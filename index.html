@@ -1323,6 +1323,14 @@
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
+  }
+  .cart-item-emoji img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: inherit;
   }
   .cart-item-info { flex: 1; min-width: 0; }
   .cart-item-name {
@@ -2712,6 +2720,7 @@
     height: 58px;
     border-radius: 16px;
     background: linear-gradient(180deg, #f7eaf1, #f2dfe9);
+    box-shadow: inset 0 0 0 1px rgba(180,104,171,0.12);
   }
 
   .cart-item-name {
@@ -5670,12 +5679,14 @@ function getCurrentProductSelection() {
   var price = 0;
   var itemName = p.name;
   var size = null;
+  var image = p.image || '';
 
   if (p.sizes && p.sizes.length > 0 && currentSizeId) {
     size = p.sizes.find(function(s) { return s.id === currentSizeId; });
     if (size) {
       price = size.price;
       itemName += ' (' + size.label + ')';
+      if (size.image) image = size.image;
     }
   } else if (typeof p.basePrice === 'number') {
     price = p.basePrice;
@@ -5693,7 +5704,8 @@ function getCurrentProductSelection() {
   return {
     name: itemName,
     price: price,
-    emoji: p.visual || '🎁'
+    emoji: p.visual || '🎁',
+    image: image || getCartImageForName(itemName)
   };
 }
 
@@ -5716,7 +5728,7 @@ function handleProductCta() {
   var selection = getCurrentProductSelection();
   if (!selection) { showPage('contact'); return; }
 
-  addToCart(selection.name, selection.price, selection.emoji);
+  addToCart(selection.name, selection.price, selection.emoji, selection.image);
 
   var cta = document.getElementById('pd-cta');
   if (cta) {
@@ -6202,12 +6214,47 @@ function saveCart() {
   localStorage.setItem('le_cart', JSON.stringify(cart));
 }
 
-function addToCart(name, price, emoji) {
+var CART_IMAGE_MAP = {
+  'Bloom': 'assets/products/bloom.jpg',
+  'Aurora': 'assets/products/aurora.jpg',
+  'Serenata': 'assets/products/serenata.jpg',
+  'Diamante': 'assets/products/diamante-v2.jpg',
+  'Prisma': 'assets/products/diamante.jpg',
+  'Nala': 'assets/products/nala.jpg',
+  'Aura': 'assets/products/pequeno-diamante.jpg',
+  'Essência do Amor': 'assets/products/essencia-amor-m2.jpg',
+  'Essência do Amor (S)': 'assets/products/essencia-amor-s.jpg',
+  'Essência do Amor (M)': 'assets/products/essencia-amor-m2.jpg',
+  'Essência do Amor (L)': 'assets/products/essencia-amor-l.jpg',
+  'Pensar em Ti': 'assets/products/pensar-em-ti.jpg',
+  'Lembrei-me de Ti': 'assets/products/lembrei-me-de-ti.jpg',
+  'Luz Serena': 'assets/products/luz-serena.jpg',
+  'Doce Luz': 'assets/products/doce-luz.jpg',
+  'Memória Perfumada': 'assets/products/memoria-perfumada.jpg',
+  'Bilhete Perfumado': 'assets/products/bilhete-perfumado.jpg',
+  'Laço de Memória': 'assets/products/laco-de-memoria.jpg',
+  'Pequeno Artista': 'assets/products/pequeno-artista.jpg',
+  'Momento Criativo': 'assets/products/momento-criativo.jpg',
+  'Caixinha de Arte': 'assets/products/caixinha-de-arte.jpg',
+  'Miminho Doce': 'assets/products/miminho-doce.jpg'
+};
+
+function getCartImageForName(name) {
+  var cleanName = String(name || '').split(' — ')[0].trim();
+  if (CART_IMAGE_MAP[cleanName]) return CART_IMAGE_MAP[cleanName];
+
+  var baseName = cleanName.replace(/\s*\([^)]*\)\s*$/, '').trim();
+  return CART_IMAGE_MAP[baseName] || '';
+}
+
+function addToCart(name, price, emoji, image) {
+  var cartImage = image || getCartImageForName(name);
   var existing = cart.find(function(i){ return i.name === name; });
   if (existing) {
     existing.qty += 1;
+    if (cartImage && !existing.image) existing.image = cartImage;
   } else {
-    cart.push({ name: name, price: price, emoji: emoji, qty: 1 });
+    cart.push({ name: name, price: price, emoji: emoji, image: cartImage, qty: 1 });
   }
   saveCart();
   renderCart();
@@ -6300,11 +6347,15 @@ function renderCart() {
     var safeName = escapeJsString(item.name);
     var displayName = escapeHtml(item.name);
     var displayEmoji = escapeHtml(item.emoji || '');
+    var imageSrc = escapeHtml(item.image || getCartImageForName(item.name));
+    var visualHtml = imageSrc
+      ? '<img src="' + imageSrc + '" alt="' + displayName + '">'
+      : displayEmoji;
     var price = Number(item.price) || 0;
     var qty = Number(item.qty) || 0;
     var lineTotal = price * qty;
     return '<div class="cart-item">' +
-      '<div class="cart-item-emoji">' + displayEmoji + '</div>' +
+      '<div class="cart-item-emoji">' + visualHtml + '</div>' +
       '<div class="cart-item-info">' +
         '<div class="cart-item-name">' + displayName + '</div>' +
         '<div class="cart-item-price">' + formatPrice(lineTotal) + ' <span style="color:var(--warm-gray);font-weight:300;font-size:0.78rem;">(' + formatPrice(price) + ' × ' + qty + ')</span></div>' +
