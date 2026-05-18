@@ -5505,6 +5505,7 @@ var PRODUCT_CATALOG = {
     customLabel: 'Texto a gravar (até 60 caracteres)',
     customPlaceholder: 'Ex: "Para sempre, Tu e Eu"',
     customNote: 'A personalização tem um custo adicional de 1,50€.',
+    customCartLabel: 'Texto a gravar',
     customPrice: 1.50,
     details: 'Moldura artesanal com composição floral · Pintura e montagem feitas à mão · Personalização com escrita manual · Embalagem de oferta incluída · Cada peça é única.',
     tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial', '💍 Aniversário de Casamento'],
@@ -5524,6 +5525,12 @@ var PRODUCT_CATALOG = {
       { id: 'M', label: 'M', price: 35, note: 'gesto completo', image: 'assets/products/essencia-amor-m2.jpg' },
       { id: 'L', label: 'L', price: 50, note: 'experiência', image: 'assets/products/essencia-amor-l.jpg' }
     ],
+    customizable: true,
+    customLabel: 'Frase na caixa (substitui o logótipo)',
+    customPlaceholder: 'Ex: O amor mora nos detalhes.',
+    customNote: 'Ao escrever uma frase, substituímos o logótipo da caixa por essa frase. Acresce 1,50€.',
+    customCartLabel: 'Frase na caixa',
+    customPrice: 1.50,
     details: 'Composição variada conforme o tamanho · Sabonetes artesanais e mimos selecionados · Embalagem de oferta com fita e cartão · Composição final pode variar com a sazonalidade dos materiais artesanais.',
     tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial', '✨ Agradecimento'],
     quote: '"A box não é o presente. O presente é o que se sente quando ela é aberta."',
@@ -5670,7 +5677,7 @@ function getCurrentProductSelection() {
     if (input && input.value.trim().length > 0 && typeof p.customPrice === 'number') {
       var customText = input.value.trim();
       price += p.customPrice;
-      itemName += ' — "' + customText + '"';
+      itemName += ' — ' + (p.customCartLabel || 'Personalização') + ': "' + customText + '"';
     }
   }
 
