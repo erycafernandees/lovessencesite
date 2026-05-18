@@ -1510,43 +1510,25 @@
   .hero-premium {
     position: relative;
     overflow: hidden;
-    background: #fdfcfb;
-    padding: 4.5rem 5vw 4.5rem;
+    background: linear-gradient(90deg, #ffffff 0%, #ffffff 52%, #fff7fb 52%, #fdfbfc 100%);
+    padding: 5.2rem 5vw 4.8rem;
   }
-  .hero-premium::before {
-    content: '';
-    position: absolute;
-    right: -10%;
-    top: -18%;
-    width: 28rem;
-    height: 28rem;
-    border-radius: 999px;
-    background: radial-gradient(circle, rgba(227,190,223,0.07) 0%, rgba(227,190,223,0) 70%);
-    pointer-events: none;
-  }
+  .hero-premium::before,
   .hero-premium::after {
-    content: '';
-    position: absolute;
-    left: -6rem;
-    bottom: -8rem;
-    width: 20rem;
-    height: 20rem;
-    border-radius: 999px;
-    background: radial-gradient(circle, rgba(220,210,215,0.10) 0%, rgba(220,210,215,0) 70%);
-    pointer-events: none;
+    content: none;
   }
   .hero-premium-inner {
     position: relative;
     z-index: 1;
-    max-width: 1440px;
+    max-width: 1460px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
-    gap: 3.5rem;
+    grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
+    gap: 4.2rem;
     align-items: center;
   }
   .hero-premium-copy {
-    max-width: 620px;
+    max-width: 650px;
   }
   .hero-premium-eyebrow {
     margin-bottom: 1.15rem;
@@ -1611,29 +1593,31 @@
   }
   .hero-premium-visual {
     position: relative;
-    min-height: 560px;
+    min-height: 610px;
   }
   .hero-premium-panel-main {
     position: absolute;
     left: 0;
-    top: 2.6rem;
-    width: 76%;
-    border-radius: 28px;
+    top: 0.8rem;
+    z-index: 1;
+    width: 72%;
+    border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.6);
-    background: linear-gradient(155deg,#f9e8ec 0%,#efd4da 100%);
-    padding: 2rem;
-    box-shadow: 0 28px 80px rgba(102,19,94,0.16);
+    background: #ffffff;
+    padding: 0;
+    box-shadow: 0 30px 82px rgba(102,19,94,0.15);
   }
   .hero-premium-panel-accent {
     position: absolute;
     right: 0;
-    top: 0;
-    width: 43%;
-    border-radius: 24px;
+    top: 16.5rem;
+    z-index: 3;
+    width: 46%;
+    border-radius: 10px;
     border: 1px solid rgba(180,104,171,0.14);
-    background: linear-gradient(155deg,#fbf1e8 0%,#eddac7 100%);
-    padding: 1.6rem 1.25rem;
-    box-shadow: 0 18px 50px rgba(63,7,58,0.08);
+    background: #ffffff;
+    padding: 0;
+    box-shadow: 0 22px 56px rgba(63,7,58,0.12);
   }
   .hero-premium-panel-bottom {
     position: absolute;
@@ -3315,7 +3299,7 @@
     font-weight: 300 !important;
     font-size: clamp(3.6rem, 7vw, 6rem) !important;
     line-height: 0.98 !important;
-    letter-spacing: -0.035em !important;
+    letter-spacing: 0 !important;
     color: #1a1118 !important;
     text-wrap: balance;
   }
@@ -3325,13 +3309,19 @@
     font-weight: 300;
   }
 
+  .hero-premium-title .hero-line-soft:first-child {
+    white-space: nowrap;
+  }
+
   .hero-premium-title .hero-line-accent {
     display: block;
     margin-top: 0.08em;
     color: var(--rose);
+    font-size: clamp(3rem, 5.4vw, 4.9rem);
     font-style: italic;
     font-weight: 400;
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
+    white-space: nowrap;
   }
 
   .hero-premium-text {
@@ -3346,10 +3336,11 @@
     .hero-premium-title {
       font-size: clamp(3.2rem, 12vw, 4.7rem) !important;
       line-height: 0.99 !important;
-      letter-spacing: -0.03em !important;
+      letter-spacing: 0 !important;
     }
 
     .hero-premium-title .hero-line-accent {
+      font-size: clamp(2rem, 9.2vw, 3rem);
       margin-top: 0.03em;
     }
   }
@@ -3521,6 +3512,7 @@
     padding: 0 !important;
     overflow: hidden;
     background: #fff !important;
+    border-radius: 10px !important;
   }
 
   .hero-premium-feature-img,
@@ -3533,35 +3525,13 @@
   }
 
   .hero-premium-feature-img {
-    min-height: 430px;
-    object-position: center 46%;
+    min-height: 540px;
+    object-position: center 48%;
   }
 
   .hero-premium-side-photo img {
-    min-height: 250px;
-    object-position: center 50%;
-  }
-
-  .hero-premium-photo-caption {
-    position: absolute;
-    top: 1.1rem;
-    left: 1.1rem;
-    width: min(78%, 18rem);
-    padding: 1.05rem 1rem 1.1rem;
-    background: rgba(252,248,252,0.88);
-    border: 1px solid rgba(180,104,171,0.14);
-    box-shadow: 0 16px 36px rgba(63,7,58,0.11);
-    backdrop-filter: blur(12px);
-  }
-
-  .hero-premium-photo-caption .hero-premium-visual-title {
-    margin-top: 0.65rem;
-    font-size: clamp(1.85rem, 3vw, 2.55rem);
-  }
-
-  .hero-premium-panel-bottom,
-  .hero-premium-gift {
-    z-index: 3;
+    min-height: 285px;
+    object-position: center 45%;
   }
 
   .hero-premium-mobile-photo {
@@ -3576,6 +3546,12 @@
 
   .product-card:hover .product-img img {
     transform: scale(1.045);
+  }
+
+  .shop-products-grid .product-img {
+    aspect-ratio: 3 / 4;
+    height: auto !important;
+    min-height: 0;
   }
 
   .product-img img[src*="bloom"] { object-position: center 52%; }
@@ -3606,11 +3582,11 @@
 
   @media (max-width: 1180px) {
     .hero-premium-feature-img {
-      min-height: 390px;
+      min-height: 470px;
     }
 
     .hero-premium-side-photo img {
-      min-height: 220px;
+      min-height: 260px;
     }
   }
 
@@ -3638,11 +3614,11 @@
     }
 
     .hero-premium-mobile-photo img:first-child {
-      object-position: center 46%;
+      object-position: center 43%;
     }
 
     .hero-premium-mobile-photo img:last-child {
-      object-position: center 50%;
+      object-position: center 44%;
     }
   }
 
@@ -3923,8 +3899,8 @@
         </p>
 
         <div class="hero-premium-mobile-photo" aria-hidden="true">
-          <img src="assets/hero/banner-1.jpg" alt="" loading="eager"/>
-          <img src="assets/hero/banner-2.jpg" alt="" loading="eager"/>
+          <img src="assets/products/pensar-em-ti.jpg" alt="" loading="eager"/>
+          <img src="assets/hero/hero-vela-dinis.jpg" alt="" loading="eager"/>
         </div>
 
         <div class="hero-premium-actions">
@@ -3950,23 +3926,12 @@
 
       <div class="hero-premium-visual" aria-hidden="true">
         <div class="hero-premium-panel-main hero-premium-photo-panel">
-          <img class="hero-premium-feature-img" src="assets/hero/banner-1.jpg" alt="" loading="eager"/>
-          <div class="hero-premium-photo-caption">
-            <p class="hero-premium-visual-label">Love Essences</p>
-            <h3 class="hero-premium-visual-title">Peças que <em>contam histórias</em></h3>
-          </div>
+          <img class="hero-premium-feature-img" src="assets/products/pensar-em-ti.jpg" alt="" loading="eager"/>
         </div>
 
         <div class="hero-premium-panel-accent hero-premium-side-photo">
-          <img src="assets/hero/banner-2.jpg" alt="" loading="lazy"/>
+          <img src="assets/hero/hero-vela-dinis.jpg" alt="" loading="lazy"/>
         </div>
-
-        <div class="hero-premium-panel-bottom">
-          <p>Produtos únicos</p>
-          <strong>Feitos à Mão</strong>
-        </div>
-
-        <div class="hero-premium-gift">🤍</div>
       </div>
     </div>
   </section>
