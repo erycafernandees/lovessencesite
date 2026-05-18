@@ -1381,6 +1381,10 @@
     font-size: 0.75rem; color: var(--warm-gray);
     margin-bottom: 1.2rem; font-weight: 300;
   }
+  .cart-shipping-note.free-shipping {
+    color: var(--deep-rose);
+    font-weight: 500;
+  }
   .cart-checkout-btn {
     width: 100%; background: var(--dark); color: #fff;
     border: none; padding: 1rem;
@@ -3839,7 +3843,7 @@
       <span>Subtotal</span>
       <span id="cart-total-price">0€</span>
     </div>
-    <p class="cart-shipping-note">🚚 Envio calculado no checkout · Embalagem de oferta incluída</p>
+    <p class="cart-shipping-note" id="cart-shipping-note">🚚 Envio calculado no checkout · Embalagem de oferta incluída</p>
     <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="closeCart();showPage('shop')">Continuar a comprar</button>
     <button type="button" class="cart-checkout-btn" onclick="checkoutWhatsApp()">Finalizar via WhatsApp 💬</button>
     <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="checkoutForm()">Finalizar via Formulário ✉️</button>
@@ -6268,6 +6272,7 @@ function renderCart() {
   var itemsEl  = document.getElementById('cart-items');
   var footerEl = document.getElementById('cart-footer');
   var totalEl  = document.getElementById('cart-total-price');
+  var shippingEl = document.getElementById('cart-shipping-note');
 
   if (cart.length === 0) {
     emptyEl.style.display = 'flex';
@@ -6279,7 +6284,17 @@ function renderCart() {
   emptyEl.style.display = 'none';
   itemsEl.style.display = 'block';
   footerEl.style.display = 'block';
-  totalEl.textContent = formatPrice(getTotal());
+  var total = getTotal();
+  totalEl.textContent = formatPrice(total);
+  if (shippingEl) {
+    if (total >= 60) {
+      shippingEl.textContent = '🚚 Portes de envio gratuitos · Embalagem de oferta incluída';
+      shippingEl.classList.add('free-shipping');
+    } else {
+      shippingEl.textContent = '🚚 Envio calculado no checkout · Embalagem de oferta incluída';
+      shippingEl.classList.remove('free-shipping');
+    }
+  }
 
   itemsEl.innerHTML = cart.map(function(item) {
     var safeName = escapeJsString(item.name);
