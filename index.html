@@ -792,6 +792,12 @@
     gap: 0.75rem;
     align-items: center;
   }
+  .shop-products-grid .product-btn {
+    display: none !important;
+  }
+  .shop-products-grid .product-price {
+    width: 100%;
+  }
 
   /* PRODUCT DETAIL PAGE */
   .product-detail { padding: 3rem 8vw; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
@@ -1747,6 +1753,20 @@
     font-family: var(--serif); font-size: 1.2rem;
   }
   .cart-subtotal span:last-child { color: var(--deep-rose); font-weight: 500; }
+  .cart-discount-line {
+    display: none;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0.2rem 0 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    background: rgba(241,227,239,0.72);
+    color: var(--deep-rose);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    font-weight: 500;
+  }
+  .cart-discount-line span:last-child { white-space: nowrap; }
   .cart-shipping-note {
     font-size: 0.75rem; color: var(--warm-gray);
     margin-bottom: 1.2rem; font-weight: 300;
@@ -4158,7 +4178,7 @@
     <a href="#" onclick="showPage('home'); return false;" style="font-size:0.75rem; font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--warm-gray); text-decoration:none; transition:color 0.3s;" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--warm-gray)'">Início</a>
     <a href="#" onclick="showPage('shop'); return false;" style="font-size:0.75rem; font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--warm-gray); text-decoration:none; transition:color 0.3s;" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--warm-gray)'">Loja</a>
     <a href="#" onclick="showPage('occasions'); return false;" style="font-size:0.75rem; font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--warm-gray); text-decoration:none; transition:color 0.3s;" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--warm-gray)'">Ocasiões</a>
-    <a href="#" onclick="showPage('about'); return false;" style="font-size:0.75rem; font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--warm-gray); text-decoration:none; transition:color 0.3s;" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--warm-gray)'">A Nossa História</a>
+    <a href="#" onclick="showPage('about'); return false;" style="font-size:0.75rem; font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--warm-gray); text-decoration:none; transition:color 0.3s;" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--warm-gray)'">Sobre Nós</a>
     <a href="#" onclick="showPage('tracking'); return false;" style="font-size:0.75rem; font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--warm-gray); text-decoration:none; transition:color 0.3s;" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--warm-gray)'">Tracking</a>
     <a href="#" onclick="showPage('contact'); return false;" style="font-size:0.75rem; font-weight:400; letter-spacing:0.12em; text-transform:uppercase; color:var(--warm-gray); text-decoration:none; transition:color 0.3s;" onmouseover="this.style.color='var(--rose)'" onmouseout="this.style.color='var(--warm-gray)'">Contacto</a>
   </div>
@@ -4195,7 +4215,7 @@
       <div class="mobile-menu-section mobile-menu-section--wide">
         <span class="mobile-menu-title">A Marca</span>
         <div class="mobile-menu-links">
-          <button type="button" class="mobile-nav-link" onclick="navTo('about')">A Nossa História</button>
+          <button type="button" class="mobile-nav-link" onclick="navTo('about')">Sobre Nós</button>
           <button type="button" class="mobile-nav-link" onclick="navTo('tracking')">Tracking</button>
           <button type="button" class="mobile-nav-link" onclick="navTo('contact')">Contacto</button>
           <button type="button" class="mobile-nav-link" onclick="navTo('about')">Valores</button>
@@ -4232,8 +4252,12 @@
   <!-- Footer with total + checkout -->
   <div class="cart-footer" id="cart-footer" style="display:none">
     <div class="cart-subtotal">
-      <span>Subtotal</span>
+      <span>Total</span>
       <span id="cart-total-price">0€</span>
+    </div>
+    <div class="cart-discount-line" id="cart-discount-line">
+      <span id="cart-discount-label"></span>
+      <span id="cart-discount-value"></span>
     </div>
     <p class="cart-shipping-note" id="cart-shipping-note">🚚 Envio calculado no checkout · Embalagem de oferta incluída</p>
     <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="closeCart();showPage('shop')">Continuar a comprar</button>
@@ -4272,7 +4296,7 @@
 
         <div class="hero-premium-actions">
           <a href="#page-shop" id="hero-shop-btn" class="btn-primary" onclick="showPage('shop'); return false;" style="text-decoration:none;">Descobrir a Coleção</a>
-          <a href="#page-about" id="hero-about-btn" class="btn-outline" onclick="showPage('about'); return false;" style="text-decoration:none;">A Nossa História</a>
+          <a href="#page-about" id="hero-about-btn" class="btn-outline" onclick="showPage('about'); return false;" style="text-decoration:none;">Sobre Nós</a>
         </div>
 
         <div class="hero-premium-cards">
@@ -4383,7 +4407,7 @@
           <p class="product-desc">Vela em frasco com rolha, criada como lembrança de eventos. Aromas suaves para ficar na memória.</p>
           <div class="product-footer">
             <span class="product-price">4€/un</span>
-            <button type="button" class="product-btn" onclick="openProduct('memoria_perfumada')">Ver detalhes</button>
+            <button type="button" class="product-btn" onclick="openProduct('memoria_perfumada')">Personalizar</button>
           </div>
         </div>
       </div>
@@ -4456,7 +4480,7 @@
       <h2 class="section-title">Nós fazemos,<br/><em>vocês sentem</em></h2>
       <div class="story-quote">Cada peça é pensada para ser mais do que um objeto, é um gesto com significado.</div>
       <p class="section-sub">Criamos experiências emocionais através de aromas, design e detalhe. Porque o melhor presente não se compra, sente-se.</p>
-      <button type="button" class="btn-outline" style="border-color: rgba(255,255,255,0.25); color: #fff; margin-top: 1rem;" onclick="showPage('about')">Conhecer a Nossa História</button>
+      <button type="button" class="btn-outline" style="border-color: rgba(255,255,255,0.25); color: #fff; margin-top: 1rem;" onclick="showPage('about')">Conhecer Sobre Nós</button>
     </div>
   </section>
 
@@ -4794,10 +4818,10 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="memorias" data-occasion="aniversarios,presente-romantico,alguem-especial,empresas">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/lembrei-me-de-ti.jpg" alt="Lembrei-me de Ti, mini box Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/lembrei-me-de-ti.jpg" alt="Lembrei-me de Ti, mini bouquet Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Lembrei-me de Ti</h3>
-          <p class="product-desc">A mini-box ideal para um gesto espontâneo. Pequena no tamanho, intencional no significado.</p>
+          <p class="product-desc">Mini bouquet delicado, ideal para um gesto espontâneo. Pequeno no tamanho, cheio de intenção no significado.</p>
           <div class="product-footer"><span class="product-price">12€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Lembrei-me de Ti',12,'🌷')">Adicionar 🛒</button></div>
         </div>
       </div>
@@ -4809,7 +4833,7 @@
           <h3 class="product-name">Mini Difusor Personalizado</h3>
           <p class="product-desc">Mini difusor aromático personalizado com etiqueta temática, ideal para lembranças delicadas de aniversário, batizado, comunhão, casamento, baby shower ou educadoras.</p>
           <p class="product-fragrance-note"><strong>Inclui</strong>Mini frasco difusor com líquido aromático · Varetas · Etiqueta personalizada com o tema escolhido</p>
-          <div class="product-footer"><span class="product-price">3,50€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">3,50€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados">
@@ -4818,7 +4842,7 @@
           <h3 class="product-name">Mini Difusor + Mini Sabonete</h3>
           <p class="product-desc">Kit personalizado composto por mini difusor aromático e mini sabonete artesanal, uma lembrança perfumada e delicada para eventos especiais.</p>
           <p class="product-fragrance-note"><strong>Inclui</strong>Mini difusor com líquido aromático · Varetas · Mini sabonete artesanal redondo · Etiqueta personalizada com o tema escolhido</p>
-          <div class="product-footer"><span class="product-price">4,90€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor_sabonete')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">4,90€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor_sabonete')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,pequeninos">
@@ -4827,16 +4851,16 @@
           <h3 class="product-name">Sopros de Alegria</h3>
           <p class="product-desc">Bolinhas de sabão personalizadas com etiqueta temática, perfeitas para lembranças infantis e momentos cheios de alegria.</p>
           <p class="product-fragrance-note"><strong>Inclui</strong>Frasco de bolinhas de sabão com líquido · Etiqueta personalizada com o tema escolhido · Mínimo recomendado: 12 unidades</p>
-          <div class="product-footer"><span class="product-price">1,50€/un</span><button type="button" class="product-btn" onclick="openProduct('sopros_alegria')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">1,50€/un</span><button type="button" class="product-btn" onclick="openProduct('sopros_alegria')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,empresas">
         <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/luz-serena.jpg" alt="Luz Serena, vela pilar personalizada Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Luz Serena</h3>
-          <p class="product-desc">Vela pilar com base em Raysin. Encomenda mínima de 10 unidades, com escalonamento de preço a partir de 30, 50 e 80 unidades.</p>
+          <p class="product-desc">Vela delicada e perfumada, pensada para iluminar a mesa e deixar uma lembrança doce nos convidados.</p>
           <p class="product-fragrance-note"><strong>Fragrâncias disponíveis</strong>Baunilha · Colónia de bebé · Dove · Explosão floral · Flor de algodão · Lavanda · Talco · Talco com jasmim</p>
-          <div class="product-footer"><span class="product-price">A partir de 3€/un</span><button type="button" class="product-btn" onclick="openProduct('luz_serena')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">3€/un</span><button type="button" class="product-btn" onclick="openProduct('luz_serena')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,empresas">
@@ -4845,7 +4869,7 @@
           <h3 class="product-name">Doce Luz</h3>
           <p class="product-desc">Vela bubble com tag e cordão ou com caixa personalizada. Mínimo 15 unidades. Uma lembrança suave e memorável.</p>
           <p class="product-fragrance-note"><strong>Fragrâncias disponíveis</strong>Baunilha · Colónia de bebé · Dove · Explosão floral · Flor de algodão · Lavanda · Talco · Talco com jasmim</p>
-          <div class="product-footer"><span class="product-price">3,50€/un</span><button type="button" class="product-btn" onclick="openProduct('doce_luz')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">3,50€/un</span><button type="button" class="product-btn" onclick="openProduct('doce_luz')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,empresas">
@@ -4854,7 +4878,7 @@
           <h3 class="product-name">Memória Perfumada</h3>
           <p class="product-desc">Vela em frasco com rolha. Aromas suaves, escolhidos para combinar com a ocasião. Encomenda mínima de 10 unidades.</p>
           <p class="product-fragrance-note"><strong>Fragrâncias disponíveis</strong>Baunilha · Colónia de bebé · Dove · Explosão floral · Flor de algodão · Lavanda · Talco · Talco com jasmim</p>
-          <div class="product-footer"><span class="product-price">4€/un</span><button type="button" class="product-btn" onclick="openProduct('memoria_perfumada')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">4€/un</span><button type="button" class="product-btn" onclick="openProduct('memoria_perfumada')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,empresas,pequeninos">
@@ -4863,7 +4887,7 @@
           <h3 class="product-name">Bilhete Perfumado</h3>
           <p class="product-desc">Sabonete floral com cartão. Mínimo 6 unidades, essência à escolha sujeita a disponibilidade. Um detalhe que fica na memória.</p>
           <p class="product-fragrance-note"><strong>Fragrâncias disponíveis</strong>Baunilha · Colónia de bebé · Dove · Explosão floral · Flor de algodão · Lavanda · Talco · Talco com jasmim</p>
-          <div class="product-footer"><span class="product-price">2€/un</span><button type="button" class="product-btn" onclick="openProduct('bilhete_perfumado')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">2€/un</span><button type="button" class="product-btn" onclick="openProduct('bilhete_perfumado')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados">
@@ -4871,7 +4895,7 @@
         <div class="product-info">
           <h3 class="product-name">Laço de Memória</h3>
           <p class="product-desc">Porta-chaves artesanal em tecido, feito por artesã local. Escolhe o tecido disponível no detalhe do artigo.</p>
-          <div class="product-footer"><span class="product-price">4,90€</span><button type="button" class="product-btn" onclick="openProduct('laco_memoria')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">4,90€</span><button type="button" class="product-btn" onclick="openProduct('laco_memoria')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
@@ -4879,7 +4903,7 @@
         <div class="product-info">
           <h3 class="product-name">Pequeno Artista</h3>
           <p class="product-desc">Kit de pintura em gesso para crianças: 1 peça com íman, 3 cores, pincel, autocolantes e miminho. Em saco de organza.</p>
-          <div class="product-footer"><span class="product-price">3€/un</span><button type="button" class="product-btn" onclick="showPage('contact')">Pedir Orçamento</button></div>
+          <div class="product-footer"><span class="product-price">3€/un</span><button type="button" class="product-btn" onclick="openProduct('pequeno_artista')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
@@ -4887,7 +4911,7 @@
         <div class="product-info">
           <h3 class="product-name">Momento Criativo</h3>
           <p class="product-desc">Kit com 2 peças em gesso, 3 cores, pincel, autocolantes e miminho. Para crianças que celebram em grande.</p>
-          <div class="product-footer"><span class="product-price">3,90€/un</span><button type="button" class="product-btn" onclick="showPage('contact')">Pedir Orçamento</button></div>
+          <div class="product-footer"><span class="product-price">3,90€/un</span><button type="button" class="product-btn" onclick="openProduct('momento_criativo')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
@@ -4895,7 +4919,7 @@
         <div class="product-info">
           <h3 class="product-name">Caixinha de Arte</h3>
           <p class="product-desc">Kit completo: 3 peças em gesso, 6 cores, 2 pincéis, autocolantes e miminho. Em caixa preparada para oferecer.</p>
-          <div class="product-footer"><span class="product-price">5,90€/un</span><button type="button" class="product-btn" onclick="showPage('contact')">Pedir Orçamento</button></div>
+          <div class="product-footer"><span class="product-price">5,90€/un</span><button type="button" class="product-btn" onclick="openProduct('caixinha_arte')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
@@ -4903,7 +4927,7 @@
         <div class="product-info">
           <h3 class="product-name">Miminho Doce</h3>
           <p class="product-desc">Saco de doces para crianças. Um complemento simples e doce, ideal para combinar com qualquer kit da Coleção Pequenos Momentos.</p>
-          <div class="product-footer"><span class="product-price">2€/un</span><button type="button" class="product-btn" onclick="showPage('contact')">Pedir Orçamento</button></div>
+          <div class="product-footer"><span class="product-price">2€/un</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Miminho Doce',2,'🍬')">Adicionar 🛒</button></div>
         </div>
       </div>
     </div>
@@ -5019,7 +5043,7 @@
 <div class="page" id="page-about">
   <div class="about-hero">
     <div class="about-hero-text">
-      <p class="section-label">✦ A Nossa História</p>
+      <p class="section-label">✦ Sobre Nós</p>
       <h1>Nascemos do desejo<br/>de criar algo que<br/><em>se sentisse.</em></h1>
       <p>A Love Essences não foi criada num escritório. Foi criada numa cozinha, com as mãos numa forma de gesso e o cheiro de rosas no ar. É uma história de amor, ao artesanato, à beleza e ao gesto de oferecer.</p>
     </div>
@@ -5427,7 +5451,7 @@
               <option>Mini Difusor Personalizado (3,50€/un)</option>
               <option>Mini Difusor + Mini Sabonete (4,90€/un)</option>
               <option>Sopros de Alegria (1,50€/un)</option>
-              <option>Luz Serena (Vela Pilar)</option>
+              <option>Luz Serena (3€/un)</option>
               <option>Doce Luz (Vela Bubble)</option>
               <option>Memória Perfumada (Vela em Frasco)</option>
               <option>Bilhete Perfumado</option>
@@ -5936,7 +5960,7 @@
     <div class="footer-col">
       <h5>A Marca</h5>
       <ul>
-        <li><a href="#" onclick="showPage('about'); return false;">A Nossa História</a></li>
+        <li><a href="#" onclick="showPage('about'); return false;">Sobre Nós</a></li>
         <li><a href="#" onclick="showPage('tracking'); return false;">Tracking</a></li>
         <li><a href="#" onclick="showPage('contact'); return false;">Contacto</a></li>
         <li><a href="#" onclick="showPage('about'); return false;">Valores</a></li>
@@ -6070,6 +6094,81 @@ var PRODUCT_CATALOG = {
     quote: '"As palavras certas, na moldura certa, transformam um presente numa memória."',
     ctaLabel: 'Adicionar ao Carrinho'
   },
+  serenata: {
+    category: 'Coleção Assinatura',
+    name: 'Serenata',
+    visual: '🤍',
+    image: 'assets/products/serenata.jpg',
+    visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
+    storyTitle: 'A peça',
+    story: 'Peça larga em gesso, com presença escultórica e acabamento sereno. Uma escolha elegante para quem gosta de detalhes que preenchem o espaço com suavidade.',
+    sizes: [],
+    basePrice: 30,
+    details: 'Peça artesanal em gesso · Acabamento feito à mão · Embalagem de oferta incluída · Cada peça pode apresentar pequenas variações naturais.',
+    tags: ['🤍 Para Alguém Especial', '✨ Decoração', '🎁 Presente delicado'],
+    quote: '"Uma peça calma, feita para ocupar o espaço com leveza."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  diamante: {
+    category: 'Coleção Assinatura',
+    name: 'Diamante',
+    visual: '💎',
+    image: 'assets/products/diamante-v2.jpg',
+    visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
+    storyTitle: 'A peça',
+    story: 'Peça em gesso com forma facetada, inspirada no brilho discreto de um diamante. Elegante, luminosa e pensada para oferecer com intenção.',
+    sizes: [],
+    basePrice: 21,
+    details: 'Peça artesanal em gesso · Forma facetada · Acabamento feito à mão · Embalagem de oferta incluída.',
+    tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial'],
+    quote: '"Um brilho subtil para uma memória especial."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  prisma: {
+    category: 'Coleção Assinatura',
+    name: 'Prisma',
+    visual: '💎',
+    image: 'assets/products/diamante.jpg',
+    visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
+    storyTitle: 'A peça',
+    story: 'Peça em gesso com presença facetada, semelhante ao Diamante, mas com um vaso ligeiramente diferente. Uma opção maior, elegante e muito especial.',
+    sizes: [],
+    basePrice: 24,
+    details: 'Peça artesanal em gesso · Vaso facetado · Acabamento feito à mão · Embalagem de oferta incluída.',
+    tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial'],
+    quote: '"Um detalhe luminoso para oferecer com carinho."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  nala: {
+    category: 'Coleção Assinatura',
+    name: 'Nala',
+    visual: '✨',
+    image: 'assets/products/nala.jpg',
+    visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
+    storyTitle: 'A peça',
+    story: 'A peça que dá nome à coleção. Forma orgânica, presença suave e acabamento delicado, ideal para quem prefere o detalhe ao excesso.',
+    sizes: [],
+    basePrice: 18,
+    details: 'Peça artesanal em gesso · Acabamento feito à mão · Embalagem de oferta incluída · Cada peça é única.',
+    tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial'],
+    quote: '"Um gesto simples, bonito e cheio de intenção."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  aura: {
+    category: 'Coleção Assinatura',
+    name: 'Aura',
+    visual: '🔹',
+    image: 'assets/products/pequeno-diamante.jpg',
+    visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
+    storyTitle: 'A peça',
+    story: 'Peça compacta em gesso, delicada e luminosa. Perfeita para um gesto subtil, sem perder carácter.',
+    sizes: [],
+    basePrice: 18,
+    details: 'Peça artesanal em gesso · Formato compacto · Acabamento feito à mão · Embalagem de oferta incluída.',
+    tags: ['🎂 Aniversários', '🤍 Para Alguém Especial', '🏷️ Eventos & Empresas'],
+    quote: '"Pequena no tamanho, bonita na presença."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
   essencia_amor: {
     category: 'Coleção Memórias',
     name: 'Essência do Amor',
@@ -6110,6 +6209,21 @@ var PRODUCT_CATALOG = {
     details: 'Composição cuidada com peças e mimos artesanais · Embalagem pronta a oferecer · Mensagem personalizada incluída mediante pedido · Composição pode variar consoante disponibilidade.',
     tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial', '✨ Sem Ocasião'],
     quote: '"Há gestos que não precisam de ocasião. Só de coragem para os fazer."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  lembrei_me_de_ti: {
+    category: 'Coleção Memórias',
+    name: 'Lembrei-me de Ti',
+    visual: '🌷',
+    image: 'assets/products/lembrei-me-de-ti.jpg',
+    visualBg: 'linear-gradient(160deg, #faf0f7 0%, #d8a8d0 100%)',
+    storyTitle: 'O mini bouquet',
+    story: 'Um mini bouquet delicado, criado para aqueles gestos espontâneos que chegam no momento certo. Pequeno no tamanho, cheio de intenção no significado.',
+    sizes: [],
+    basePrice: 12,
+    details: 'Mini bouquet artesanal · Composição delicada · Embalagem pronta a oferecer · Ideal para um mimo espontâneo.',
+    tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial', '✨ Sem Ocasião'],
+    quote: '"Lembrei-me de ti, e isso já é uma forma bonita de amor."',
     ctaLabel: 'Adicionar ao Carrinho'
   },
   mini_difusor: {
@@ -6179,19 +6293,18 @@ var PRODUCT_CATALOG = {
     image: 'assets/products/luz-serena.jpg',
     visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
     storyTitle: 'A vela',
-    story: 'Vela pilar com base em Raysin, criada para eventos que pedem uma lembrança elegante, aromática e delicada. O valor varia consoante quantidade e acabamento.',
+    story: 'Uma vela delicada e perfumada, feita para acompanhar momentos especiais com uma luz suave. É uma lembrança querida, elegante e cheia de carinho para oferecer a quem celebrou consigo.',
     sizes: [],
-    quoteOnly: true,
-    priceLabel: 'A partir de 3€/un',
+    basePrice: 3,
+    priceSuffix: '/un',
     eventOptions: true,
     defaultQty: 10,
     minQty: 10,
     fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
-    formProductName: 'Luz Serena (Vela Pilar)',
-    details: 'Inclui: vela pilar aromática · Base em Raysin · Personalização conforme tema do evento. Encomenda mínima de 10 unidades, com escalonamento de preço a partir de 30, 50 e 80 unidades.',
+    details: 'Inclui: vela aromática · Personalização conforme o tema do evento · Fragrância à escolha. Encomenda mínima de 10 unidades.',
     tags: ['💍 Casamentos', '🕊️ Batizados', '🤍 Comunhões', '🏷️ Eventos & Empresas'],
-    quote: '"Uma luz calma para agradecer a presença de quem celebra contigo."',
-    ctaLabel: 'Pedir Orçamento'
+    quote: '"Uma luz serena para agradecer a presença de quem fez parte do dia."',
+    ctaLabel: 'Adicionar ao Carrinho'
   },
   doce_luz: {
     category: 'Lembranças para Eventos',
@@ -6270,6 +6383,86 @@ var PRODUCT_CATALOG = {
     details: 'Inclui: porta-chaves em tecido · Mosquetão metálico dourado em forma de coração · Acabamento artesanal. Preço único por unidade.',
     tags: ['💍 Casamentos', '🕊️ Batizados', '🤍 Comunhões', '🎁 Lembrança especial'],
     quote: '"Um laço delicado para guardar a memória do dia."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  pequeno_artista: {
+    category: 'Lembranças para Eventos',
+    name: 'Pequeno Artista',
+    visual: '🎨',
+    image: 'assets/products/pequeno-artista.jpg',
+    visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
+    storyTitle: 'O kit',
+    story: 'Kit de pintura em gesso para crianças, pensado para oferecer uma lembrança divertida, criativa e cheia de ternura.',
+    sizes: [],
+    basePrice: 3,
+    priceSuffix: '/un',
+    eventOptions: true,
+    defaultQty: 1,
+    minQty: 1,
+    fragrances: [],
+    details: 'Inclui: 1 peça em gesso com íman · 3 cores · Pincel · Autocolantes · Miminho · Saco de organza.',
+    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
+    quote: '"Uma lembrança pequenina para mãos cheias de imaginação."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  momento_criativo: {
+    category: 'Lembranças para Eventos',
+    name: 'Momento Criativo',
+    visual: '🎨',
+    image: 'assets/products/momento-criativo.jpg',
+    visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
+    storyTitle: 'O kit',
+    story: 'Kit criativo com duas peças em gesso, ideal para crianças que adoram pintar, brincar e levar para casa uma recordação especial.',
+    sizes: [],
+    basePrice: 3.90,
+    priceSuffix: '/un',
+    eventOptions: true,
+    defaultQty: 1,
+    minQty: 1,
+    fragrances: [],
+    details: 'Inclui: 2 peças em gesso · 3 cores · Pincel · Autocolantes · Miminho.',
+    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
+    quote: '"Um momento para criar, brincar e guardar."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  caixinha_arte: {
+    category: 'Lembranças para Eventos',
+    name: 'Caixinha de Arte',
+    visual: '🎨',
+    image: 'assets/products/caixinha-de-arte.jpg',
+    visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
+    storyTitle: 'O kit',
+    story: 'Kit completo de pintura em caixa, preparado para oferecer uma experiência criativa mais completa aos mais pequenos.',
+    sizes: [],
+    basePrice: 5.90,
+    priceSuffix: '/un',
+    eventOptions: true,
+    defaultQty: 1,
+    minQty: 1,
+    fragrances: [],
+    details: 'Inclui: 3 peças em gesso · 6 cores · 2 pincéis · Autocolantes · Miminho · Caixa preparada para oferecer.',
+    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
+    quote: '"Uma caixinha feita para transformar a lembrança numa brincadeira."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  miminho_doce: {
+    category: 'Lembranças para Eventos',
+    name: 'Miminho Doce',
+    visual: '🍬',
+    image: 'assets/products/miminho-doce.jpg',
+    visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
+    storyTitle: 'O mimo',
+    story: 'Saco de doces para crianças, simples, doce e perfeito para completar qualquer kit da Coleção Pequenos Momentos.',
+    sizes: [],
+    basePrice: 2,
+    priceSuffix: '/un',
+    eventOptions: true,
+    defaultQty: 1,
+    minQty: 1,
+    fragrances: [],
+    details: 'Inclui: saco de doces preparado para oferecer · Personalização conforme o tema do evento.',
+    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
+    quote: '"Um detalhe simples para adoçar a lembrança."',
     ctaLabel: 'Adicionar ao Carrinho'
   }
 };
@@ -7025,7 +7218,7 @@ function toggleEventoCelebracao() {
 var FRAGRANCE_PRODUCTS = [
   'Mini Difusor Personalizado (3,50€/un)',
   'Mini Difusor + Mini Sabonete (4,90€/un)',
-  'Luz Serena (Vela Pilar)',
+  'Luz Serena (3€/un)',
   'Doce Luz (Vela Bubble)',
   'Memória Perfumada (Vela em Frasco)',
   'Bilhete Perfumado'
@@ -7154,6 +7347,79 @@ function getCartImageForName(name) {
   return CART_IMAGE_MAP[baseName] || '';
 }
 
+function getCartBaseName(name) {
+  return String(name || '')
+    .split(/\s*(?:,|\u2014)\s+/)[0]
+    .replace(/\s*\([^)]*\)\s*$/, '')
+    .trim();
+}
+
+var CHILD_EVENT_PRODUCTS = [
+  'Sopros de Alegria',
+  'Pequeno Artista',
+  'Momento Criativo',
+  'Caixinha de Arte',
+  'Miminho Doce',
+  'Bilhete Perfumado'
+];
+
+var ADULT_EVENT_PRODUCTS = [
+  'Mini Difusor Personalizado',
+  'Mini Difusor + Mini Sabonete',
+  'Luz Serena',
+  'Doce Luz',
+  'Memória Perfumada',
+  'Laço de Memória'
+];
+
+function getSubtotal() {
+  return cart.reduce(function(sum, i){
+    return sum + (Number(i.price) || 0) * (Number(i.qty) || 0);
+  }, 0);
+}
+
+function getCartDiscount() {
+  var childSubtotal = 0;
+  var adultSubtotal = 0;
+  var childQty = 0;
+  var adultQty = 0;
+  var childNames = {};
+
+  cart.forEach(function(item) {
+    var baseName = getCartBaseName(item.name);
+    var qty = Number(item.qty) || 0;
+    var line = (Number(item.price) || 0) * qty;
+    if (CHILD_EVENT_PRODUCTS.indexOf(baseName) !== -1) {
+      childSubtotal += line;
+      childQty += qty;
+      if (qty > 0) childNames[baseName] = true;
+    } else if (ADULT_EVENT_PRODUCTS.indexOf(baseName) !== -1) {
+      adultSubtotal += line;
+      adultQty += qty;
+    }
+  });
+
+  var childTypes = Object.keys(childNames).length;
+  var eventSubtotal = childSubtotal + adultSubtotal;
+  var eventQty = childQty + adultQty;
+
+  if (childQty > 0 && adultQty > 0 && eventQty >= 50 && eventSubtotal > 0) {
+    return {
+      amount: eventSubtotal * 0.08,
+      label: 'Desconto lembranças adulto + infantil (8%)'
+    };
+  }
+
+  if (childTypes >= 2 && childSubtotal > 0) {
+    return {
+      amount: childSubtotal * 0.05,
+      label: 'Desconto kit infantil (5%)'
+    };
+  }
+
+  return { amount: 0, label: '' };
+}
+
 function addCartLine(name, price, emoji, image, qty) {
   qty = parseInt(qty, 10);
   if (!Number.isFinite(qty) || qty < 1) qty = 1;
@@ -7234,9 +7500,9 @@ function clearCart() {
 }
 
 function getTotal() {
-  return cart.reduce(function(sum, i){
-    return sum + (Number(i.price) || 0) * (Number(i.qty) || 0);
-  }, 0);
+  var subtotal = getSubtotal();
+  var discount = getCartDiscount();
+  return Math.max(0, subtotal - (discount.amount || 0));
 }
 
 function getCount() {
@@ -7254,6 +7520,9 @@ function renderCart() {
   var footerEl = document.getElementById('cart-footer');
   var totalEl  = document.getElementById('cart-total-price');
   var shippingEl = document.getElementById('cart-shipping-note');
+  var discountLine = document.getElementById('cart-discount-line');
+  var discountLabel = document.getElementById('cart-discount-label');
+  var discountValue = document.getElementById('cart-discount-value');
 
   if (cart.length === 0) {
     emptyEl.style.display = 'flex';
@@ -7265,8 +7534,21 @@ function renderCart() {
   emptyEl.style.display = 'none';
   itemsEl.style.display = 'block';
   footerEl.style.display = 'block';
+  var subtotal = getSubtotal();
+  var discount = getCartDiscount();
   var total = getTotal();
   totalEl.textContent = formatPrice(total);
+  if (discountLine && discountLabel && discountValue) {
+    if (discount.amount > 0) {
+      discountLine.style.display = 'flex';
+      discountLabel.textContent = discount.label;
+      discountValue.textContent = '-' + formatPrice(discount.amount);
+    } else {
+      discountLine.style.display = 'none';
+      discountLabel.textContent = '';
+      discountValue.textContent = '';
+    }
+  }
   if (shippingEl) {
     if (total >= 60) {
       shippingEl.textContent = '🚚 Portes de envio gratuitos · Embalagem de oferta incluída';
@@ -7332,6 +7614,12 @@ function buildOrderSummary() {
     var price = Number(i.price) || 0;
     return qty + 'x ' + i.name + ' (' + formatPrice(price * qty) + ')';
   });
+  var subtotal = getSubtotal();
+  var discount = getCartDiscount();
+  if (discount.amount > 0) {
+    lines.push('Subtotal: ' + formatPrice(subtotal));
+    lines.push(discount.label + ': -' + formatPrice(discount.amount));
+  }
   lines.push('Total: ' + formatPrice(getTotal()));
   return lines.join('\n');
 }
@@ -7454,67 +7742,69 @@ renderCart();
 
 
 <script>
-/* ── MOBILE PRODUCT REVEAL ──────────────────────────────────────── */
+/* ── SHOP CARD OPEN ─────────────────────────────────────────────── */
 (function () {
-  function setupMobileProductReveal() {
-    var isMobile = window.matchMedia('(max-width: 768px)').matches;
-    var cards = document.querySelectorAll('.product-card');
+  var PRODUCT_CARD_OPEN_MAP = {
+    'Bloom': 'bloom',
+    'Aurora': 'aurora',
+    'Serenata': 'serenata',
+    'Diamante': 'diamante',
+    'Prisma': 'prisma',
+    'Nala': 'nala',
+    'Aura': 'aura',
+    'Essência do Amor': 'essencia_amor',
+    'Pensar em Ti': 'pensar_em_ti',
+    'Lembrei-me de Ti': 'lembrei_me_de_ti',
+    'Mini Difusor Personalizado': 'mini_difusor',
+    'Mini Difusor + Mini Sabonete': 'mini_difusor_sabonete',
+    'Sopros de Alegria': 'sopros_alegria',
+    'Luz Serena': 'luz_serena',
+    'Doce Luz': 'doce_luz',
+    'Memória Perfumada': 'memoria_perfumada',
+    'Bilhete Perfumado': 'bilhete_perfumado',
+    'Laço de Memória': 'laco_memoria',
+    'Pequeno Artista': 'pequeno_artista',
+    'Momento Criativo': 'momento_criativo',
+    'Caixinha de Arte': 'caixinha_arte',
+    'Miminho Doce': 'miminho_doce'
+  };
 
-    cards.forEach(function(card) {
-      var desc = card.querySelector('.product-desc');
-      var info = card.querySelector('.product-info');
-      if (!desc || !info) return;
+  function getProductIdFromCard(card) {
+    var title = card.querySelector('.product-name');
+    var name = title ? title.textContent.trim() : '';
+    return PRODUCT_CARD_OPEN_MAP[name] || '';
+  }
 
-      var toggle = info.querySelector('.product-summary-toggle');
-      if (!toggle) {
-        toggle = document.createElement('button');
-        toggle.type = 'button';
-        toggle.className = 'product-summary-toggle';
-        toggle.textContent = 'Ver detalhes';
-        var title = info.querySelector('.product-name');
-        if (title && title.nextSibling) {
-          info.insertBefore(toggle, title.nextSibling);
-        } else {
-          info.insertBefore(toggle, desc);
-        }
-      }
+  function openCardProduct(card) {
+    var productId = getProductIdFromCard(card);
+    if (productId && typeof openProduct === 'function') openProduct(productId);
+  }
 
-      if (!card.dataset.productRevealBound) {
-        toggle.addEventListener('click', function (event) {
-          event.preventDefault();
-          event.stopPropagation();
-          if (!window.matchMedia('(max-width: 768px)').matches) return;
-          var willExpand = !card.classList.contains('is-expanded');
-          document.querySelectorAll('.product-card.is-expanded').forEach(function(openCard) {
-            if (openCard !== card) openCard.classList.remove('is-expanded');
-          });
-          card.classList.toggle('is-expanded', willExpand);
-          toggle.setAttribute('aria-expanded', String(willExpand));
-        });
+  function setupShopCardOpen() {
+    document.querySelectorAll('#shop-products-grid .product-card').forEach(function(card) {
+      var productId = getProductIdFromCard(card);
+      if (!productId) return;
 
-        card.addEventListener('click', function (event) {
-          if (!window.matchMedia('(max-width: 768px)').matches) return;
-          if (event.target.closest('.product-btn, .cart-add-btn, .event-qty-field, a, .product-summary-toggle')) return;
-          var willExpand = !card.classList.contains('is-expanded');
-          document.querySelectorAll('.product-card.is-expanded').forEach(function(openCard) {
-            if (openCard !== card) openCard.classList.remove('is-expanded');
-          });
-          card.classList.toggle('is-expanded', willExpand);
-          toggle.setAttribute('aria-expanded', String(willExpand));
-        });
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', 'Abrir ' + card.querySelector('.product-name').textContent.trim());
 
-        card.dataset.productRevealBound = 'true';
-      }
-
-      if (!isMobile) {
-        card.classList.remove('is-expanded');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
+      if (card.dataset.cardOpenBound) return;
+      card.addEventListener('click', function(event) {
+        if (event.target.closest('a, select, input, textarea')) return;
+        openCardProduct(card);
+      });
+      card.addEventListener('keydown', function(event) {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        openCardProduct(card);
+      });
+      card.dataset.cardOpenBound = 'true';
     });
   }
 
-  document.addEventListener('DOMContentLoaded', setupMobileProductReveal);
-  window.addEventListener('resize', setupMobileProductReveal);
+  document.addEventListener('DOMContentLoaded', setupShopCardOpen);
+  window.addEventListener('resize', setupShopCardOpen);
 })();
 </script>
 
