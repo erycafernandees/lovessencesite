@@ -709,6 +709,29 @@
     line-height: 1.8;
     font-weight: 300;
   }
+  .events-discount-note .discount-rules-title {
+    display: block;
+    margin-top: 1rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--deep-rose);
+    font-weight: 600;
+  }
+  .events-discount-note ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.45rem;
+    max-width: 820px;
+  }
+  .events-discount-note li {
+    font-size: 0.86rem;
+    line-height: 1.7;
+    color: var(--warm-gray);
+    font-weight: 300;
+  }
+  .events-discount-note li::marker { color: var(--rose); }
   .event-cart-row {
     display: flex;
     align-items: center;
@@ -4684,8 +4707,14 @@
     </div>
 
     <div class="events-discount-note" id="events-discount-note">
-      <strong>Lembranças personalizadas para eventos</strong>
-      <p>Todos os artigos de crianças podem ser combinados em kits com 5% de desconto. Ao combinar artigos de adulto e crianças, aplicamos 10% de desconto nas lembranças acima das 40 unidades.</p>
+      <strong>Crie o seu kit personalizado</strong>
+      <p>Pode combinar dois ou mais artigos infantis no mesmo kit e beneficiar de desconto. Exemplo: Sopros de Alegria + Pequeno Artista.</p>
+      <span class="discount-rules-title">Descontos disponíveis:</span>
+      <ul>
+        <li>5% de desconto ao combinar dois ou mais artigos infantis no mesmo kit.</li>
+        <li>8% de desconto ao combinar artigos infantis com artigos para adulto, em encomendas a partir de 50 unidades.</li>
+        <li>Os descontos não são acumuláveis.</li>
+      </ul>
     </div>
 
     <div class="shop-products-grid" id="shop-products-grid">
