@@ -1029,10 +1029,8 @@
   .about-hero-text h1 em { color: var(--blush); font-style: italic; }
   .about-hero-text p { color: rgba(255,255,255,0.55); font-size: 0.95rem; line-height: 1.85; margin-top: 1.5rem; font-weight: 300; }
   .about-hero-visual { position: relative; }
-  .about-circle { width: 320px; height: 320px; border-radius: 50%; background: linear-gradient(145deg, rgba(227,190,223,0.15) 0%, rgba(180,104,171,0.08) 100%); border: 1px solid rgba(180,104,171,0.2); display: flex; align-items: center; justify-content: center; }
-  .about-circle-inner { text-align: center; }
-  .about-circle-inner span { font-size: 5rem; display: block; margin-bottom: 1rem; }
-  .about-circle-inner p { font-family: var(--serif); font-size: 1rem; color: rgba(255,255,255,0.6); font-style: italic; }
+  .about-circle { width: 320px; height: 320px; border-radius: 50%; background: linear-gradient(145deg, rgba(227,190,223,0.15) 0%, rgba(180,104,171,0.08) 100%); border: 1px solid rgba(180,104,171,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 28px 76px rgba(0,0,0,0.18); }
+  .about-circle img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 64%; }
   .about-story { padding: 6rem 8vw; }
   .about-story-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 6rem; align-items: start; }
   .about-story-sticky { position: sticky; top: 100px; }
@@ -1603,7 +1601,6 @@
     }
     .about-hero-visual { display: flex; justify-content: center; }
     .about-circle { width: 240px; height: 240px; }
-    .about-circle-inner span { font-size: 3.5rem; }
     .about-story { padding: 3rem 5vw; }
     .about-story-grid { grid-template-columns: 1fr; gap: 2.5rem; }
     .about-story-sticky { position: static; }
@@ -5169,10 +5166,7 @@
     </div>
     <div class="about-hero-visual">
       <div class="about-circle">
-        <div class="about-circle-inner">
-          <span>🌸</span>
-          <p>"Feito à mão<br/>com amor"</p>
-        </div>
+        <img src="assets/hero/brand-detail.jpg" alt="Detalhe floral artesanal Love Essences" loading="lazy"/>
       </div>
     </div>
   </div>
