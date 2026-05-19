@@ -684,6 +684,31 @@
     line-height: 1.8;
     font-weight: 300;
   }
+  .events-discount-note {
+    display: none;
+    margin: 0 0 2rem;
+    padding: 1.25rem 1.4rem;
+    border: 1px solid rgba(180,104,171,0.16);
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(241,227,239,0.78), rgba(255,255,255,0.9));
+    color: var(--warm-gray);
+    box-shadow: 0 16px 42px rgba(102,19,94,0.07);
+  }
+  .events-discount-note strong {
+    display: block;
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    font-weight: 400;
+    color: var(--dark);
+    margin-bottom: 0.45rem;
+  }
+  .events-discount-note p {
+    margin: 0;
+    max-width: 760px;
+    font-size: 0.88rem;
+    line-height: 1.8;
+    font-weight: 300;
+  }
   .shop-products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem; }
   .shop-products-grid .product-card {
     border-radius: 26px;
@@ -3779,6 +3804,9 @@
   .product-img img[src*="luz-serena"] { object-position: center 50%; }
   .product-img img[src*="bilhete-perfumado"] { object-position: center 48%; }
   .product-img img[src*="doce-luz"] { object-position: center 52%; }
+  .product-img img[src*="mini-difusor"] { object-position: center 50%; }
+  .product-img img[src*="mini-difusor-mais-mini-sabonete"] { object-position: center 50%; }
+  .product-img img[src*="sopros-de-alegria"] { object-position: center 50%; }
   .product-img img[src*="laco-de-memoria"] { object-position: center 50%; }
   .product-img img[src*="pequeno-artista"] { object-position: center 48%; }
   .product-img img[src*="momento-criativo"] { object-position: center 50%; }
@@ -4552,6 +4580,11 @@
       <p>Podes mudar a categoria, selecionar outra ocasião ou pedir-nos uma encomenda personalizada para criarmos algo pensado exatamente para esse momento.</p>
     </div>
 
+    <div class="events-discount-note" id="events-discount-note">
+      <strong>Lembranças personalizadas para eventos</strong>
+      <p>Todos os artigos de crianças podem ser combinados em kits com 5% de desconto. Ao combinar artigos de adulto e crianças, aplicamos 10% de desconto nas lembranças acima das 30 unidades.</p>
+    </div>
+
     <div class="shop-products-grid" id="shop-products-grid">
       <!-- ========== COLEÇÃO ASSINATURA ========== -->
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
@@ -4638,6 +4671,33 @@
       </div>
 
       <!-- ========== LEMBRANÇAS PARA EVENTOS ========== -->
+      <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,pequeninos">
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Novo</span><img src="assets/products/mini-difusor.jpeg" alt="Mini Difusor Personalizado, lembrança aromática Love Essences" loading="lazy"/></div>
+        <div class="product-info">
+          <h3 class="product-name">Mini Difusor Personalizado</h3>
+          <p class="product-desc">Mini difusor aromático personalizado com etiqueta temática, ideal para lembranças delicadas de aniversário, batizado, comunhão, casamento, baby shower ou educadoras.</p>
+          <p class="product-fragrance-note"><strong>Inclui</strong>Mini frasco difusor com líquido aromático · Varetas · Etiqueta personalizada com o tema escolhido</p>
+          <div class="product-footer"><span class="product-price">3,50€/un</span><button type="button" class="product-btn" onclick="openQuoteRequest('Mini Difusor Personalizado (3,50€/un)')">Pedir Orçamento</button></div>
+        </div>
+      </div>
+      <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,pequeninos">
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Kit</span><img src="assets/products/mini-difusor-mais-mini-sabonete.jpeg" alt="Mini Difusor com Mini Sabonete, kit personalizado Love Essences" loading="lazy"/></div>
+        <div class="product-info">
+          <h3 class="product-name">Mini Difusor + Mini Sabonete</h3>
+          <p class="product-desc">Kit personalizado composto por mini difusor aromático e mini sabonete artesanal, uma lembrança perfumada e delicada para eventos especiais.</p>
+          <p class="product-fragrance-note"><strong>Inclui</strong>Mini difusor com líquido aromático · Varetas · Mini sabonete artesanal redondo · Etiqueta personalizada com o tema escolhido</p>
+          <div class="product-footer"><span class="product-price">4,90€/un</span><button type="button" class="product-btn" onclick="openQuoteRequest('Mini Difusor + Mini Sabonete (4,90€/un)')">Pedir Orçamento</button></div>
+        </div>
+      </div>
+      <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,pequeninos">
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Infantil</span><img src="assets/products/sopros-de-alegria.jpeg" alt="Sopros de Alegria, bolinhas de sabão personalizadas Love Essences" loading="lazy"/></div>
+        <div class="product-info">
+          <h3 class="product-name">Sopros de Alegria</h3>
+          <p class="product-desc">Bolinhas de sabão personalizadas com etiqueta temática, perfeitas para lembranças infantis e momentos cheios de alegria.</p>
+          <p class="product-fragrance-note"><strong>Inclui</strong>Frasco de bolinhas de sabão com líquido · Etiqueta personalizada com o tema escolhido · Mínimo recomendado: 12 unidades</p>
+          <div class="product-footer"><span class="product-price">1,50€/un</span><button type="button" class="product-btn" onclick="openQuoteRequest('Sopros de Alegria (1,50€/un)')">Pedir Orçamento</button></div>
+        </div>
+      </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,empresas">
         <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/luz-serena.jpg" alt="Luz Serena, vela pilar personalizada Love Essences" loading="lazy"/></div>
         <div class="product-info">
@@ -5197,6 +5257,9 @@
               <option>Lembrei-me de Ti (12€)</option>
             </optgroup>
             <optgroup label="Lembranças para Eventos">
+              <option>Mini Difusor Personalizado (3,50€/un)</option>
+              <option>Mini Difusor + Mini Sabonete (4,90€/un)</option>
+              <option>Sopros de Alegria (1,50€/un)</option>
               <option>Luz Serena (Vela Pilar)</option>
               <option>Doce Luz (Vela Bubble)</option>
               <option>Memória Perfumada (Vela em Frasco)</option>
@@ -6196,6 +6259,13 @@ function applyShopFilters() {
   var emptyState = document.getElementById('shop-empty-state');
   if (emptyState) emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
 
+  var discountNote = document.getElementById('events-discount-note');
+  if (discountNote) {
+    var eventOccasions = ['casamentos-batizados', 'empresas', 'pequeninos'];
+    var showDiscountNote = currentCategory === 'eventos' || eventOccasions.indexOf(currentOccasion) !== -1;
+    discountNote.style.display = showDiscountNote ? 'block' : 'none';
+  }
+
   updateShopMeta(visibleCount);
 }
 
@@ -6471,6 +6541,8 @@ function toggleEventoCelebracao() {
 }
 
 var FRAGRANCE_PRODUCTS = [
+  'Mini Difusor Personalizado (3,50€/un)',
+  'Mini Difusor + Mini Sabonete (4,90€/un)',
   'Luz Serena (Vela Pilar)',
   'Doce Luz (Vela Bubble)',
   'Memória Perfumada (Vela em Frasco)',
@@ -6582,6 +6654,9 @@ var CART_IMAGE_MAP = {
   'Doce Luz': 'assets/products/doce-luz.jpg',
   'Memória Perfumada': 'assets/products/memoria-perfumada.jpg',
   'Bilhete Perfumado': 'assets/products/bilhete-perfumado.jpg',
+  'Mini Difusor Personalizado': 'assets/products/mini-difusor.jpeg',
+  'Mini Difusor + Mini Sabonete': 'assets/products/mini-difusor-mais-mini-sabonete.jpeg',
+  'Sopros de Alegria': 'assets/products/sopros-de-alegria.jpeg',
   'Laço de Memória': 'assets/products/laco-de-memoria.jpg',
   'Pequeno Artista': 'assets/products/pequeno-artista.jpg',
   'Momento Criativo': 'assets/products/momento-criativo.jpg',
