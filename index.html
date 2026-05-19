@@ -4970,6 +4970,13 @@
         <div class="pd-sizes" id="pd-sizes"></div>
       </div>
 
+      <!-- Cor da caixa (visível apenas para produtos com caixas coloridas) -->
+      <div class="pd-section" id="pd-box-color-section" style="display:none;">
+        <h4>Escolhe a cor da caixa</h4>
+        <div class="pd-fabrics" id="pd-box-colors"></div>
+        <p class="pd-custom-note" id="pd-box-color-note"></p>
+      </div>
+
       <!-- Opções de tecido (visível apenas para artigos em tecido) -->
       <div class="pd-section" id="pd-fabric-section" style="display:none;">
         <h4>Escolhe o tecido</h4>
@@ -6182,6 +6189,7 @@ var PRODUCT_CATALOG = {
       { id: 'M', label: 'M', price: 35, note: 'gesto completo', image: 'assets/products/essencia-amor-m2.jpg' },
       { id: 'L', label: 'L', price: 50, note: 'experiência', image: 'assets/products/essencia-amor-l.jpg' }
     ],
+    boxColors: ['Branco pérola', 'Cinza claro', 'Cinza escuro', 'Preto'],
     customizable: true,
     customLabel: 'Frase na caixa (substitui o logótipo)',
     customPlaceholder: 'Ex: O amor mora nos detalhes.',
@@ -6206,6 +6214,7 @@ var PRODUCT_CATALOG = {
       { id: 'M', label: 'M', price: 39.90, note: 'um abraço' },
       { id: 'L', label: 'L', price: 55,    note: 'um eu-pensei-em-ti completo' }
     ],
+    boxColors: ['Branco pérola', 'Cinza claro', 'Cinza escuro', 'Preto'],
     details: 'Composição cuidada com peças e mimos artesanais · Embalagem pronta a oferecer · Mensagem personalizada incluída mediante pedido · Composição pode variar consoante disponibilidade.',
     tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial', '✨ Sem Ocasião'],
     quote: '"Há gestos que não precisam de ocasião. Só de coragem para os fazer."',
@@ -6469,6 +6478,7 @@ var PRODUCT_CATALOG = {
 
 var currentProduct = null;
 var currentSizeId = null;
+var currentBoxColor = null;
 var currentFabricId = null;
 
 function openProduct(productId) {
@@ -6477,6 +6487,7 @@ function openProduct(productId) {
 
   currentProduct = productId;
   currentSizeId = p.sizes && p.sizes.length > 0 ? p.sizes[0].id : null;
+  currentBoxColor = p.boxColors && p.boxColors.length > 0 ? p.boxColors[0] : null;
   currentFabricId = p.fabricOptions && p.fabricOptions.length > 0 ? p.fabricOptions[0].id : null;
 
   updateProductVisual();
@@ -6535,6 +6546,7 @@ function openProduct(productId) {
   }
 
   renderProductEventOptions(p);
+  renderProductBoxColors(p);
   renderProductFabricOptions(p);
   updateProductPrice();
   showPage('product');
@@ -6624,6 +6636,42 @@ function renderProductFabricOptions(p) {
   }
 }
 
+function renderProductBoxColors(p) {
+  var colorSection = document.getElementById('pd-box-color-section');
+  var colorsEl = document.getElementById('pd-box-colors');
+  var noteEl = document.getElementById('pd-box-color-note');
+  if (!colorSection || !colorsEl) return;
+
+  colorsEl.innerHTML = '';
+  if (!p.boxColors || !p.boxColors.length) {
+    colorSection.style.display = 'none';
+    return;
+  }
+
+  colorSection.style.display = '';
+  p.boxColors.forEach(function(label, idx) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pd-fabric' + (idx === 0 ? ' active' : '');
+    btn.dataset.boxColor = label;
+    btn.innerHTML = '<span class="pd-fabric-label">' + label + '</span>';
+    btn.onclick = function() { selectBoxColor(label); };
+    colorsEl.appendChild(btn);
+  });
+
+  if (noteEl) {
+    noteEl.textContent = 'A cor escolhida segue no carrinho para prepararmos a caixa.';
+  }
+}
+
+function selectBoxColor(label) {
+  currentBoxColor = label;
+  document.querySelectorAll('#pd-box-colors .pd-fabric').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.boxColor === label);
+  });
+  updateProductPrice();
+}
+
 function selectFabric(fabricId) {
   currentFabricId = fabricId;
   document.querySelectorAll('#pd-fabrics .pd-fabric').forEach(function(btn) {
@@ -6681,6 +6729,10 @@ function getCurrentProductSelection() {
     }
   } else if (typeof p.basePrice === 'number') {
     price = p.basePrice;
+  }
+
+  if (p.boxColors && p.boxColors.length && currentBoxColor) {
+    itemName += ', Cor da caixa: ' + currentBoxColor;
   }
 
   if (p.eventOptions) {
