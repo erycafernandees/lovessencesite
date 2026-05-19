@@ -734,6 +734,9 @@
   .event-cart-row .product-btn {
     flex: 1;
   }
+  .shop-products-grid .product-fragrance-note {
+    display: none;
+  }
   .shop-products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem; }
   .shop-products-grid .product-card {
     border-radius: 26px;
@@ -854,6 +857,48 @@
     color: var(--warm-gray);
     margin-top: 0.5rem;
     font-style: italic;
+  }
+  .pd-event-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .pd-event-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .pd-event-field.pd-event-field-wide {
+    grid-column: 1 / -1;
+  }
+  .pd-event-field label {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+  }
+  .pd-event-field input,
+  .pd-event-field select {
+    width: 100%;
+    padding: 0.78rem 0.9rem;
+    border: 1px solid rgba(180,104,171,0.25);
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    background: #fff;
+    color: var(--dark);
+    box-sizing: border-box;
+  }
+  .pd-event-field input:focus,
+  .pd-event-field select:focus {
+    outline: none;
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(209,146,202,0.16);
+  }
+  @media (max-width: 768px) {
+    .pd-event-form {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* Preço dinâmico, destaque */
@@ -4282,7 +4327,7 @@
           <p class="product-desc">Vela em frasco com rolha, criada como lembrança de eventos. Aromas suaves para ficar na memória.</p>
           <div class="product-footer">
             <span class="product-price">4€/un</span>
-            <button type="button" class="product-btn" onclick="showPage('contact')">Pedir Orçamento</button>
+            <button type="button" class="product-btn" onclick="openProduct('memoria_perfumada')">Ver detalhes</button>
           </div>
         </div>
       </div>
@@ -4702,7 +4747,7 @@
           <h3 class="product-name">Mini Difusor Personalizado</h3>
           <p class="product-desc">Mini difusor aromático personalizado com etiqueta temática, ideal para lembranças delicadas de aniversário, batizado, comunhão, casamento, baby shower ou educadoras.</p>
           <p class="product-fragrance-note"><strong>Inclui</strong>Mini frasco difusor com líquido aromático · Varetas · Etiqueta personalizada com o tema escolhido</p>
-          <div class="product-footer" style="flex-direction:column;align-items:stretch;"><span class="product-price">3,50€/un</span><div class="event-cart-row"><input class="event-qty-field" id="qty-mini-difusor" type="number" min="1" step="1" value="1" aria-label="Quantidade Mini Difusor Personalizado"/><button type="button" class="product-btn cart-add-btn" data-cart-name="Mini Difusor Personalizado" onclick="addQuantityToCart('Mini Difusor Personalizado',3.5,'🌿','assets/products/mini-difusor.jpeg','qty-mini-difusor')">Adicionar</button></div></div>
+          <div class="product-footer"><span class="product-price">3,50€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor')">Ver detalhes</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,pequeninos">
@@ -4711,7 +4756,7 @@
           <h3 class="product-name">Mini Difusor + Mini Sabonete</h3>
           <p class="product-desc">Kit personalizado composto por mini difusor aromático e mini sabonete artesanal, uma lembrança perfumada e delicada para eventos especiais.</p>
           <p class="product-fragrance-note"><strong>Inclui</strong>Mini difusor com líquido aromático · Varetas · Mini sabonete artesanal redondo · Etiqueta personalizada com o tema escolhido</p>
-          <div class="product-footer" style="flex-direction:column;align-items:stretch;"><span class="product-price">4,90€/un</span><div class="event-cart-row"><input class="event-qty-field" id="qty-mini-difusor-sabonete" type="number" min="1" step="1" value="1" aria-label="Quantidade Mini Difusor + Mini Sabonete"/><button type="button" class="product-btn cart-add-btn" data-cart-name="Mini Difusor + Mini Sabonete" onclick="addQuantityToCart('Mini Difusor + Mini Sabonete',4.9,'🌿','assets/products/mini-difusor-mais-mini-sabonete.jpeg','qty-mini-difusor-sabonete')">Adicionar</button></div></div>
+          <div class="product-footer"><span class="product-price">4,90€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor_sabonete')">Ver detalhes</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,pequeninos">
@@ -4720,7 +4765,7 @@
           <h3 class="product-name">Sopros de Alegria</h3>
           <p class="product-desc">Bolinhas de sabão personalizadas com etiqueta temática, perfeitas para lembranças infantis e momentos cheios de alegria.</p>
           <p class="product-fragrance-note"><strong>Inclui</strong>Frasco de bolinhas de sabão com líquido · Etiqueta personalizada com o tema escolhido · Mínimo recomendado: 12 unidades</p>
-          <div class="product-footer" style="flex-direction:column;align-items:stretch;"><span class="product-price">1,50€/un</span><div class="event-cart-row"><input class="event-qty-field" id="qty-sopros-alegria" type="number" min="1" step="1" value="12" aria-label="Quantidade Sopros de Alegria"/><button type="button" class="product-btn cart-add-btn" data-cart-name="Sopros de Alegria" onclick="addQuantityToCart('Sopros de Alegria',1.5,'🫧','assets/products/sopros-de-alegria.jpeg','qty-sopros-alegria')">Adicionar</button></div></div>
+          <div class="product-footer"><span class="product-price">1,50€/un</span><button type="button" class="product-btn" onclick="openProduct('sopros_alegria')">Ver detalhes</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,empresas">
@@ -4729,7 +4774,7 @@
           <h3 class="product-name">Luz Serena</h3>
           <p class="product-desc">Vela pilar com base em Raysin. Encomenda mínima de 10 unidades, com escalonamento de preço a partir de 30, 50 e 80 unidades.</p>
           <p class="product-fragrance-note"><strong>Fragrâncias disponíveis</strong>Baunilha · Colónia de bebé · Dove · Explosão floral · Flor de algodão · Lavanda · Talco · Talco com jasmim</p>
-          <div class="product-footer"><span class="product-price">A partir de 3€/un</span><button type="button" class="product-btn" onclick="openQuoteRequest('Luz Serena (Vela Pilar)')">Pedir Orçamento</button></div>
+          <div class="product-footer"><span class="product-price">A partir de 3€/un</span><button type="button" class="product-btn" onclick="openProduct('luz_serena')">Ver detalhes</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,empresas">
@@ -4738,7 +4783,7 @@
           <h3 class="product-name">Doce Luz</h3>
           <p class="product-desc">Vela bubble com tag e cordão ou com caixa personalizada. Mínimo 15 unidades. Uma lembrança suave e memorável.</p>
           <p class="product-fragrance-note"><strong>Fragrâncias disponíveis</strong>Baunilha · Colónia de bebé · Dove · Explosão floral · Flor de algodão · Lavanda · Talco · Talco com jasmim</p>
-          <div class="product-footer"><span class="product-price">3,50€/un</span><button type="button" class="product-btn" onclick="openQuoteRequest('Doce Luz (Vela Bubble)')">Pedir Orçamento</button></div>
+          <div class="product-footer"><span class="product-price">3,50€/un</span><button type="button" class="product-btn" onclick="openProduct('doce_luz')">Ver detalhes</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,empresas">
@@ -4747,7 +4792,7 @@
           <h3 class="product-name">Memória Perfumada</h3>
           <p class="product-desc">Vela em frasco com rolha. Aromas suaves, escolhidos para combinar com a ocasião. Encomenda mínima de 10 unidades.</p>
           <p class="product-fragrance-note"><strong>Fragrâncias disponíveis</strong>Baunilha · Colónia de bebé · Dove · Explosão floral · Flor de algodão · Lavanda · Talco · Talco com jasmim</p>
-          <div class="product-footer"><span class="product-price">4€/un</span><button type="button" class="product-btn" onclick="openQuoteRequest('Memória Perfumada (Vela em Frasco)')">Pedir Orçamento</button></div>
+          <div class="product-footer"><span class="product-price">4€/un</span><button type="button" class="product-btn" onclick="openProduct('memoria_perfumada')">Ver detalhes</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,empresas,pequeninos">
@@ -4756,7 +4801,7 @@
           <h3 class="product-name">Bilhete Perfumado</h3>
           <p class="product-desc">Sabonete floral com cartão. Mínimo 6 unidades, essência à escolha sujeita a disponibilidade. Um detalhe que fica na memória.</p>
           <p class="product-fragrance-note"><strong>Fragrâncias disponíveis</strong>Baunilha · Colónia de bebé · Dove · Explosão floral · Flor de algodão · Lavanda · Talco · Talco com jasmim</p>
-          <div class="product-footer"><span class="product-price">2€/un</span><button type="button" class="product-btn" onclick="openQuoteRequest('Bilhete Perfumado')">Pedir Orçamento</button></div>
+          <div class="product-footer"><span class="product-price">2€/un</span><button type="button" class="product-btn" onclick="openProduct('bilhete_perfumado')">Ver detalhes</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados">
@@ -4847,6 +4892,34 @@
           <input type="text" id="pd-custom-text" placeholder="Ex: Mãe, obrigada por tudo." maxlength="60"/>
           <p class="pd-custom-note" id="pd-custom-note">A personalização tem um custo adicional de 1,50€.</p>
         </div>
+      </div>
+
+      <!-- Detalhes de evento (visível apenas para lembranças personalizadas) -->
+      <div class="pd-section" id="pd-event-section" style="display:none;">
+        <h4>Personalização do evento</h4>
+        <div class="pd-event-form">
+          <div class="pd-event-field">
+            <label for="pd-event-qty">Quantidade</label>
+            <input type="number" id="pd-event-qty" min="1" step="1" value="1"/>
+          </div>
+          <div class="pd-event-field">
+            <label for="pd-event-date">Data do evento</label>
+            <input type="date" id="pd-event-date"/>
+          </div>
+          <div class="pd-event-field">
+            <label for="pd-event-name">Nome</label>
+            <input type="text" id="pd-event-name" placeholder="Ex: Leonor" maxlength="80"/>
+          </div>
+          <div class="pd-event-field" id="pd-event-fragrance-wrap">
+            <label for="pd-event-fragrance">Fragrância</label>
+            <select id="pd-event-fragrance"></select>
+          </div>
+          <div class="pd-event-field pd-event-field-wide">
+            <label for="pd-event-phrase">Frase ou texto</label>
+            <input type="text" id="pd-event-phrase" placeholder="Ex: Obrigada por fazeres parte deste dia" maxlength="100"/>
+          </div>
+        </div>
+        <p class="pd-custom-note" id="pd-event-note"></p>
       </div>
 
       <!-- Composição / Detalhes do produto -->
@@ -5969,6 +6042,147 @@ var PRODUCT_CATALOG = {
     tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial', '✨ Sem Ocasião'],
     quote: '"Há gestos que não precisam de ocasião. Só de coragem para os fazer."',
     ctaLabel: 'Adicionar ao Carrinho'
+  },
+  mini_difusor: {
+    category: 'Lembranças para Eventos',
+    name: 'Mini Difusor Personalizado',
+    visual: '🌿',
+    image: 'assets/products/mini-difusor.jpeg',
+    visualBg: 'linear-gradient(160deg, #f7edf6 0%, #e3bedf 100%)',
+    storyTitle: 'A lembrança',
+    story: 'O Mini Difusor Personalizado é uma lembrança simples, delicada e perfumada, pensada para tornar qualquer momento especial ainda mais memorável. Personalizado com etiqueta no tema do evento, é uma opção bonita e acessível para oferecer aos convidados, educadoras ou pessoas especiais.',
+    sizes: [],
+    basePrice: 3.50,
+    priceSuffix: '/un',
+    eventOptions: true,
+    defaultQty: 1,
+    minQty: 1,
+    fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
+    details: 'Inclui: mini frasco difusor com líquido aromático · Varetas · Etiqueta personalizada com o tema escolhido.',
+    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🍎 Educadoras'],
+    quote: '"Uma lembrança pequena no tamanho, mas cheia de intenção."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  mini_difusor_sabonete: {
+    category: 'Lembranças para Eventos',
+    name: 'Mini Difusor + Mini Sabonete',
+    visual: '🌿',
+    image: 'assets/products/mini-difusor-mais-mini-sabonete.jpeg',
+    visualBg: 'linear-gradient(160deg, #f7edf6 0%, #e3bedf 100%)',
+    storyTitle: 'O kit',
+    story: 'Um pequeno kit cheio de detalhe e carinho, composto por um mini difusor aromático e um mini sabonete artesanal. É uma opção equilibrada para quem procura uma lembrança personalizada, bonita e acessível.',
+    sizes: [],
+    basePrice: 4.90,
+    priceSuffix: '/un',
+    eventOptions: true,
+    defaultQty: 1,
+    minQty: 1,
+    fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
+    details: 'Inclui: mini difusor com líquido aromático · Varetas · Mini sabonete artesanal redondo · Etiqueta personalizada com o tema escolhido.',
+    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🍎 Educadoras'],
+    quote: '"Dois detalhes delicados para uma memória perfumada."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  sopros_alegria: {
+    category: 'Lembranças para Eventos',
+    name: 'Sopros de Alegria',
+    visual: '🫧',
+    image: 'assets/products/sopros-de-alegria.jpeg',
+    visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
+    storyTitle: 'A lembrança',
+    story: 'Os Sopros de Alegria são bolinhas de sabão personalizadas com etiqueta temática, ideais para festas infantis, aniversários, batizados, comunhões e outros momentos especiais. Uma lembrança simples, divertida e encantadora para os mais pequenos.',
+    sizes: [],
+    basePrice: 1.50,
+    priceSuffix: '/un',
+    eventOptions: true,
+    defaultQty: 12,
+    minQty: 12,
+    fragrances: [],
+    details: 'Inclui: frasco de bolinhas de sabão com líquido · Etiqueta personalizada com o tema escolhido. Mínimo recomendado: 12 unidades.',
+    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
+    quote: '"Pequenos sopros para encher o dia de alegria."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  luz_serena: {
+    category: 'Lembranças para Eventos',
+    name: 'Luz Serena',
+    visual: '🕯️',
+    image: 'assets/products/luz-serena.jpg',
+    visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
+    storyTitle: 'A vela',
+    story: 'Vela pilar com base em Raysin, criada para eventos que pedem uma lembrança elegante, aromática e delicada. O valor varia consoante quantidade e acabamento.',
+    sizes: [],
+    quoteOnly: true,
+    priceLabel: 'A partir de 3€/un',
+    eventOptions: true,
+    defaultQty: 10,
+    minQty: 10,
+    fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
+    formProductName: 'Luz Serena (Vela Pilar)',
+    details: 'Inclui: vela pilar aromática · Base em Raysin · Personalização conforme tema do evento. Encomenda mínima de 10 unidades, com escalonamento de preço a partir de 30, 50 e 80 unidades.',
+    tags: ['💍 Casamentos', '🕊️ Batizados', '🤍 Comunhões', '🏷️ Eventos & Empresas'],
+    quote: '"Uma luz calma para agradecer a presença de quem celebra contigo."',
+    ctaLabel: 'Pedir Orçamento'
+  },
+  doce_luz: {
+    category: 'Lembranças para Eventos',
+    name: 'Doce Luz',
+    visual: '🕯️',
+    image: 'assets/products/doce-luz.jpg',
+    visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
+    storyTitle: 'A vela',
+    story: 'Vela bubble com tag e cordão ou com caixa personalizada. Uma lembrança suave e memorável para eventos delicados.',
+    sizes: [],
+    basePrice: 3.50,
+    priceSuffix: '/un',
+    eventOptions: true,
+    defaultQty: 15,
+    minQty: 15,
+    fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
+    details: 'Inclui: vela bubble aromática · Tag e cordão ou caixa personalizada · Fragrância à escolha. Encomenda mínima de 15 unidades.',
+    tags: ['💍 Casamentos', '🕊️ Batizados', '🤍 Comunhões', '🏷️ Eventos & Empresas'],
+    quote: '"Um detalhe doce, luminoso e feito para ficar na memória."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  memoria_perfumada: {
+    category: 'Lembranças para Eventos',
+    name: 'Memória Perfumada',
+    visual: '🕯️',
+    image: 'assets/products/memoria-perfumada.jpg',
+    visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
+    storyTitle: 'A vela',
+    story: 'Vela em frasco com rolha, criada como lembrança de eventos. Aromas suaves, escolhidos para combinar com a ocasião.',
+    sizes: [],
+    basePrice: 4,
+    priceSuffix: '/un',
+    eventOptions: true,
+    defaultQty: 10,
+    minQty: 10,
+    fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
+    details: 'Inclui: vela em frasco com rolha · Etiqueta personalizada · Fragrância à escolha. Encomenda mínima de 10 unidades.',
+    tags: ['💍 Casamentos', '🕊️ Batizados', '🤍 Comunhões', '🏷️ Eventos & Empresas'],
+    quote: '"Uma memória que se acende, perfuma e fica."',
+    ctaLabel: 'Adicionar ao Carrinho'
+  },
+  bilhete_perfumado: {
+    category: 'Lembranças para Eventos',
+    name: 'Bilhete Perfumado',
+    visual: '💌',
+    image: 'assets/products/bilhete-perfumado.jpg',
+    visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
+    storyTitle: 'O sabonete',
+    story: 'Sabonete floral com cartão, criado para ser um detalhe perfumado, simples e muito delicado. A frase ou mensagem pode acompanhar o tema da celebração.',
+    sizes: [],
+    basePrice: 2,
+    priceSuffix: '/un',
+    eventOptions: true,
+    defaultQty: 6,
+    minQty: 6,
+    fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
+    details: 'Inclui: sabonete floral artesanal · Cartão personalizado · Fragrância à escolha sujeita a disponibilidade. Mínimo 6 unidades.',
+    tags: ['💍 Casamentos', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
+    quote: '"Um pequeno bilhete, uma fragrância e uma memória bonita."',
+    ctaLabel: 'Adicionar ao Carrinho'
   }
 };
 
@@ -6037,8 +6251,64 @@ function openProduct(productId) {
     customSection.style.display = 'none';
   }
 
+  renderProductEventOptions(p);
   updateProductPrice();
   showPage('product');
+}
+
+function renderProductEventOptions(p) {
+  var eventSection = document.getElementById('pd-event-section');
+  if (!eventSection) return;
+
+  if (!p.eventOptions) {
+    eventSection.style.display = 'none';
+    return;
+  }
+
+  eventSection.style.display = '';
+
+  var qty = document.getElementById('pd-event-qty');
+  var eventName = document.getElementById('pd-event-name');
+  var eventDate = document.getElementById('pd-event-date');
+  var eventPhrase = document.getElementById('pd-event-phrase');
+  var fragranceWrap = document.getElementById('pd-event-fragrance-wrap');
+  var fragrance = document.getElementById('pd-event-fragrance');
+  var note = document.getElementById('pd-event-note');
+
+  if (qty) {
+    var minQty = p.minQty || 1;
+    qty.min = minQty;
+    qty.value = p.defaultQty || minQty;
+    qty.oninput = updateProductPrice;
+  }
+  if (eventName) eventName.value = '';
+  if (eventDate) eventDate.value = '';
+  if (eventPhrase) eventPhrase.value = '';
+
+  if (fragrance && fragranceWrap) {
+    fragrance.innerHTML = '';
+    if (p.fragrances && p.fragrances.length) {
+      fragranceWrap.style.display = '';
+      var emptyOpt = document.createElement('option');
+      emptyOpt.value = '';
+      emptyOpt.textContent = 'Seleciona uma fragrância...';
+      fragrance.appendChild(emptyOpt);
+      p.fragrances.forEach(function(label) {
+        var opt = document.createElement('option');
+        opt.value = label;
+        opt.textContent = label;
+        fragrance.appendChild(opt);
+      });
+    } else {
+      fragranceWrap.style.display = 'none';
+    }
+  }
+
+  if (note) {
+    note.textContent = p.minQty && p.minQty > 1
+      ? 'Quantidade mínima recomendada: ' + p.minQty + ' unidades. Estes dados seguem no carrinho ou no pedido para prepararmos a personalização.'
+      : 'Estes dados seguem no carrinho para prepararmos a personalização.';
+  }
 }
 
 function selectSize(sizeId) {
@@ -6078,6 +6348,8 @@ function getCurrentProductSelection() {
   var itemName = p.name;
   var size = null;
   var image = p.image || '';
+  var qty = 1;
+  var eventDetails = [];
 
   if (p.sizes && p.sizes.length > 0 && currentSizeId) {
     size = p.sizes.find(function(s) { return s.id === currentSizeId; });
@@ -6088,6 +6360,31 @@ function getCurrentProductSelection() {
     }
   } else if (typeof p.basePrice === 'number') {
     price = p.basePrice;
+  }
+
+  if (p.eventOptions) {
+    var qtyInput = document.getElementById('pd-event-qty');
+    var minQty = p.minQty || 1;
+    qty = qtyInput ? parseInt(qtyInput.value, 10) : (p.defaultQty || minQty);
+    if (!Number.isFinite(qty) || qty < minQty) {
+      qty = minQty;
+      if (qtyInput) qtyInput.value = minQty;
+    }
+
+    var nameInput = document.getElementById('pd-event-name');
+    var dateInput = document.getElementById('pd-event-date');
+    var fragranceInput = document.getElementById('pd-event-fragrance');
+    var phraseInput = document.getElementById('pd-event-phrase');
+    var eventName = nameInput ? nameInput.value.trim() : '';
+    var eventDate = dateInput ? dateInput.value.trim() : '';
+    var fragrance = fragranceInput ? fragranceInput.value.trim() : '';
+    var phrase = phraseInput ? phraseInput.value.trim() : '';
+
+    if (eventName) eventDetails.push('Nome: ' + eventName);
+    if (eventDate) eventDetails.push('Data: ' + eventDate);
+    if (fragrance) eventDetails.push('Fragrância: ' + fragrance);
+    if (phrase) eventDetails.push('Frase: "' + phrase + '"');
+    if (eventDetails.length) itemName += ', ' + eventDetails.join(', ');
   }
 
   if (p.customizable) {
@@ -6102,16 +6399,21 @@ function getCurrentProductSelection() {
   return {
     name: itemName,
     price: price,
+    qty: qty,
     emoji: p.visual || '🎁',
-    image: image || getCartImageForName(itemName)
+    image: image || getCartImageForName(itemName),
+    quoteOnly: !!p.quoteOnly,
+    formProductName: p.formProductName || p.name,
+    summary: eventDetails.join('\n')
   };
 }
 
 function updateProductPrice() {
   var selection = getCurrentProductSelection();
   if (!selection) return;
+  var p = PRODUCT_CATALOG[currentProduct];
 
-  document.getElementById('pd-price').textContent = formatPrice(selection.price);
+  document.getElementById('pd-price').textContent = p.priceLabel || (formatPrice(selection.price) + (p.priceSuffix || ''));
   document.getElementById('pd-price-from').style.display = 'none';
 }
 
@@ -6126,7 +6428,12 @@ function handleProductCta() {
   var selection = getCurrentProductSelection();
   if (!selection) { showPage('contact'); return; }
 
-  addToCart(selection.name, selection.price, selection.emoji, selection.image);
+  if (selection.quoteOnly) {
+    openProductQuoteRequest(selection);
+    return;
+  }
+
+  addCartLine(selection.name, selection.price, selection.emoji, selection.image, selection.qty || 1);
 
   var cta = document.getElementById('pd-cta');
   if (cta) {
@@ -6136,6 +6443,23 @@ function handleProductCta() {
       cta.textContent = originalLabel;
     }, 1400);
   }
+}
+
+function openProductQuoteRequest(selection) {
+  openQuoteRequest(selection.formProductName);
+  setTimeout(function() {
+    var descricao = document.querySelector('#contact-form textarea[name="descricao"]');
+    var quantidade = document.querySelector('#form-quantidade input');
+    var ocasiao = document.getElementById('form-ocasiao');
+    if (ocasiao) {
+      ocasiao.value = 'Casamento ou Batizado';
+      toggleEventoCelebracao();
+    }
+    if (quantidade) quantidade.value = String(selection.qty || '');
+    if (descricao) {
+      descricao.value = 'Detalhes escolhidos no artigo ' + selection.formProductName + ':\n' + (selection.summary || 'Sem personalização indicada ainda.');
+    }
+  }, 350);
 }
 
 function closeMenu() {
@@ -6697,20 +7021,25 @@ function getCartImageForName(name) {
   return CART_IMAGE_MAP[baseName] || '';
 }
 
-function addToCart(name, price, emoji, image) {
+function addCartLine(name, price, emoji, image, qty) {
+  qty = parseInt(qty, 10);
+  if (!Number.isFinite(qty) || qty < 1) qty = 1;
   var cartImage = image || getCartImageForName(name);
   var existing = cart.find(function(i){ return i.name === name; });
   if (existing) {
-    existing.qty += 1;
+    existing.qty += qty;
     if (cartImage && !existing.image) existing.image = cartImage;
   } else {
-    cart.push({ name: name, price: price, emoji: emoji, image: cartImage, qty: 1 });
+    cart.push({ name: name, price: price, emoji: emoji, image: cartImage, qty: qty });
   }
   saveCart();
   renderCart();
   openCart();
-
   flashCartButton(name);
+}
+
+function addToCart(name, price, emoji, image) {
+  addCartLine(name, price, emoji, image, 1);
 }
 
 function addQuantityToCart(name, price, emoji, image, inputId) {
@@ -6725,18 +7054,7 @@ function addQuantityToCart(name, price, emoji, image, inputId) {
     return;
   }
 
-  var cartImage = image || getCartImageForName(name);
-  var existing = cart.find(function(i){ return i.name === name; });
-  if (existing) {
-    existing.qty += qty;
-    if (cartImage && !existing.image) existing.image = cartImage;
-  } else {
-    cart.push({ name: name, price: price, emoji: emoji, image: cartImage, qty: qty });
-  }
-  saveCart();
-  renderCart();
-  openCart();
-  flashCartButton(name);
+  addCartLine(name, price, emoji, image, qty);
 }
 
 function flashCartButton(name) {
