@@ -821,6 +821,37 @@
     font-weight: 400;
   }
   .pd-size.active .pd-size-price { color: var(--deep-rose); font-weight: 500; }
+  .pd-fabrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; margin-top: 0.6rem; }
+  .pd-fabric {
+    background: #fff;
+    border: 1px solid rgba(180,104,171,0.22);
+    border-radius: 6px;
+    padding: 1rem 0.9rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: left;
+    font-family: var(--sans);
+    color: var(--dark);
+  }
+  .pd-fabric:hover { border-color: var(--rose); transform: translateY(-1px); }
+  .pd-fabric.active {
+    background: var(--cream);
+    border-color: var(--rose);
+    box-shadow: 0 4px 14px rgba(180,104,171,0.18);
+  }
+  .pd-fabric-label {
+    display: block;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--dark);
+  }
+  .pd-fabric-note {
+    display: block;
+    font-size: 0.74rem;
+    color: var(--warm-gray);
+    margin-top: 0.35rem;
+    line-height: 1.45;
+  }
 
   /* Bloco de personalização (Aurora) */
   .pd-custom {
@@ -1457,6 +1488,8 @@
     .pd-size { padding: 0.85rem 0.6rem; }
     .pd-size-label { font-size: 0.95rem; }
     .pd-size-price { font-size: 0.72rem; }
+    .pd-fabrics { grid-template-columns: 1fr; gap: 0.55rem; }
+    .pd-fabric { padding: 0.9rem 0.75rem; }
 
     /* ABOUT */
     .about-hero {
@@ -4808,8 +4841,8 @@
         <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/laco-de-memoria.jpg" alt="Laço de Memória, porta-chaves artesanal Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Laço de Memória</h3>
-          <p class="product-desc">Porta-chaves artesanal em retalhos, feito por artesã local. A partir de 2 unidades, preço por unidade reduz.</p>
-          <div class="product-footer"><span class="product-price">5,90€ <span style="font-size:0.7rem;color:var(--warm-gray);font-weight:400;">· 4,99€/un a partir de 2</span></span><button type="button" class="product-btn" onclick="showPage('contact')">Encomendar</button></div>
+          <p class="product-desc">Porta-chaves artesanal em tecido, feito por artesã local. Escolhe o tecido disponível no detalhe do artigo.</p>
+          <div class="product-footer"><span class="product-price">4,90€</span><button type="button" class="product-btn" onclick="openProduct('laco_memoria')">Ver detalhes</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
@@ -4882,6 +4915,13 @@
       <div class="pd-section" id="pd-size-section" style="display:none;">
         <h4>Escolhe o tamanho</h4>
         <div class="pd-sizes" id="pd-sizes"></div>
+      </div>
+
+      <!-- Opções de tecido (visível apenas para artigos em tecido) -->
+      <div class="pd-section" id="pd-fabric-section" style="display:none;">
+        <h4>Escolhe o tecido</h4>
+        <div class="pd-fabrics" id="pd-fabrics"></div>
+        <p class="pd-custom-note" id="pd-fabric-note"></p>
       </div>
 
       <!-- Bloco de personalização (visível apenas para produtos personalizáveis) -->
@@ -5362,7 +5402,7 @@
               <option>Doce Luz (Vela Bubble)</option>
               <option>Memória Perfumada (Vela em Frasco)</option>
               <option>Bilhete Perfumado</option>
-              <option>Laço de Memória (Porta-chaves)</option>
+              <option>Laço de Memória (4,90€)</option>
             </optgroup>
             <optgroup label="Para os Mais Pequeninos">
               <option>Pequeno Artista (Kit Pintura)</option>
@@ -6183,11 +6223,31 @@ var PRODUCT_CATALOG = {
     tags: ['💍 Casamentos', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
     quote: '"Um pequeno bilhete, uma fragrância e uma memória bonita."',
     ctaLabel: 'Adicionar ao Carrinho'
+  },
+  laco_memoria: {
+    category: 'Lembranças para Eventos',
+    name: 'Laço de Memória',
+    visual: '🎀',
+    image: 'assets/products/laco-de-memoria.jpg',
+    visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
+    storyTitle: 'O porta-chaves',
+    story: 'Porta-chaves artesanal em tecido, criado em pequenas quantidades por artesã local. Um detalhe leve, bonito e útil para oferecer em casamentos, batizados ou como mimo especial.',
+    sizes: [],
+    basePrice: 4.90,
+    fabricOptions: [
+      { id: 'xadrez_rosa', label: 'Xadrez rosa e branco', note: 'Igual ao tecido da fotografia.' },
+      { id: 'stock', label: 'Outros tecidos disponíveis', note: 'Confirmamos as opções atuais por WhatsApp antes da produção.' }
+    ],
+    details: 'Inclui: porta-chaves em tecido · Mosquetão metálico dourado em forma de coração · Acabamento artesanal. Preço único por unidade.',
+    tags: ['💍 Casamentos', '🕊️ Batizados', '🤍 Comunhões', '🎁 Lembrança especial'],
+    quote: '"Um laço delicado para guardar a memória do dia."',
+    ctaLabel: 'Adicionar ao Carrinho'
   }
 };
 
 var currentProduct = null;
 var currentSizeId = null;
+var currentFabricId = null;
 
 function openProduct(productId) {
   var p = PRODUCT_CATALOG[productId];
@@ -6195,6 +6255,7 @@ function openProduct(productId) {
 
   currentProduct = productId;
   currentSizeId = p.sizes && p.sizes.length > 0 ? p.sizes[0].id : null;
+  currentFabricId = p.fabricOptions && p.fabricOptions.length > 0 ? p.fabricOptions[0].id : null;
 
   updateProductVisual();
 
@@ -6252,6 +6313,7 @@ function openProduct(productId) {
   }
 
   renderProductEventOptions(p);
+  renderProductFabricOptions(p);
   updateProductPrice();
   showPage('product');
 }
@@ -6309,6 +6371,43 @@ function renderProductEventOptions(p) {
       ? 'Quantidade mínima recomendada: ' + p.minQty + ' unidades. Estes dados seguem no carrinho ou no pedido para prepararmos a personalização.'
       : 'Estes dados seguem no carrinho para prepararmos a personalização.';
   }
+}
+
+function renderProductFabricOptions(p) {
+  var fabricSection = document.getElementById('pd-fabric-section');
+  var fabricsEl = document.getElementById('pd-fabrics');
+  var noteEl = document.getElementById('pd-fabric-note');
+  if (!fabricSection || !fabricsEl) return;
+
+  fabricsEl.innerHTML = '';
+  if (!p.fabricOptions || !p.fabricOptions.length) {
+    fabricSection.style.display = 'none';
+    return;
+  }
+
+  fabricSection.style.display = '';
+  p.fabricOptions.forEach(function(option, idx) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pd-fabric' + (idx === 0 ? ' active' : '');
+    btn.dataset.fabricId = option.id;
+    btn.innerHTML = '<span class="pd-fabric-label">' + option.label + '</span>' +
+                    (option.note ? '<span class="pd-fabric-note">' + option.note + '</span>' : '');
+    btn.onclick = function() { selectFabric(option.id); };
+    fabricsEl.appendChild(btn);
+  });
+
+  if (noteEl) {
+    noteEl.textContent = 'A escolha do tecido segue no carrinho. As opções podem variar consoante o stock disponível no momento da produção.';
+  }
+}
+
+function selectFabric(fabricId) {
+  currentFabricId = fabricId;
+  document.querySelectorAll('#pd-fabrics .pd-fabric').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.fabricId === fabricId);
+  });
+  updateProductPrice();
 }
 
 function selectSize(sizeId) {
@@ -6385,6 +6484,11 @@ function getCurrentProductSelection() {
     if (fragrance) eventDetails.push('Fragrância: ' + fragrance);
     if (phrase) eventDetails.push('Frase: "' + phrase + '"');
     if (eventDetails.length) itemName += ', ' + eventDetails.join(', ');
+  }
+
+  if (p.fabricOptions && p.fabricOptions.length && currentFabricId) {
+    var fabric = p.fabricOptions.find(function(option) { return option.id === currentFabricId; });
+    if (fabric) itemName += ', Tecido: ' + fabric.label;
   }
 
   if (p.customizable) {
