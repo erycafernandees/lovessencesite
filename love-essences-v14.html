@@ -3531,6 +3531,13 @@
       border-radius: 20px !important;
     }
 
+    .product-detail .pd-visual {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      height: auto !important;
+      min-height: 0;
+    }
+
     .products-grid,
     .shop-products-grid,
     .values-grid,
@@ -4084,15 +4091,31 @@
 
   @media (max-width: 768px) {
     .hero-premium-mobile-photo {
-      height: clamp(170px, 34vw, 230px);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem;
+      height: auto;
+      aspect-ratio: 2 / 1;
+      overflow: visible;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .hero-premium-mobile-photo img {
+      aspect-ratio: 1 / 1;
+      height: auto;
+      min-height: 0;
+      border-radius: 22px;
+      border: 1px solid rgba(180,104,171,0.12);
+      box-shadow: 0 14px 34px rgba(102,19,94,0.08);
     }
 
     .hero-premium-mobile-photo img:first-child {
-      object-position: center 58%;
+      object-position: center 60%;
     }
 
     .hero-premium-mobile-photo img:last-child {
-      object-position: 52% 62%;
+      object-position: 52% 72%;
     }
   }
 
