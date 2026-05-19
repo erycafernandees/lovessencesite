@@ -1544,9 +1544,29 @@
     .cat-tab,
     .occasion-pill { flex-shrink: 0; font-size: 0.72rem; padding: 0.55rem 1rem; }
 
-    /* Mobile: dropdown de ocasião quebra para linha própria, sem separador vertical */
-    .category-tabs { flex-wrap: wrap; }
+    /* Mobile: categorias em grelha 2x2; ocasião fica em linha própria. */
+    .category-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem;
+      overflow: visible;
+      flex-wrap: unset;
+      align-items: stretch;
+    }
+    .category-tabs .cat-tab {
+      width: 100%;
+      min-width: 0;
+      flex: initial;
+      white-space: normal;
+      text-align: center;
+      justify-content: center;
+      line-height: 1.2;
+      font-size: 0.64rem;
+      letter-spacing: 0.08em;
+      padding: 0.68rem 0.5rem;
+    }
     .occasion-select-wrap {
+      grid-column: 1 / -1;
       width: 100%;
       margin-left: 0;
       padding-left: 0;
@@ -1947,7 +1967,7 @@
   .hero-premium {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(90deg, #ffffff 0%, #ffffff 52%, #fff7fb 52%, #fdfbfc 100%);
+    background: #ffffff;
     padding: 5.2rem 5vw 4.8rem;
   }
   .hero-premium::before,
@@ -4256,10 +4276,10 @@
       <div class="mobile-menu-section">
         <span class="mobile-menu-title">Loja</span>
         <div class="mobile-menu-links">
-          <button type="button" class="mobile-nav-link" onclick="navTo('shop')">Coleção Assinatura</button>
-          <button type="button" class="mobile-nav-link" onclick="navTo('shop')">Coleção Memórias</button>
-          <button type="button" class="mobile-nav-link" onclick="navTo('shop')">Lembranças para Eventos</button>
-          <button type="button" class="mobile-nav-link" onclick="navTo('shop')">Toda a Coleção</button>
+          <button type="button" class="mobile-nav-link" onclick="openShopCategory('pecas')">Coleção Assinatura</button>
+          <button type="button" class="mobile-nav-link" onclick="openShopCategory('memorias')">Coleção Memórias</button>
+          <button type="button" class="mobile-nav-link" onclick="openShopCategory('eventos')">Lembranças para Eventos</button>
+          <button type="button" class="mobile-nav-link" onclick="openShopCategory('todos')">Toda a Coleção</button>
         </div>
       </div>
 
@@ -4751,10 +4771,10 @@
     <h1 class="section-title">Cada peça é única.<br/><em>Como quem a vai receber.</em></h1>
     <p>Produtos artesanais feitos com intenção e amor, escolhe o teu presente perfeito.</p>
     <div class="category-tabs">
-      <button type="button" class="cat-tab active" data-filter="todos" onclick="filterCategory(this,'todos')">Todos</button>
       <button type="button" class="cat-tab" data-filter="pecas" onclick="filterCategory(this,'pecas')">Coleção Assinatura</button>
       <button type="button" class="cat-tab" data-filter="memorias" onclick="filterCategory(this,'memorias')">Coleção Memórias</button>
       <button type="button" class="cat-tab" data-filter="eventos" onclick="filterCategory(this,'eventos')">Lembranças para Eventos</button>
+      <button type="button" class="cat-tab active" data-filter="todos" onclick="filterCategory(this,'todos')">Todos</button>
 
       <div class="occasion-select-wrap">
         <label class="occasion-select-label" for="occasion-select">Ocasião</label>
@@ -4997,7 +5017,7 @@
   </section>
 
   <!-- Note personalizado -->
-  <section class="bg-[#faf6f0] px-[5vw] py-16 text-center md:px-[8vw]">
+  <section class="bg-white px-[5vw] py-16 text-center md:px-[8vw]">
     <p class="section-label">✦ Não encontraste o que procuras?</p>
     <h2 class="section-title" style="max-width: 600px; margin: 0 auto 1rem;">Criamos o presente<br/><em>exatamente para si</em></h2>
     <p class="section-sub" style="margin: 0 auto 2rem;">Escolhe o aroma, a cor, a mensagem, o tamanho. Fazemos a partir do zero só para ti.</p>
@@ -5197,7 +5217,7 @@
 <!-- OCCASIONS PAGE -->
 <!-- ============================================================ -->
 <div class="page" id="page-occasions">
-  <section class="bg-[#faf6f0] px-[5vw] pb-8 pt-28 md:px-[8vw] md:pb-10">
+  <section class="bg-white px-[5vw] pb-8 pt-28 md:px-[8vw] md:pb-10">
     <div class="mx-auto max-w-[820px] text-center">
       <p class="section-label">✦ Para cada momento</p>
       <h1 class="section-title">O presente certo<br/>para cada <em>ocasião</em></h1>
@@ -6010,9 +6030,9 @@
     <div class="footer-col">
       <h5>Loja</h5>
       <ul>
-        <li><a href="#" onclick="showPage('shop'); return false;">Coleção Assinatura</a></li>
-        <li><a href="#" onclick="showPage('shop'); return false;">Coleção Memórias</a></li>
-        <li><a href="#" onclick="showPage('shop'); return false;">Lembranças para Eventos</a></li>
+        <li><a href="#" onclick="openShopCategory('pecas'); return false;">Coleção Assinatura</a></li>
+        <li><a href="#" onclick="openShopCategory('memorias'); return false;">Coleção Memórias</a></li>
+        <li><a href="#" onclick="openShopCategory('eventos'); return false;">Lembranças para Eventos</a></li>
         <li><a href="#" onclick="showPage('contact'); return false;">Encomenda Personalizada</a></li>
       </ul>
     </div>
@@ -7168,6 +7188,24 @@ function filterCategory(btn, category) {
   }
   setActiveFilter('.cat-tab', 'data-filter', category);
   applyShopFilters();
+}
+
+function openShopCategory(category) {
+  closeMenu();
+  currentCategory = category || 'todos';
+  currentOccasion = 'todos';
+  window._intentionalFilter = true;
+  showPage('shop');
+  setActiveFilter('.cat-tab', 'data-filter', currentCategory);
+  setActiveFilter('.occasion-pill', 'data-occasion', 'todos');
+  updateActiveOccasionChip();
+  syncOccasionSelect();
+  applyShopFilters();
+
+  setTimeout(function() {
+    var hero = document.querySelector('.shop-hero');
+    if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 120);
 }
 
 function filterOccasion(btn, occasion) {
