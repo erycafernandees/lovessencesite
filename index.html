@@ -5083,6 +5083,13 @@
         <p class="pd-custom-note" id="pd-box-color-note"></p>
       </div>
 
+      <!-- Cor do ursinho (visível apenas para boxes com ursinho) -->
+      <div class="pd-section" id="pd-bear-color-section" style="display:none;">
+        <h4>Escolhe a cor do ursinho</h4>
+        <div class="pd-fabrics" id="pd-bear-colors"></div>
+        <p class="pd-custom-note" id="pd-bear-color-note"></p>
+      </div>
+
       <!-- Opções de tecido (visível apenas para artigos em tecido) -->
       <div class="pd-section" id="pd-fabric-section" style="display:none;">
         <h4>Escolhe o tecido</h4>
@@ -6322,6 +6329,7 @@ var PRODUCT_CATALOG = {
       { id: 'L', label: 'L', price: 55,    note: 'um eu-pensei-em-ti completo' }
     ],
     boxColors: ['Branco pérola', 'Cinza claro', 'Cinza escuro', 'Preto'],
+    bearColors: ['Branco', 'Castanho'],
     details: 'Composição cuidada com peças e mimos artesanais · Embalagem pronta a oferecer · Mensagem personalizada incluída mediante pedido · Composição pode variar consoante disponibilidade.',
     tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial', '✨ Sem Ocasião'],
     quote: '"Há gestos que não precisam de ocasião. Só de coragem para os fazer."',
@@ -6586,6 +6594,7 @@ var PRODUCT_CATALOG = {
 var currentProduct = null;
 var currentSizeId = null;
 var currentBoxColor = null;
+var currentBearColor = null;
 var currentFabricId = null;
 var currentGalleryImages = [];
 var currentGalleryIndex = 0;
@@ -6598,6 +6607,7 @@ function openProduct(productId) {
   currentProduct = productId;
   currentSizeId = p.sizes && p.sizes.length > 0 ? p.sizes[0].id : null;
   currentBoxColor = p.boxColors && p.boxColors.length > 0 ? p.boxColors[0] : null;
+  currentBearColor = p.bearColors && p.bearColors.length > 0 ? p.bearColors[0] : null;
   currentFabricId = p.fabricOptions && p.fabricOptions.length > 0 ? p.fabricOptions[0].id : null;
 
   updateProductVisual();
@@ -6657,6 +6667,7 @@ function openProduct(productId) {
 
   renderProductEventOptions(p);
   renderProductBoxColors(p);
+  renderProductBearColors(p);
   renderProductFabricOptions(p);
   updateProductPrice();
   showPage('product');
@@ -6778,6 +6789,42 @@ function selectBoxColor(label) {
   currentBoxColor = label;
   document.querySelectorAll('#pd-box-colors .pd-fabric').forEach(function(btn) {
     btn.classList.toggle('active', btn.dataset.boxColor === label);
+  });
+  updateProductPrice();
+}
+
+function renderProductBearColors(p) {
+  var colorSection = document.getElementById('pd-bear-color-section');
+  var colorsEl = document.getElementById('pd-bear-colors');
+  var noteEl = document.getElementById('pd-bear-color-note');
+  if (!colorSection || !colorsEl) return;
+
+  colorsEl.innerHTML = '';
+  if (!p.bearColors || !p.bearColors.length) {
+    colorSection.style.display = 'none';
+    return;
+  }
+
+  colorSection.style.display = '';
+  p.bearColors.forEach(function(label, idx) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pd-fabric' + (idx === 0 ? ' active' : '');
+    btn.dataset.bearColor = label;
+    btn.innerHTML = '<span class="pd-fabric-label">' + label + '</span>';
+    btn.onclick = function() { selectBearColor(label); };
+    colorsEl.appendChild(btn);
+  });
+
+  if (noteEl) {
+    noteEl.textContent = 'A cor escolhida segue no carrinho para prepararmos o ursinho.';
+  }
+}
+
+function selectBearColor(label) {
+  currentBearColor = label;
+  document.querySelectorAll('#pd-bear-colors .pd-fabric').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.bearColor === label);
   });
   updateProductPrice();
 }
@@ -6936,6 +6983,10 @@ function getCurrentProductSelection() {
 
   if (p.boxColors && p.boxColors.length && currentBoxColor) {
     itemName += ', Cor da caixa: ' + currentBoxColor;
+  }
+
+  if (p.bearColors && p.bearColors.length && currentBearColor) {
+    itemName += ', Cor do ursinho: ' + currentBearColor;
   }
 
   if (p.eventOptions) {
