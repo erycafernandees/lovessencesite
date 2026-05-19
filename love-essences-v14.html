@@ -792,9 +792,11 @@
     gap: 0.75rem;
     align-items: center;
   }
+  .products-grid .product-btn,
   .shop-products-grid .product-btn {
     display: none !important;
   }
+  .products-grid .product-price,
   .shop-products-grid .product-price {
     width: 100%;
   }
@@ -7983,7 +7985,7 @@ renderCart();
   }
 
   function setupShopCardOpen() {
-    document.querySelectorAll('#shop-products-grid .product-card').forEach(function(card) {
+    document.querySelectorAll('.products-grid .product-card, #shop-products-grid .product-card').forEach(function(card) {
       var productId = getProductIdFromCard(card);
       if (!productId) return;
 
