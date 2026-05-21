@@ -76,6 +76,7 @@
   .nav-links { display: flex; gap: 2.5rem; list-style: none; }
   .nav-links a { font-size: 0.8rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--warm-gray); text-decoration: none; transition: color 0.3s; }
   .nav-links a:hover { color: var(--rose); }
+  #nav-row2 a { white-space: nowrap; }
   .nav-cta { background: var(--rose); color: #fff; border: none; padding: 0.7rem 1.8rem; font-family: var(--sans); font-size: 0.75rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.3s; border-radius: 2px; }
   .nav-cta:hover { background: var(--deep-rose); }
 
@@ -4180,11 +4181,14 @@
     }
   }
   /* ── MOBILE HERO & NAV FIXES ──────────────────────────────── */
-  #nav-row2 { display: none !important; }
+  #main-nav { display: block; padding: 0; z-index: 190; }
+  #nav-row2 { display: none !important; width: 100%; box-sizing: border-box; }
   @media (min-width: 768px) {
     #nav-row2 { display: flex !important; }
   }
-  #main-nav { z-index: 190; }
+  @media (min-width: 769px) {
+    .hamburger { display: none !important; }
+  }
   .mobile-menu.open { box-shadow: 0 20px 40px rgba(63,7,58,0.10); }
   .mobile-nav-link, .mobile-cta, .cart-nav-btn, .hamburger { position: relative; z-index: 1; }
 
