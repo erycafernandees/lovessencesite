@@ -4820,8 +4820,8 @@
   </section>
   <section class="shop-grid px-[5vw] pb-14 pt-10 md:px-[8vw]">
     <div class="shop-results-meta">
-      <p class="shop-results-label" id="shop-results-label">A mostrar: todos os produtos</p>
-      <button type="button" class="btn-sm" style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--rose);background:none;border:none;cursor:pointer;padding:0;font-weight:500;" onclick="showPage('occasions')">Ver por Ocasião →</button>
+      <p class="shop-results-label" id="shop-results-label">Sugestões para todos os momentos</p>
+      <button type="button" class="btn-sm" style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--rose);background:none;border:none;cursor:pointer;padding:0;font-weight:500;" onclick="showPage('occasions')">Escolher por ocasião →</button>
     </div>
 
     <!-- Chip de filtro de ocasião ativo (visível apenas quando há filtro aplicado) -->
@@ -5235,7 +5235,7 @@
     <h2 class="section-title">Vem sentir a diferença<br/>de um presente <em>feito com amor</em></h2>
     <div style="display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
       <button type="button" class="btn-primary" onclick="showPage('shop')">Explorar a Loja</button>
-      <button type="button" class="btn-outline" onclick="showPage('occasions')">Ver por Ocasião</button>
+      <button type="button" class="btn-outline" onclick="showPage('occasions')">Escolher por Ocasião</button>
     </div>
   </section>
 </div>
@@ -7174,9 +7174,9 @@ var currentCategory = 'todos';
 var currentOccasion = 'todos';
 
 var occasionLabels = {
-  'todos': 'todas as ocasiões',
+  'todos': 'todos os momentos',
   'aniversarios': 'aniversários',
-  'presente-romantico': 'presente romântico',
+  'presente-romantico': 'presentes românticos',
   'alguem-especial': 'alguém especial',
   'casamentos-batizados': 'casamentos & batizados',
   'empresas': 'eventos & empresas',
@@ -7184,9 +7184,9 @@ var occasionLabels = {
 };
 
 var categoryLabels = {
-  'todos': 'todos os produtos',
-  'pecas': 'coleção assinatura',
-  'memorias': 'coleção memórias',
+  'todos': 'Sugestões para todos os momentos',
+  'pecas': 'Coleção Assinatura',
+  'memorias': 'Coleção Memórias',
   'eventos': 'Lembranças Personalizadas para Eventos'
 };
 
@@ -7200,9 +7200,18 @@ function updateShopMeta(visibleCount) {
   var label = document.getElementById('shop-results-label');
   if (!label) return;
 
-  var categoryText = categoryLabels[currentCategory] || 'todos os produtos';
-  var occasionText = occasionLabels[currentOccasion] || 'todas as ocasiões';
-  label.textContent = 'A mostrar: ' + categoryText + ' · ' + occasionText + ' · ' + visibleCount + ' sugestão(ões)';
+  var categoryText = categoryLabels[currentCategory] || 'Sugestões para todos os momentos';
+  var occasionText = occasionLabels[currentOccasion] || 'todos os momentos';
+
+  if (currentCategory === 'todos' && currentOccasion === 'todos') {
+    label.textContent = 'Sugestões para todos os momentos';
+  } else if (currentCategory === 'todos') {
+    label.textContent = 'Sugestões para ' + occasionText;
+  } else if (currentOccasion === 'todos') {
+    label.textContent = categoryText;
+  } else {
+    label.textContent = categoryText + ' para ' + occasionText;
+  }
 }
 
 function applyShopFilters() {
