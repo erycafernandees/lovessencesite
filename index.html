@@ -807,7 +807,7 @@
   .product-detail { padding: 3rem 8vw; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
   .pd-visual { background: linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%); border-radius: 16px; height: 560px; display: flex; align-items: center; justify-content: center; font-size: 8rem; position: sticky; top: 100px; overflow: hidden; }
   .pd-gallery { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: inherit; }
-  .pd-gallery-track { width: 100%; height: 100%; position: relative; }
+  .pd-gallery-track { width: 100%; height: 100%; position: relative; pointer-events: none; }
   .pd-gallery-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.45s ease; }
   .pd-gallery-slide.active { opacity: 1; }
   .pd-gallery-nav {
@@ -859,6 +859,26 @@
     transition: transform 0.2s ease, background 0.2s ease;
   }
   .pd-gallery-dot.active { background: var(--deep-rose); transform: scale(1.25); }
+  @media (max-width: 768px) {
+    .pd-gallery-nav {
+      z-index: 8 !important;
+      width: 48px !important;
+      height: 48px !important;
+      min-width: 48px !important;
+      min-height: 48px !important;
+      background: rgba(255,255,255,0.94) !important;
+      border-color: rgba(180,104,171,0.28) !important;
+      color: var(--deep-rose) !important;
+      box-shadow: 0 12px 30px rgba(63,7,58,0.16) !important;
+      pointer-events: auto !important;
+      touch-action: manipulation;
+    }
+
+    .pd-gallery-prev { left: 0.65rem !important; }
+    .pd-gallery-next { right: 0.65rem !important; }
+    .pd-gallery-dots { z-index: 7 !important; pointer-events: auto !important; }
+    .pd-gallery-dot { pointer-events: auto !important; }
+  }
   .pd-content { padding-top: 1rem; }
   .pd-breadcrumb { font-size: 0.75rem; color: var(--warm-gray); margin-bottom: 1.5rem; letter-spacing: 0.05em; }
   .pd-category { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rose); margin-bottom: 0.8rem; font-weight: 500; }
@@ -1063,6 +1083,78 @@
   .occasion-detail { padding: 4rem 8vw; background: var(--cream); }
   .occasion-products-title { font-family: var(--serif); font-size: 2rem; font-weight: 300; margin-bottom: 0.5rem; }
   .occasion-products-sub { color: var(--warm-gray); font-size: 0.9rem; margin-bottom: 3rem; }
+  .occasions-cards-mockup { padding-top: 2rem; background: #fff; }
+  .occasion-card {
+    min-height: 260px !important;
+    border-radius: 26px !important;
+    padding: 1.55rem 1.9rem !important;
+    border: 1px solid rgba(180,104,171,0.12) !important;
+    box-shadow: 0 18px 42px rgba(102,19,94,0.10) !important;
+    transform: translateZ(0);
+  }
+  .occasion-card:hover { transform: translateY(-4px) !important; }
+  .occasion-card::after {
+    content: '';
+    position: absolute;
+    right: 1.4rem;
+    bottom: 1.2rem;
+    width: 7rem;
+    height: 7rem;
+    border: 1px solid rgba(255,255,255,0.38);
+    border-radius: 46% 54% 52% 48%;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .occasion-card--bday { background: linear-gradient(135deg, #fde7ef 0%, #f3bdd2 100%) !important; }
+  .occasion-card--romantic { background: linear-gradient(135deg, #ffe4e3 0%, #f2bbb6 100%) !important; }
+  .occasion-card--special { background: linear-gradient(135deg, #f4e0ed 0%, #cfa2c7 100%) !important; }
+  .occasion-card--wedding { background: linear-gradient(135deg, #ffe9dd 0%, #f1c5b0 100%) !important; }
+  .occasion-card--business { background: linear-gradient(135deg, #efe4f5 0%, #cbb7e7 100%) !important; }
+  .occasion-card--kids { background: linear-gradient(135deg, #ffebe2 0%, #f5c9b9 100%) !important; }
+  .occasion-card .occasion-badge {
+    border-radius: 999px !important;
+    background: rgba(255,255,255,0.72) !important;
+    color: var(--deep-rose) !important;
+    box-shadow: 0 10px 24px rgba(102,19,94,0.08);
+  }
+  .occasion-card .occasion-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.16);
+    filter: drop-shadow(0 10px 14px rgba(102,19,94,0.14));
+  }
+  .occasion-card h3 {
+    color: var(--dark) !important;
+    font-size: clamp(1.55rem, 2vw, 2.05rem) !important;
+    line-height: 1.08 !important;
+  }
+  .occasion-card p {
+    color: #5f415b !important;
+    opacity: 0.9 !important;
+    max-width: 24rem;
+  }
+  .occasion-card .occasion-link {
+    color: var(--deep-rose) !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+  }
+  .occasion-choice-strip {
+    margin: 1rem 8vw 4rem;
+    padding: 1.35rem;
+    border-radius: 8px;
+    border: 1px solid rgba(180,104,171,0.15);
+    background: linear-gradient(135deg, #fffaf8 0%, #fff7fc 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    box-shadow: 0 18px 42px rgba(102,19,94,0.06);
+  }
 
   /* CONTACT PAGE */
   .contact-hero { background: var(--dark); padding: 5rem 8vw; text-align: center; position: relative; overflow: hidden; }
@@ -3092,6 +3184,21 @@
     box-shadow: 0 28px 76px rgba(102,19,94,0.12);
     overflow: hidden;
   }
+  @media (min-width: 769px) {
+    .product-detail .pd-visual {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      height: auto !important;
+      min-height: 0;
+      max-height: calc(100vh - 8rem);
+    }
+  }
+  .pd-visual img[src*="cores-gesso"] {
+    object-fit: contain !important;
+    background: #fff;
+    box-sizing: border-box;
+    padding: clamp(0.5rem, 1.4vw, 1rem);
+  }
 
   .pd-content {
     background: rgba(255,255,255,0.72);
@@ -3619,8 +3726,7 @@
     border-radius: 0 !important;
   }
 
-  /* remove internal colored card rounding where it feels too soft */
-  .occasion-card,
+  /* remove internal image rounding where it feels too soft */
   .product-img,
   .shop-products-grid .product-img {
     border-radius: 0 !important;
@@ -3638,7 +3744,6 @@
     .cta-banner,
     .shop-hero,
     .occasions-hero,
-    .occasion-card,
     .product-img,
     .shop-products-grid .product-img {
       border-radius: 0 !important;
@@ -4220,6 +4325,43 @@
   }
   .mobile-menu.open { box-shadow: 0 20px 40px rgba(63,7,58,0.10); }
   .mobile-nav-link, .mobile-cta, .cart-nav-btn, .hamburger { position: relative; z-index: 1; }
+
+  @media (max-width: 768px) {
+    #main-nav .nav-top-inner {
+      display: grid !important;
+      grid-template-columns: 64px minmax(0, 1fr) 64px !important;
+      align-items: center !important;
+      gap: 0.35rem !important;
+      padding: 0.9rem 5vw 0.8rem !important;
+    }
+    #main-nav .nav-top-side.left {
+      display: block !important;
+      width: 64px !important;
+      min-width: 64px !important;
+    }
+    #main-nav .nav-logo-image {
+      justify-self: center !important;
+      justify-content: center !important;
+      min-width: 0 !important;
+      width: 100% !important;
+    }
+    #main-nav .nav-logo-image img {
+      height: 44px !important;
+      max-width: min(58vw, 250px) !important;
+    }
+    #main-nav .nav-top-side.right {
+      justify-self: end !important;
+      gap: 0.2rem !important;
+      width: 64px !important;
+      min-width: 64px !important;
+      overflow: visible !important;
+    }
+    #main-nav .cart-nav-btn,
+    #main-nav .hamburger {
+      width: 32px !important;
+      height: 38px !important;
+    }
+  }
 
   @media (max-width: 640px) {
     #page-home > section:first-of-type h1 {
@@ -5041,7 +5183,7 @@
         <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/pequeno-artista.jpg" alt="Pequeno Artista, kit de pintura Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Pequeno Artista</h3>
-          <p class="product-desc">Kit de pintura em gesso para crianças: 1 peça com íman, 3 cores, pincel, autocolantes e miminho. Em saco de organza.</p>
+          <p class="product-desc">Kit de pintura em gesso para crianças: 1 peça com íman, 3 cores, pincel e autocolantes. Depois da atividade, pode decorar o frigorífico com a sua arte.</p>
           <div class="product-footer"><span class="product-price">3€/un</span><button type="button" class="product-btn" onclick="openProduct('pequeno_artista')">Personalizar</button></div>
         </div>
       </div>
@@ -5049,7 +5191,7 @@
         <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/momento-criativo.jpg" alt="Momento Criativo, kit de pintura Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Momento Criativo</h3>
-          <p class="product-desc">Kit com 2 peças em gesso, 3 cores, pincel, autocolantes e miminho. Para crianças que celebram em grande.</p>
+          <p class="product-desc">Kit com 2 peças em gesso com íman, 4 cores, 1 pincel e autocolantes. Para criar e depois expor a arte no frigorífico.</p>
           <div class="product-footer"><span class="product-price">3,90€/un</span><button type="button" class="product-btn" onclick="openProduct('momento_criativo')">Personalizar</button></div>
         </div>
       </div>
@@ -5057,7 +5199,7 @@
         <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/caixinha-de-arte.jpg" alt="Caixinha de Arte, kit completo Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Caixinha de Arte</h3>
-          <p class="product-desc">Kit completo: 3 peças em gesso, 6 cores, 2 pincéis, autocolantes e miminho. Em caixa preparada para oferecer.</p>
+          <p class="product-desc">Kit completo: 3 peças em gesso com íman, 6 cores, 2 pincéis e autocolantes. Em caixa preparada para oferecer.</p>
           <div class="product-footer"><span class="product-price">5,90€/un</span><button type="button" class="product-btn" onclick="openProduct('caixinha_arte')">Personalizar</button></div>
         </div>
       </div>
@@ -5066,7 +5208,7 @@
         <div class="product-info">
           <h3 class="product-name">Miminho Doce</h3>
           <p class="product-desc">Saco de doces para crianças. Um complemento simples e doce, ideal para combinar com qualquer kit da Coleção Pequenos Momentos.</p>
-          <div class="product-footer"><span class="product-price">2€/un</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Miminho Doce',2,'🍬')">Adicionar 🛒</button></div>
+          <div class="product-footer"><span class="product-price">A partir de 1€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Miminho Doce',1,'🍬')">Adicionar 🛒</button></div>
         </div>
       </div>
     </div>
@@ -5277,7 +5419,7 @@
 <!-- OCCASIONS PAGE -->
 <!-- ============================================================ -->
 <div class="page" id="page-occasions">
-  <section class="bg-white px-[5vw] pb-8 pt-28 md:px-[8vw] md:pb-10">
+  <section class="occasions-hero bg-white px-[5vw] pb-8 pt-28 md:px-[8vw] md:pb-10">
     <div class="mx-auto max-w-[820px] text-center">
       <p class="section-label">✦ Para cada momento</p>
       <h1 class="section-title">O presente certo<br/>para cada <em>ocasião</em></h1>
@@ -5285,12 +5427,12 @@
     </div>
   </section>
 
-  <section class="px-[5vw] py-10 md:px-[8vw] md:py-14">
-    <div class="mx-auto grid max-w-[1440px] gap-6 md:grid-cols-2 xl:grid-cols-3">
+  <section class="occasions-cards-mockup px-[5vw] py-10 md:px-[8vw] md:py-14">
+    <div class="occasions-grid mx-auto grid max-w-[1440px] gap-6 md:grid-cols-2 xl:grid-cols-3">
 
       <!-- ====== Para oferecer a alguém ====== -->
       <article
-        class="group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
+        class="occasion-card occasion-card--bday group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
         style="background: linear-gradient(160deg, #f3e5f1 0%, #d192ca 100%);"
         onclick="openOccasion('aniversarios')"
         onkeydown="handleOccasionCardKey(event, 'aniversarios')"
@@ -5298,18 +5440,18 @@
         tabindex="0"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para oferecer</div>
-          <span class="text-5xl transition duration-300 group-hover:scale-110">🎂</span>
+          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para oferecer</div>
+          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">🎂</span>
         </div>
         <div class="p-1 pt-4">
           <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Aniversários</h3>
           <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Para celebrar quem amamos com algo tão único quanto eles.</p>
-          <span class="mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('aniversarios')">Ver Sugestões →</span>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('aniversarios')">Ver sugestões →</span>
         </div>
       </article>
 
       <article
-        class="group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
+        class="occasion-card occasion-card--romantic group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
         style="background: linear-gradient(160deg, #f5e8f2 0%, #d192ca 100%);"
         onclick="openOccasion('presente-romantico')"
         onkeydown="handleOccasionCardKey(event, 'presente-romantico')"
@@ -5317,18 +5459,18 @@
         tabindex="0"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para oferecer</div>
-          <span class="text-5xl transition duration-300 group-hover:scale-110">💝</span>
+          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para oferecer</div>
+          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">💝</span>
         </div>
         <div class="p-1 pt-4">
           <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Presente Romântico</h3>
           <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Porque às vezes as palavras não chegam. Deixa o presente falar.</p>
-          <span class="mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('presente-romantico')">Ver Sugestões →</span>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('presente-romantico')">Ver sugestões →</span>
         </div>
       </article>
 
       <article
-        class="group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
+        class="occasion-card occasion-card--special group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
         style="background: linear-gradient(160deg, #f8eef5 0%, #c896c3 100%);"
         onclick="openOccasion('alguem-especial')"
         onkeydown="handleOccasionCardKey(event, 'alguem-especial')"
@@ -5336,19 +5478,19 @@
         tabindex="0"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para oferecer</div>
-          <span class="text-5xl transition duration-300 group-hover:scale-110">🤍</span>
+          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para oferecer</div>
+          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">🎁</span>
         </div>
         <div class="p-1 pt-4">
           <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Para Alguém Especial</h3>
           <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Aquele gesto inesperado que diz tudo sem precisar de motivo.</p>
-          <span class="mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('alguem-especial')">Ver Sugestões →</span>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('alguem-especial')">Ver sugestões →</span>
         </div>
       </article>
 
       <!-- ====== Para celebrações ====== -->
       <article
-        class="group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
+        class="occasion-card occasion-card--wedding group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
         style="background: linear-gradient(160deg, #f5eef0 0%, #d4a8b8 100%);"
         onclick="openOccasion('casamentos-batizados')"
         onkeydown="handleOccasionCardKey(event, 'casamentos-batizados')"
@@ -5356,18 +5498,18 @@
         tabindex="0"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">celebração</div>
-          <span class="text-5xl transition duration-300 group-hover:scale-110">💍</span>
+          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">celebração</div>
+          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">💍</span>
         </div>
         <div class="p-1 pt-4">
           <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Casamentos &amp; Batizados</h3>
           <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Lembranças delicadas para quem celebra convosco esses momentos únicos.</p>
-          <span class="mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('casamentos-batizados')">Ver Sugestões →</span>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('casamentos-batizados')">Ver sugestões →</span>
         </div>
       </article>
 
       <article
-        class="group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
+        class="occasion-card occasion-card--business group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
         style="background: linear-gradient(160deg, #efe8f0 0%, #a892b0 100%);"
         onclick="openOccasion('empresas')"
         onkeydown="handleOccasionCardKey(event, 'empresas')"
@@ -5375,19 +5517,19 @@
         tabindex="0"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">celebração</div>
-          <span class="text-5xl transition duration-300 group-hover:scale-110">✨</span>
+          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">celebração</div>
+          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">✨</span>
         </div>
         <div class="p-1 pt-4">
           <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Eventos &amp; Empresas</h3>
           <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Brindes corporativos e lembranças com curadoria, à medida da vossa marca.</p>
-          <span class="mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('empresas')">Ver Sugestões →</span>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('empresas')">Ver sugestões →</span>
         </div>
       </article>
 
       <!-- ====== Para os mais pequeninos ====== -->
       <article
-        class="group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
+        class="occasion-card occasion-card--kids group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
         style="background: linear-gradient(160deg, #fbeef0 0%, #e0a8b8 100%);"
         onclick="openOccasion('pequeninos')"
         onkeydown="handleOccasionCardKey(event, 'pequeninos')"
@@ -5395,26 +5537,22 @@
         tabindex="0"
       >
         <div class="flex items-start justify-between gap-3">
-          <div class="rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para crianças</div>
-          <span class="text-5xl transition duration-300 group-hover:scale-110">🎨</span>
+          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para crianças</div>
+          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">🧸</span>
         </div>
         <div class="p-1 pt-4">
           <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Para os Mais Pequeninos</h3>
           <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Kits criativos, doces e mimos pensados para encantar os pequenos convidados.</p>
-          <span class="mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('pequeninos')">Ver Sugestões →</span>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('pequeninos')">Ver sugestões →</span>
         </div>
       </article>
 
     </div>
   </section>
 
-  <div class="occasion-detail">
-    <h2 class="occasion-products-title">Não sabes o que escolher?</h2>
-    <p class="occasion-products-sub">Conta-nos tudo sobre a pessoa e a ocasião, e nós criamos o presente perfeito.</p>
-    <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
-      <button type="button" class="btn-primary" onclick="showPage('contact')">Pedir Ajuda para Escolher</button>
-      <button type="button" class="btn-outline" onclick="showPage('shop')">Ver Toda a Loja</button>
-    </div>
+  <div class="occasion-choice-strip">
+    <button type="button" class="btn-primary" onclick="showPage('contact')">Ajuda-me a escolher</button>
+    <button type="button" class="btn-outline" onclick="showPage('shop')">Ver toda a loja</button>
   </div>
 
   <section class="cta-banner">
@@ -6544,6 +6682,7 @@ var PRODUCT_CATALOG = {
     name: 'Pequeno Artista',
     visual: '🎨',
     image: 'assets/products/pequeno-artista.jpg',
+    gallery: ['assets/products/cores-gesso.jpg'],
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'O kit',
     story: 'Kit de pintura em gesso para crianças, pensado para oferecer uma lembrança divertida, criativa e cheia de ternura.',
@@ -6554,7 +6693,7 @@ var PRODUCT_CATALOG = {
     defaultQty: 1,
     minQty: 1,
     fragrances: [],
-    details: 'Inclui: 1 peça em gesso com íman · 3 cores · Pincel · Autocolantes · Miminho · Saco de organza.',
+    details: 'Inclui: 1 peça em gesso com íman · 3 cores · Pincel · Autocolantes · Saco de organza · Depois da atividade, a peça pode decorar o frigorífico e expor a sua arte.',
     tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
     quote: '"Uma lembrança pequenina para mãos cheias de imaginação."',
     ctaLabel: 'Adicionar ao Carrinho'
@@ -6564,6 +6703,7 @@ var PRODUCT_CATALOG = {
     name: 'Momento Criativo',
     visual: '🎨',
     image: 'assets/products/momento-criativo.jpg',
+    gallery: ['assets/products/cores-gesso.jpg'],
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'O kit',
     story: 'Kit criativo com duas peças em gesso, ideal para crianças que adoram pintar, brincar e levar para casa uma recordação especial.',
@@ -6574,7 +6714,7 @@ var PRODUCT_CATALOG = {
     defaultQty: 1,
     minQty: 1,
     fragrances: [],
-    details: 'Inclui: 2 peças em gesso · 3 cores · Pincel · Autocolantes · Miminho.',
+    details: 'Inclui: 2 peças em gesso com íman · 4 cores · 1 pincel · Autocolantes · Depois da atividade, as peças podem decorar o frigorífico e expor a sua arte.',
     tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
     quote: '"Um momento para criar, brincar e guardar."',
     ctaLabel: 'Adicionar ao Carrinho'
@@ -6584,6 +6724,7 @@ var PRODUCT_CATALOG = {
     name: 'Caixinha de Arte',
     visual: '🎨',
     image: 'assets/products/caixinha-de-arte.jpg',
+    gallery: ['assets/products/cores-gesso.jpg'],
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'O kit',
     story: 'Kit completo de pintura em caixa, preparado para oferecer uma experiência criativa mais completa aos mais pequenos.',
@@ -6594,7 +6735,7 @@ var PRODUCT_CATALOG = {
     defaultQty: 1,
     minQty: 1,
     fragrances: [],
-    details: 'Inclui: 3 peças em gesso · 6 cores · 2 pincéis · Autocolantes · Miminho · Caixa preparada para oferecer.',
+    details: 'Inclui: 3 peças em gesso com íman · 6 cores · 2 pincéis · Autocolantes · Caixa preparada para oferecer · Depois da atividade, as peças podem decorar o frigorífico e expor a sua arte.',
     tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
     quote: '"Uma caixinha feita para transformar a lembrança numa brincadeira."',
     ctaLabel: 'Adicionar ao Carrinho'
@@ -6608,8 +6749,9 @@ var PRODUCT_CATALOG = {
     storyTitle: 'O mimo',
     story: 'Saco de doces para crianças, simples, doce e perfeito para completar qualquer kit da Coleção Pequenos Momentos.',
     sizes: [],
-    basePrice: 2,
-    priceSuffix: '/un',
+    basePrice: 1,
+    priceLabel: 'A partir de 1€',
+    priceSuffix: '',
     eventOptions: true,
     defaultQty: 1,
     minQty: 1,
