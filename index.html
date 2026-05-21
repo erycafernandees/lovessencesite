@@ -4188,6 +4188,35 @@
   }
   @media (min-width: 769px) {
     .hamburger { display: none !important; }
+    #nav-row2 {
+      padding-top: 0.65rem !important;
+      padding-bottom: 0.95rem !important;
+    }
+    #main-nav .nav-top-inner {
+      display: grid !important;
+      grid-template-columns: 1fr auto 1fr !important;
+      align-items: center !important;
+      gap: 1rem !important;
+      padding: 0.95rem 5vw 0.8rem !important;
+    }
+    #main-nav .nav-top-side.left {
+      display: block !important;
+      min-width: 0 !important;
+    }
+    #main-nav .nav-logo-image {
+      justify-self: center !important;
+      justify-content: center !important;
+      flex: none !important;
+      max-width: none !important;
+    }
+    #main-nav .nav-logo-image img {
+      height: 56px !important;
+      max-width: min(62vw, 380px) !important;
+    }
+    #main-nav .nav-top-side.right {
+      justify-self: end !important;
+      margin-left: 0 !important;
+    }
   }
   .mobile-menu.open { box-shadow: 0 20px 40px rgba(63,7,58,0.10); }
   .mobile-nav-link, .mobile-cta, .cart-nav-btn, .hamburger { position: relative; z-index: 1; }
