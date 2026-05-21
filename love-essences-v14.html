@@ -5204,11 +5204,11 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/miminho-doce.jpg" alt="Miminho Doce, saco de doces Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/miminho-doce2.png" alt="Miminho Doce, marshmallows no palito Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Miminho Doce</h3>
-          <p class="product-desc">Saco de doces para crianças. Um complemento simples e doce, ideal para combinar com qualquer kit da Coleção Pequenos Momentos.</p>
-          <div class="product-footer"><span class="product-price">A partir de 1€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Miminho Doce',1,'🍬')">Adicionar 🛒</button></div>
+          <p class="product-desc">Três opções doces para crianças: laço de marshmallows, cone de miminhos ou espetada de alegria, sempre prontas para oferecer.</p>
+          <div class="product-footer"><span class="product-price">A partir de 1€</span><button type="button" class="product-btn" onclick="openProduct('miminho_doce')">Personalizar</button></div>
         </div>
       </div>
     </div>
@@ -5245,9 +5245,9 @@
         <p id="pd-story"></p>
       </div>
 
-      <!-- Seletor de tamanho (visível apenas para produtos com tamanhos múltiplos) -->
+      <!-- Seletor de tamanho/opção (visível apenas para produtos com múltiplas escolhas) -->
       <div class="pd-section" id="pd-size-section" style="display:none;">
-        <h4>Escolhe o tamanho</h4>
+        <h4 id="pd-size-title">Escolhe o tamanho</h4>
         <div class="pd-sizes" id="pd-sizes"></div>
       </div>
 
@@ -6744,19 +6744,24 @@ var PRODUCT_CATALOG = {
     category: 'Lembranças para Eventos',
     name: 'Miminho Doce',
     visual: '🍬',
-    image: 'assets/products/miminho-doce.jpg',
+    image: 'assets/products/miminho-doce2.png',
+    gallery: ['assets/products/miminho-doce2.png', 'assets/products/miminho-doce.jpg', 'assets/products/miminho-doce3.png'],
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'O mimo',
-    story: 'Saco de doces para crianças, simples, doce e perfeito para completar qualquer kit da Coleção Pequenos Momentos.',
-    sizes: [],
+    story: 'Doces personalizados para crianças, simples, bonitos e perfeitos para completar qualquer kit da Coleção Pequenos Momentos. Escolhe entre Laço de Marshmallows, Cone de Miminhos ou Espetada de Alegria.',
+    sizeTitle: 'Escolhe a opção',
+    sizes: [
+      { id: 'laco_marshmallows', label: 'Laço de Marshmallows', price: 1, image: 'assets/products/miminho-doce2.png' },
+      { id: 'cone_miminhos', label: 'Cone de Miminhos', price: 2, image: 'assets/products/miminho-doce.jpg' },
+      { id: 'espetada_alegria', label: 'Espetada de Alegria', price: 2, image: 'assets/products/miminho-doce3.png' }
+    ],
     basePrice: 1,
-    priceLabel: 'A partir de 1€',
-    priceSuffix: '',
+    priceSuffix: '/un',
     eventOptions: true,
     defaultQty: 1,
     minQty: 1,
     fragrances: [],
-    details: 'Inclui: saco de doces preparado para oferecer · Personalização conforme o tema do evento.',
+    details: 'Inclui: opção doce escolhida · Laço ou cone conforme a versão selecionada · Embalagem preparada para oferecer · Personalização conforme o tema do evento.',
     tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
     quote: '"Um detalhe simples para adoçar a lembrança."',
     ctaLabel: 'Adicionar ao Carrinho'
@@ -6805,7 +6810,9 @@ function openProduct(productId) {
 
   // Tamanhos
   var sizeSection = document.getElementById('pd-size-section');
+  var sizeTitle = document.getElementById('pd-size-title');
   var sizesEl = document.getElementById('pd-sizes');
+  if (sizeTitle) sizeTitle.textContent = p.sizeTitle || 'Escolhe o tamanho';
   sizesEl.innerHTML = '';
   if (p.sizes && p.sizes.length > 0) {
     sizeSection.style.display = '';
@@ -7841,7 +7848,7 @@ var CART_IMAGE_MAP = {
   'Pequeno Artista': 'assets/products/pequeno-artista.jpg',
   'Momento Criativo': 'assets/products/momento-criativo.jpg',
   'Caixinha de Arte': 'assets/products/caixinha-de-arte.jpg',
-  'Miminho Doce': 'assets/products/miminho-doce.jpg'
+  'Miminho Doce': 'assets/products/miminho-doce2.png'
 };
 
 function getCartImageForName(name) {
