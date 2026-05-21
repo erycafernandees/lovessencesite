@@ -501,6 +501,7 @@
   .category-tabs { display: flex; justify-content: center; gap: 0.8rem; flex-wrap: wrap; margin: 2rem 0 0; align-items: center; }
   .cat-tab { background: transparent; border: 1px solid rgba(180,104,171,0.3); color: var(--warm-gray); padding: 0.6rem 1.6rem; font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: all 0.3s; }
   .cat-tab.active, .cat-tab:hover { background: var(--rose); border-color: var(--rose); color: #fff; }
+  .cat-label-mobile { display: none; }
 
   /* Dropdown de ocasião, alinhado à direita das tabs, mesmo tom visual */
   .occasion-select-wrap {
@@ -1563,6 +1564,8 @@
       letter-spacing: 0.08em;
       padding: 0.68rem 0.5rem;
     }
+    .cat-label-desktop { display: none; }
+    .cat-label-mobile { display: inline; }
     .occasion-select-wrap {
       grid-column: 1 / -1;
       width: 100%;
@@ -4793,7 +4796,7 @@
     <div class="category-tabs">
       <button type="button" class="cat-tab" data-filter="pecas" onclick="filterCategory(this,'pecas')">Coleção Assinatura</button>
       <button type="button" class="cat-tab" data-filter="memorias" onclick="filterCategory(this,'memorias')">Coleção Memórias</button>
-      <button type="button" class="cat-tab" data-filter="eventos" onclick="filterCategory(this,'eventos')">Lembranças para Eventos</button>
+      <button type="button" class="cat-tab" data-filter="eventos" onclick="filterCategory(this,'eventos')"><span class="cat-label-desktop">Lembranças para Eventos</span><span class="cat-label-mobile">Lembranças</span></button>
       <button type="button" class="cat-tab active" data-filter="todos" onclick="filterCategory(this,'todos')">Todos</button>
 
       <div class="occasion-select-wrap">
@@ -7184,7 +7187,7 @@ var categoryLabels = {
   'todos': 'todos os produtos',
   'pecas': 'coleção assinatura',
   'memorias': 'coleção memórias',
-  'eventos': 'lembranças para eventos'
+  'eventos': 'Lembranças Personalizadas para Eventos'
 };
 
 function setActiveFilter(selector, attribute, value) {
