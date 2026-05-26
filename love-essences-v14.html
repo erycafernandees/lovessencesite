@@ -807,9 +807,17 @@
   .product-detail { padding: 3rem 8vw; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
   .pd-visual { background: linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%); border-radius: 16px; height: 560px; display: flex; align-items: center; justify-content: center; font-size: 8rem; position: sticky; top: 100px; overflow: hidden; }
   .pd-gallery { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: inherit; }
-  .pd-gallery-track { width: 100%; height: 100%; position: relative; pointer-events: none; }
-  .pd-gallery-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.45s ease; }
-  .pd-gallery-slide.active { opacity: 1; }
+  .pd-gallery-track { width: 100%; height: 100%; position: relative; pointer-events: auto; }
+  .pd-gallery-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.45s ease; }
+  .pd-gallery-slide.active { opacity: 1; pointer-events: auto; }
+  .pd-gallery-slide video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: inherit;
+    background: #000;
+  }
   .pd-gallery-nav {
     position: absolute;
     top: 50%;
@@ -5106,22 +5114,22 @@
       </div>
 
       <!-- ========== LEMBRANÇAS PARA EVENTOS ========== -->
-      <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados">
-        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Novo</span><img src="assets/products/mini-difusor.jpg" alt="Mini Difusor Personalizado, lembrança aromática Love Essences" loading="lazy"/></div>
+      <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,empresas">
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Novo</span><img src="assets/products/mini-difusor4.jpg" alt="Mini Difusor Personalizado, lembrança aromática Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Mini Difusor Personalizado</h3>
           <p class="product-desc">Mini difusor aromático personalizado com etiqueta temática, ideal para lembranças delicadas de aniversário, batizado, comunhão, casamento, baby shower ou educadoras.</p>
           <p class="product-fragrance-note"><strong>Inclui</strong>Mini frasco difusor com líquido aromático · Varetas · Etiqueta personalizada com o tema escolhido</p>
-          <div class="product-footer"><span class="product-price">3,50€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor')">Personalizar</button></div>
+          <div class="product-footer"><span class="product-price">4,50€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor')">Personalizar</button></div>
         </div>
       </div>
-      <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados">
-        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Kit</span><img src="assets/products/mini-difusor-mais-mini-sabonete.jpeg" alt="Mini Difusor com Mini Sabonete, kit personalizado Love Essences" loading="lazy"/></div>
+      <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,empresas">
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Kit</span><img src="assets/products/mini-difusor-mais-mini-sabonete.jpg" alt="Mini Difusor com Mini Sabonete, kit personalizado Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Mini Difusor + Mini Sabonete</h3>
           <p class="product-desc">Kit personalizado composto por mini difusor aromático e mini sabonete artesanal, uma lembrança perfumada e delicada para eventos especiais.</p>
           <p class="product-fragrance-note"><strong>Inclui</strong>Mini difusor com líquido aromático · Varetas · Mini sabonete artesanal redondo · Etiqueta personalizada com o tema escolhido</p>
-          <div class="product-footer"><span class="product-price">4,90€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor_sabonete')">Personalizar</button></div>
+          <div class="product-footer"><span class="product-price">6,30€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor_sabonete')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,pequeninos">
@@ -5738,8 +5746,8 @@
               <option>Lembrei-me de Ti (12€)</option>
             </optgroup>
             <optgroup label="Lembranças para Eventos">
-              <option>Mini Difusor Personalizado (3,50€/un)</option>
-              <option>Mini Difusor + Mini Sabonete (4,90€/un)</option>
+              <option>Mini Difusor Personalizado (4,50€/un)</option>
+              <option>Mini Difusor + Mini Sabonete (6,30€/un)</option>
               <option>Sopros de Alegria (1,50€/un)</option>
               <option>Luz Serena (3€/un)</option>
               <option>Doce Luz (Vela Bubble)</option>
@@ -6420,7 +6428,7 @@ var PRODUCT_CATALOG = {
     name: 'Prisma',
     visual: '💎',
     image: 'assets/products/prisma.jpg',
-    gallery: ['assets/products/prisma2.PNG', 'assets/products/prisma3.jpg'],
+    gallery: ['assets/products/prisma3.jpg', { type: 'video', src: 'assets/products/prisma-video.mov', poster: 'assets/products/prisma.jpg' }],
     visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
     storyTitle: 'A peça',
     story: 'Peça em gesso com presença facetada, semelhante ao Diamante, mas com um vaso ligeiramente diferente. Uma opção maior, elegante e muito especial.',
@@ -6525,20 +6533,20 @@ var PRODUCT_CATALOG = {
     category: 'Lembranças para Eventos',
     name: 'Mini Difusor Personalizado',
     visual: '🌿',
-    image: 'assets/products/mini-difusor.jpg',
-    gallery: ['assets/products/mini-difusor2.jpg', 'assets/products/mini-difusor3.jpg', 'assets/products/mini-difusor4.jpg', 'assets/products/mini-difusor5.jpg'],
+    image: 'assets/products/mini-difusor4.jpg',
+    gallery: ['assets/products/mini-difusor4.jpg', 'assets/products/mini-difusor3.jpg', 'assets/products/mini-difusor5.jpg'],
     visualBg: 'linear-gradient(160deg, #f7edf6 0%, #e3bedf 100%)',
     storyTitle: 'A lembrança',
     story: 'O Mini Difusor Personalizado é uma lembrança simples, delicada e perfumada, pensada para tornar qualquer momento especial ainda mais memorável. Personalizado com etiqueta no tema do evento, é uma opção bonita e acessível para oferecer aos convidados, educadoras ou pessoas especiais.',
     sizes: [],
-    basePrice: 3.50,
+    basePrice: 4.50,
     priceSuffix: '/un',
     eventOptions: true,
     defaultQty: 1,
     minQty: 1,
     fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
     details: 'Inclui: mini frasco difusor com líquido aromático · Varetas · Etiqueta personalizada com o tema escolhido.',
-    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🍎 Educadoras'],
+    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🍎 Educadoras', '🏷️ Eventos & Empresas'],
     quote: '"Uma lembrança pequena no tamanho, mas cheia de intenção."',
     ctaLabel: 'Adicionar ao Carrinho'
   },
@@ -6546,19 +6554,19 @@ var PRODUCT_CATALOG = {
     category: 'Lembranças para Eventos',
     name: 'Mini Difusor + Mini Sabonete',
     visual: '🌿',
-    image: 'assets/products/mini-difusor-mais-mini-sabonete.jpeg',
+    image: 'assets/products/mini-difusor-mais-mini-sabonete.jpg',
     visualBg: 'linear-gradient(160deg, #f7edf6 0%, #e3bedf 100%)',
     storyTitle: 'O kit',
     story: 'Um pequeno kit cheio de detalhe e carinho, composto por um mini difusor aromático e um mini sabonete artesanal. É uma opção equilibrada para quem procura uma lembrança personalizada, bonita e acessível.',
     sizes: [],
-    basePrice: 4.90,
+    basePrice: 6.30,
     priceSuffix: '/un',
     eventOptions: true,
     defaultQty: 1,
     minQty: 1,
     fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
     details: 'Inclui: mini difusor com líquido aromático · Varetas · Mini sabonete artesanal redondo · Etiqueta personalizada com o tema escolhido.',
-    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🍎 Educadoras'],
+    tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🍎 Educadoras', '🏷️ Eventos & Empresas'],
     quote: '"Dois detalhes delicados para uma memória perfumada."',
     ctaLabel: 'Adicionar ao Carrinho'
   },
@@ -7056,15 +7064,27 @@ function stopProductGalleryAuto() {
 function startProductGalleryAuto() {
   stopProductGalleryAuto();
   if (currentGalleryImages.length <= 1) return;
+  if (currentGalleryImages.some(function(item) { return getGalleryItemType(item) === 'video'; })) return;
   productGalleryTimer = setInterval(function() {
     changeProductGallery(1, false);
   }, 5200);
 }
 
+function getGalleryItemSrc(item) {
+  return typeof item === 'string' ? item : item && item.src;
+}
+
+function getGalleryItemType(item) {
+  var src = getGalleryItemSrc(item) || '';
+  if (item && typeof item === 'object' && item.type) return item.type;
+  return /\.(mp4|mov|webm)$/i.test(src) ? 'video' : 'image';
+}
+
 function getProductGalleryImages(p, activeSize) {
   var images = [];
-  function addImage(path) {
-    if (path && images.indexOf(path) === -1) images.push(path);
+  function addImage(item) {
+    var src = getGalleryItemSrc(item);
+    if (src && !images.some(function(existing) { return getGalleryItemSrc(existing) === src; })) images.push(item);
   }
 
   if (activeSize && activeSize.image) addImage(activeSize.image);
@@ -7086,9 +7106,20 @@ function renderProductGallery(images, altBase) {
   if (!visual || !currentGalleryImages.length) return false;
 
   var safeAlt = productEscapeHtml(altBase || 'Produto Love Essences');
-  var slides = currentGalleryImages.map(function(src, idx) {
+  var slides = currentGalleryImages.map(function(item, idx) {
+    var src = getGalleryItemSrc(item);
+    var itemType = getGalleryItemType(item);
+    if (itemType === 'video') {
+      var poster = item && item.poster ? ' poster="' + productEscapeHtml(item.poster) + '"' : '';
+      return '<div class="pd-gallery-slide' + (idx === 0 ? ' active' : '') + '" data-gallery-index="' + idx + '">' +
+        '<video autoplay muted loop playsinline preload="metadata"' + poster + '>' +
+          '<source src="' + productEscapeHtml(src) + '" type="video/quicktime">' +
+          'O seu navegador não consegue reproduzir este vídeo.' +
+        '</video>' +
+      '</div>';
+    }
     return '<div class="pd-gallery-slide' + (idx === 0 ? ' active' : '') + '" data-gallery-index="' + idx + '">' +
-      '<img src="' + productEscapeHtml(src) + '" alt="' + safeAlt + (currentGalleryImages.length > 1 ? ' foto ' + (idx + 1) : '') + '">' +
+      '<img src="' + productEscapeHtml(src) + '" alt="" aria-label="' + safeAlt + (currentGalleryImages.length > 1 ? ' foto ' + (idx + 1) : '') + '" onerror="this.closest(\'.pd-gallery-slide\').remove()">' +
     '</div>';
   }).join('');
 
@@ -7098,8 +7129,9 @@ function renderProductGallery(images, altBase) {
       '<button type="button" class="pd-gallery-nav pd-gallery-prev" aria-label="Ver foto anterior" onclick="changeProductGallery(-1, true)">‹</button>' +
       '<button type="button" class="pd-gallery-nav pd-gallery-next" aria-label="Ver próxima foto" onclick="changeProductGallery(1, true)">›</button>' +
       '<div class="pd-gallery-dots" aria-label="Escolher foto">' +
-        currentGalleryImages.map(function(_, idx) {
-          return '<button type="button" class="pd-gallery-dot' + (idx === 0 ? ' active' : '') + '" aria-label="Ver foto ' + (idx + 1) + '" onclick="setProductGallerySlide(' + idx + ', true)"></button>';
+        currentGalleryImages.map(function(item, idx) {
+          var itemLabel = getGalleryItemType(item) === 'video' ? 'vídeo' : 'foto';
+          return '<button type="button" class="pd-gallery-dot' + (idx === 0 ? ' active' : '') + '" aria-label="Ver ' + itemLabel + ' ' + (idx + 1) + '" onclick="setProductGallerySlide(' + idx + ', true)"></button>';
         }).join('') +
       '</div>';
   }
@@ -7119,6 +7151,11 @@ function setProductGallerySlide(index, restartAuto) {
   document.querySelectorAll('#pd-visual .pd-gallery-dot').forEach(function(dot, idx) {
     dot.classList.toggle('active', idx === currentGalleryIndex);
   });
+  document.querySelectorAll('#pd-visual video').forEach(function(video) {
+    if (!video.closest('.pd-gallery-slide').classList.contains('active')) video.pause();
+  });
+  var activeVideo = document.querySelector('#pd-visual .pd-gallery-slide.active video');
+  if (activeVideo) activeVideo.play().catch(function() {});
 
   if (restartAuto) startProductGalleryAuto();
 }
@@ -7740,8 +7777,8 @@ function toggleEventoCelebracao() {
 }
 
 var FRAGRANCE_PRODUCTS = [
-  'Mini Difusor Personalizado (3,50€/un)',
-  'Mini Difusor + Mini Sabonete (4,90€/un)',
+  'Mini Difusor Personalizado (4,50€/un)',
+  'Mini Difusor + Mini Sabonete (6,30€/un)',
   'Luz Serena (3€/un)',
   'Doce Luz (Vela Bubble)',
   'Memória Perfumada (Vela em Frasco)',
@@ -7853,8 +7890,8 @@ var CART_IMAGE_MAP = {
   'Doce Luz': 'assets/products/doce-luz.jpg',
   'Memória Perfumada': 'assets/products/memoria-perfumada.jpg',
   'Bilhete Perfumado': 'assets/products/bilhete-perfumado.jpg',
-  'Mini Difusor Personalizado': 'assets/products/mini-difusor.jpg',
-  'Mini Difusor + Mini Sabonete': 'assets/products/mini-difusor-mais-mini-sabonete.jpeg',
+  'Mini Difusor Personalizado': 'assets/products/mini-difusor4.jpg',
+  'Mini Difusor + Mini Sabonete': 'assets/products/mini-difusor-mais-mini-sabonete.jpg',
   'Sopros de Alegria': 'assets/products/sopros-de-alegria.jpeg',
   'Laço de Memória': 'assets/products/laco-de-memoria.jpg',
   'Pequeno Artista': 'assets/products/pequeno-artista.jpg',
