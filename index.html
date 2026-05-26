@@ -4146,7 +4146,6 @@
   .product-img img[src*="momento-criativo"] { object-position: center 50%; }
   .product-img img[src*="caixinha-de-arte"] { object-position: center 50%; }
   .product-img img[src*="miminho-doce"] { object-position: center 50%; }
-
   .pd-visual img[src*="bloom"] { object-position: center 54%; }
   .pd-visual img[src*="aurora"] { object-position: center 48%; }
   .pd-visual img[src*="essencia-amor"] { object-position: center 50%; }
@@ -5057,11 +5056,11 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/diamante.jpg" alt="Prisma, peça artesanal Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/prisma.jpg" alt="Prisma, peça artesanal Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Prisma</h3>
           <p class="product-desc">Peça em gesso com presença facetada, semelhante ao Diamante, mas com um vaso ligeiramente diferente. Elegante, luminosa e muito especial.</p>
-          <div class="product-footer"><span class="product-price">24€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Prisma',24,'💎')">Adicionar 🛒</button></div>
+          <div class="product-footer"><span class="product-price">25€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Prisma',25,'💎')">Adicionar 🛒</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
@@ -5109,7 +5108,7 @@
 
       <!-- ========== LEMBRANÇAS PARA EVENTOS ========== -->
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados">
-        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Novo</span><img src="assets/products/mini-difusor.jpeg" alt="Mini Difusor Personalizado, lembrança aromática Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Novo</span><img src="assets/products/mini-difusor.jpg" alt="Mini Difusor Personalizado, lembrança aromática Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Mini Difusor Personalizado</h3>
           <p class="product-desc">Mini difusor aromático personalizado com etiqueta temática, ideal para lembranças delicadas de aniversário, batizado, comunhão, casamento, baby shower ou educadoras.</p>
@@ -5298,12 +5297,16 @@
             <label for="pd-event-name">Nome</label>
             <input type="text" id="pd-event-name" placeholder="Ex: Leonor" maxlength="80"/>
           </div>
+          <div class="pd-event-field" id="pd-event-sweet-colors-wrap">
+            <label for="pd-event-sweet-colors">Cores pretendidas dos doces</label>
+            <input type="text" id="pd-event-sweet-colors" placeholder="Ex: rosa, branco e amarelo" maxlength="80"/>
+          </div>
           <div class="pd-event-field" id="pd-event-fragrance-wrap">
             <label for="pd-event-fragrance">Fragrância</label>
             <select id="pd-event-fragrance"></select>
           </div>
           <div class="pd-event-field pd-event-field-wide">
-            <label for="pd-event-phrase">Frase ou texto</label>
+            <label for="pd-event-phrase">Frase para colocar na etiqueta</label>
             <input type="text" id="pd-event-phrase" placeholder="Ex: Obrigada por fazeres parte deste dia" maxlength="100"/>
           </div>
         </div>
@@ -5722,7 +5725,7 @@
               <option>Aurora (25€ + 1,50€ personalização)</option>
               <option>Serenata (30€)</option>
               <option>Diamante (21€)</option>
-              <option>Prisma (24€)</option>
+              <option>Prisma (25€)</option>
               <option>Nala (18€)</option>
               <option>Aura (18€)</option>
             </optgroup>
@@ -6417,12 +6420,13 @@ var PRODUCT_CATALOG = {
     category: 'Coleção Assinatura',
     name: 'Prisma',
     visual: '💎',
-    image: 'assets/products/diamante.jpg',
+    image: 'assets/products/prisma.jpg',
+    gallery: ['assets/products/prisma2.PNG', 'assets/products/prisma3.jpg'],
     visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
     storyTitle: 'A peça',
     story: 'Peça em gesso com presença facetada, semelhante ao Diamante, mas com um vaso ligeiramente diferente. Uma opção maior, elegante e muito especial.',
     sizes: [],
-    basePrice: 24,
+    basePrice: 25,
     details: 'Peça artesanal em gesso · Vaso facetado · Acabamento feito à mão · Embalagem de oferta incluída.',
     tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial'],
     quote: '"Um detalhe luminoso para oferecer com carinho."',
@@ -6522,7 +6526,8 @@ var PRODUCT_CATALOG = {
     category: 'Lembranças para Eventos',
     name: 'Mini Difusor Personalizado',
     visual: '🌿',
-    image: 'assets/products/mini-difusor.jpeg',
+    image: 'assets/products/mini-difusor.jpg',
+    gallery: ['assets/products/mini-difusor2.jpg', 'assets/products/mini-difusor3.jpg', 'assets/products/mini-difusor4.jpg', 'assets/products/mini-difusor5.jpg'],
     visualBg: 'linear-gradient(160deg, #f7edf6 0%, #e3bedf 100%)',
     storyTitle: 'A lembrança',
     story: 'O Mini Difusor Personalizado é uma lembrança simples, delicada e perfumada, pensada para tornar qualquer momento especial ainda mais memorável. Personalizado com etiqueta no tema do evento, é uma opção bonita e acessível para oferecer aos convidados, educadoras ou pessoas especiais.',
@@ -6682,7 +6687,7 @@ var PRODUCT_CATALOG = {
     name: 'Pequeno Artista',
     visual: '🎨',
     image: 'assets/products/pequeno-artista.jpg',
-    gallery: ['assets/products/cores-gesso.jpg'],
+    gallery: ['assets/products/cores-gesso.png'],
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'O kit',
     story: 'Kit de pintura em gesso para crianças, pensado para oferecer uma lembrança divertida, criativa e cheia de ternura.',
@@ -6703,7 +6708,7 @@ var PRODUCT_CATALOG = {
     name: 'Momento Criativo',
     visual: '🎨',
     image: 'assets/products/momento-criativo.jpg',
-    gallery: ['assets/products/cores-gesso.jpg'],
+    gallery: ['assets/products/cores-gesso.png'],
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'O kit',
     story: 'Kit criativo com duas peças em gesso, ideal para crianças que adoram pintar, brincar e levar para casa uma recordação especial.',
@@ -6724,7 +6729,7 @@ var PRODUCT_CATALOG = {
     name: 'Caixinha de Arte',
     visual: '🎨',
     image: 'assets/products/caixinha-de-arte.jpg',
-    gallery: ['assets/products/cores-gesso.jpg'],
+    gallery: ['assets/products/cores-gesso.png'],
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'O kit',
     story: 'Kit completo de pintura em caixa, preparado para oferecer uma experiência criativa mais completa aos mais pequenos.',
@@ -6745,19 +6750,20 @@ var PRODUCT_CATALOG = {
     name: 'Miminho Doce',
     visual: '🍬',
     image: 'assets/products/miminho-doce2.png',
-    gallery: ['assets/products/miminho-doce2.png', 'assets/products/miminho-doce.jpg', 'assets/products/miminho-doce3.png'],
+    gallery: ['assets/products/miminho-doce2.png', 'assets/products/miminho-doce-cone.jpg', 'assets/products/miminho-doce3.png'],
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'O mimo',
     story: 'Doces personalizados para crianças, simples, bonitos e perfeitos para completar qualquer kit da Coleção Pequenos Momentos. Escolhe entre Laço de Marshmallows, Cone de Miminhos ou Espetada de Alegria.',
     sizeTitle: 'Escolhe a opção',
     sizes: [
       { id: 'laco_marshmallows', label: 'Laço de Marshmallows', price: 1, image: 'assets/products/miminho-doce2.png' },
-      { id: 'cone_miminhos', label: 'Cone de Miminhos', price: 2, image: 'assets/products/miminho-doce.jpg' },
+      { id: 'cone_miminhos', label: 'Cone de Miminhos', price: 2, image: 'assets/products/miminho-doce-cone.jpg' },
       { id: 'espetada_alegria', label: 'Espetada de Alegria', price: 2, image: 'assets/products/miminho-doce3.png' }
     ],
     basePrice: 1,
     priceSuffix: '/un',
     eventOptions: true,
+    sweetColorOptions: true,
     defaultQty: 1,
     minQty: 1,
     fragrances: [],
@@ -6867,6 +6873,8 @@ function renderProductEventOptions(p) {
   var eventName = document.getElementById('pd-event-name');
   var eventDate = document.getElementById('pd-event-date');
   var eventPhrase = document.getElementById('pd-event-phrase');
+  var sweetColorsWrap = document.getElementById('pd-event-sweet-colors-wrap');
+  var sweetColors = document.getElementById('pd-event-sweet-colors');
   var fragranceWrap = document.getElementById('pd-event-fragrance-wrap');
   var fragrance = document.getElementById('pd-event-fragrance');
   var note = document.getElementById('pd-event-note');
@@ -6880,6 +6888,8 @@ function renderProductEventOptions(p) {
   if (eventName) eventName.value = '';
   if (eventDate) eventDate.value = '';
   if (eventPhrase) eventPhrase.value = '';
+  if (sweetColors) sweetColors.value = '';
+  if (sweetColorsWrap) sweetColorsWrap.style.display = p.sweetColorOptions ? '' : 'none';
 
   if (fragrance && fragranceWrap) {
     fragrance.innerHTML = '';
@@ -7061,7 +7071,7 @@ function getProductGalleryImages(p, activeSize) {
   if (activeSize && activeSize.image) addImage(activeSize.image);
   else addImage(p.image);
 
-  // Para adicionar mais fotos a um artigo, usar: gallery: ['assets/products/foto-2.jpg', ...]
+  // Para adicionar mais fotos a um artigo, usar a lista gallery no produto.
   if (activeSize && Array.isArray(activeSize.gallery)) activeSize.gallery.forEach(addImage);
   if (Array.isArray(p.gallery)) p.gallery.forEach(addImage);
 
@@ -7179,17 +7189,20 @@ function getCurrentProductSelection() {
 
     var nameInput = document.getElementById('pd-event-name');
     var dateInput = document.getElementById('pd-event-date');
+    var sweetColorsInput = document.getElementById('pd-event-sweet-colors');
     var fragranceInput = document.getElementById('pd-event-fragrance');
     var phraseInput = document.getElementById('pd-event-phrase');
     var eventName = nameInput ? nameInput.value.trim() : '';
     var eventDate = dateInput ? dateInput.value.trim() : '';
+    var sweetColors = sweetColorsInput ? sweetColorsInput.value.trim() : '';
     var fragrance = fragranceInput ? fragranceInput.value.trim() : '';
     var phrase = phraseInput ? phraseInput.value.trim() : '';
 
     if (eventName) eventDetails.push('Nome: ' + eventName);
     if (eventDate) eventDetails.push('Data: ' + eventDate);
+    if (sweetColors) eventDetails.push('Cores dos doces: ' + sweetColors);
     if (fragrance) eventDetails.push('Fragrância: ' + fragrance);
-    if (phrase) eventDetails.push('Frase: "' + phrase + '"');
+    if (phrase) eventDetails.push('Frase da etiqueta: "' + phrase + '"');
     if (eventDetails.length) itemName += ', ' + eventDetails.join(', ');
   }
 
@@ -7828,7 +7841,7 @@ var CART_IMAGE_MAP = {
   'Aurora': 'assets/products/aurora.jpg',
   'Serenata': 'assets/products/serenata.jpg',
   'Diamante': 'assets/products/diamante-v2.jpg',
-  'Prisma': 'assets/products/diamante.jpg',
+  'Prisma': 'assets/products/prisma.jpg',
   'Nala': 'assets/products/nala.jpg',
   'Aura': 'assets/products/pequeno-diamante.jpg',
   'Essência do Amor': 'assets/products/essencia-amor-m2.jpg',
@@ -7841,7 +7854,7 @@ var CART_IMAGE_MAP = {
   'Doce Luz': 'assets/products/doce-luz.jpg',
   'Memória Perfumada': 'assets/products/memoria-perfumada.jpg',
   'Bilhete Perfumado': 'assets/products/bilhete-perfumado.jpg',
-  'Mini Difusor Personalizado': 'assets/products/mini-difusor.jpeg',
+  'Mini Difusor Personalizado': 'assets/products/mini-difusor.jpg',
   'Mini Difusor + Mini Sabonete': 'assets/products/mini-difusor-mais-mini-sabonete.jpeg',
   'Sopros de Alegria': 'assets/products/sopros-de-alegria.jpeg',
   'Laço de Memória': 'assets/products/laco-de-memoria.jpg',
