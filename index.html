@@ -6428,7 +6428,8 @@ var PRODUCT_CATALOG = {
     name: 'Prisma',
     visual: '💎',
     image: 'assets/products/prisma.jpg',
-    gallery: ['assets/products/prisma3.jpg', { type: 'video', src: 'assets/products/prisma-video.mov', poster: 'assets/products/prisma.jpg' }],
+    galleryFirst: true,
+    gallery: [{ type: 'video', src: 'assets/products/prisma-video.mov', poster: 'assets/products/prisma.jpg' }, 'assets/products/prisma3.jpg'],
     visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
     storyTitle: 'A peça',
     story: 'Peça em gesso com presença facetada, semelhante ao Diamante, mas com um vaso ligeiramente diferente. Uma opção maior, elegante e muito especial.',
@@ -7087,6 +7088,8 @@ function getProductGalleryImages(p, activeSize) {
     if (src && !images.some(function(existing) { return getGalleryItemSrc(existing) === src; })) images.push(item);
   }
 
+  if (!activeSize && p.galleryFirst && Array.isArray(p.gallery)) p.gallery.forEach(addImage);
+
   if (activeSize && activeSize.image) addImage(activeSize.image);
   else addImage(p.image);
 
@@ -7112,8 +7115,8 @@ function renderProductGallery(images, altBase) {
     if (itemType === 'video') {
       var poster = item && item.poster ? ' poster="' + productEscapeHtml(item.poster) + '"' : '';
       return '<div class="pd-gallery-slide' + (idx === 0 ? ' active' : '') + '" data-gallery-index="' + idx + '">' +
-        '<video autoplay muted loop playsinline preload="metadata"' + poster + '>' +
-          '<source src="' + productEscapeHtml(src) + '" type="video/quicktime">' +
+        '<video autoplay muted loop playsinline preload="auto"' + poster + '>' +
+          '<source src="' + productEscapeHtml(src) + '">' +
           'O seu navegador não consegue reproduzir este vídeo.' +
         '</video>' +
       '</div>';
@@ -7137,6 +7140,7 @@ function renderProductGallery(images, altBase) {
   }
 
   visual.innerHTML = '<div class="pd-gallery"><div class="pd-gallery-track">' + slides + '</div>' + controls + '</div>';
+  setProductGallerySlide(0, false);
   startProductGalleryAuto();
   return true;
 }
