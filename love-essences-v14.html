@@ -5576,7 +5576,7 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/miminho-doce2.png" alt="Miminho Doce, marshmallows no palito Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/miminho-doce-cone.jpg" alt="Miminho Doce, cone de doces Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Miminho Doce</h3>
           <p class="product-desc">Três opções doces para crianças: laço de marshmallows, cone de miminhos ou espetada de alegria, sempre prontas para oferecer.</p>
@@ -8556,12 +8556,13 @@ var PRODUCT_CATALOG = {
     category: 'Lembranças para Eventos',
     name: 'Miminho Doce',
     visual: '🍬',
-    image: 'assets/products/miminho-doce2.png',
-    gallery: ['assets/products/miminho-doce2.png', 'assets/products/miminho-doce-cone.jpg', 'assets/products/miminho-doce3.png'],
+    image: 'assets/products/miminho-doce-cone.jpg',
+    gallery: ['assets/products/miminho-doce-cone.jpg', 'assets/products/miminho-doce2.png', 'assets/products/miminho-doce3.png'],
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'O mimo',
     story: 'Doces personalizados para crianças, simples, bonitos e perfeitos para completar qualquer kit da Coleção Pequenos Momentos. Escolhe entre Laço de Marshmallows, Cone de Miminhos ou Espetada de Alegria.',
     sizeTitle: 'Escolhe a opção',
+    defaultSizeId: 'cone_miminhos',
     sizes: [
       { id: 'laco_marshmallows', label: 'Laço de Marshmallows', price: 1, image: 'assets/products/miminho-doce2.png' },
       { id: 'cone_miminhos', label: 'Cone de Miminhos', price: 2, image: 'assets/products/miminho-doce-cone.jpg' },
@@ -8595,7 +8596,7 @@ function openProduct(productId) {
   if (!p) { showPage('shop'); return; }
 
   currentProduct = productId;
-  currentSizeId = p.sizes && p.sizes.length > 0 ? p.sizes[0].id : null;
+  currentSizeId = p.sizes && p.sizes.length > 0 ? (p.defaultSizeId || p.sizes[0].id) : null;
   currentBoxColor = p.boxColors && p.boxColors.length > 0 ? p.boxColors[0] : null;
   currentBearColor = p.bearColors && p.bearColors.length > 0 ? p.bearColors[0] : null;
   currentFabricId = p.fabricOptions && p.fabricOptions.length > 0 ? p.fabricOptions[0].id : null;
@@ -8632,7 +8633,7 @@ function openProduct(productId) {
     p.sizes.forEach(function(s, idx) {
       var btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'pd-size' + (idx === 0 ? ' active' : '');
+      btn.className = 'pd-size' + (s.id === currentSizeId ? ' active' : '');
       btn.dataset.sizeId = s.id;
       btn.innerHTML = '<span class="pd-size-label">' + s.label + '</span>' +
                       '<span class="pd-size-price">' + formatPrice(s.price) + '</span>';
@@ -9701,7 +9702,7 @@ var CART_IMAGE_MAP = {
   'Pequeno Artista': 'assets/products/pequeno-artista.jpg',
   'Momento Criativo': 'assets/products/momento-criativo.jpg',
   'Caixinha de Arte': 'assets/products/caixinha-de-arte.jpg',
-  'Miminho Doce': 'assets/products/miminho-doce2.png'
+  'Miminho Doce': 'assets/products/miminho-doce-cone.jpg'
 };
 
 function getCartImageForName(name) {
