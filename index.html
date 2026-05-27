@@ -206,8 +206,8 @@
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
   }
-  .strip-item { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.55); font-weight: 400; display: flex; align-items: center; gap: 0.6rem; white-space: nowrap; flex-shrink: 0; }
-  .strip-dot { width: 4px; height: 4px; background: var(--rose); border-radius: 50%; flex-shrink: 0; }
+  .strip-item { font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.68); font-weight: 500; display: flex; align-items: center; gap: 0.62rem; white-space: nowrap; flex-shrink: 0; }
+  .strip-dot { width: 3px; height: 3px; background: rgba(209,146,202,0.85); border-radius: 50%; flex-shrink: 0; }
 
   /* SECTIONS */
   section { padding: 6rem 8vw; }
@@ -240,8 +240,8 @@
   .product-info { padding: 1.4rem 1.6rem 1.8rem; }
   .product-name { font-family: var(--serif); font-size: 1.3rem; font-weight: 400; margin-bottom: 0.5rem; }
   .product-desc { font-size: 0.84rem; line-height: 1.7; color: var(--warm-gray); margin-bottom: 1.2rem; font-weight: 300; }
-  .product-footer { display: flex; align-items: center; justify-content: space-between; }
-  .product-price { font-family: var(--serif); font-size: 1.2rem; font-weight: 500; color: var(--deep-rose); }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; gap: 0.9rem; flex-wrap: wrap; }
+  .product-price { font-family: var(--sans); font-size: 0.98rem; font-weight: 650; line-height: 1.25; letter-spacing: 0.02em; color: var(--deep-rose); }
   .product-btn { background: var(--dark); color: #fff; border: none; padding: 0.55rem 1.2rem; font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background 0.3s; }
   .product-btn:hover { background: var(--rose); }
 
@@ -260,6 +260,166 @@
   .pillar-num { font-family: var(--serif); font-size: 2.5rem; font-weight: 300; color: var(--blush); line-height: 1; min-width: 40px; }
   .pillar-text h5 { font-family: var(--serif); font-size: 1.05rem; font-weight: 500; margin-bottom: 0.2rem; }
   .pillar-text p { font-size: 0.82rem; color: var(--warm-gray); line-height: 1.6; font-weight: 300; }
+  .values-feedback-section {
+    background: var(--warm-white);
+    padding: 5.5rem 8vw;
+  }
+  .values-feedback-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 5.5rem);
+    align-items: start;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+  .values-panel,
+  .feedback-panel {
+    min-width: 0;
+  }
+  .values-panel .why-cards {
+    margin-top: 2.1rem;
+  }
+  @media (min-width: 901px) {
+    .values-feedback-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(3rem, 6vw, 6.5rem);
+      align-items: start;
+      max-width: 1200px;
+    }
+    .values-panel .why-cards {
+      gap: 1rem;
+    }
+    .values-panel .why-card {
+      min-height: 146px;
+      padding: 1.25rem 1.35rem;
+    }
+    .values-panel .why-icon {
+      font-size: 1.55rem;
+      margin-bottom: 0.65rem;
+    }
+    .values-panel .why-card h4 {
+      font-size: 1rem;
+    }
+    .values-panel .why-card p {
+      font-size: 0.78rem;
+      line-height: 1.62;
+    }
+    .feedback-panel-head {
+      display: block;
+      margin-bottom: 1.4rem;
+    }
+    .feedback-panel .section-title {
+      margin-bottom: 0.85rem !important;
+    }
+    .feedback-stats {
+      justify-content: flex-end;
+      gap: 1.25rem;
+      margin-left: auto;
+    }
+    .feedback-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+    .feedback-card {
+      min-height: 156px;
+      padding: 1.05rem 1.15rem;
+      border-radius: 18px;
+    }
+    .feedback-card p {
+      font-size: clamp(0.84rem, 0.92vw, 0.98rem);
+      line-height: 1.55;
+    }
+    .feedback-author {
+      margin-top: 0.7rem;
+      padding-top: 0.65rem;
+    }
+    .feedback-author strong { font-size: 0.82rem; }
+    .feedback-author span { font-size: 0.58rem; }
+  }
+  .feedback-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .feedback-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+  .feedback-stat {
+    text-align: right;
+  }
+  .feedback-stat strong {
+    display: block;
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    line-height: 1;
+    color: var(--dark);
+    font-weight: 500;
+  }
+  .feedback-stat span {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+  }
+  .feedback-divider {
+    width: 1px;
+    height: 34px;
+    background: rgba(180,104,171,0.24);
+  }
+  .feedback-list {
+    display: grid;
+    gap: 1rem;
+  }
+  .feedback-card {
+    padding: 1.35rem 1.45rem;
+    border-radius: 24px;
+    border: 1px solid rgba(180,104,171,0.13);
+    background: rgba(255,255,255,0.94);
+    box-shadow: 0 14px 40px rgba(102,19,94,0.07);
+  }
+  .feedback-stars {
+    margin-bottom: 0.65rem;
+    color: var(--rose);
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+  }
+  .feedback-card p {
+    font-family: var(--serif);
+    font-size: clamp(1rem, 1.35vw, 1.18rem);
+    line-height: 1.62;
+    color: var(--dark);
+    font-style: italic;
+    font-weight: 300;
+  }
+  .feedback-author {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgba(180,104,171,0.12);
+  }
+  .feedback-author strong {
+    display: block;
+    font-family: var(--serif);
+    font-size: 0.9rem;
+    color: var(--dark);
+    font-weight: 500;
+  }
+  .feedback-author span {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 0.66rem;
+    color: var(--warm-gray);
+    letter-spacing: 0.04em;
+  }
 
   /* STORY */
   .story-bg { background: var(--dark); position: relative; overflow: hidden; }
@@ -269,7 +429,7 @@
   .story-inner .section-title { color: #fff; }
   .story-inner .section-title em { color: var(--blush); }
   .story-inner .section-sub { color: rgba(255,255,255,0.55); margin: 0 auto 2.5rem; }
-  .story-quote { font-family: var(--serif); font-size: clamp(1.6rem, 2.8vw, 2.6rem); font-weight: 300; font-style: italic; color: #fff; line-height: 1.4; margin: 3rem 0; opacity: 0.9; }
+  .story-quote { font-family: var(--serif); font-size: clamp(1.15rem, 1.8vw, 1.75rem); font-weight: 300; font-style: italic; color: #fff; line-height: 1.65; margin: 2.2rem auto; max-width: 760px; opacity: 0.86; }
   .story-quote::before { content: '"'; color: var(--blush); }
   .story-quote::after { content: '"'; color: var(--blush); }
 
@@ -796,11 +956,15 @@
   }
   .products-grid .product-btn,
   .shop-products-grid .product-btn {
-    display: none !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
   }
   .products-grid .product-price,
   .shop-products-grid .product-price {
-    width: 100%;
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   /* PRODUCT DETAIL PAGE */
@@ -1149,6 +1313,74 @@
     color: var(--deep-rose) !important;
     font-size: 0.8rem !important;
     font-weight: 600 !important;
+  }
+  .home-occasion-preview {
+    background: #fff;
+    padding: 5rem 8vw;
+  }
+  .home-occasion-head {
+    max-width: 760px;
+    margin: 0 auto 2.7rem;
+    text-align: center;
+  }
+  .home-occasion-head .section-sub {
+    margin: 0 auto;
+  }
+  .home-occasion-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.05rem;
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .home-occasion-preview .occasion-card {
+    min-height: 190px !important;
+    padding: 1.25rem 1.45rem !important;
+  }
+  .home-occasion-preview .occasion-card h3 {
+    font-family: var(--serif) !important;
+    font-size: clamp(1.35rem, 1.65vw, 1.7rem) !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.1 !important;
+    max-width: 12rem;
+  }
+  .home-occasion-preview .occasion-card p {
+    font-size: 0.82rem !important;
+    line-height: 1.65 !important;
+    max-width: 21rem;
+  }
+  .home-occasion-preview .occasion-card .occasion-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    font-size: 1.45rem !important;
+  }
+  .home-occasion-preview .occasion-card .occasion-badge {
+    padding: 0.45rem 0.75rem !important;
+    font-size: 0.56rem !important;
+    letter-spacing: 0.16em !important;
+  }
+  .home-occasion-preview .occasion-card .occasion-link {
+    margin-top: 0.9rem !important;
+    font-size: 0.74rem !important;
+  }
+  @media (max-width: 980px) {
+    .home-occasion-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 640px) {
+    .home-occasion-preview {
+      padding: 3.6rem 6vw;
+    }
+    .home-occasion-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .home-occasion-preview .occasion-card {
+      min-height: 180px !important;
+    }
   }
   .occasion-choice-strip {
     margin: 1rem 8vw 4rem;
@@ -1596,6 +1828,37 @@
     .why-card { padding: 1.2rem; }
     .why-card h4 { font-size: 0.95rem; }
     .why-card p { font-size: 0.78rem; }
+    .values-feedback-section { padding: 4rem 5vw; }
+    .values-feedback-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .values-panel .why-cards { margin-top: 1.5rem; }
+    .feedback-panel-head { align-items: flex-start; flex-direction: column; }
+    .feedback-panel .section-title {
+      white-space: nowrap;
+      font-size: clamp(1.45rem, 5.55vw, 1.95rem);
+      line-height: 1.1;
+    }
+    .feedback-panel .section-title br {
+      display: none;
+    }
+    .feedback-panel .section-title .feedback-title-second::before {
+      content: ' ';
+    }
+    .feedback-stats { width: 100%; justify-content: space-between; }
+    .feedback-list {
+      display: flex;
+      gap: 0.9rem;
+      margin: 0 -5vw;
+      padding: 0 5vw 0.35rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .feedback-list::-webkit-scrollbar { display: none; }
+    .feedback-card {
+      flex: 0 0 min(82vw, 340px);
+      scroll-snap-align: start;
+    }
 
     /* TESTIMONIALS */
     .testimonials-head { align-items: flex-start; }
@@ -1620,7 +1883,7 @@
     .shop-products-grid .product-img { height: 170px; }
 
     /* STORY QUOTE */
-    .story-quote { font-size: clamp(1.3rem, 5vw, 1.9rem); margin: 2rem 0; }
+    .story-quote { font-size: clamp(1.05rem, 4.2vw, 1.35rem); margin: 1.8rem 0; line-height: 1.65; }
 
     /* CTA BANNER */
     .cta-banner { padding: 3.5rem 5vw; }
@@ -2724,6 +2987,8 @@
 
   .product-card {
     position: relative;
+    display: flex;
+    flex-direction: column;
     border-radius: 30px !important;
     border: 1px solid rgba(180,104,171,0.13) !important;
     background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(252,247,250,0.98)) !important;
@@ -2771,6 +3036,9 @@
   }
 
   .product-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     padding: 1.45rem 1.45rem 1.55rem;
   }
 
@@ -2784,6 +3052,7 @@
   }
 
   .product-desc {
+    flex: 1;
     font-size: 0.92rem;
     line-height: 1.8;
     color: var(--warm-gray);
@@ -2815,18 +3084,33 @@
   .product-footer {
     gap: 0.9rem;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: auto;
+    min-height: 48px;
   }
 
   .product-price {
     font-family: var(--serif);
-    font-size: 1.32rem;
-    line-height: 1.15;
+    font-size: 1.12rem;
+    line-height: 1.18;
     color: var(--dark);
     font-weight: 400;
     letter-spacing: 0;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.16rem;
+  }
+
+  .product-price-note {
+    font-size: 0.68rem;
+    color: var(--warm-gray);
+    font-weight: 400;
+    letter-spacing: 0.01em;
   }
 
   .product-btn {
+    min-width: 142px;
     min-height: 48px;
     padding: 0.85rem 1.2rem;
     border-radius: 14px;
@@ -2837,6 +3121,7 @@
     letter-spacing: 0.16em;
     font-weight: 500;
     transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    white-space: nowrap;
   }
 
   .product-btn:hover {
@@ -2902,6 +3187,8 @@
 
     .product-info,
     .shop-products-grid .product-info {
+      display: flex;
+      flex-direction: column;
       min-height: 0;
       padding: 1rem 1rem 1.1rem;
     }
@@ -2919,7 +3206,7 @@
     }
 
     .product-price {
-      font-size: 0.98rem;
+      font-size: 1rem;
     }
 
     .product-footer {
@@ -2930,6 +3217,7 @@
 
     .product-btn {
       width: 100%;
+      min-width: 0;
       min-height: 42px;
       padding: 0.72rem 0.8rem;
       border-radius: 12px;
@@ -3555,7 +3843,6 @@
     font-weight: 400;
   }
 
-  .product-price,
   .pd-price {
     font-weight: 500;
   }
@@ -4265,11 +4552,12 @@
   }
   .announce-track span {
     flex-shrink: 0;
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
+    font-family: var(--sans);
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: #fff;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1;
   }
   @keyframes announceLoop {
@@ -4465,11 +4753,11 @@
   }
 
   .site-language-switcher {
-    position: fixed;
-    left: 1rem;
-    bottom: 1rem;
-    z-index: 240;
-    opacity: 0.86;
+    position: static;
+    z-index: 1;
+    opacity: 0.92;
+    box-shadow: none;
+    background: rgba(255,255,255,0.7);
   }
 
   .site-language-switcher:hover,
@@ -4477,12 +4765,24 @@
     opacity: 1;
   }
 
+  .desktop-language-switcher {
+    display: inline-flex;
+  }
+
+  .mobile-language-switcher {
+    display: none;
+    width: max-content;
+    margin: 0.35rem 0 1.4rem;
+  }
+
   @media (max-width: 768px) {
-    .site-language-switcher {
-      left: 0.75rem;
-      bottom: 0.75rem;
-      transform: scale(0.94);
-      transform-origin: left bottom;
+    .desktop-language-switcher {
+      display: none !important;
+    }
+    .mobile-language-switcher {
+      display: inline-flex;
+      transform: scale(0.96);
+      transform-origin: left center;
     }
   }
 
@@ -4745,8 +5045,8 @@
     }
 
     .site-language-switcher {
-      left: 0.72rem !important;
-      bottom: max(0.68rem, env(safe-area-inset-bottom)) !important;
+      position: static !important;
+      transform: none !important;
     }
   }
 
@@ -4793,12 +5093,16 @@
     </a>
 
     <div class="nav-top-side right">
+      <div class="language-switcher site-language-switcher desktop-language-switcher" aria-label="Idioma">
+        <button type="button" class="language-btn active" data-lang="pt" onclick="setLanguage('pt')">PT</button>
+        <button type="button" class="language-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
+        <button type="button" class="language-btn" data-lang="es" onclick="setLanguage('es')">ES</button>
+      </div>
       <!-- Cart minimalista -->
       <button type="button" class="cart-nav-btn" id="cart-nav-btn" aria-label="Carrinho">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--dark);">
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <path d="M16 10a4 4 0 0 1-8 0"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" style="display:block; color:var(--dark);">
+          <path d="M7.15 8.35h9.7a1.35 1.35 0 0 1 1.34 1.18l1.05 9.7a1.35 1.35 0 0 1-1.34 1.5H6.1a1.35 1.35 0 0 1-1.34-1.5l1.05-9.7a1.35 1.35 0 0 1 1.34-1.18Z"/>
+          <path d="M8.45 11.15V7.75a3.55 3.55 0 0 1 7.1 0v3.4"/>
         </svg>
         <span class="cart-badge" id="cart-badge" style="display:none;">0</span>
       </button>
@@ -4815,16 +5119,15 @@
   </div>
 </nav>
 
-<div class="language-switcher site-language-switcher" aria-label="Idioma">
-  <button type="button" class="language-btn active" data-lang="pt" onclick="setLanguage('pt')">PT</button>
-  <button type="button" class="language-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
-  <button type="button" class="language-btn" data-lang="es" onclick="setLanguage('es')">ES</button>
-</div>
-
 <!-- MOBILE MENU DRAWER -->
 <div class="mobile-menu md:hidden" id="mobile-menu">
   <div class="mobile-menu-panel mx-auto w-full max-w-[1440px]">
     <p class="mobile-menu-intro">Presentes artesanais feitos à mão em Portugal, com amor e intenção em cada detalhe.</p>
+    <div class="language-switcher mobile-language-switcher" aria-label="Idioma">
+      <button type="button" class="language-btn active" data-lang="pt" onclick="setLanguage('pt')">PT</button>
+      <button type="button" class="language-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
+      <button type="button" class="language-btn" data-lang="es" onclick="setLanguage('es')">ES</button>
+    </div>
 
     <div class="mobile-menu-grid">
       <div class="mobile-menu-section">
@@ -5018,7 +5321,7 @@
           <p class="product-desc">Peça artesanal em porcelana, delicada e atemporal. Disponível em três tamanhos, para todas as histórias.</p>
           <div class="product-footer">
             <span class="product-price">A partir de 32,90€</span>
-            <button type="button" class="product-btn" onclick="openProduct('bloom')">Ver detalhes</button>
+            <button type="button" class="product-btn" onclick="openProduct('bloom')">Ver produto</button>
           </div>
         </div>
       </div>
@@ -5032,7 +5335,7 @@
           <p class="product-desc">A box presente para dizer aquilo que as palavras não conseguem. Em três tamanhos, sempre pronta a oferecer.</p>
           <div class="product-footer">
             <span class="product-price">A partir de 25€</span>
-            <button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Ver detalhes</button>
+            <button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Ver produto</button>
           </div>
         </div>
       </div>
@@ -5067,11 +5370,131 @@
     </div>
   </section>
 
-  <!-- WHY US -->
-  <section>
-    <div class="why-grid">
-      <div class="why-visual">
-        <div class="why-big-text">Love</div>
+  <!-- HOME OCCASIONS PREVIEW -->
+  <section class="home-occasion-preview" aria-labelledby="home-occasion-title">
+    <div class="home-occasion-head">
+      <p class="section-label">✦ Para cada momento</p>
+      <h2 class="section-title" id="home-occasion-title">O presente certo<br/>para cada <em>ocasião</em></h2>
+      <p class="section-sub">Porque cada data especial merece um gesto que esteja à sua altura.</p>
+    </div>
+    <div class="home-occasion-grid">
+      <article
+        class="occasion-card occasion-card--bday group relative flex cursor-pointer flex-col justify-between overflow-hidden"
+        onclick="openOccasion('aniversarios')"
+        onkeydown="handleOccasionCardKey(event, 'aniversarios')"
+        role="button"
+        tabindex="0"
+      >
+        <div class="relative z-10 flex items-start justify-between gap-4">
+          <span class="occasion-badge px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]">para oferecer</span>
+          <span class="occasion-icon text-3xl">🎂</span>
+        </div>
+        <div class="relative z-10">
+          <h3>Aniversários</h3>
+          <p class="mt-4 text-sm leading-7">Para celebrar quem amamos com algo tão único quanto eles.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('aniversarios')">Ver sugestões →</span>
+        </div>
+      </article>
+
+      <article
+        class="occasion-card occasion-card--romantic group relative flex cursor-pointer flex-col justify-between overflow-hidden"
+        onclick="openOccasion('presente-romantico')"
+        onkeydown="handleOccasionCardKey(event, 'presente-romantico')"
+        role="button"
+        tabindex="0"
+      >
+        <div class="relative z-10 flex items-start justify-between gap-4">
+          <span class="occasion-badge px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]">para oferecer</span>
+          <span class="occasion-icon text-3xl">💝</span>
+        </div>
+        <div class="relative z-10">
+          <h3>Presente Romântico</h3>
+          <p class="mt-4 text-sm leading-7">Porque às vezes as palavras não chegam. Deixa o presente falar.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('presente-romantico')">Ver sugestões →</span>
+        </div>
+      </article>
+
+      <article
+        class="occasion-card occasion-card--special group relative flex cursor-pointer flex-col justify-between overflow-hidden"
+        onclick="openOccasion('alguem-especial')"
+        onkeydown="handleOccasionCardKey(event, 'alguem-especial')"
+        role="button"
+        tabindex="0"
+      >
+        <div class="relative z-10 flex items-start justify-between gap-4">
+          <span class="occasion-badge px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]">para oferecer</span>
+          <span class="occasion-icon text-3xl">🎁</span>
+        </div>
+        <div class="relative z-10">
+          <h3>Para Alguém Especial</h3>
+          <p class="mt-4 text-sm leading-7">Aquele gesto inesperado que diz tudo sem precisar de motivo.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('alguem-especial')">Ver sugestões →</span>
+        </div>
+      </article>
+
+      <article
+        class="occasion-card occasion-card--wedding group relative flex cursor-pointer flex-col justify-between overflow-hidden"
+        onclick="openOccasion('casamentos-batizados')"
+        onkeydown="handleOccasionCardKey(event, 'casamentos-batizados')"
+        role="button"
+        tabindex="0"
+      >
+        <div class="relative z-10 flex items-start justify-between gap-4">
+          <span class="occasion-badge px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]">celebração</span>
+          <span class="occasion-icon text-3xl">💍</span>
+        </div>
+        <div class="relative z-10">
+          <h3>Casamentos &amp; Batizados</h3>
+          <p class="mt-4 text-sm leading-7">Lembranças delicadas para quem celebra convosco esses momentos únicos.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('casamentos-batizados')">Ver sugestões →</span>
+        </div>
+      </article>
+
+      <article
+        class="occasion-card occasion-card--business group relative flex cursor-pointer flex-col justify-between overflow-hidden"
+        onclick="openOccasion('empresas')"
+        onkeydown="handleOccasionCardKey(event, 'empresas')"
+        role="button"
+        tabindex="0"
+      >
+        <div class="relative z-10 flex items-start justify-between gap-4">
+          <span class="occasion-badge px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]">celebração</span>
+          <span class="occasion-icon text-3xl">✦</span>
+        </div>
+        <div class="relative z-10">
+          <h3>Eventos &amp; Empresas</h3>
+          <p class="mt-4 text-sm leading-7">Brindes corporativos e lembranças com curadoria, à medida da vossa marca.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('empresas')">Ver sugestões →</span>
+        </div>
+      </article>
+
+      <article
+        class="occasion-card occasion-card--kids group relative flex cursor-pointer flex-col justify-between overflow-hidden"
+        onclick="openOccasion('pequeninos')"
+        onkeydown="handleOccasionCardKey(event, 'pequeninos')"
+        role="button"
+        tabindex="0"
+      >
+        <div class="relative z-10 flex items-start justify-between gap-4">
+          <span class="occasion-badge px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]">para crianças</span>
+          <span class="occasion-icon text-3xl">🧸</span>
+        </div>
+        <div class="relative z-10">
+          <h3>Para os Mais Pequeninos</h3>
+          <p class="mt-4 text-sm leading-7">Kits criativos, doces e mimos pensados para encantar os pequenos convidados.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('pequeninos')">Ver sugestões →</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- VALUES + FEEDBACKS -->
+  <section class="values-feedback-section">
+    <div class="values-feedback-grid">
+      <div class="values-panel">
+        <p class="section-label">✦ Valores</p>
+        <h2 class="section-title">Presentes que<br/><em>contam histórias</em></h2>
+        <p class="section-sub">Numa época em que tudo é igual, criamos peças que se lembram. Não são apenas sabonetes, é a forma como alguém se sentiu quando abriu.</p>
         <div class="why-cards">
           <div class="why-card">
             <span class="why-icon">🌿</span>
@@ -5095,32 +5518,71 @@
           </div>
         </div>
       </div>
-      <div class="why-content">
-        <p class="section-label">✦ Porquê escolher a Love Essences</p>
-        <h2 class="section-title">Presentes que<br/><em>contam histórias</em></h2>
-        <p class="section-sub">Numa época em que tudo é igual, criamos peças que se lembram. Não são apenas sabonetes, é a forma como alguém se sentiu quando abriu.</p>
-        <div class="pillars">
-          <div class="pillar">
-            <span class="pillar-num">01</span>
-            <div class="pillar-text">
-              <h5>Estética que surpreende</h5>
-              <p>Produtos tão bonitos que só se quer apreciá-los. A embalagem faz parte da experiência.</p>
+
+      <div class="feedback-panel">
+        <div class="feedback-panel-head">
+          <div>
+            <p class="section-label">✦ Quem já sentiu</p>
+            <h2 class="section-title" style="margin-bottom:0;">Histórias que deixam <em>marca</em></h2>
+          </div>
+          <div class="feedback-stats" aria-label="Resumo dos feedbacks">
+            <div class="feedback-stat">
+              <strong>4.9 / 5</strong>
+              <span>experiência sentida</span>
+            </div>
+            <div class="feedback-divider" aria-hidden="true"></div>
+            <div class="feedback-stat">
+              <strong>+300</strong>
+              <span>presentes enviados</span>
             </div>
           </div>
-          <div class="pillar">
-            <span class="pillar-num">02</span>
-            <div class="pillar-text">
-              <h5>Aromas que ficam</h5>
-              <p>Cada aroma foi escolhido para despertar uma memória, criar um momento.</p>
+        </div>
+
+        <div class="feedback-list">
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"Ofereci-lhe um Bloom de aniversário e ela ficou sem palavras. É uma peça que se sente, não só se vê."</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">MA</div>
+              <div>
+                <strong>Mariana Alves</strong>
+                <span>Lisboa · Bloom M</span>
+              </div>
             </div>
-          </div>
-          <div class="pillar">
-            <span class="pillar-num">03</span>
-            <div class="pillar-text">
-              <h5>Personalização real</h5>
-              <p>Do aroma à mensagem, do tamanho à cor, cada detalhe pode ser seu.</p>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"A Aurora com escrita personalizada ficou linda. Perfeita para oferecer sem cair no cliché."</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">JM</div>
+              <div>
+                <strong>Joana Martins</strong>
+                <span>Cascais · Aurora Personalizada</span>
+              </div>
             </div>
-          </div>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"As Memórias Perfumadas para o batizado ficaram lindíssimas. Minimalistas, delicadas e sofisticadas."</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">DR</div>
+              <div>
+                <strong>Daniela Ribeiro</strong>
+                <span>Setúbal · Memória Perfumada</span>
+              </div>
+            </div>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"Encomendei a Pensar em Ti M e ficou mesmo elegante. Tudo pensado ao detalhe."</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">RP</div>
+              <div>
+                <strong>Ricardo Pereira</strong>
+                <span>Porto · Pensar em Ti M</span>
+              </div>
+            </div>
+          </article>
         </div>
       </div>
     </div>
@@ -5138,7 +5600,7 @@
   </section>
 
   <!-- TESTIMONIALS -->
-  <section style="background: var(--warm-white); padding: 5rem 0 5rem;">
+  <section style="display:none;">
 
     <!-- Header -->
     <div style="padding: 0 8vw; max-width: 1440px; margin: 0 auto 3rem;">
@@ -5401,7 +5863,7 @@
         <div class="product-info">
           <h3 class="product-name">Bloom</h3>
           <p class="product-desc">Peça artesanal em porcelana, delicada e atemporal. Disponível em três tamanhos. A peça que fala por ti.</p>
-          <div class="product-footer"><span class="product-price">A partir de 32,90€</span><button type="button" class="product-btn" onclick="openProduct('bloom')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">A partir de 32,90€</span><button type="button" class="product-btn" onclick="openProduct('bloom')">Ver produto</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
@@ -5409,7 +5871,7 @@
         <div class="product-info">
           <h3 class="product-name">Aurora</h3>
           <p class="product-desc">Moldura floral artesanal com possibilidade de escrita personalizada. Cada Aurora é única, como o momento que celebra.</p>
-          <div class="product-footer"><span class="product-price">25€ <span style="font-size:0.7rem;color:var(--warm-gray);font-weight:400;">· +1,50€ personalização</span></span><button type="button" class="product-btn" onclick="openProduct('aurora')">Personalizar</button></div>
+          <div class="product-footer"><span class="product-price"><span>25€</span><span class="product-price-note">+1,50€ personalização</span></span><button type="button" class="product-btn" onclick="openProduct('aurora')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="alguem-especial">
@@ -5459,7 +5921,7 @@
         <div class="product-info">
           <h3 class="product-name">Essência do Amor</h3>
           <p class="product-desc">Box presente em três tamanhos, criada para dizer aquilo que as palavras não conseguem. Composição cuidada, embalagem pronta a oferecer.</p>
-          <div class="product-footer"><span class="product-price">A partir de 25€</span><button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">A partir de 25€</span><button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Ver produto</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="memorias" data-occasion="aniversarios,presente-romantico,alguem-especial">
@@ -5467,7 +5929,7 @@
         <div class="product-info">
           <h3 class="product-name">Pensar em Ti</h3>
           <p class="product-desc">A box para os dias em que queres simplesmente lembrar alguém de que existe. Três tamanhos, sempre com o mesmo cuidado.</p>
-          <div class="product-footer"><span class="product-price">A partir de 29,90€</span><button type="button" class="product-btn" onclick="openProduct('pensar_em_ti')">Ver detalhes</button></div>
+          <div class="product-footer"><span class="product-price">A partir de 29,90€</span><button type="button" class="product-btn" onclick="openProduct('pensar_em_ti')">Ver produto</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="memorias" data-occasion="aniversarios,presente-romantico,alguem-especial,empresas">
@@ -5481,9 +5943,9 @@
 
       <!-- ========== LEMBRANÇAS PARA EVENTOS ========== -->
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,empresas">
-        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Novo</span><img src="assets/products/mini-difusor4.jpg" alt="Mini Difusor Personalizado, lembrança aromática Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Novo</span><img src="assets/products/mini-difusor4.jpg" alt="Mini Difusor, lembrança aromática Love Essences" loading="lazy"/></div>
         <div class="product-info">
-          <h3 class="product-name">Mini Difusor Personalizado</h3>
+          <h3 class="product-name">Mini Difusor</h3>
           <p class="product-desc">Mini difusor aromático personalizado com etiqueta temática, ideal para lembranças delicadas de aniversário, batizado, comunhão, casamento, baby shower ou educadoras.</p>
           <p class="product-fragrance-note"><strong>Inclui</strong>Mini frasco difusor com líquido aromático · Varetas · Etiqueta personalizada com o tema escolhido</p>
           <div class="product-footer"><span class="product-price">4,50€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor')">Personalizar</button></div>
@@ -6112,7 +6574,7 @@
               <option>Lembrei-me de Ti (12€)</option>
             </optgroup>
             <optgroup label="Lembranças para Eventos">
-              <option>Mini Difusor Personalizado (4,50€/un)</option>
+              <option>Mini Difusor (4,50€/un)</option>
               <option>Mini Difusor + Mini Sabonete (5,50€/un)</option>
               <option>Sopros de Alegria (1,50€/un)</option>
               <option>Luz Serena (3,50€/un)</option>
@@ -6795,7 +7257,7 @@ var I18N_TEXT = {
     "Essência do Amor": "Essence of Love",
     "Pensar em Ti": "Thinking of You",
     "Lembrei-me de Ti": "I Thought of You",
-    "Mini Difusor Personalizado": "Personalised Mini Diffuser",
+    "Mini Difusor": "Mini Diffuser",
     "Mini Difusor + Mini Sabonete": "Mini Diffuser + Mini Soap",
     "Sopros de Alegria": "Bubbles of Joy",
     "Luz Serena": "Serene Light",
@@ -6981,7 +7443,7 @@ var I18N_TEXT = {
     "Essência do Amor": "Esencia del Amor",
     "Pensar em Ti": "Pensando en Ti",
     "Lembrei-me de Ti": "Me Acordé de Ti",
-    "Mini Difusor Personalizado": "Mini Difusor Personalizado",
+    "Mini Difusor": "Mini Difusor",
     "Mini Difusor + Mini Sabonete": "Mini Difusor + Mini Jabón",
     "Sopros de Alegria": "Soplos de Alegría",
     "Luz Serena": "Luz Serena",
@@ -7045,6 +7507,7 @@ var I18N_EXTRA_TEXT = {
     "Mais Oferecida": "Most Gifted",
     "Personalizável": "Personalizable",
     "Ver detalhes": "View details",
+    "Ver produto": "View product",
     "100% Natural": "100% Natural",
     "Ingredientes selecionados com cuidado para a pele e para o planeta.": "Ingredients carefully chosen for the skin and the planet.",
     "Cada peça é única. Não existe linha de produção, existe dedicação.": "Each piece is unique. There is no production line, there is dedication.",
@@ -7053,6 +7516,8 @@ var I18N_EXTRA_TEXT = {
     "Porque o amor que transmitimos começa pelos valores que defendemos.": "Because the love we share begins with the values we stand for.",
     "Presentes que": "Gifts that",
     "contam histórias": "tell stories",
+    "Histórias que deixam": "Stories that leave a",
+    "marca": "mark",
     "Numa época em que tudo é igual, criamos peças que se lembram. Não são apenas sabonetes, é a forma como alguém se sentiu quando abriu.": "In a time when everything feels the same, we create pieces to be remembered. They are not just soaps, they are the way someone felt when they opened them.",
     "Estética que surpreende": "Aesthetic that surprises",
     "Produtos tão bonitos que só se quer apreciá-los. A embalagem faz parte da experiência.": "Products so beautiful you simply want to admire them. The packaging is part of the experience.",
@@ -7080,12 +7545,15 @@ var I18N_EXTRA_TEXT = {
     "Feedbacks que": "Feedback that",
     "deixam a": "leaves a",
     "marca": "mark",
+    "Resumo dos feedbacks": "Feedback summary",
     "experiência sentida": "felt experience",
     "presentes enviados": "gifts sent",
     "\"Ofereci-lhe um Bloom de aniversário e ela ficou sem palavras. É uma peça que se sente, não só se vê.\"": "\"I gave her a Bloom for her birthday and she was speechless. It is a piece you feel, not only see.\"",
     "\"Encomendei a Pensar em Ti M para o aniversário da minha namorada e ficou mesmo elegante. Tudo pensado ao detalhe.\"": "\"I ordered Thinking of You M for my girlfriend's birthday and it was truly elegant. Every detail was thought through.\"",
     "\"Comprei a Serenata para a entrada de casa e fiquei rendida. Decorativa, sofisticada e com uma presença discreta.\"": "\"I bought Serenata for the entrance hall and fell in love. Decorative, sophisticated and quietly present.\"",
     "\"Quis fugir ao presente habitual e a Essência do Amor foi das encomendas mais bonitas que ofereci, delicada, com um toque especial.\"": "\"I wanted something different from the usual gift and Essence of Love was one of the most beautiful gifts I have given, delicate, with a special touch.\"",
+    "\"A Aurora com escrita personalizada ficou linda. Perfeita para oferecer sem cair no cliché.\"": "\"Aurora with personalised writing was beautiful. Perfect to offer without feeling cliché.\"",
+    "\"As Memórias Perfumadas para o batizado ficaram lindíssimas. Minimalistas, delicadas e sofisticadas.\"": "\"The scented keepsakes for the baptism were beautiful. Minimal, delicate and sophisticated.\"",
     "\"As Memórias Perfumadas para o batizado ficaram lindíssimas. Minimalistas, delicadas e muito mais sofisticadas ao vivo do que imaginava.\"": "\"The Scented Memories for the baptism were beautiful. Minimal, delicate and even more sophisticated in person than I imagined.\"",
     "\"A Aurora com escrita personalizada ficou linda. Perfeita para oferecer sem cair no cliché. Impossível não impressionar.\"": "\"Aurora with personalized writing was lovely. Perfect to offer without feeling cliché. Impossible not to impress.\"",
     "✦ Pronta para surpreender?": "✦ Ready to surprise?",
@@ -7163,7 +7631,7 @@ var I18N_EXTRA_TEXT = {
     "Um mini bouquet delicado, criado para aqueles gestos espontâneos que chegam no momento certo. Pequeno no tamanho, cheio de intenção no significado.": "A delicate mini bouquet, created for those spontaneous gestures that arrive at the right moment. Small in size, full of meaning.",
     "Mini bouquet artesanal · Composição delicada · Embalagem pronta a oferecer · Ideal para um mimo espontâneo.": "Handmade mini bouquet · Delicate composition · Packaging ready to offer · Ideal for a spontaneous treat.",
     "\"Lembrei-me de ti, e isso já é uma forma bonita de amor.\"": "\"I thought of you, and that is already a beautiful form of love.\"",
-    "O Mini Difusor Personalizado é uma lembrança simples, delicada e perfumada, pensada para tornar qualquer momento especial ainda mais memorável. Personalizado com etiqueta no tema do evento, é uma opção bonita e acessível para oferecer aos convidados, educadoras ou pessoas especiais.": "The Personalized Mini Diffuser is a simple, delicate and scented favour, designed to make any special moment even more memorable. Personalized with a label in the event theme, it is a beautiful and accessible option for guests, teachers or special people.",
+    "O Mini Difusor é uma lembrança simples, delicada e perfumada, pensada para tornar qualquer momento especial ainda mais memorável. Personalizado com etiqueta no tema do evento, é uma opção bonita e acessível para oferecer aos convidados, educadoras ou pessoas especiais.": "The Mini Diffuser is a simple, delicate and scented favour, designed to make any special moment even more memorable. With a label in the event theme, it is a beautiful and accessible option for guests, teachers or special people.",
     "Inclui: mini frasco difusor com líquido aromático · Varetas · Etiqueta personalizada com o tema escolhido.": "Includes: mini diffuser bottle with aromatic liquid · Reed sticks · Personalized label with the chosen theme.",
     "\"Uma lembrança pequena no tamanho, mas cheia de intenção.\"": "\"A favour small in size, but full of intention.\"",
     "Um pequeno kit cheio de detalhe e carinho, composto por um mini difusor aromático e um mini sabonete artesanal. É uma opção equilibrada para quem procura uma lembrança personalizada, bonita e acessível.": "A small kit full of detail and care, composed of an aromatic mini diffuser and a mini handmade soap. A balanced option for those looking for a personalized, beautiful and accessible favour.",
@@ -7404,6 +7872,7 @@ var I18N_EXTRA_TEXT = {
     "Mais Oferecida": "Más Regalada",
     "Personalizável": "Personalizable",
     "Ver detalhes": "Ver detalles",
+    "Ver produto": "Ver producto",
     "100% Natural": "100% Natural",
     "Ingredientes selecionados com cuidado para a pele e para o planeta.": "Ingredientes seleccionados con cuidado para la piel y para el planeta.",
     "Cada peça é única. Não existe linha de produção, existe dedicação.": "Cada pieza es única. No existe línea de producción, existe dedicación.",
@@ -7412,6 +7881,8 @@ var I18N_EXTRA_TEXT = {
     "Porque o amor que transmitimos começa pelos valores que defendemos.": "Porque el amor que transmitimos empieza por los valores que defendemos.",
     "Presentes que": "Regalos que",
     "contam histórias": "cuentan historias",
+    "Histórias que deixam": "Historias que dejan",
+    "marca": "huella",
     "Numa época em que tudo é igual, criamos peças que se lembram. Não são apenas sabonetes, é a forma como alguém se sentiu quando abriu.": "En una época en la que todo parece igual, creamos piezas que se recuerdan. No son solo jabones, son la forma en que alguien se sintió al abrirlos.",
     "Estética que surpreende": "Estética que sorprende",
     "Produtos tão bonitos que só se quer apreciá-los. A embalagem faz parte da experiência.": "Productos tan bonitos que solo apetece admirarlos. El embalaje forma parte de la experiencia.",
@@ -7439,12 +7910,15 @@ var I18N_EXTRA_TEXT = {
     "Feedbacks que": "Opiniones que",
     "deixam a": "dejan",
     "marca": "huella",
+    "Resumo dos feedbacks": "Resumen de opiniones",
     "experiência sentida": "experiencia sentida",
     "presentes enviados": "regalos enviados",
     "\"Ofereci-lhe um Bloom de aniversário e ela ficou sem palavras. É uma peça que se sente, não só se vê.\"": "\"Le regalé un Bloom por su cumpleaños y se quedó sin palabras. Es una pieza que se siente, no solo se ve.\"",
     "\"Encomendei a Pensar em Ti M para o aniversário da minha namorada e ficou mesmo elegante. Tudo pensado ao detalhe.\"": "\"Pedí Pensando en Ti M para el cumpleaños de mi novia y quedó muy elegante. Todo pensado al detalle.\"",
     "\"Comprei a Serenata para a entrada de casa e fiquei rendida. Decorativa, sofisticada e com uma presença discreta.\"": "\"Compré Serenata para la entrada de casa y me encantó. Decorativa, sofisticada y con una presencia discreta.\"",
     "\"Quis fugir ao presente habitual e a Essência do Amor foi das encomendas mais bonitas que ofereci, delicada, com um toque especial.\"": "\"Quise salir del regalo habitual y Esencia del Amor fue uno de los regalos más bonitos que he ofrecido, delicado y con un toque especial.\"",
+    "\"A Aurora com escrita personalizada ficou linda. Perfeita para oferecer sem cair no cliché.\"": "\"Aurora con escritura personalizada quedó preciosa. Perfecta para regalar sin caer en el cliché.\"",
+    "\"As Memórias Perfumadas para o batizado ficaram lindíssimas. Minimalistas, delicadas e sofisticadas.\"": "\"Las Memorias Perfumadas para el bautizo quedaron preciosas. Minimalistas, delicadas y sofisticadas.\"",
     "\"As Memórias Perfumadas para o batizado ficaram lindíssimas. Minimalistas, delicadas e muito mais sofisticadas ao vivo do que imaginava.\"": "\"Las Memorias Perfumadas para el bautizo quedaron preciosas. Minimalistas, delicadas y mucho más sofisticadas en persona de lo que imaginaba.\"",
     "\"A Aurora com escrita personalizada ficou linda. Perfeita para oferecer sem cair no cliché. Impossível não impressionar.\"": "\"Aurora con escritura personalizada quedó preciosa. Perfecta para regalar sin caer en el cliché. Imposible no impresionar.\"",
     "✦ Pronta para surpreender?": "✦ ¿Lista para sorprender?",
@@ -7522,7 +7996,7 @@ var I18N_EXTRA_TEXT = {
     "Um mini bouquet delicado, criado para aqueles gestos espontâneos que chegam no momento certo. Pequeno no tamanho, cheio de intenção no significado.": "Un mini bouquet delicado, creado para esos gestos espontáneos que llegan en el momento adecuado. Pequeño en tamaño, lleno de intención en su significado.",
     "Mini bouquet artesanal · Composição delicada · Embalagem pronta a oferecer · Ideal para um mimo espontâneo.": "Mini bouquet artesanal · Composición delicada · Embalaje listo para regalar · Ideal para un detalle espontáneo.",
     "\"Lembrei-me de ti, e isso já é uma forma bonita de amor.\"": "\"Me acordé de ti, y eso ya es una forma bonita de amor.\"",
-    "O Mini Difusor Personalizado é uma lembrança simples, delicada e perfumada, pensada para tornar qualquer momento especial ainda mais memorável. Personalizado com etiqueta no tema do evento, é uma opção bonita e acessível para oferecer aos convidados, educadoras ou pessoas especiais.": "El Mini Difusor Personalizado es un detalle simple, delicado y perfumado, pensado para hacer cualquier momento especial aún más memorable. Personalizado con etiqueta del tema del evento, es una opción bonita y accesible para invitados, educadoras o personas especiales.",
+    "O Mini Difusor é uma lembrança simples, delicada e perfumada, pensada para tornar qualquer momento especial ainda mais memorável. Personalizado com etiqueta no tema do evento, é uma opção bonita e acessível para oferecer aos convidados, educadoras ou pessoas especiais.": "El Mini Difusor es un detalle simple, delicado y perfumado, pensado para hacer cualquier momento especial aún más memorable. Personalizado con etiqueta del tema del evento, es una opción bonita y accesible para invitados, educadoras o personas especiales.",
     "Inclui: mini frasco difusor com líquido aromático · Varetas · Etiqueta personalizada com o tema escolhido.": "Incluye: mini frasco difusor con líquido aromático · Varillas · Etiqueta personalizada con el tema elegido.",
     "\"Uma lembrança pequena no tamanho, mas cheia de intenção.\"": "\"Un detalle pequeño en tamaño, pero lleno de intención.\"",
     "Um pequeno kit cheio de detalhe e carinho, composto por um mini difusor aromático e um mini sabonete artesanal. É uma opção equilibrada para quem procura uma lembrança personalizada, bonita e acessível.": "Un pequeño kit lleno de detalle y cariño, compuesto por un mini difusor aromático y un mini jabón artesanal. Es una opción equilibrada para quien busca un detalle personalizado, bonito y accesible.",
@@ -7792,7 +8266,7 @@ var I18N_REPLACE_TEXT = {
     "Essência do Amor": "Essence of Love",
     "Pensar em Ti": "Thinking of You",
     "Lembrei-me de Ti": "I Thought of You",
-    "Mini Difusor Personalizado": "Personalized Mini Diffuser",
+    "Mini Difusor": "Mini Diffuser",
     "Mini Difusor + Mini Sabonete": "Mini Diffuser + Mini Soap",
     "Sopros de Alegria": "Bubbles of Joy",
     "Luz Serena": "Serene Light",
@@ -7877,7 +8351,7 @@ var I18N_REPLACE_TEXT = {
     "Essência do Amor": "Esencia del Amor",
     "Pensar em Ti": "Pensando en Ti",
     "Lembrei-me de Ti": "Me Acordé de Ti",
-    "Mini Difusor Personalizado": "Mini Difusor Personalizado",
+    "Mini Difusor": "Mini Difusor",
     "Mini Difusor + Mini Sabonete": "Mini Difusor + Mini Jabón",
     "Sopros de Alegria": "Soplos de Alegría",
     "Luz Serena": "Luz Serena",
@@ -8331,13 +8805,13 @@ var PRODUCT_CATALOG = {
   },
   mini_difusor: {
     category: 'Lembranças para Eventos',
-    name: 'Mini Difusor Personalizado',
+    name: 'Mini Difusor',
     visual: '🌿',
     image: 'assets/products/mini-difusor4.jpg',
     gallery: ['assets/products/mini-difusor4.jpg', 'assets/products/mini-difusor3.jpg', 'assets/products/mini-difusor5.jpg'],
     visualBg: 'linear-gradient(160deg, #f7edf6 0%, #e3bedf 100%)',
     storyTitle: 'A lembrança',
-    story: 'O Mini Difusor Personalizado é uma lembrança simples, delicada e perfumada, pensada para tornar qualquer momento especial ainda mais memorável. Personalizado com etiqueta no tema do evento, é uma opção bonita e acessível para oferecer aos convidados, educadoras ou pessoas especiais.',
+    story: 'O Mini Difusor é uma lembrança simples, delicada e perfumada, pensada para tornar qualquer momento especial ainda mais memorável. Personalizado com etiqueta no tema do evento, é uma opção bonita e acessível para oferecer aos convidados, educadoras ou pessoas especiais.',
     sizes: [],
     basePrice: 4.50,
     priceSuffix: '/un',
@@ -9582,7 +10056,7 @@ function toggleEventoCelebracao() {
 }
 
 var FRAGRANCE_PRODUCTS = [
-  'Mini Difusor Personalizado (4,50€/un)',
+  'Mini Difusor (4,50€/un)',
   'Mini Difusor + Mini Sabonete (5,50€/un)',
   'Luz Serena (3,50€/un)',
   'Doce Luz (3,15€/un)',
@@ -9695,7 +10169,7 @@ var CART_IMAGE_MAP = {
   'Doce Luz': 'assets/products/doce-luz.jpg',
   'Memória Perfumada': 'assets/products/memoria-perfumada.jpg',
   'Bilhete Perfumado': 'assets/products/bilhete-perfumado.jpg',
-  'Mini Difusor Personalizado': 'assets/products/mini-difusor4.jpg',
+  'Mini Difusor': 'assets/products/mini-difusor4.jpg',
   'Mini Difusor + Mini Sabonete': 'assets/products/mini-difusor-mais-mini-sabonete.jpg',
   'Sopros de Alegria': 'assets/products/sopros-de-alegria.jpeg',
   'Laço de Memória': 'assets/products/laco-de-memoria.jpg',
@@ -9730,7 +10204,7 @@ var CHILD_EVENT_PRODUCTS = [
 ];
 
 var ADULT_EVENT_PRODUCTS = [
-  'Mini Difusor Personalizado',
+  'Mini Difusor',
   'Mini Difusor + Mini Sabonete',
   'Luz Serena',
   'Doce Luz',
@@ -10070,6 +10544,62 @@ renderCart();
 
 
 <script>
+/* ── MOBILE FEEDBACK AUTO-SCROLL ───────────────────────────────── */
+(function () {
+  var feedbackTimer = null;
+  var feedbackIndex = 0;
+  var feedbackMedia = window.matchMedia('(max-width: 768px)');
+
+  function stopFeedbackAutoScroll() {
+    if (!feedbackTimer) return;
+    window.clearInterval(feedbackTimer);
+    feedbackTimer = null;
+  }
+
+  function startFeedbackAutoScroll() {
+    var list = document.querySelector('.feedback-list');
+    if (!list || !feedbackMedia.matches) {
+      stopFeedbackAutoScroll();
+      return;
+    }
+
+    var cards = Array.prototype.slice.call(list.querySelectorAll('.feedback-card'));
+    if (cards.length < 2) return;
+
+    stopFeedbackAutoScroll();
+    feedbackTimer = window.setInterval(function () {
+      if (document.hidden) return;
+      feedbackIndex = (feedbackIndex + 1) % cards.length;
+      list.scrollTo({
+        left: cards[feedbackIndex].offsetLeft - list.offsetLeft,
+        behavior: 'smooth'
+      });
+    }, 3600);
+  }
+
+  function bindFeedbackAutoScroll() {
+    var list = document.querySelector('.feedback-list');
+    if (!list) return;
+
+    if (!list.dataset.autoScrollBound) {
+      list.addEventListener('pointerdown', function () {
+        stopFeedbackAutoScroll();
+        window.setTimeout(startFeedbackAutoScroll, 6500);
+      });
+      list.dataset.autoScrollBound = 'true';
+    }
+
+    startFeedbackAutoScroll();
+  }
+
+  document.addEventListener('DOMContentLoaded', bindFeedbackAutoScroll);
+  window.addEventListener('resize', bindFeedbackAutoScroll);
+  document.addEventListener('visibilitychange', bindFeedbackAutoScroll);
+})();
+</script>
+
+
+<script>
 /* ── TOUCH RELAY (iOS tap fix) ───────────────────────────────────── */
 (function () {
   function triggerInlineAction(el, event) {
@@ -10121,7 +10651,7 @@ renderCart();
     'Essência do Amor': 'essencia_amor',
     'Pensar em Ti': 'pensar_em_ti',
     'Lembrei-me de Ti': 'lembrei_me_de_ti',
-    'Mini Difusor Personalizado': 'mini_difusor',
+    'Mini Difusor': 'mini_difusor',
     'Mini Difusor + Mini Sabonete': 'mini_difusor_sabonete',
     'Sopros de Alegria': 'sopros_alegria',
     'Luz Serena': 'luz_serena',
