@@ -3171,10 +3171,20 @@
 
     .product-img,
     .shop-products-grid .product-img {
-      height: 170px;
+      aspect-ratio: auto;
+      height: 220px !important;
       margin: 0.9rem 0.9rem 0;
       border-radius: 16px;
       font-size: 3rem;
+    }
+
+    .product-img.has-photo img,
+    .shop-products-grid .product-img.has-photo img {
+      width: auto;
+      max-width: 100%;
+      height: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
     }
 
     .product-tag {
@@ -3197,6 +3207,8 @@
     .shop-products-grid .product-name {
       font-size: 1.15rem;
       margin-bottom: 0.45rem;
+      width: 100%;
+      text-align: center;
     }
 
     .product-desc {
@@ -4340,6 +4352,11 @@
     .featured-bg .section-title {
       font-size: clamp(1.65rem, 6.4vw, 2.15rem);
       white-space: nowrap;
+    }
+
+    .featured-bg .product-btn {
+      width: min(100%, 168px) !important;
+      min-width: 0;
     }
   }
 
@@ -9241,6 +9258,7 @@ var PRODUCT_CATALOG = {
     name: 'Luz Serena',
     visual: '🕯️',
     image: 'assets/products/luz-serena.jpg',
+    gallery: ['assets/products/luz-serena-cores.jpg'],
     visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
     storyTitle: 'A vela',
     story: 'Uma vela delicada e perfumada, feita para acompanhar momentos especiais com uma luz suave. É uma lembrança querida, elegante e cheia de carinho para oferecer a quem celebrou consigo.',
