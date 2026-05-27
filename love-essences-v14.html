@@ -3993,6 +3993,362 @@
     }
   }
 
+  /* ── FOOTER PREMIUM COMPACT ──────────────────────────────── */
+  footer {
+    background:
+      radial-gradient(circle at 9% 20%, rgba(227,190,223,0.32) 0%, rgba(227,190,223,0) 34%),
+      radial-gradient(circle at 92% 0%, rgba(209,146,202,0.20) 0%, rgba(209,146,202,0) 32%),
+      linear-gradient(180deg, #f6e9f2 0%, #f1e3ef 100%) !important;
+    padding: 3.35rem 4vw 1.65rem !important;
+  }
+
+  .footer-grid {
+    max-width: 1440px;
+    margin: 0 auto 1.05rem !important;
+    display: grid !important;
+    grid-template-columns: minmax(250px, 1.45fr) minmax(140px, 0.8fr) minmax(210px, 1.15fr) minmax(130px, 0.75fr) minmax(180px, 0.95fr) !important;
+    align-items: start;
+    gap: clamp(1.7rem, 3.8vw, 4.5rem) !important;
+    padding: clamp(1.65rem, 2.1vw, 2.25rem) clamp(1.7rem, 3.6vw, 3.2rem) !important;
+    border-radius: 28px !important;
+    border: 1px solid rgba(180,104,171,0.13) !important;
+    background: rgba(255,255,255,0.80) !important;
+    box-shadow: 0 22px 58px rgba(102,19,94,0.08) !important;
+    backdrop-filter: blur(14px);
+  }
+
+  .footer-brand {
+    max-width: 340px;
+  }
+
+  .footer-brand-mark {
+    display: block !important;
+    margin-bottom: 1.2rem !important;
+    color: var(--deep-rose) !important;
+    text-decoration: none;
+    line-height: 1.35 !important;
+  }
+
+  .footer-brand-title,
+  .footer-col h5 {
+    display: block;
+    font-family: var(--sans);
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.26em !important;
+    text-transform: uppercase;
+    color: var(--deep-rose) !important;
+  }
+
+  .footer-brand-title::after,
+  .footer-col h5::after {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 1px;
+    margin-top: 0.65rem;
+    background: var(--rose);
+  }
+
+  .footer-brand-subtitle {
+    display: block;
+    margin-top: 0.95rem;
+    max-width: 260px;
+    font-family: var(--serif);
+    font-size: 1.05rem !important;
+    line-height: 1.25;
+    letter-spacing: 0.01em !important;
+    color: var(--deep-rose) !important;
+  }
+
+  .footer-brand-copy,
+  .footer-brand p {
+    max-width: 300px;
+    font-size: 0.9rem !important;
+    line-height: 1.75 !important;
+    color: #6f596b !important;
+  }
+
+  .footer-brand-values {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem 0.55rem;
+    margin-top: 1.25rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(180,104,171,0.16);
+    color: var(--rose) !important;
+    font-size: 0.68rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .footer-brand-values span {
+    white-space: nowrap;
+  }
+
+  .footer-brand-values span + span::before {
+    content: '·';
+    margin-right: 0.55rem;
+    color: rgba(180,104,171,0.6);
+  }
+
+  .footer-col h5 {
+    margin-bottom: 1.35rem !important;
+  }
+
+  .footer-col ul {
+    gap: 0.58rem !important;
+  }
+
+  .footer-col ul li a {
+    font-size: 0.88rem !important;
+    line-height: 1.55;
+    color: #6f596b !important;
+  }
+
+  .footer-col ul li a:hover {
+    color: var(--deep-rose) !important;
+  }
+
+  .footer-bottom {
+    max-width: 1440px;
+    margin: 0 auto !important;
+    padding: 1.05rem 1.55rem 0 !important;
+    border-top: 1px solid rgba(180,104,171,0.14) !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 1rem !important;
+  }
+
+  .footer-bottom p {
+    font-size: 0.78rem !important;
+    color: rgba(102,19,94,0.62) !important;
+  }
+
+  .footer-tagline {
+    font-family: var(--serif) !important;
+    font-size: 1.03rem !important;
+    font-style: italic;
+    color: var(--deep-rose) !important;
+  }
+
+  @media (max-width: 1180px) {
+    .footer-grid {
+      grid-template-columns: minmax(240px, 1.15fr) repeat(2, minmax(170px, 1fr)) !important;
+      gap: 2.2rem 2.6rem !important;
+    }
+
+    .footer-brand {
+      grid-column: auto !important;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .footer-grid {
+      grid-template-columns: minmax(230px, 1.15fr) minmax(180px, 1fr) !important;
+      gap: 2rem 2.4rem !important;
+    }
+
+    .footer-brand {
+      grid-column: 1 / -1 !important;
+      max-width: 520px;
+    }
+
+    .footer-brand-copy,
+    .footer-brand p {
+      max-width: 520px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    footer {
+      padding: 2.5rem 5vw 1.35rem !important;
+    }
+
+    .footer-grid {
+      grid-template-columns: 1fr !important;
+      gap: 0 !important;
+      padding: 0 1.2rem !important;
+      border-radius: 22px !important;
+    }
+
+    .footer-brand,
+    .footer-col {
+      max-width: none;
+      padding: 1.1rem 0;
+    }
+
+    .footer-col {
+      border-top: 1px solid rgba(180,104,171,0.12);
+    }
+
+    .footer-brand-mark {
+      margin-bottom: 0.85rem !important;
+    }
+
+    .footer-brand-subtitle {
+      max-width: 100%;
+      font-size: 1rem !important;
+    }
+
+    .footer-brand-values {
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .footer-col h5 {
+      margin-bottom: 0.85rem !important;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      font-size: 0.68rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.22em !important;
+    }
+
+    .footer-col h5::after {
+      display: none;
+      content: none;
+    }
+
+    .footer-col ul {
+      display: grid;
+      gap: 0.55rem 0.95rem !important;
+      align-items: start;
+    }
+
+    .footer-col li {
+      min-width: 0;
+    }
+
+    .footer-col ul li a {
+      display: block;
+      font-size: 0.78rem !important;
+      line-height: 1.42;
+    }
+
+    .footer-col-shop ul,
+    .footer-col-legal ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer-col-occasions ul,
+    .footer-col-brand ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer-bottom {
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: center !important;
+      text-align: center;
+      padding-inline: 0.6rem !important;
+    }
+
+    .footer-tagline {
+      font-size: 1rem !important;
+    }
+  }
+
+  /* ── ABOUT VALUES BALANCE ────────────────────────────────── */
+  @media (min-width: 1025px) {
+    .values-section .values-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      max-width: 1260px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .values-section .values-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+  }
+
+  /* ── FEATURED PRODUCTS COMPACT RHYTHM ────────────────────── */
+  .featured-bg {
+    padding-top: 3.8rem !important;
+    padding-bottom: 3.8rem !important;
+  }
+
+  .featured-bg .products-header {
+    align-items: center !important;
+    margin-bottom: 2.15rem !important;
+  }
+
+  .featured-bg .products-header > div {
+    min-width: 0;
+  }
+
+  .featured-bg .section-title {
+    white-space: nowrap;
+    margin-bottom: 0 !important;
+    font-size: clamp(2.2rem, 3.35vw, 3.55rem);
+    line-height: 1.08;
+  }
+
+  .featured-bg .product-footer {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.72rem !important;
+    text-align: center;
+  }
+
+  .featured-bg .product-price {
+    width: 100% !important;
+    flex: 0 0 auto !important;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .featured-bg .product-btn {
+    width: auto !important;
+    min-width: 158px;
+    align-self: center;
+  }
+
+  .footer-brand-title {
+    display: block;
+    font-family: var(--serif) !important;
+    font-size: 1.05rem !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.01em !important;
+    line-height: 1.25 !important;
+    text-transform: none !important;
+    color: var(--deep-rose) !important;
+  }
+
+  .footer-brand-title::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  @media (max-width: 768px) {
+    .featured-bg {
+      padding-top: 2.75rem !important;
+      padding-bottom: 2.9rem !important;
+    }
+
+    .featured-bg .products-header {
+      margin-bottom: 1.55rem !important;
+    }
+
+    .featured-bg .section-title {
+      font-size: clamp(1.65rem, 6.4vw, 2.15rem);
+      white-space: nowrap;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .featured-bg .section-title {
+      font-size: 1.52rem;
+    }
+  }
+
 
   /* ── REMOVE ROUNDING ON ESSENCE SECTION ───────────────────── */
   .story-bg {
@@ -5073,8 +5429,8 @@
 <div class="announce-bar" id="announce-bar" aria-label="Informação de envio">
   <div class="announce-marquee">
     <div class="announce-track">
-      <span>✦ Envio gratuito para encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
-      <span aria-hidden="true">✦ Envio gratuito para encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+      <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+      <span aria-hidden="true">✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
     </div>
   </div>
 </div>
@@ -5306,7 +5662,7 @@
     <div class="products-header">
       <div>
         <p class="section-label">✦ Mais Procurados</p>
-        <h2 class="section-title">Os Presentes<br/>que <em>emocionam</em></h2>
+        <h2 class="section-title">Os Presentes que <em>emocionam</em></h2>
       </div>
       <button type="button" class="btn-outline" onclick="showPage('shop')">Ver Toda a Coleção →</button>
     </div>
@@ -5523,7 +5879,7 @@
         <div class="feedback-panel-head">
           <div>
             <p class="section-label">✦ Quem já sentiu</p>
-            <h2 class="section-title" style="margin-bottom:0;">Histórias que deixam <em>marca</em></h2>
+            <h2 class="section-title" style="margin-bottom:0;">Histórias que deixam<br/><em>marca</em></h2>
           </div>
           <div class="feedback-stats" aria-label="Resumo dos feedbacks">
             <div class="feedback-stat">
@@ -5961,7 +6317,7 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,pequeninos">
-        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Infantil</span><img src="assets/products/sopros-de-alegria.jpeg" alt="Sopros de Alegria, bolinhas de sabão personalizadas Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Infantil</span><img src="assets/products/sopros-de-alegria.png" alt="Sopros de Alegria, bolinhas de sabão personalizadas Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Sopros de Alegria</h3>
           <p class="product-desc">Bolinhas de sabão personalizadas com etiqueta temática, perfeitas para lembranças infantis e momentos cheios de alegria.</p>
@@ -7017,7 +7373,7 @@
     <div class="legal-section">
       <span class="legal-num">06</span>
       <h2 class="legal-title">Portes grátis</h2>
-      <p class="legal-text">Em campanhas promocionais ou em compras acima de determinado valor, a Love Essences poderá oferecer portes grátis. Sempre que aplicável, essa condição será apresentada no website ou no checkout, de acordo com os critérios definidos para a campanha em vigor.</p>
+      <p class="legal-text">Em campanhas promocionais ou em compras acima de determinado valor, a Love Essences poderá oferecer portes grátis. Neste momento, os portes grátis aplicam-se a encomendas acima de 60€ para Portugal e ilhas. Sempre que aplicável, essa condição será apresentada no website ou no checkout, de acordo com os critérios definidos para a campanha em vigor.</p>
       <p class="legal-text">A oferta de portes grátis poderá ser alterada, limitada ou removida sem aviso prévio.</p>
     </div>
 
@@ -7057,13 +7413,13 @@
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <a class="nav-logo" href="#" onclick="showPage('home')" style="color: #fff; font-size: 1rem; letter-spacing: 0.18em; font-weight: 500; font-family: var(--sans); line-height: 1.5;">
-        LOVE ESSENCES
-        <span style="display: block; font-family: var(--sans); font-size: 0.65rem; font-weight: 300; letter-spacing: 0.14em; color: rgba(255,255,255,0.38); margin-top: 0.15rem;">| Sabonetes Artesanais &amp; Co.</span>
+      <a class="nav-logo footer-brand-mark" href="#" onclick="showPage('home'); return false;">
+        <span class="footer-brand-title">Love Essences | Sabonetes Artesanais &amp; Co.</span>
       </a>
-      <p>Presentes artesanais que contam histórias. Feitos à mão em Portugal, com amor e intenção em cada detalhe.</p>
+      <p class="footer-brand-copy">Presentes feitos à mão em Portugal, pensados para guardar momentos, memórias e pequenos gestos de amor.</p>
+      <p class="footer-brand-values"><span>Feito à mão</span><span>Cruelty-free</span><span>Personalizável</span></p>
     </div>
-    <div class="footer-col">
+    <div class="footer-col footer-col-shop">
       <h5>Loja</h5>
       <ul>
         <li><a href="#" onclick="openShopCategory('pecas'); return false;">Coleção Assinatura</a></li>
@@ -7072,7 +7428,7 @@
         <li><a href="#" onclick="showPage('contact'); return false;">Encomenda Personalizada</a></li>
       </ul>
     </div>
-    <div class="footer-col">
+    <div class="footer-col footer-col-occasions">
       <h5>Ocasiões</h5>
       <ul>
         <li><a href="#" onclick="openOccasion('aniversarios'); return false;">Aniversários</a></li>
@@ -7083,7 +7439,7 @@
         <li><a href="#" onclick="openOccasion('pequeninos'); return false;">Para os Mais Pequeninos</a></li>
       </ul>
     </div>
-    <div class="footer-col">
+    <div class="footer-col footer-col-brand">
       <h5>A Marca</h5>
       <ul>
         <li><a href="#" onclick="showPage('about'); return false;">Sobre Nós</a></li>
@@ -7093,7 +7449,7 @@
         <li><a href="#" onclick="showPage('contact'); return false;">Personalização</a></li>
       </ul>
     </div>
-    <div class="footer-col">
+    <div class="footer-col footer-col-legal">
       <h5>Legal</h5>
       <ul>
         <li><a href="#" onclick="showPage('privacy'); return false;">Política de Privacidade</a></li>
@@ -7104,8 +7460,8 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2026 Love Essences · Feito em Portugal com ♥</p>
-    <p class="footer-tagline">"Nós fazemos, vocês sentem"</p>
+    <p>© 2026 Love Essences · Feito em Portugal com 💜</p>
+    <p class="footer-tagline">“Nós fazemos, vocês sentem”</p>
   </div>
 </footer>
 
@@ -7122,7 +7478,7 @@ var I18N_TEXT = {
     "Carrinho": "Cart",
     "Abrir menu": "Open menu",
     "Fechar": "Close",
-    "✦ Envio gratuito para encomendas acima de 60€ · Feito à mão em Portugal ✦": "✦ Free shipping for orders over €60 · Handmade in Portugal ✦",
+    "✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦": "✦ Free shipping to Portugal and islands for orders over €60 · Handmade in Portugal ✦",
     "Início": "Home",
     "Loja": "Shop",
     "Ocasiões": "Occasions",
@@ -7145,7 +7501,7 @@ var I18N_TEXT = {
     "Esvaziar carrinho": "Empty cart",
     "Envio calculado no checkout · Embalagem de oferta incluída": "Shipping calculated at checkout · Gift packaging included",
     "Envio gratuito aplicado": "Free shipping applied",
-    "Portes gratuitos em encomendas a partir de 60€.": "Free shipping on orders from €60.",
+    "Portes gratuitos em encomendas a partir de 60€ para Portugal e ilhas.": "Free shipping on orders from €60 to Portugal and islands.",
     "Não vendemos produtos.": "We don't sell products.",
     "Criamos momentos.": "We create moments.",
     "Cada peça é pensada para ser mais do que um objeto, é um gesto com significado. Sabonetes, velas e aromas que ficam na memória de quem recebe.": "Each piece is designed to be more than an object: it is a meaningful gesture. Soaps, candles and scents that stay in the memory of the person who receives them.",
@@ -7297,6 +7653,12 @@ var I18N_TEXT = {
     "Devoluções & Reembolsos": "Returns & Refunds",
     "Política de Envio": "Shipping Policy",
     "Legal": "Legal",
+    "Sabonetes Artesanais & Presentes Perfumados": "Artisan Soaps & Scented Gifts",
+    "Presentes feitos à mão em Portugal, pensados para guardar momentos, memórias e pequenos gestos de amor.": "Handmade gifts from Portugal, created to hold moments, memories and small gestures of love.",
+    "Feito à mão": "Handmade",
+    "Personalizável": "Customisable",
+    "© 2026 Love Essences · Feito em Portugal com 💜": "© 2026 Love Essences · Made in Portugal with 💜",
+    "“Nós fazemos, vocês sentem”": "“We make it, you feel it”",
     "© 2026 Love Essences · Feito em Portugal com ♥": "© 2026 Love Essences · Made in Portugal with ♥",
     "\"Nós fazemos, vocês sentem\"": "\"We make it, you feel it\""
   },
@@ -7308,7 +7670,7 @@ var I18N_TEXT = {
     "Carrinho": "Carrito",
     "Abrir menu": "Abrir menú",
     "Fechar": "Cerrar",
-    "✦ Envio gratuito para encomendas acima de 60€ · Feito à mão em Portugal ✦": "✦ Envío gratis para pedidos superiores a 60€ · Hecho a mano en Portugal ✦",
+    "✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦": "✦ Envío gratis a Portugal e islas para pedidos superiores a 60€ · Hecho a mano en Portugal ✦",
     "Início": "Inicio",
     "Loja": "Tienda",
     "Ocasiões": "Ocasiones",
@@ -7331,7 +7693,7 @@ var I18N_TEXT = {
     "Esvaziar carrinho": "Vaciar carrito",
     "Envio calculado no checkout · Embalagem de oferta incluída": "Envío calculado en el checkout · Embalaje de regalo incluido",
     "Envio gratuito aplicado": "Envío gratis aplicado",
-    "Portes gratuitos em encomendas a partir de 60€.": "Envío gratis en pedidos desde 60€.",
+    "Portes gratuitos em encomendas a partir de 60€ para Portugal e ilhas.": "Envío gratis en pedidos desde 60€ a Portugal e islas.",
     "Não vendemos produtos.": "No vendemos productos.",
     "Criamos momentos.": "Creamos momentos.",
     "Cada peça é pensada para ser mais do que um objeto, é um gesto com significado. Sabonetes, velas e aromas que ficam na memória de quem recebe.": "Cada pieza está pensada para ser más que un objeto: es un gesto con significado. Jabones, velas y aromas que quedan en la memoria de quien los recibe.",
@@ -7483,6 +7845,12 @@ var I18N_TEXT = {
     "Devoluções & Reembolsos": "Devoluciones y Reembolsos",
     "Política de Envio": "Política de Envío",
     "Legal": "Legal",
+    "Sabonetes Artesanais & Presentes Perfumados": "Jabones Artesanales y Regalos Perfumados",
+    "Presentes feitos à mão em Portugal, pensados para guardar momentos, memórias e pequenos gestos de amor.": "Regalos hechos a mano en Portugal, pensados para guardar momentos, recuerdos y pequeños gestos de amor.",
+    "Feito à mão": "Hecho a mano",
+    "Personalizável": "Personalizable",
+    "© 2026 Love Essences · Feito em Portugal com 💜": "© 2026 Love Essences · Hecho en Portugal con 💜",
+    "“Nós fazemos, vocês sentem”": "“Nosotros lo hacemos, vosotros lo sentís”",
     "© 2026 Love Essences · Feito em Portugal com ♥": "© 2026 Love Essences · Hecho en Portugal con ♥",
     "\"Nós fazemos, vocês sentem\"": "\"Nosotros lo hacemos, vosotros lo sentís\""
   }
@@ -7495,7 +7863,7 @@ var I18N_EXTRA_TEXT = {
     "Finalizar via WhatsApp 💬": "Checkout via WhatsApp 💬",
     "Finalizar via Formulário ✉️": "Checkout by Form ✉️",
     "🚚 Envio calculado no checkout · Embalagem de oferta incluída": "🚚 Shipping calculated at checkout · Gift packaging included",
-    "🚚 Portes de envio gratuitos · Embalagem de oferta incluída": "🚚 Free shipping · Gift packaging included",
+    "🚚 Portes de envio gratuitos para Portugal e ilhas · Embalagem de oferta incluída": "🚚 Free shipping to Portugal and islands · Gift packaging included",
     "✦ Feito à mão com amor · Portugal": "✦ Handmade with love · Portugal",
     "Não vendemos": "We do not sell",
     "produtos.": "products.",
@@ -7790,6 +8158,7 @@ var I18N_EXTRA_TEXT = {
     "Ocorreu um erro. Por favor, tenta novamente.": "An error occurred. Please try again.",
     "💌 Prometemos responder em menos de 24 horas.": "💌 We promise to reply in less than 24 hours.",
     "Presentes artesanais que contam histórias. Feitos à mão em Portugal, com amor e intenção em cada detalhe.": "Handmade gifts that tell stories. Made in Portugal with love and intention in every detail.",
+    "Love Essences | Sabonetes Artesanais & Co.": "Love Essences | Handmade Soaps & Co.",
     "| Sabonetes Artesanais & Co.": "| Handmade Soaps & Co.",
     "✦ Documentos Legais": "✦ Legal Documents",
     "Última atualização: 14 de abril de 2026": "Last updated: April 14, 2026",
@@ -7850,6 +8219,7 @@ var I18N_EXTRA_TEXT = {
     "Rastreamento da encomenda": "Order tracking",
     "Morada de envio": "Shipping address",
     "Portes grátis": "Free shipping",
+    "Em campanhas promocionais ou em compras acima de determinado valor, a Love Essences poderá oferecer portes grátis. Neste momento, os portes grátis aplicam-se a encomendas acima de 60€ para Portugal e ilhas. Sempre que aplicável, essa condição será apresentada no website ou no checkout, de acordo com os critérios definidos para a campanha em vigor.": "In promotional campaigns or purchases above a defined amount, Love Essences may offer free shipping. Currently, free shipping applies to orders over €60 to Portugal and the islands. Whenever applicable, this condition will be shown on the website or at checkout according to the criteria defined for the active campaign.",
     "Problemas com a entrega": "Delivery issues",
     "Destinos de envio": "Shipping destinations",
     "Alterações à Política de Envio": "Changes to the Shipping Policy"
@@ -7860,7 +8230,7 @@ var I18N_EXTRA_TEXT = {
     "Finalizar via WhatsApp 💬": "Finalizar por WhatsApp 💬",
     "Finalizar via Formulário ✉️": "Finalizar por Formulario ✉️",
     "🚚 Envio calculado no checkout · Embalagem de oferta incluída": "🚚 Envío calculado en el checkout · Embalaje de regalo incluido",
-    "🚚 Portes de envio gratuitos · Embalagem de oferta incluída": "🚚 Envío gratis · Embalaje de regalo incluido",
+    "🚚 Portes de envio gratuitos para Portugal e ilhas · Embalagem de oferta incluída": "🚚 Envío gratis a Portugal e islas · Embalaje de regalo incluido",
     "✦ Feito à mão com amor · Portugal": "✦ Hecho a mano con amor · Portugal",
     "Não vendemos": "No vendemos",
     "produtos.": "productos.",
@@ -8155,6 +8525,7 @@ var I18N_EXTRA_TEXT = {
     "Ocorreu um erro. Por favor, tenta novamente.": "Ha ocurrido un error. Por favor, inténtalo de nuevo.",
     "💌 Prometemos responder em menos de 24 horas.": "💌 Prometemos responder en menos de 24 horas.",
     "Presentes artesanais que contam histórias. Feitos à mão em Portugal, com amor e intenção em cada detalhe.": "Regalos artesanales que cuentan historias. Hechos a mano en Portugal, con amor e intención en cada detalle.",
+    "Love Essences | Sabonetes Artesanais & Co.": "Love Essences | Jabones Artesanales & Co.",
     "| Sabonetes Artesanais & Co.": "| Jabones Artesanales & Co.",
     "✦ Documentos Legais": "✦ Documentos Legales",
     "Última atualização: 14 de abril de 2026": "Última actualización: 14 de abril de 2026",
@@ -8215,6 +8586,7 @@ var I18N_EXTRA_TEXT = {
     "Rastreamento da encomenda": "Seguimiento del pedido",
     "Morada de envio": "Dirección de envío",
     "Portes grátis": "Envío gratis",
+    "Em campanhas promocionais ou em compras acima de determinado valor, a Love Essences poderá oferecer portes grátis. Neste momento, os portes grátis aplicam-se a encomendas acima de 60€ para Portugal e ilhas. Sempre que aplicável, essa condição será apresentada no website ou no checkout, de acordo com os critérios definidos para a campanha em vigor.": "En campañas promocionales o en compras superiores a un importe definido, Love Essences podrá ofrecer envío gratis. Actualmente, el envío gratis se aplica a pedidos superiores a 60€ para Portugal e islas. Siempre que sea aplicable, esta condición se mostrará en la web o en el checkout según los criterios definidos para la campaña vigente.",
     "Problemas com a entrega": "Problemas con la entrega",
     "Destinos de envio": "Destinos de envío",
     "Alterações à Política de Envio": "Cambios en la Política de Envío"
@@ -8848,7 +9220,7 @@ var PRODUCT_CATALOG = {
     category: 'Lembranças para Eventos',
     name: 'Sopros de Alegria',
     visual: '🫧',
-    image: 'assets/products/sopros-de-alegria.jpeg',
+    image: 'assets/products/sopros-de-alegria.png',
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'A lembrança',
     story: 'Os Sopros de Alegria são bolinhas de sabão personalizadas com etiqueta temática, ideais para festas infantis, aniversários, batizados, comunhões e outros momentos especiais. Uma lembrança simples, divertida e encantadora para os mais pequenos.',
@@ -10171,7 +10543,7 @@ var CART_IMAGE_MAP = {
   'Bilhete Perfumado': 'assets/products/bilhete-perfumado.jpg',
   'Mini Difusor': 'assets/products/mini-difusor4.jpg',
   'Mini Difusor + Mini Sabonete': 'assets/products/mini-difusor-mais-mini-sabonete.jpg',
-  'Sopros de Alegria': 'assets/products/sopros-de-alegria.jpeg',
+  'Sopros de Alegria': 'assets/products/sopros-de-alegria.png',
   'Laço de Memória': 'assets/products/laco-de-memoria.jpg',
   'Pequeno Artista': 'assets/products/pequeno-artista.jpg',
   'Momento Criativo': 'assets/products/momento-criativo.jpg',
@@ -10391,7 +10763,7 @@ function renderCart() {
   }
   if (shippingEl) {
     if (total >= 60) {
-      shippingEl.textContent = '🚚 Portes de envio gratuitos · Embalagem de oferta incluída';
+      shippingEl.textContent = '🚚 Portes de envio gratuitos para Portugal e ilhas · Embalagem de oferta incluída';
       shippingEl.classList.add('free-shipping');
     } else {
       shippingEl.textContent = '🚚 Envio calculado no checkout · Embalagem de oferta incluída';
