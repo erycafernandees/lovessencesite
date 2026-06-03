@@ -9145,11 +9145,19 @@ function syncHeaderOffsets() {
 }
 
 
+function scrollToPageTopInstant() {
+  var root = document.documentElement;
+  var previousScrollBehavior = root.style.scrollBehavior;
+  root.style.scrollBehavior = 'auto';
+  window.scrollTo(0, 0);
+  root.style.scrollBehavior = previousScrollBehavior;
+}
+
 function showPage(name) {
   if (name !== 'product' && typeof stopProductGalleryAuto === 'function') stopProductGalleryAuto();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const target = document.getElementById('page-' + name);
-  if (target) { target.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  if (target) { target.classList.add('active'); scrollToPageTopInstant(); }
 
   // Reset de filtros ao entrar na loja "limpa" (sem vir de openOccasion).
   // openOccasion seta o flag _intentionalFilter para evitar este reset.
@@ -11198,38 +11206,39 @@ renderCart();
 
 
 <script>
-/* ── TOUCH RELAY (iOS tap fix) ───────────────────────────────────── */
+/* ── TOUCH GUARD ─────────────────────────────────────────────────── */
 (function () {
-  function triggerInlineAction(el, event) {
-    if (!el) return false;
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    try {
-      el.click();
-      return true;
-    } catch (err) {
-      return false;
-    }
-  }
+  var MOVE_LIMIT = 12;
 
-  function findActionTarget(target) {
+  function findTouchableCard(target) {
     if (!target || !target.closest) return null;
-    return target.closest('button[onclick], a[onclick], [role="button"][onclick], .product-btn[onclick], .btn-primary[onclick], .btn-outline[onclick], .pd-cta[onclick], .cart-nav-btn[onclick], .mobile-nav-link[onclick], .mobile-cta[onclick]');
+    return target.closest('.products-grid .product-card, #shop-products-grid .product-card, .occasion-card');
   }
 
-  document.addEventListener('touchend', function (e) {
-    var target = findActionTarget(e.target);
-    if (!target) return;
-    triggerInlineAction(target, e);
-  }, { passive: false, capture: true });
-
-  document.addEventListener('pointerup', function (e) {
+  document.addEventListener('pointerdown', function (e) {
     if (e.pointerType !== 'touch') return;
-    var target = findActionTarget(e.target);
-    if (!target) return;
-    triggerInlineAction(target, e);
+    var card = findTouchableCard(e.target);
+    if (!card) return;
+    card.dataset.touchStartX = String(e.clientX);
+    card.dataset.touchStartY = String(e.clientY);
+    card.dataset.touchMoved = 'false';
+  }, { passive: true, capture: true });
+
+  document.addEventListener('pointermove', function (e) {
+    if (e.pointerType !== 'touch') return;
+    var card = findTouchableCard(e.target);
+    if (!card || !card.dataset.touchStartX || !card.dataset.touchStartY) return;
+    var dx = Math.abs(e.clientX - Number(card.dataset.touchStartX));
+    var dy = Math.abs(e.clientY - Number(card.dataset.touchStartY));
+    if (dx > MOVE_LIMIT || dy > MOVE_LIMIT) card.dataset.touchMoved = 'true';
+  }, { passive: true, capture: true });
+
+  document.addEventListener('click', function (e) {
+    var card = findTouchableCard(e.target);
+    if (!card || card.dataset.touchMoved !== 'true') return;
+    e.preventDefault();
+    e.stopPropagation();
+    card.dataset.touchMoved = 'false';
   }, true);
 })();
 </script>
@@ -11285,7 +11294,7 @@ renderCart();
 
       if (card.dataset.cardOpenBound) return;
       card.addEventListener('click', function(event) {
-        if (event.target.closest('a, select, input, textarea')) return;
+        if (event.target.closest('button, a, select, input, textarea, label')) return;
         openCardProduct(card);
       });
       card.addEventListener('keydown', function(event) {
