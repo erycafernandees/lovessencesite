@@ -4361,6 +4361,59 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .footer-contact-panel {
+      position: relative;
+      margin-top: 0.15rem;
+      padding-top: 1.25rem;
+      padding-bottom: 0.15rem;
+      border-top: none;
+    }
+
+    .footer-contact-panel::before {
+      content: '';
+      width: min(54%, 180px);
+      height: 1px;
+      margin-bottom: 1.2rem;
+      background: linear-gradient(90deg, transparent, rgba(180,104,171,0.28), transparent);
+    }
+
+    .footer-contact-panel .footer-newsletter {
+      width: min(100%, 320px);
+      max-width: 320px;
+    }
+
+    .newsletter-kicker {
+      font-size: 12px !important;
+      margin-bottom: 0.65rem !important;
+      letter-spacing: 0.045em !important;
+    }
+
+    .newsletter-form input {
+      padding: 8px 13px;
+      font-size: 12.5px;
+    }
+
+    .newsletter-form button {
+      padding: 8px 14px;
+      font-size: 15px;
+    }
+
+    .footer-social-links {
+      gap: 1.1rem;
+      margin-top: 1rem;
+    }
+
+    .footer-social-links a,
+    .footer-contact-email {
+      width: 22px;
+      height: 22px;
+    }
+
+    .footer-social-links svg {
+      width: 22px;
+      height: 22px;
+    }
+
     .footer-bottom {
       flex-direction: column !important;
       justify-content: center !important;
