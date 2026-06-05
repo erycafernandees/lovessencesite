@@ -6,14 +6,112 @@
 <title>Love Essences, Presentes que contam histórias</title>
 <meta name="description" content="Presentes artesanais feitos à mão em Portugal, personalizados para momentos especiais."/>
 <meta name="theme-color" content="#66135e"/>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    corePlugins: {
-      preflight: false  /* Desativa o reset do Tailwind para não conflituar com os teus estilos */
+<link rel="canonical" href="https://erycafernandees.github.io/lovessencesite/"/>
+<meta property="og:title" content="Love Essences — Presentes que contam histórias"/>
+<meta property="og:description" content="Presentes artesanais feitos à mão em Portugal. Personalizados para momentos especiais."/>
+<meta property="og:image" content="https://erycafernandees.github.io/lovessencesite/assets/love-essences-social-logo.png"/>
+<meta property="og:url" content="https://erycafernandees.github.io/lovessencesite/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:locale" content="pt_PT"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Love Essences — Presentes que contam histórias"/>
+<meta name="twitter:description" content="Presentes artesanais feitos à mão em Portugal. Personalizados para momentos especiais."/>
+<meta name="twitter:image" content="https://erycafernandees.github.io/lovessencesite/assets/love-essences-social-logo.png"/>
+<link rel="icon" type="image/png" href="./assets/love-essences-social-logo.png"/>
+<link rel="apple-touch-icon" href="./assets/love-essences-social-logo.png"/>
+<link rel="stylesheet" href="./dist/output.css"/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "Love Essences",
+      "url": "https://erycafernandees.github.io/lovessencesite/",
+      "logo": "https://erycafernandees.github.io/lovessencesite/assets/love-essences-social-logo.png",
+      "description": "Presentes artesanais feitos à mão em Portugal, personalizados para momentos especiais.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "PT"
+      },
+      "sameAs": [
+        "https://instagram.com/lovessences.art"
+      ]
+    },
+    {
+      "@type": "Product",
+      "name": "Bloom",
+      "description": "Peça artesanal em porcelana, delicada e atemporal. Disponível em três tamanhos, para todas as histórias.",
+      "image": "https://erycafernandees.github.io/lovessencesite/assets/products/bloom.jpg",
+      "offers": {
+        "@type": "Offer",
+        "price": "32.90",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "Product",
+      "name": "Essência do Amor",
+      "description": "A box presente para dizer aquilo que as palavras não conseguem. Em três tamanhos, sempre pronta a oferecer.",
+      "image": "https://erycafernandees.github.io/lovessencesite/assets/products/essencia-amor-m2.jpg",
+      "offers": {
+        "@type": "Offer",
+        "price": "25",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "Product",
+      "name": "Aurora",
+      "description": "Moldura floral artesanal com escrita personalizada, única, como o momento que vai eternizar.",
+      "image": "https://erycafernandees.github.io/lovessencesite/assets/products/aurora.jpg",
+      "offers": {
+        "@type": "Offer",
+        "price": "25",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "Product",
+      "name": "Memória Perfumada",
+      "description": "Vela em frasco com rolha, criada como lembrança de eventos. Aromas suaves para ficar na memória.",
+      "image": "https://erycafernandees.github.io/lovessencesite/assets/products/memoria-perfumada.png",
+      "offers": {
+        "@type": "Offer",
+        "price": "4",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "Product",
+      "name": "Mini Difusor",
+      "description": "Mini difusor aromático com etiqueta temática, ideal para lembranças delicadas de eventos.",
+      "image": "https://erycafernandees.github.io/lovessencesite/assets/products/mini-difusor4.jpg",
+      "offers": {
+        "@type": "Offer",
+        "price": "4.50",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "Product",
+      "name": "Luz Serena",
+      "description": "Vela delicada e perfumada, pensada para iluminar a mesa e deixar uma lembrança doce nos convidados.",
+      "image": "https://erycafernandees.github.io/lovessencesite/assets/products/luz-serena.png",
+      "offers": {
+        "@type": "Offer",
+        "price": "3.50",
+        "priceCurrency": "EUR",
+        "availability": "https://schema.org/InStock"
+      }
     }
-  }
+  ]
+}
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -658,7 +756,7 @@
 
   /* SHOP PAGE */
   .shop-hero { background: var(--cream); padding: 4rem 8vw 3rem; text-align: center; }
-  .shop-hero h1 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 300; }
+  .shop-hero h2 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 300; }
   .shop-hero p { color: var(--warm-gray); margin-top: 1rem; font-weight: 300; font-size: 0.95rem; }
   .category-tabs { display: flex; justify-content: center; gap: 0.8rem; flex-wrap: wrap; margin: 2rem 0 0; align-items: center; }
   .cat-tab { background: transparent; border: 1px solid rgba(180,104,171,0.3); color: var(--warm-gray); padding: 0.6rem 1.6rem; font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: all 0.3s; }
@@ -1284,8 +1382,8 @@
   .about-hero { background: var(--dark); padding: 6rem 8vw; display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; position: relative; overflow: hidden; }
   .about-hero::before { content: ''; position: absolute; right: -5%; top: 50%; transform: translateY(-50%); width: 50vw; height: 80vh; background: radial-gradient(ellipse, rgba(227,190,223,0.07) 0%, transparent 70%); }
   .about-hero-text .section-label { color: var(--blush); }
-  .about-hero-text h1 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 300; color: #fff; line-height: 1.15; }
-  .about-hero-text h1 em { color: var(--blush); font-style: italic; }
+  .about-hero-text h2 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 300; color: #fff; line-height: 1.15; }
+  .about-hero-text h2 em { color: var(--blush); font-style: italic; }
   .about-hero-text p { color: rgba(255,255,255,0.55); font-size: 0.95rem; line-height: 1.85; margin-top: 1.5rem; font-weight: 300; }
   .about-hero-visual { position: relative; }
   .about-circle { width: 320px; height: 320px; border-radius: 50%; background: linear-gradient(145deg, rgba(227,190,223,0.15) 0%, rgba(180,104,171,0.08) 100%); border: 1px solid rgba(180,104,171,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 28px 76px rgba(0,0,0,0.18); }
@@ -1464,8 +1562,8 @@
   .contact-hero { background: var(--dark); padding: 5rem 8vw; text-align: center; position: relative; overflow: hidden; }
   .contact-hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 100%, rgba(180,104,171,0.1) 0%, transparent 70%); }
   .contact-hero .section-label { color: var(--blush); }
-  .contact-hero h1 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 300; color: #fff; position: relative; z-index: 1; }
-  .contact-hero h1 em { color: var(--blush); font-style: italic; }
+  .contact-hero h2 { font-family: var(--serif); font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 300; color: #fff; position: relative; z-index: 1; }
+  .contact-hero h2 em { color: var(--blush); font-style: italic; }
   .contact-hero p { color: rgba(255,255,255,0.5); margin-top: 1rem; font-weight: 300; position: relative; z-index: 1; }
   .contact-body { padding: 5rem 8vw; display: grid; grid-template-columns: 1fr 1.2fr; gap: 6rem; align-items: start; }
   .contact-info h3 { font-family: var(--serif); font-size: 2rem; font-weight: 300; margin-bottom: 1.5rem; }
@@ -1506,7 +1604,7 @@
     position: relative;
     z-index: 1;
   }
-  .tracking-hero h1 {
+  .tracking-hero h2 {
     font-family: var(--serif);
     font-size: clamp(2.7rem, 6vw, 5rem);
     font-weight: 300;
@@ -2063,7 +2161,7 @@
 
     /* CONTACT */
     .contact-hero { padding: 4rem 5vw 3rem; }
-    .contact-hero h1 { font-size: clamp(2rem, 8vw, 3rem); }
+    .contact-hero h2 { font-size: clamp(2rem, 8vw, 3rem); }
     .contact-body {
       grid-template-columns: 1fr;
       gap: 2.5rem;
@@ -3791,9 +3889,9 @@
   .hero-premium-title,
   .hero h1,
   .pd-name,
-  .shop-hero h1,
-  .about-hero-text h1,
-  .contact-hero h1 {
+  .shop-hero h2,
+  .about-hero-text h2,
+  .contact-hero h2 {
     letter-spacing: -0.028em;
   }
 
@@ -5900,7 +5998,7 @@
         <div class="hero-premium-mobile-photo">
           <article class="hero-mobile-card">
             <span class="hero-mobile-card-image">
-              <img src="assets/products/pensar-em-ti.jpg" alt="" loading="eager"/>
+              <img src="assets/products/pensar-em-ti.jpg" alt="Arranjo de flores de sabonete com urso Love Essences" loading="eager"/>
             </span>
             <span class="hero-mobile-card-icon">🌸</span>
             <span class="hero-mobile-card-title">Flores que Ficam</span>
@@ -5909,7 +6007,7 @@
           </article>
           <article class="hero-mobile-card">
             <span class="hero-mobile-card-image">
-              <img src="assets/hero/hero-vela-dinis.jpg" alt="" loading="eager"/>
+              <img src="assets/hero/hero-vela-dinis.jpg" alt="Vela personalizada Love Essences com nome e data" loading="eager"/>
             </span>
             <span class="hero-mobile-card-icon">💛</span>
             <span class="hero-mobile-card-title">Aromas que Acolhem</span>
@@ -5941,11 +6039,11 @@
 
       <div class="hero-premium-visual" aria-hidden="true">
         <div class="hero-premium-panel-main hero-premium-photo-panel">
-          <img class="hero-premium-feature-img" src="assets/products/pensar-em-ti.jpg" alt="" loading="eager"/>
+          <img class="hero-premium-feature-img" src="assets/products/pensar-em-ti.jpg" alt="Arranjo de flores de sabonete com urso Love Essences" loading="eager"/>
         </div>
 
         <div class="hero-premium-panel-accent hero-premium-side-photo">
-          <img src="assets/hero/hero-vela-dinis.jpg" alt="" loading="lazy"/>
+          <img src="assets/hero/hero-vela-dinis.jpg" alt="Vela personalizada Love Essences com nome e data" loading="lazy"/>
         </div>
       </div>
     </div>
@@ -6496,7 +6594,7 @@
 <div class="page" id="page-shop">
   <section class="shop-hero px-[5vw] pt-28 pb-10 md:px-[8vw]">
     <p class="section-label">✦ A Nossa Loja</p>
-    <h1 class="section-title">Cada peça é única.<br/><em>Como quem a vai receber.</em></h1>
+    <h2 class="section-title">Cada peça é única.<br/><em>Como quem a vai receber.</em></h2>
     <p>Produtos artesanais feitos com intenção e amor, escolhe o teu presente perfeito.</p>
     <div class="category-tabs">
       <button type="button" class="cat-tab" data-filter="pecas" onclick="filterCategory(this,'pecas')">Coleção Assinatura</button>
@@ -6764,7 +6862,7 @@
     <div class="pd-visual" id="pd-visual">🌸</div>
     <div class="pd-content">
       <p class="pd-category" id="pd-category">✦ Coleção Assinatura</p>
-      <h1 class="pd-name" id="pd-name">Bloom</h1>
+      <h2 class="pd-name" id="pd-name">Bloom</h2>
       <div class="pd-price-block">
         <span class="pd-price-from" id="pd-price-from" style="display:none;">A partir de</span>
         <p class="pd-price" id="pd-price">32,90€</p>
@@ -6873,7 +6971,7 @@
   <div class="about-hero">
     <div class="about-hero-text">
       <p class="section-label">✦ Sobre Nós</p>
-      <h1>Nascemos do desejo<br/>de criar algo que<br/><em>se sentisse.</em></h1>
+      <h2>Nascemos do desejo<br/>de criar algo que<br/><em>se sentisse.</em></h2>
       <p>A Love Essences não foi criada num escritório. Foi criada numa cozinha, com as mãos numa forma de gesso e o cheiro de rosas no ar. É uma história de amor, ao artesanato, à beleza e ao gesto de oferecer.</p>
     </div>
     <div class="about-hero-visual">
@@ -6956,7 +7054,7 @@
   <section class="occasions-hero bg-white px-[5vw] pb-8 pt-28 md:px-[8vw] md:pb-10">
     <div class="mx-auto max-w-[820px] text-center">
       <p class="section-label">✦ Para cada momento</p>
-      <h1 class="section-title">O presente certo<br/>para cada <em>ocasião</em></h1>
+      <h2 class="section-title">O presente certo<br/>para cada <em>ocasião</em></h2>
       <p class="mx-auto mt-3 max-w-[42rem] text-[15px] leading-8 md:text-[16px]" style="color: var(--warm-gray);">Porque cada data especial merece um gesto que esteja à sua altura.</p>
     </div>
   </section>
@@ -7103,7 +7201,7 @@
 <div class="page" id="page-tracking">
   <section class="tracking-hero">
     <p class="section-label">✦ Envio CTT</p>
-    <h1>Acompanhar Encomenda</h1>
+    <h2>Acompanhar Encomenda</h2>
     <p>Assim que a sua encomenda for enviada, receberá um código de acompanhamento CTT. Insira o código abaixo para acompanhar o percurso da sua encomenda na página oficial dos CTT.</p>
   </section>
 
@@ -7141,7 +7239,7 @@
 <div class="page" id="page-contact">
   <div class="contact-hero">
     <p class="section-label">✦ Vamos criar juntos</p>
-    <h1>Conta-nos<br/><em>tudo sobre ela.</em></h1>
+    <h2>Conta-nos<br/><em>tudo sobre ela.</em></h2>
     <p>Cada encomenda personalizada começa aqui, com uma história.</p>
   </div>
 
@@ -7336,7 +7434,7 @@
 <div class="page" id="page-privacy">
   <section style="padding:calc(var(--header-offset) + 3rem) 5vw 3rem; text-align:center; background:linear-gradient(180deg,rgba(241,227,239,0.4) 0%,transparent 100%); border-bottom:1px solid rgba(180,104,171,0.1);">
     <p class="section-label">✦ Documentos Legais</p>
-    <h1 class="section-title" style="font-size:clamp(2rem,4.5vw,3.2rem);">Política de <em>Privacidade</em></h1>
+    <h2 class="section-title" style="font-size:clamp(2rem,4.5vw,3.2rem);">Política de <em>Privacidade</em></h2>
     <p style="font-size:0.78rem; color:var(--warm-gray); letter-spacing:0.06em; margin-top:0.5rem;">Última atualização: 14 de abril de 2026</p>
   </section>
   <div style="max-width:820px; margin:0 auto; padding:3.5rem 5vw 5rem;">
@@ -7459,7 +7557,7 @@
 <div class="page" id="page-terms">
   <section style="padding:calc(var(--header-offset) + 3rem) 5vw 3rem; text-align:center; background:linear-gradient(180deg,rgba(241,227,239,0.4) 0%,transparent 100%); border-bottom:1px solid rgba(180,104,171,0.1);">
     <p class="section-label">✦ Documentos Legais</p>
-    <h1 class="section-title" style="font-size:clamp(2rem,4.5vw,3.2rem);">Termos de <em>Serviço</em></h1>
+    <h2 class="section-title" style="font-size:clamp(2rem,4.5vw,3.2rem);">Termos de <em>Serviço</em></h2>
     <p style="font-size:0.78rem; color:var(--warm-gray); letter-spacing:0.06em; margin-top:0.5rem;">Última atualização: 14 de abril de 2026</p>
   </section>
   <div style="max-width:820px; margin:0 auto; padding:3.5rem 5vw 5rem;">
@@ -7554,7 +7652,7 @@
 <div class="page" id="page-returns">
   <section style="padding:calc(var(--header-offset) + 3rem) 5vw 3rem; text-align:center; background:linear-gradient(180deg,rgba(241,227,239,0.4) 0%,transparent 100%); border-bottom:1px solid rgba(180,104,171,0.1);">
     <p class="section-label">✦ Documentos Legais</p>
-    <h1 class="section-title" style="font-size:clamp(2rem,4.5vw,3.2rem);">Devoluções &amp; <em>Reembolsos</em></h1>
+    <h2 class="section-title" style="font-size:clamp(2rem,4.5vw,3.2rem);">Devoluções &amp; <em>Reembolsos</em></h2>
     <p style="font-size:0.78rem; color:var(--warm-gray); letter-spacing:0.06em; margin-top:0.5rem;">Última atualização: 14 de abril de 2026</p>
   </section>
 
@@ -7648,7 +7746,7 @@
 <div class="page" id="page-shipping">
   <section style="padding:calc(var(--header-offset) + 3rem) 5vw 3rem; text-align:center; background:linear-gradient(180deg,rgba(241,227,239,0.4) 0%,transparent 100%); border-bottom:1px solid rgba(180,104,171,0.1);">
     <p class="section-label">✦ Documentos Legais</p>
-    <h1 class="section-title" style="font-size:clamp(2rem,4.5vw,3.2rem);">Política de <em>Envio</em></h1>
+    <h2 class="section-title" style="font-size:clamp(2rem,4.5vw,3.2rem);">Política de <em>Envio</em></h2>
     <p style="font-size:0.78rem; color:var(--warm-gray); letter-spacing:0.06em; margin-top:0.5rem;">Última atualização: 14 de abril de 2026</p>
   </section>
 
@@ -10260,7 +10358,7 @@ function renderProductGallery(images, altBase) {
       '</div>';
     }
     return '<div class="pd-gallery-slide' + (idx === 0 ? ' active' : '') + '" data-gallery-index="' + idx + '">' +
-      '<img src="' + productEscapeHtml(src) + '" alt="" aria-label="' + safeAlt + (currentGalleryImages.length > 1 ? ' foto ' + (idx + 1) : '') + '" onerror="this.closest(\'.pd-gallery-slide\').remove()">' +
+      '<img src="' + productEscapeHtml(src) + '" alt="' + safeAlt + (currentGalleryImages.length > 1 ? ' foto ' + (idx + 1) : '') + '" onerror="this.closest(\'.pd-gallery-slide\').remove()">' +
     '</div>';
   }).join('');
 

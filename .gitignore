@@ -1,3 +1,4 @@
 .DS_Store
 *.log
 love-essences-v13.html
+node_modules/
