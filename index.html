@@ -41,6 +41,7 @@
     --sans: 'Jost', sans-serif;
     --header-offset: 149px;
     --announce-height: 24px;
+    --product-back-height: 54px;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -53,7 +54,7 @@
   .mobile-nav-link, .mobile-cta, .hamburger,
   .cart-nav-btn, .cart-close, .cart-checkout-btn,
   .cart-add-btn, .qty-btn, .cart-item-remove, .cart-clear-btn,
-  .btn-sm, .pd-cta, .nav-logo {
+  .btn-sm, .pd-cta, .pd-back-bar, .scroll-top-btn, .nav-logo {
     touch-action: manipulation;
     -webkit-tap-highlight-color: rgba(180,104,171,0.15);
     cursor: pointer;
@@ -968,7 +969,36 @@
   }
 
   /* PRODUCT DETAIL PAGE */
+  #page-product.active { padding-top: calc(var(--header-offset) + var(--product-back-height)); }
   .product-detail { padding: 3rem 8vw; display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+  .pd-back-bar {
+    position: fixed !important;
+    top: var(--header-offset, 110px) !important;
+    left: 0;
+    right: 0;
+    z-index: 170;
+    width: 100%;
+    height: var(--product-back-height);
+    display: flex;
+    align-items: center;
+    padding: 1rem 8vw;
+    border: 0;
+    border-bottom: 1px solid rgba(180,104,171,0.14);
+    background: rgba(241,227,239,0.94);
+    color: var(--warm-gray);
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-align: left;
+    cursor: pointer;
+    backdrop-filter: blur(14px);
+    transition: color 0.2s ease, background 0.2s ease;
+  }
+  .pd-back-bar:hover {
+    color: var(--deep-rose);
+    background: rgba(252,248,252,0.96);
+  }
+  #page-product.active .product-detail { margin-top: 0; }
   .pd-visual { background: linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%); border-radius: 16px; height: 560px; display: flex; align-items: center; justify-content: center; font-size: 8rem; position: sticky; top: 100px; overflow: hidden; }
   .pd-gallery { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: inherit; }
   .pd-gallery-track { width: 100%; height: 100%; position: relative; pointer-events: auto; }
@@ -1214,6 +1244,41 @@
   .pd-price-block { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 1.8rem; }
   .pd-price { margin-bottom: 0; }
   .pd-price-from { font-size: 0.78rem; color: var(--warm-gray); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .scroll-top-btn {
+    position: fixed;
+    right: clamp(1rem, 2vw, 1.8rem);
+    bottom: clamp(1rem, 2vw, 1.8rem);
+    z-index: 120;
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    border: 1px solid rgba(180,104,171,0.28);
+    background: rgba(252,248,252,0.92);
+    color: var(--deep-rose);
+    font-family: var(--sans);
+    font-size: 1.25rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 16px 42px rgba(63,7,58,0.14);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: opacity 0.22s ease, transform 0.22s ease, background 0.22s ease, color 0.22s ease;
+  }
+
+  .scroll-top-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .scroll-top-btn:hover {
+    background: var(--deep-rose);
+    color: #fff;
+  }
 
   /* ABOUT PAGE */
   .about-hero { background: var(--dark); padding: 6rem 8vw; display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; position: relative; overflow: hidden; }
@@ -1948,6 +2013,8 @@
 
     /* PRODUCT DETAIL */
     .product-detail { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 5vw; }
+    #page-product { --product-back-height: 48px; }
+    .pd-back-bar { top: var(--header-offset, 96px) !important; padding: 0.85rem 5vw; }
     .pd-visual { height: 280px; font-size: 5rem; position: static; border-radius: 12px; }
     .pd-name { font-size: clamp(1.8rem, 7vw, 2.5rem); }
     .pd-price { font-size: 1.6rem; margin-bottom: 1.5rem; }
@@ -1958,6 +2025,13 @@
     .pd-size-price { font-size: 0.72rem; }
     .pd-fabrics { grid-template-columns: 1fr; gap: 0.55rem; }
     .pd-fabric { padding: 0.9rem 0.75rem; }
+    .scroll-top-btn {
+      width: 42px;
+      height: 42px;
+      right: 0.9rem;
+      bottom: calc(0.9rem + env(safe-area-inset-bottom, 0px));
+      font-size: 1.12rem;
+    }
 
     /* ABOUT */
     .about-hero {
@@ -4105,6 +4179,7 @@
   }
 
   .footer-newsletter {
+    margin-top: 1.35rem;
     width: min(100%, 420px);
     max-width: 420px;
     margin-left: auto;
@@ -4610,10 +4685,16 @@
   }
 
   .instagram-handle {
+    display: inline-block;
     font-size: 14px;
     color: #b468ab;
     letter-spacing: 0.1em;
     margin-bottom: 32px;
+    text-decoration: none;
+  }
+
+  .instagram-handle:hover {
+    color: var(--deep-rose);
   }
 
   .instagram-grid {
@@ -5792,6 +5873,8 @@
   </div>
 </div>
 
+<button type="button" class="scroll-top-btn" id="scroll-top-btn" aria-label="Voltar ao topo">↑</button>
+
 <!-- ============================================================ -->
 <!-- HOME PAGE -->
 <!-- ============================================================ -->
@@ -6370,7 +6453,7 @@
   <section class="instagram-feed">
     <p class="section-label">✦ SIGA-NOS</p>
     <h2 class="section-title">Visto no Instagram</h2>
-    <p class="instagram-handle">@lovessences.art</p>
+    <a class="instagram-handle" href="https://www.instagram.com/lovessences.art" target="_blank" rel="noopener">@lovessences.art</a>
     <div class="instagram-grid">
       <a href="https://www.instagram.com/lovessences.art" target="_blank" rel="noopener">
         <img src="assets/insta1.jpg" alt="Love Essences no Instagram" />
@@ -6674,9 +6757,9 @@
 <!-- PRODUCT PAGE, dinâmica, preenchida por openProduct() -->
 <!-- ============================================================ -->
 <div class="page" id="page-product">
-  <div style="background: var(--cream); padding: 1.5rem 8vw; font-size: 0.8rem; color: var(--warm-gray); cursor: pointer;" onclick="showPage('shop')">
+  <button type="button" class="pd-back-bar" onclick="showPage('shop')">
     ← Voltar à Loja
-  </div>
+  </button>
   <div class="product-detail">
     <div class="pd-visual" id="pd-visual">🌸</div>
     <div class="pd-content">
@@ -9233,8 +9316,115 @@ function scrollToPageTopInstant() {
   root.style.scrollBehavior = previousScrollBehavior;
 }
 
-function showPage(name) {
+var SCROLL_TOP_PAGES = ['home', 'shop', 'product', 'occasions'];
+
+function shouldShowScrollTopButton() {
+  var page = getActivePageName();
+  var threshold = Math.min(620, Math.max(320, window.innerHeight * 0.42));
+  return SCROLL_TOP_PAGES.indexOf(page) !== -1 && window.scrollY > threshold;
+}
+
+function updateScrollTopButton() {
+  var button = document.getElementById('scroll-top-btn');
+  if (!button) return;
+  button.classList.toggle('visible', shouldShowScrollTopButton());
+}
+
+function scrollActivePageToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(updateScrollTopButton, 320);
+}
+
+function initScrollTopButton() {
+  var button = document.getElementById('scroll-top-btn');
+  if (!button) return;
+  button.addEventListener('click', scrollActivePageToTop);
+  window.addEventListener('scroll', updateScrollTopButton, { passive: true });
+  window.addEventListener('resize', updateScrollTopButton);
+  updateScrollTopButton();
+}
+
+var pageHistoryReady = false;
+
+function getActivePageName() {
+  var active = document.querySelector('.page.active');
+  return active ? active.id.replace('page-', '') : 'home';
+}
+
+function getPageNameFromHash() {
+  var hash = window.location.hash || '';
+  if (!hash) return '';
+  if (hash === '#home') return 'home';
+  if (hash.indexOf('#page-') !== 0) return '';
+  var page = hash.replace('#page-', '');
+  return document.getElementById('page-' + page) ? page : '';
+}
+
+function getPageHistoryUrl(name) {
+  var url = new URL(window.location.href);
+  url.hash = name === 'home' ? '' : 'page-' + name;
+  return url.toString();
+}
+
+function syncPageHistory(name, options) {
+  options = options || {};
+  if (!pageHistoryReady || options.history === false || !window.history || !history.pushState) return;
+
+  var productId = options.productId || (name === 'product' ? currentProduct : null);
+  var state = { loveEssencesPage: true, page: name };
+  if (productId) state.productId = productId;
+
+  var current = history.state || {};
+  if (
+    current.loveEssencesPage &&
+    current.page === state.page &&
+    (current.productId || null) === (state.productId || null)
+  ) {
+    return;
+  }
+
+  history.pushState(state, '', getPageHistoryUrl(name));
+}
+
+function restorePageFromHistory(state) {
+  var page = state && state.loveEssencesPage ? state.page : (getPageNameFromHash() || 'home');
+  if (page === 'product') {
+    if (state && state.productId && typeof openProduct === 'function') {
+      openProduct(state.productId, { history: false });
+    } else {
+      showPage('shop', { history: false });
+    }
+    return;
+  }
+
+  if (!document.getElementById('page-' + page)) page = 'home';
+  showPage(page, { history: false });
+}
+
+function initPageHistory() {
+  if (!window.history || !history.replaceState) return;
+
+  var hashPage = getPageNameFromHash();
+  if (hashPage && hashPage !== getActivePageName()) {
+    if (hashPage === 'product') showPage('shop', { history: false });
+    else showPage(hashPage, { history: false });
+  }
+
+  var initialPage = getActivePageName();
+  var initialState = { loveEssencesPage: true, page: initialPage };
+  if (initialPage === 'product' && currentProduct) initialState.productId = currentProduct;
+  history.replaceState(initialState, '', getPageHistoryUrl(initialPage));
+  pageHistoryReady = true;
+
+  window.addEventListener('popstate', function(event) {
+    restorePageFromHistory(event.state);
+  });
+}
+
+function showPage(name, options) {
+  options = options || {};
   if (name !== 'product' && typeof stopProductGalleryAuto === 'function') stopProductGalleryAuto();
+  if (typeof syncHeaderOffsets === 'function') syncHeaderOffsets();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const target = document.getElementById('page-' + name);
   if (target) { target.classList.add('active'); scrollToPageTopInstant(); }
@@ -9251,6 +9441,13 @@ function showPage(name) {
     if (typeof applyShopFilters === 'function') applyShopFilters();
   }
   window._intentionalFilter = false;
+  syncPageHistory(name, options);
+  if (typeof syncHeaderOffsets === 'function' || typeof updateScrollTopButton === 'function') {
+    requestAnimationFrame(function() {
+      if (typeof syncHeaderOffsets === 'function') syncHeaderOffsets();
+      if (typeof updateScrollTopButton === 'function') updateScrollTopButton();
+    });
+  }
 }
 
 var CTT_TRACKING_URL = 'https://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx?request_locale=pt';
@@ -9731,7 +9928,8 @@ var currentGalleryImages = [];
 var currentGalleryIndex = 0;
 var productGalleryTimer = null;
 
-function openProduct(productId) {
+function openProduct(productId, options) {
+  options = options || {};
   var p = PRODUCT_CATALOG[productId];
   if (!p) { showPage('shop'); return; }
 
@@ -9803,7 +10001,7 @@ function openProduct(productId) {
   renderProductBearColors(p);
   renderProductFabricOptions(p);
   updateProductPrice();
-  showPage('product');
+  showPage('product', { history: options.history !== false, productId: productId });
 }
 
 function renderProductEventOptions(p) {
@@ -10303,6 +10501,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   initLanguageSwitcher();
   syncHeaderOffsets();
+  initPageHistory();
+  initScrollTopButton();
   window.addEventListener('resize', syncHeaderOffsets);
   window.addEventListener('orientationchange', syncHeaderOffsets);
 
