@@ -19,6 +19,10 @@
 <meta name="twitter:image" content="https://erycafernandees.github.io/lovessencesite/assets/love-essences-social-logo.png"/>
 <link rel="icon" type="image/png" href="./assets/love-essences-social-logo.png"/>
 <link rel="apple-touch-icon" href="./assets/love-essences-social-logo.png"/>
+<link rel="preload" as="image" href="./assets/products/bloom.jpg"/>
+<link rel="preload" as="image" href="./assets/products/essencia-amor-m2.jpg"/>
+<link rel="preload" as="image" href="./assets/products/aurora.jpg"/>
+<link rel="preload" as="image" href="./assets/products/memoria-perfumada.png"/>
 <link rel="stylesheet" href="./dist/output.css"/>
 <script type="application/ld+json">
 {
@@ -419,6 +423,13 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 0.9rem;
     }
+    .feedback-list[data-feedback-carousel="desktop"] .feedback-card {
+      display: none;
+    }
+    .feedback-list[data-feedback-carousel="desktop"] .feedback-card.is-feedback-visible {
+      display: block;
+      animation: feedbackFadeIn 0.35s ease;
+    }
     .feedback-card {
       min-height: 156px;
       padding: 1.05rem 1.15rem;
@@ -475,6 +486,10 @@
   .feedback-list {
     display: grid;
     gap: 1rem;
+  }
+  @keyframes feedbackFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   .feedback-card {
     padding: 1.35rem 1.45rem;
@@ -3343,8 +3358,9 @@
 
     .product-img,
     .shop-products-grid .product-img {
-      aspect-ratio: auto;
-      height: 220px !important;
+      aspect-ratio: 3 / 4;
+      height: auto !important;
+      min-height: 0;
       margin: 0.9rem 0.9rem 0;
       border-radius: 16px;
       font-size: 3rem;
@@ -3352,10 +3368,10 @@
 
     .product-img.has-photo img,
     .shop-products-grid .product-img.has-photo img {
-      width: auto;
-      max-width: 100%;
+      width: 100%;
+      max-width: none;
       height: 100%;
-      aspect-ratio: 3 / 4;
+      aspect-ratio: auto;
       object-fit: cover;
     }
 
@@ -3391,16 +3407,24 @@
 
     .product-price {
       font-size: 1rem;
+      width: auto;
+      align-items: flex-start;
+      text-align: left;
+      white-space: nowrap;
     }
 
     .product-footer {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.55rem;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+      flex-wrap: nowrap;
+      text-align: left;
     }
 
     .product-btn {
-      width: 100%;
+      width: auto;
+      flex: 0 0 auto;
       min-width: 0;
       min-height: 42px;
       padding: 0.72rem 0.8rem;
@@ -4639,19 +4663,20 @@
   }
 
   .featured-bg .product-footer {
-    flex-direction: column !important;
+    flex-direction: row !important;
     align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 0.72rem !important;
-    text-align: center;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+    text-align: left;
   }
 
   .featured-bg .product-price {
-    width: 100% !important;
-    flex: 0 0 auto !important;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    width: auto !important;
+    flex: 1 1 auto !important;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+    white-space: nowrap;
   }
 
   .featured-bg .product-btn {
@@ -6043,7 +6068,7 @@
         </div>
 
         <div class="hero-premium-panel-accent hero-premium-side-photo">
-          <img src="assets/hero/hero-vela-dinis.jpg" alt="Vela personalizada Love Essences com nome e data" loading="lazy"/>
+          <img src="assets/hero/hero-vela-dinis.jpg" alt="Vela personalizada Love Essences com nome e data" loading="eager" decoding="async"/>
         </div>
       </div>
     </div>
@@ -6080,13 +6105,13 @@
       <div class="product-card">
         <div class="product-img has-photo">
           <span class="product-tag">Mais Vendido</span>
-          <img src="assets/products/bloom.jpg" alt="Bloom, peça artesanal Love Essences" loading="lazy"/>
+          <img src="assets/products/bloom.jpg" alt="Bloom, peça artesanal Love Essences" loading="eager" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Bloom</h3>
           <p class="product-desc">Peça artesanal em porcelana, delicada e atemporal. Disponível em três tamanhos, para todas as histórias.</p>
           <div class="product-footer">
-            <span class="product-price">A partir de 32,90€</span>
+            <span class="product-price">Desde 32,90€</span>
             <button type="button" class="product-btn" onclick="openProduct('bloom')">Ver produto</button>
           </div>
         </div>
@@ -6094,21 +6119,20 @@
       <div class="product-card">
         <div class="product-img has-photo">
           <span class="product-tag">Mais Oferecida</span>
-          <img src="assets/products/essencia-amor-m2.jpg" alt="Essência do Amor, box presente Love Essences" loading="lazy"/>
+          <img src="assets/products/essencia-amor-m2.jpg" alt="Essência do Amor, box presente Love Essences" loading="eager" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Essência do Amor</h3>
           <p class="product-desc">A box presente para dizer aquilo que as palavras não conseguem. Em três tamanhos, sempre pronta a oferecer.</p>
           <div class="product-footer">
-            <span class="product-price">A partir de 25€</span>
+            <span class="product-price">Desde 25€</span>
             <button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Ver produto</button>
           </div>
         </div>
       </div>
       <div class="product-card">
         <div class="product-img has-photo">
-          <span class="product-tag">Personalizável</span>
-          <img src="assets/products/aurora.jpg" alt="Aurora, moldura floral personalizada Love Essences" loading="lazy"/>
+          <img src="assets/products/aurora.jpg" alt="Aurora, moldura floral personalizada Love Essences" loading="eager" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Aurora</h3>
@@ -6122,7 +6146,7 @@
       <div class="product-card">
         <div class="product-img has-photo">
           <span class="product-tag">Eventos</span>
-          <img src="assets/products/memoria-perfumada.png" alt="Memória Perfumada, lembrança de evento Love Essences" loading="lazy"/>
+          <img src="assets/products/memoria-perfumada.png" alt="Memória Perfumada, lembrança de evento Love Essences" loading="eager" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Memória Perfumada</h3>
@@ -6307,45 +6331,133 @@
         <div class="feedback-list">
           <article class="feedback-card">
             <div class="feedback-stars">★★★★★</div>
-            <p>"Ofereci-lhe um Bloom de aniversário e ela ficou sem palavras. É uma peça que se sente, não só se vê."</p>
+            <p>"Recebi ontem um presente feito pela Love Essences e amei 😍 Com uma apresentação muito cuidada e o cheirinho não tem explicação 💐"</p>
             <div class="feedback-author">
-              <div class="testi-avatar">MA</div>
+              <div class="testi-avatar">LC</div>
               <div>
-                <strong>Mariana Alves</strong>
-                <span>Lisboa · Bloom M</span>
+                <strong>Lígia Carvalho</strong>
+                <span>Lisboa · presente recebido</span>
               </div>
             </div>
           </article>
           <article class="feedback-card">
             <div class="feedback-stars">★★★★★</div>
-            <p>"A Aurora com escrita personalizada ficou linda. Perfeita para oferecer sem cair no cliché."</p>
+            <p>"Está incrível!!! Tão bonito mesmo! Muito obrigada ❤️"</p>
             <div class="feedback-author">
-              <div class="testi-avatar">JM</div>
+              <div class="testi-avatar">DS</div>
               <div>
-                <strong>Joana Martins</strong>
-                <span>Cascais · Aurora Personalizada</span>
+                <strong>Daniela Silva</strong>
+                <span>Porto · mensagem privada</span>
               </div>
             </div>
           </article>
           <article class="feedback-card">
             <div class="feedback-stars">★★★★★</div>
-            <p>"As Memórias Perfumadas para o batizado ficaram lindíssimas. Minimalistas, delicadas e sofisticadas."</p>
+            <p>"Está mesmo incrível! Tem um cheiro tão bom 🥺 quando terminar as minhas obras e mudanças vou querer para a minha casa nova!"</p>
             <div class="feedback-author">
-              <div class="testi-avatar">DR</div>
+              <div class="testi-avatar">MS</div>
               <div>
-                <strong>Daniela Ribeiro</strong>
-                <span>Setúbal · Memória Perfumada</span>
+                <strong>Mariana Santos</strong>
+                <span>Sintra · mensagem privada</span>
               </div>
             </div>
           </article>
           <article class="feedback-card">
             <div class="feedback-stars">★★★★★</div>
-            <p>"Encomendei a Pensar em Ti M e ficou mesmo elegante. Tudo pensado ao detalhe."</p>
+            <p>"Está tão bonito 😍, muito obrigada pela simpatia e disponibilidade 🤗"</p>
             <div class="feedback-author">
-              <div class="testi-avatar">RP</div>
+              <div class="testi-avatar">TT</div>
               <div>
-                <strong>Ricardo Pereira</strong>
-                <span>Porto · Pensar em Ti M</span>
+                <strong>Teresa Carriço</strong>
+                <span>Sintra · Instagram</span>
+              </div>
+            </div>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"Como sempre: PERFEITO!!! 🙌🙌🙌"</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">MS</div>
+              <div>
+                <strong>Marta Sena Santos</strong>
+                <span>Instagram</span>
+              </div>
+            </div>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"Lindíssimo, adorei a prenda que a minha amiga me ofereceu. Um trabalho maravilhoso 💖"</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">MF</div>
+              <div>
+                <strong>Maria Ferreira</strong>
+                <span>Instagram</span>
+              </div>
+            </div>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"Simplesmente lindooo ❤️"</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">PC</div>
+              <div>
+                <strong>Pérolas e Contas</strong>
+                <span>Instagram</span>
+              </div>
+            </div>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"A minha mamã amou ☺️"</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">FP</div>
+              <div>
+                <strong>Fit Pandora</strong>
+                <span>Instagram</span>
+              </div>
+            </div>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"Maravilhoso 💜"</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">LH</div>
+              <div>
+                <strong>Luana Hanysz</strong>
+                <span>Instagram</span>
+              </div>
+            </div>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"Lindo demais 😍"</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">CR</div>
+              <div>
+                <strong>Carla Rosário</strong>
+                <span>Instagram</span>
+              </div>
+            </div>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"Não aguento 🥺❤️"</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">CB</div>
+              <div>
+                <strong>Catarina Barradas</strong>
+                <span>Instagram</span>
+              </div>
+            </div>
+          </article>
+          <article class="feedback-card">
+            <div class="feedback-stars">★★★★★</div>
+            <p>"Lindoo"</p>
+            <div class="feedback-author">
+              <div class="testi-avatar">LF</div>
+              <div>
+                <strong>Lidia Fernandes</strong>
+                <span>Instagram</span>
               </div>
             </div>
           </article>
@@ -6554,22 +6666,22 @@
     <a class="instagram-handle" href="https://www.instagram.com/lovessences.art" target="_blank" rel="noopener">@lovessences.art</a>
     <div class="instagram-grid">
       <a href="https://www.instagram.com/lovessences.art" target="_blank" rel="noopener">
-        <img src="assets/insta1.jpg" alt="Love Essences no Instagram" />
+        <img src="assets/insta1.jpg" alt="Love Essences no Instagram" loading="eager" decoding="async"/>
       </a>
       <a href="https://www.instagram.com/lovessences.art" target="_blank" rel="noopener">
-        <img src="assets/insta2.jpg" alt="Love Essences no Instagram" />
+        <img src="assets/insta2.jpg" alt="Love Essences no Instagram" loading="eager" decoding="async"/>
       </a>
       <a href="https://www.instagram.com/lovessences.art" target="_blank" rel="noopener">
-        <img src="assets/insta3.jpg" alt="Love Essences no Instagram" />
+        <img src="assets/insta3.jpg" alt="Love Essences no Instagram" loading="eager" decoding="async"/>
       </a>
       <a href="https://www.instagram.com/lovessences.art" target="_blank" rel="noopener">
-        <img src="assets/insta4.jpg" alt="Love Essences no Instagram" />
+        <img src="assets/insta4.jpg" alt="Love Essences no Instagram" loading="eager" decoding="async"/>
       </a>
       <a href="https://www.instagram.com/lovessences.art" target="_blank" rel="noopener">
-        <img src="assets/insta5.jpg" alt="Love Essences no Instagram" />
+        <img src="assets/insta5.jpg" alt="Love Essences no Instagram" loading="eager" decoding="async"/>
       </a>
       <a href="https://www.instagram.com/lovessences.art" target="_blank" rel="noopener">
-        <img src="assets/insta6.jpg" alt="Love Essences no Instagram" />
+        <img src="assets/insta6.jpg" alt="Love Essences no Instagram" loading="eager" decoding="async"/>
       </a>
     </div>
   </section>
@@ -6657,15 +6769,15 @@
         <div class="product-info">
           <h3 class="product-name">Bloom</h3>
           <p class="product-desc">Peça artesanal em porcelana, delicada e atemporal. Disponível em três tamanhos. A peça que fala por ti.</p>
-          <div class="product-footer"><span class="product-price">A partir de 32,90€</span><button type="button" class="product-btn" onclick="openProduct('bloom')">Ver produto</button></div>
+          <div class="product-footer"><span class="product-price">Desde 32,90€</span><button type="button" class="product-btn" onclick="openProduct('bloom')">Ver produto</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
-        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Personalizável</span><img src="assets/products/aurora.jpg" alt="Aurora, moldura floral personalizada Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/aurora.jpg" alt="Aurora, moldura floral personalizada Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Aurora</h3>
           <p class="product-desc">Moldura floral artesanal com possibilidade de escrita personalizada. Cada Aurora é única, como o momento que celebra.</p>
-          <div class="product-footer"><span class="product-price"><span>25€</span><span class="product-price-note">+1,50€ personalização</span></span><button type="button" class="product-btn" onclick="openProduct('aurora')">Personalizar</button></div>
+          <div class="product-footer"><span class="product-price">25€</span><button type="button" class="product-btn" onclick="openProduct('aurora')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="alguem-especial">
@@ -6715,7 +6827,7 @@
         <div class="product-info">
           <h3 class="product-name">Essência do Amor</h3>
           <p class="product-desc">Box presente em três tamanhos, criada para dizer aquilo que as palavras não conseguem. Composição cuidada, embalagem pronta a oferecer.</p>
-          <div class="product-footer"><span class="product-price">A partir de 25€</span><button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Ver produto</button></div>
+          <div class="product-footer"><span class="product-price">Desde 25€</span><button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Ver produto</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="memorias" data-occasion="aniversarios,presente-romantico,alguem-especial">
@@ -6723,7 +6835,7 @@
         <div class="product-info">
           <h3 class="product-name">Pensar em Ti</h3>
           <p class="product-desc">A box para os dias em que queres simplesmente lembrar alguém de que existe. Três tamanhos, sempre com o mesmo cuidado.</p>
-          <div class="product-footer"><span class="product-price">A partir de 29,90€</span><button type="button" class="product-btn" onclick="openProduct('pensar_em_ti')">Ver produto</button></div>
+          <div class="product-footer"><span class="product-price">Desde 29,90€</span><button type="button" class="product-btn" onclick="openProduct('pensar_em_ti')">Ver produto</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="memorias" data-occasion="aniversarios,presente-romantico,alguem-especial,empresas">
@@ -6836,7 +6948,7 @@
         <div class="product-info">
           <h3 class="product-name">Miminho Doce</h3>
           <p class="product-desc">Três opções doces para crianças: laço de marshmallows, cone de miminhos ou espetada de alegria, sempre prontas para oferecer.</p>
-          <div class="product-footer"><span class="product-price">A partir de 1€</span><button type="button" class="product-btn" onclick="openProduct('miminho_doce')">Personalizar</button></div>
+          <div class="product-footer"><span class="product-price">Desde 1€</span><button type="button" class="product-btn" onclick="openProduct('miminho_doce')">Personalizar</button></div>
         </div>
       </div>
     </div>
@@ -6864,7 +6976,7 @@
       <p class="pd-category" id="pd-category">✦ Coleção Assinatura</p>
       <h2 class="pd-name" id="pd-name">Bloom</h2>
       <div class="pd-price-block">
-        <span class="pd-price-from" id="pd-price-from" style="display:none;">A partir de</span>
+        <span class="pd-price-from" id="pd-price-from" style="display:none;">Desde</span>
         <p class="pd-price" id="pd-price">32,90€</p>
       </div>
 
@@ -8382,6 +8494,21 @@ var I18N_EXTRA_TEXT = {
     "Resumo dos feedbacks": "Feedback summary",
     "experiência sentida": "felt experience",
     "presentes enviados": "gifts sent",
+    "\"Recebi ontem um presente feito pela Love Essences e amei 😍 Com uma apresentação muito cuidada e o cheirinho não tem explicação 💐\"": "\"Yesterday I received a gift made by Love Essences and I loved it 😍 Beautifully presented, and the scent is beyond words 💐\"",
+    "\"Está incrível!!! Tão bonito mesmo! Muito obrigada ❤️\"": "\"It is incredible!!! So beautiful! Thank you so much ❤️\"",
+    "\"Está mesmo incrível! Tem um cheiro tão bom 🥺 quando terminar as minhas obras e mudanças vou querer para a minha casa nova!\"": "\"It is truly incredible! It smells so good 🥺 when I finish my renovations and move, I will want one for my new home!\"",
+    "Sintra · mensagem privada": "Sintra · private message",
+    "\"Está tão bonito 😍, muito obrigada pela simpatia e disponibilidade 🤗\"": "\"It is so beautiful 😍 thank you so much for your kindness and availability 🤗\"",
+    "\"Como sempre: PERFEITO!!! 🙌🙌🙌\"": "\"As always: PERFECT!!! 🙌🙌🙌\"",
+    "\"Lindíssimo, adorei a prenda que a minha amiga me ofereceu. Um trabalho maravilhoso 💖\"": "\"So beautiful, I loved the gift my friend gave me. Wonderful work 💖\"",
+    "\"Simplesmente lindooo ❤️\"": "\"Simply beautiful ❤️\"",
+    "\"A minha mamã amou ☺️\"": "\"My mum loved it ☺️\"",
+    "\"Maravilhoso 💜\"": "\"Wonderful 💜\"",
+    "\"Lindo demais 😍\"": "\"So beautiful 😍\"",
+    "\"Não aguento 🥺❤️\"": "\"I cannot handle it 🥺❤️\"",
+    "\"Lindoo\"": "\"Beautiful\"",
+    "Instagram · presente recebido": "Instagram · gift received",
+    "Mensagem privada": "Private message",
     "\"Ofereci-lhe um Bloom de aniversário e ela ficou sem palavras. É uma peça que se sente, não só se vê.\"": "\"I gave her a Bloom for her birthday and she was speechless. It is a piece you feel, not only see.\"",
     "\"Encomendei a Pensar em Ti M para o aniversário da minha namorada e ficou mesmo elegante. Tudo pensado ao detalhe.\"": "\"I ordered Thinking of You M for my girlfriend's birthday and it was truly elegant. Every detail was thought through.\"",
     "\"Comprei a Serenata para a entrada de casa e fiquei rendida. Decorativa, sofisticada e com uma presença discreta.\"": "\"I bought Serenata for the entrance hall and fell in love. Decorative, sophisticated and quietly present.\"",
@@ -8501,11 +8628,11 @@ var I18N_EXTRA_TEXT = {
     "Doces personalizados para crianças, simples, bonitos e perfeitos para completar qualquer kit da Coleção Pequenos Momentos. Escolhe entre Laço de Marshmallows, Cone de Miminhos ou Espetada de Alegria.": "Personalized sweets for children, simple, beautiful and perfect to complete any kit from the Little Moments Collection. Choose between Marshmallow Bow, Sweet Cone or Joy Skewer.",
     "Inclui: opção doce escolhida · Laço ou cone conforme a versão selecionada · Embalagem preparada para oferecer · Personalização conforme o tema do evento.": "Includes: chosen sweet option · Bow or cone according to the selected version · Packaging ready to offer · Personalisation according to the event theme.",
     "\"Um detalhe simples para adoçar a lembrança.\"": "\"A simple detail to sweeten the favour.\"",
-    "A partir de 1€": "From €1",
-    "A partir de 29,90€": "From €29.90",
-    "A partir de 32,90€": "From €32.90",
-    "A partir de 25€": "From €25",
-    "A partir de": "From",
+    "Desde 1€": "From €1",
+    "Desde 29,90€": "From €29.90",
+    "Desde 32,90€": "From €32.90",
+    "Desde 25€": "From €25",
+    "Desde": "From",
     "· +1,50€ personalização": "· +€1.50 personalisation",
     "Adicionar 🛒": "Add 🛒",
     "Inclui": "Includes",
@@ -8749,6 +8876,21 @@ var I18N_EXTRA_TEXT = {
     "Resumo dos feedbacks": "Resumen de opiniones",
     "experiência sentida": "experiencia sentida",
     "presentes enviados": "regalos enviados",
+    "\"Recebi ontem um presente feito pela Love Essences e amei 😍 Com uma apresentação muito cuidada e o cheirinho não tem explicação 💐\"": "\"Ayer recibí un regalo hecho por Love Essences y me encantó 😍 Con una presentación muy cuidada y un aroma imposible de explicar 💐\"",
+    "\"Está incrível!!! Tão bonito mesmo! Muito obrigada ❤️\"": "\"¡Está increíble!!! Muy bonito de verdad. Muchas gracias ❤️\"",
+    "\"Está mesmo incrível! Tem um cheiro tão bom 🥺 quando terminar as minhas obras e mudanças vou querer para a minha casa nova!\"": "\"¡Está realmente increíble! Huele tan bien 🥺 cuando termine mis obras y la mudanza, querré uno para mi casa nueva!\"",
+    "Sintra · mensagem privada": "Sintra · mensaje privado",
+    "\"Está tão bonito 😍, muito obrigada pela simpatia e disponibilidade 🤗\"": "\"Está tan bonito 😍 muchas gracias por la simpatía y disponibilidad 🤗\"",
+    "\"Como sempre: PERFEITO!!! 🙌🙌🙌\"": "\"Como siempre: ¡PERFECTO!!! 🙌🙌🙌\"",
+    "\"Lindíssimo, adorei a prenda que a minha amiga me ofereceu. Um trabalho maravilhoso 💖\"": "\"Preciosísimo, me encantó el regalo que me dio mi amiga. Un trabajo maravilloso 💖\"",
+    "\"Simplesmente lindooo ❤️\"": "\"Simplemente precioso ❤️\"",
+    "\"A minha mamã amou ☺️\"": "\"A mi mamá le encantó ☺️\"",
+    "\"Maravilhoso 💜\"": "\"Maravilloso 💜\"",
+    "\"Lindo demais 😍\"": "\"Preciosísimo 😍\"",
+    "\"Não aguento 🥺❤️\"": "\"No puedo con esto 🥺❤️\"",
+    "\"Lindoo\"": "\"Precioso\"",
+    "Instagram · presente recebido": "Instagram · regalo recibido",
+    "Mensagem privada": "Mensaje privado",
     "\"Ofereci-lhe um Bloom de aniversário e ela ficou sem palavras. É uma peça que se sente, não só se vê.\"": "\"Le regalé un Bloom por su cumpleaños y se quedó sin palabras. Es una pieza que se siente, no solo se ve.\"",
     "\"Encomendei a Pensar em Ti M para o aniversário da minha namorada e ficou mesmo elegante. Tudo pensado ao detalhe.\"": "\"Pedí Pensando en Ti M para el cumpleaños de mi novia y quedó muy elegante. Todo pensado al detalle.\"",
     "\"Comprei a Serenata para a entrada de casa e fiquei rendida. Decorativa, sofisticada e com uma presença discreta.\"": "\"Compré Serenata para la entrada de casa y me encantó. Decorativa, sofisticada y con una presencia discreta.\"",
@@ -8868,11 +9010,11 @@ var I18N_EXTRA_TEXT = {
     "Doces personalizados para crianças, simples, bonitos e perfeitos para completar qualquer kit da Coleção Pequenos Momentos. Escolhe entre Laço de Marshmallows, Cone de Miminhos ou Espetada de Alegria.": "Dulces personalizados para niños, simples, bonitos y perfectos para completar cualquier kit de la Colección Pequeños Momentos. Elige entre Lazo de Marshmallows, Cono de Dulces o Brocheta de Alegría.",
     "Inclui: opção doce escolhida · Laço ou cone conforme a versão selecionada · Embalagem preparada para oferecer · Personalização conforme o tema do evento.": "Incluye: opción dulce elegida · Lazo o cono según la versión seleccionada · Embalaje preparado para regalar · Personalización según el tema del evento.",
     "\"Um detalhe simples para adoçar a lembrança.\"": "\"Un detalle simple para endulzar el recuerdo.\"",
-    "A partir de 1€": "Desde 1€",
-    "A partir de 29,90€": "Desde 29,90€",
-    "A partir de 32,90€": "Desde 32,90€",
-    "A partir de 25€": "Desde 25€",
-    "A partir de": "Desde",
+    "Desde 1€": "Desde 1€",
+    "Desde 29,90€": "Desde 29,90€",
+    "Desde 32,90€": "Desde 32,90€",
+    "Desde 25€": "Desde 25€",
+    "Desde": "Desde",
     "· +1,50€ personalização": "· +1,50€ personalización",
     "Adicionar 🛒": "Añadir 🛒",
     "Inclui": "Incluye",
@@ -11512,7 +11654,7 @@ renderCart();
 (function () {
   var feedbackTimer = null;
   var feedbackIndex = 0;
-  var feedbackMedia = window.matchMedia('(max-width: 768px)');
+  var feedbackMedia = window.matchMedia('(max-width: 900px)');
 
   function stopFeedbackAutoScroll() {
     if (!feedbackTimer) return;
@@ -11559,6 +11701,88 @@ renderCart();
   document.addEventListener('DOMContentLoaded', bindFeedbackAutoScroll);
   window.addEventListener('resize', bindFeedbackAutoScroll);
   document.addEventListener('visibilitychange', bindFeedbackAutoScroll);
+})();
+</script>
+
+
+<script>
+/* ── DESKTOP FEEDBACK CAROUSEL ─────────────────────────────────── */
+(function () {
+  var desktopFeedbackTimer = null;
+  var desktopFeedbackIndex = 0;
+  var desktopFeedbackMedia = window.matchMedia('(min-width: 901px)');
+  var SHORT_FEEDBACK_PAGE_SIZE = 4;
+  var LONG_FEEDBACK_PAGE_SIZE = 2;
+  var LONG_FEEDBACK_LIMIT = 110;
+
+  function stopDesktopFeedbackCarousel() {
+    if (!desktopFeedbackTimer) return;
+    window.clearInterval(desktopFeedbackTimer);
+    desktopFeedbackTimer = null;
+  }
+
+  function clearDesktopFeedbackState(list, cards) {
+    if (list) list.removeAttribute('data-feedback-carousel');
+    cards.forEach(function (card) {
+      card.classList.remove('is-feedback-visible');
+      card.removeAttribute('aria-hidden');
+    });
+  }
+
+  function getFeedbackTextLength(card) {
+    var text = card ? card.querySelector('p') : null;
+    return text ? text.textContent.replace(/\s+/g, ' ').trim().length : 0;
+  }
+
+  function getDesktopFeedbackPageSize(cards, startIndex) {
+    var nextFour = cards.slice(startIndex, startIndex + SHORT_FEEDBACK_PAGE_SIZE);
+    var hasLongFeedback = nextFour.some(function (card) {
+      return getFeedbackTextLength(card) > LONG_FEEDBACK_LIMIT;
+    });
+    return hasLongFeedback ? LONG_FEEDBACK_PAGE_SIZE : SHORT_FEEDBACK_PAGE_SIZE;
+  }
+
+  function showDesktopFeedbackPage(cards) {
+    var pageSize = getDesktopFeedbackPageSize(cards, desktopFeedbackIndex);
+    if (desktopFeedbackIndex > cards.length - 1) {
+      desktopFeedbackIndex = 0;
+      pageSize = getDesktopFeedbackPageSize(cards, desktopFeedbackIndex);
+    }
+
+    cards.forEach(function (card, index) {
+      var visible = index >= desktopFeedbackIndex && index < desktopFeedbackIndex + pageSize;
+      card.classList.toggle('is-feedback-visible', visible);
+      card.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    });
+
+    return pageSize;
+  }
+
+  function startDesktopFeedbackCarousel() {
+    var list = document.querySelector('.feedback-list');
+    if (!list) return;
+
+    var cards = Array.prototype.slice.call(list.querySelectorAll('.feedback-card'));
+    if (!desktopFeedbackMedia.matches || cards.length <= LONG_FEEDBACK_PAGE_SIZE) {
+      stopDesktopFeedbackCarousel();
+      clearDesktopFeedbackState(list, cards);
+      return;
+    }
+
+    list.setAttribute('data-feedback-carousel', 'desktop');
+    var currentPageSize = showDesktopFeedbackPage(cards);
+
+    stopDesktopFeedbackCarousel();
+    desktopFeedbackTimer = window.setInterval(function () {
+      if (document.hidden) return;
+      desktopFeedbackIndex = desktopFeedbackIndex + currentPageSize >= cards.length ? 0 : desktopFeedbackIndex + currentPageSize;
+      currentPageSize = showDesktopFeedbackPage(cards);
+    }, 5200);
+  }
+
+  document.addEventListener('DOMContentLoaded', startDesktopFeedbackCarousel);
+  window.addEventListener('resize', startDesktopFeedbackCarousel);
+  document.addEventListener('visibilitychange', startDesktopFeedbackCarousel);
 })();
 </script>
 
@@ -11710,6 +11934,48 @@ renderCart();
 
   document.addEventListener('DOMContentLoaded', setupShopCardOpen);
   window.addEventListener('resize', setupShopCardOpen);
+})();
+</script>
+
+<script>
+/* ── HOMEPAGE IMAGE RECOVERY ───────────────────────────────────── */
+(function () {
+  function retryImageOnce(image) {
+    if (!image || image.dataset.imageRetry === 'done') return;
+    image.dataset.imageRetry = 'done';
+
+    var source = image.getAttribute('src');
+    if (!source) return;
+
+    try {
+      var retryUrl = new URL(source, document.baseURI);
+      retryUrl.searchParams.set('image-retry', '1');
+      image.src = retryUrl.href;
+    } catch (error) {
+      image.src = source + (source.indexOf('?') === -1 ? '?' : '&') + 'image-retry=1';
+    }
+  }
+
+  function protectHomepageImages() {
+    document.querySelectorAll('#page-home img').forEach(function (image) {
+      image.loading = 'eager';
+      image.decoding = 'async';
+
+      if (!image.dataset.imageGuard) {
+        image.addEventListener('error', function () {
+          retryImageOnce(image);
+        }, { once: true });
+        image.dataset.imageGuard = 'ready';
+      }
+
+      if (image.complete && image.naturalWidth === 0) {
+        retryImageOnce(image);
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', protectHomepageImages);
+  window.addEventListener('pageshow', protectHomepageImages);
 })();
 </script>
 
