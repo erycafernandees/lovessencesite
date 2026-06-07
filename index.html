@@ -298,11 +298,17 @@
   .value-strip-track {
     display: flex;
     align-items: center;
-    gap: 3.2rem;
     width: max-content;
     padding: 1.2rem 0;
     animation: stripMarquee 24s linear infinite;
     will-change: transform;
+  }
+  .value-strip-group {
+    display: flex;
+    align-items: center;
+    gap: 3.2rem;
+    flex-shrink: 0;
+    padding-right: 3.2rem;
   }
   .value-strip:hover .value-strip-track { animation-play-state: paused; }
   @keyframes stripMarquee {
@@ -1455,12 +1461,14 @@
     opacity: 0.55;
     pointer-events: none;
   }
-  .occasion-card--bday { background: linear-gradient(135deg, #fde7ef 0%, #f3bdd2 100%) !important; }
-  .occasion-card--romantic { background: linear-gradient(135deg, #ffe4e3 0%, #f2bbb6 100%) !important; }
-  .occasion-card--special { background: linear-gradient(135deg, #f4e0ed 0%, #cfa2c7 100%) !important; }
-  .occasion-card--wedding { background: linear-gradient(135deg, #ffe9dd 0%, #f1c5b0 100%) !important; }
-  .occasion-card--business { background: linear-gradient(135deg, #efe4f5 0%, #cbb7e7 100%) !important; }
-  .occasion-card--kids { background: linear-gradient(135deg, #ffebe2 0%, #f5c9b9 100%) !important; }
+  .occasion-card--bday,
+  .occasion-card--romantic,
+  .occasion-card--special,
+  .occasion-card--wedding,
+  .occasion-card--business,
+  .occasion-card--kids {
+    background: #f3e7f1 !important;
+  }
   .occasion-card .occasion-badge {
     border-radius: 999px !important;
     background: rgba(255,255,255,0.72) !important;
@@ -1561,10 +1569,10 @@
     }
   }
   .occasion-choice-strip {
-    margin: 1rem 8vw 4rem;
-    padding: 0;
+    margin: 0;
+    padding: 1rem 8vw 4rem;
     border: none;
-    background: transparent;
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1975,9 +1983,12 @@
     .value-strip::before,
     .value-strip::after { width: 36px; }
     .value-strip-track {
-      gap: 2rem;
       padding: 1rem 0;
       animation-duration: 18s;
+    }
+    .value-strip-group {
+      gap: 2rem;
+      padding-right: 2rem;
     }
     .strip-item { font-size: 0.68rem; }
 
@@ -5332,15 +5343,19 @@
   .announce-track {
     display: flex;
     align-items: center;
-    gap: 2.2rem;
     width: max-content;
-    min-width: 200%;
     white-space: nowrap;
     animation: announceLoop 18s linear infinite;
     will-change: transform;
   }
+  .announce-group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
   .announce-track span {
     flex-shrink: 0;
+    padding-right: 2.2rem;
     font-family: var(--sans);
     font-size: 0.6rem;
     letter-spacing: 0.16em;
@@ -5363,10 +5378,10 @@
       --announce-height: 22px;
     }
     .announce-track {
-      gap: 1.6rem;
       animation-duration: 14s;
     }
     .announce-track span {
+      padding-right: 1.6rem;
       font-size: 0.5rem;
       letter-spacing: 0.09em;
     }
@@ -5862,8 +5877,18 @@
 <div class="announce-bar" id="announce-bar" aria-label="Informação de envio">
   <div class="announce-marquee">
     <div class="announce-track">
-      <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
-      <span aria-hidden="true">✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+      <div class="announce-group">
+        <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+        <span aria-hidden="true">✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+        <span aria-hidden="true">✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+        <span aria-hidden="true">✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+      </div>
+      <div class="announce-group" aria-hidden="true">
+        <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+        <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+        <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+        <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+      </div>
     </div>
   </div>
 </div>
@@ -6078,17 +6103,30 @@
   <!-- STRIP -->
   <div class="value-strip" aria-label="Valores da marca">
     <div class="value-strip-track">
-      <div class="strip-item"><span class="strip-dot"></span>Feito à Mão</div>
-      <div class="strip-item"><span class="strip-dot"></span>Cruelty-Free</div>
-      <div class="strip-item"><span class="strip-dot"></span>Personalizado</div>
-      <div class="strip-item"><span class="strip-dot"></span>Enviado com Amor</div>
-      <div class="strip-item"><span class="strip-dot"></span>Embalagem de Oferta</div>
-
-      <div class="strip-item" aria-hidden="true"><span class="strip-dot"></span>Feito à Mão</div>
-      <div class="strip-item" aria-hidden="true"><span class="strip-dot"></span>Cruelty-Free</div>
-      <div class="strip-item" aria-hidden="true"><span class="strip-dot"></span>Personalizado</div>
-      <div class="strip-item" aria-hidden="true"><span class="strip-dot"></span>Enviado com Amor</div>
-      <div class="strip-item" aria-hidden="true"><span class="strip-dot"></span>Embalagem de Oferta</div>
+      <div class="value-strip-group">
+        <div class="strip-item"><span class="strip-dot"></span>Feito à Mão</div>
+        <div class="strip-item"><span class="strip-dot"></span>Cruelty-Free</div>
+        <div class="strip-item"><span class="strip-dot"></span>Personalizado</div>
+        <div class="strip-item"><span class="strip-dot"></span>Enviado com Amor</div>
+        <div class="strip-item"><span class="strip-dot"></span>Embalagem de Oferta</div>
+        <div class="strip-item" aria-hidden="true"><span class="strip-dot"></span>Feito à Mão</div>
+        <div class="strip-item" aria-hidden="true"><span class="strip-dot"></span>Cruelty-Free</div>
+        <div class="strip-item" aria-hidden="true"><span class="strip-dot"></span>Personalizado</div>
+        <div class="strip-item" aria-hidden="true"><span class="strip-dot"></span>Enviado com Amor</div>
+        <div class="strip-item" aria-hidden="true"><span class="strip-dot"></span>Embalagem de Oferta</div>
+      </div>
+      <div class="value-strip-group" aria-hidden="true">
+        <div class="strip-item"><span class="strip-dot"></span>Feito à Mão</div>
+        <div class="strip-item"><span class="strip-dot"></span>Cruelty-Free</div>
+        <div class="strip-item"><span class="strip-dot"></span>Personalizado</div>
+        <div class="strip-item"><span class="strip-dot"></span>Enviado com Amor</div>
+        <div class="strip-item"><span class="strip-dot"></span>Embalagem de Oferta</div>
+        <div class="strip-item"><span class="strip-dot"></span>Feito à Mão</div>
+        <div class="strip-item"><span class="strip-dot"></span>Cruelty-Free</div>
+        <div class="strip-item"><span class="strip-dot"></span>Personalizado</div>
+        <div class="strip-item"><span class="strip-dot"></span>Enviado com Amor</div>
+        <div class="strip-item"><span class="strip-dot"></span>Embalagem de Oferta</div>
+      </div>
     </div>
   </div>
 
@@ -7177,7 +7215,7 @@
       <!-- ====== Para oferecer a alguém ====== -->
       <article
         class="occasion-card occasion-card--bday group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: linear-gradient(160deg, #f3e5f1 0%, #d192ca 100%);"
+        style="background: #f3e7f1;"
         onclick="openOccasion('aniversarios')"
         onkeydown="handleOccasionCardKey(event, 'aniversarios')"
         role="button"
@@ -7196,7 +7234,7 @@
 
       <article
         class="occasion-card occasion-card--romantic group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: linear-gradient(160deg, #f5e8f2 0%, #d192ca 100%);"
+        style="background: #f3e7f1;"
         onclick="openOccasion('presente-romantico')"
         onkeydown="handleOccasionCardKey(event, 'presente-romantico')"
         role="button"
@@ -7215,7 +7253,7 @@
 
       <article
         class="occasion-card occasion-card--special group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: linear-gradient(160deg, #f8eef5 0%, #c896c3 100%);"
+        style="background: #f3e7f1;"
         onclick="openOccasion('alguem-especial')"
         onkeydown="handleOccasionCardKey(event, 'alguem-especial')"
         role="button"
@@ -7235,7 +7273,7 @@
       <!-- ====== Para celebrações ====== -->
       <article
         class="occasion-card occasion-card--wedding group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: linear-gradient(160deg, #f5eef0 0%, #d4a8b8 100%);"
+        style="background: #f3e7f1;"
         onclick="openOccasion('casamentos-batizados')"
         onkeydown="handleOccasionCardKey(event, 'casamentos-batizados')"
         role="button"
@@ -7254,7 +7292,7 @@
 
       <article
         class="occasion-card occasion-card--business group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: linear-gradient(160deg, #efe8f0 0%, #a892b0 100%);"
+        style="background: #f3e7f1;"
         onclick="openOccasion('empresas')"
         onkeydown="handleOccasionCardKey(event, 'empresas')"
         role="button"
@@ -7274,7 +7312,7 @@
       <!-- ====== Para os mais pequeninos ====== -->
       <article
         class="occasion-card occasion-card--kids group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: linear-gradient(160deg, #fbeef0 0%, #e0a8b8 100%);"
+        style="background: #f3e7f1;"
         onclick="openOccasion('pequeninos')"
         onkeydown="handleOccasionCardKey(event, 'pequeninos')"
         role="button"
