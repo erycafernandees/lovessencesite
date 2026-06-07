@@ -118,8 +118,9 @@
 }
 </script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <!-- ============================================================ -->
 <!--  CHECKOUT, V14                                              -->
@@ -140,7 +141,7 @@
     --warm-gray: #8d7288;
     --dark: #3f073a;
     --serif: 'Cormorant Garamond', Georgia, serif;
-    --sans: 'Jost', sans-serif;
+    --sans: 'Quicksand', sans-serif;
     --header-offset: 149px;
     --announce-height: 24px;
     --product-back-height: 54px;
@@ -148,6 +149,10 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body { font-family: var(--sans); background: var(--warm-white); color: var(--dark); overflow-x: hidden; }
+  h2, h3, h4 {
+    font-family: var(--sans);
+    font-weight: 500;
+  }
 
   /* Ensure all buttons and links respond to touch immediately, fix iOS 300ms delay */
   button, a, [onclick], [role="button"],
@@ -1984,7 +1989,7 @@
     .value-strip::after { width: 36px; }
     .value-strip-track {
       padding: 1rem 0;
-      animation-duration: 18s;
+      animation-duration: 24s;
     }
     .value-strip-group {
       gap: 2rem;
@@ -4961,31 +4966,48 @@
   .hero-premium-title {
     font-family: var(--serif);
     font-weight: 300 !important;
-    font-size: clamp(3.6rem, 7vw, 6rem) !important;
-    line-height: 0.98 !important;
+    line-height: 1 !important;
     letter-spacing: 0 !important;
     color: #1a1118 !important;
     text-wrap: balance;
   }
 
-  .hero-premium-title .hero-line-soft {
+  .hero-premium-title > div {
     display: block;
-    font-weight: 300;
+    white-space: nowrap;
   }
 
-  .hero-premium-title .hero-line-soft:first-child {
-    white-space: nowrap;
+  .hero-premium-title .hero-line-soft {
+    display: inline;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 54px;
+    font-style: normal;
+    font-weight: 300;
   }
 
   .hero-premium-title .hero-line-accent {
     display: block;
     margin-top: 0.08em;
     color: var(--rose);
-    font-size: clamp(3rem, 5.4vw, 4.9rem);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 78px;
     font-style: italic;
-    font-weight: 400;
-    letter-spacing: 0;
+    font-weight: 300;
+    letter-spacing: normal;
     white-space: nowrap;
+  }
+
+  h2, h3, h4,
+  .product-name,
+  .shop-products-grid .product-name,
+  .pd-name,
+  .occasion-content h3,
+  .occasion-products-title,
+  .value-card h4,
+  .why-card h4,
+  .home-occasion-preview .occasion-card h3 {
+    font-family: var(--sans) !important;
+    font-weight: 500 !important;
   }
 
   .hero-premium-text {
@@ -4998,13 +5020,20 @@
 
   @media (max-width: 768px) {
     .hero-premium-title {
-      font-size: clamp(3.2rem, 12vw, 4.7rem) !important;
       line-height: 0.99 !important;
       letter-spacing: 0 !important;
     }
 
+    .hero-premium-title > div {
+      white-space: normal;
+    }
+
+    .hero-premium-title .hero-line-soft {
+      font-size: clamp(2.25rem, 10vw, 3.15rem);
+    }
+
     .hero-premium-title .hero-line-accent {
-      font-size: clamp(2rem, 9.2vw, 3rem);
+      font-size: clamp(2.45rem, 10.8vw, 3.45rem);
       margin-top: 0.03em;
     }
   }
@@ -5345,7 +5374,7 @@
     align-items: center;
     width: max-content;
     white-space: nowrap;
-    animation: announceLoop 18s linear infinite;
+    animation: announceLoop 40s linear infinite;
     will-change: transform;
   }
   .announce-group {
@@ -5378,7 +5407,7 @@
       --announce-height: 22px;
     }
     .announce-track {
-      animation-duration: 14s;
+      animation-duration: 40s;
     }
     .announce-track span {
       padding-right: 1.6rem;
@@ -5676,6 +5705,7 @@
     }
 
     .hero-premium-title .hero-line-soft {
+      font-size: clamp(2.25rem, 10vw, 3.15rem) !important;
       white-space: normal !important;
     }
 
@@ -6036,8 +6066,10 @@
         <p class="hero-premium-eyebrow">✦ Feito à mão com amor · Portugal</p>
 
 <h1 class="hero-premium-title">
-          <span class="hero-line-soft">Não vendemos</span>
-          <span class="hero-line-soft">produtos.</span>
+          <div>
+            <span class="hero-line-soft">Não vendemos</span>
+            <span class="hero-line-soft"> produtos.</span>
+          </div>
           <span class="hero-line-accent">Criamos momentos.</span>
         </h1>
 
