@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Essences — Faturação</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💝</text></svg>">
+<style>
+:root {
+  --cream: #f1e3ef;
+  --warm-white: #fcf8fc;
+  --blush: #e3bedf;
+  --rose: #b468ab;
+  --deep-rose: #66135e;
+  --nude: #d192ca;
+  --warm-gray: #8d7288;
+  --dark: #3f073a;
+  --sidebar-w: 240px;
+  --success: #2d7a4f;
+  --warning: #a06020;
+  --danger: #a02020;
+  --border: rgba(180,104,171,0.2);
+  --shadow: 0 2px 16px rgba(102,19,94,0.07);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+  background: var(--warm-white);
+  color: #2a1a2a;
+  display: flex;
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── SIDEBAR ─────────────────────────────── */
+#sidebar {
+  width: var(--sidebar-w);
+  background: var(--dark);
+  min-height: 100vh;
+  position: fixed;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+}
+.sidebar-logo {
+  padding: 1.4rem 1.2rem 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.brand-name { font-size: 1.15rem; font-weight: 700; color: #fff; letter-spacing: 0.02em; }
+.brand-name span { color: var(--nude); }
+.brand-sub { font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.32); margin-top: 0.2rem; }
+.sidebar-nav { padding: 0.75rem 0; flex: 1; overflow-y: auto; }
+.nav-section { padding: 0.85rem 1.2rem 0.25rem; font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.22); }
+.nav-item {
+  display: flex; align-items: center; gap: 0.65rem;
+  padding: 0.62rem 1.2rem;
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  font-size: 0.82rem;
+  border-left: 3px solid transparent;
+  transition: all 0.18s;
+  text-decoration: none;
+  border: none; background: none; width: 100%; text-align: left;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.nav-item.active { color: #fff; background: rgba(209,146,202,0.14); border-left-color: var(--nude); }
+.nav-item .ico { font-size: 0.95rem; width: 1.15rem; flex-shrink: 0; }
+
+/* ── MAIN ─────────────────────────────────── */
+#main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; }
+.view { display: none; padding: 2rem 2rem 3rem; max-width: 1120px; }
+.view.active { display: block; }
+
+/* ── PAGE HEADER ─────────────────────────── */
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.75rem; gap: 1rem; }
+.page-title { font-size: 1.45rem; font-weight: 700; color: var(--dark); letter-spacing: -0.02em; }
+.page-sub { font-size: 0.78rem; color: var(--warm-gray); margin-top: 0.15rem; }
+
+/* ── BUTTONS ──────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.5rem 1.1rem;
+  border: none; border-radius: 6px;
+  font-size: 0.8rem; font-weight: 500; cursor: pointer;
+  transition: all 0.18s; letter-spacing: 0.01em;
+  text-decoration: none; white-space: nowrap;
+}
+.btn-primary { background: var(--deep-rose); color: #fff; }
+.btn-primary:hover { background: var(--dark); }
+.btn-secondary { background: var(--cream); color: var(--dark); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--blush); }
+.btn-ghost { background: transparent; color: var(--warm-gray); }
+.btn-ghost:hover { background: var(--cream); color: var(--dark); }
+.btn-danger { background: #fff0f0; color: var(--danger); border: 1px solid #ffd5d5; }
+.btn-danger:hover { background: #ffe0e0; }
+.btn-sm { padding: 0.32rem 0.75rem; font-size: 0.75rem; }
+
+/* ── CARD ─────────────────────────────────── */
+.card { background: #fff; border-radius: 10px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.card-header {
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-size: 0.9rem; font-weight: 600; color: var(--dark); }
+.card-body { padding: 1.4rem; }
+
+/* ── STATS ────────────────────────────────── */
+.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.75rem; }
+.stat-card { background: #fff; border-radius: 10px; padding: 1.1rem 1.3rem; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.stat-ico { font-size: 1.4rem; margin-bottom: 0.4rem; }
+.stat-label { font-size: 0.67rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-gray); margin-bottom: 0.3rem; }
+.stat-value { font-size: 1.65rem; font-weight: 700; color: var(--dark); letter-spacing: -0.03em; line-height: 1; }
+.stat-sub { font-size: 0.7rem; color: var(--warm-gray); margin-top: 0.25rem; }
+
+/* ── TABLE ────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left; font-size: 0.67rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--warm-gray);
+  padding: 0.65rem 1rem; border-bottom: 1px solid var(--border); font-weight: 600;
+}
+td { padding: 0.8rem 1rem; border-bottom: 1px solid rgba(180,104,171,0.07); font-size: 0.83rem; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(241,227,239,0.25); }
+
+/* ── BADGES ───────────────────────────────── */
+.badge { display: inline-block; padding: 0.18rem 0.55rem; border-radius: 999px; font-size: 0.67rem; font-weight: 600; letter-spacing: 0.03em; }
+.badge-pago { background: #dcfce7; color: var(--success); }
+.badge-pendente { background: #fef3c7; color: var(--warning); }
+.badge-cancelado { background: #fee2e2; color: var(--danger); }
+.badge-draft { background: var(--cream); color: var(--warm-gray); }
+
+/* ── FORMS ────────────────────────────────── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.3rem; }
+.form-group.full { grid-column: 1 / -1; }
+label { font-size: 0.74rem; font-weight: 600; color: var(--dark); }
+input, select, textarea {
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 0.5rem 0.75rem; font-size: 0.83rem;
+  color: #2a1a2a; background: #fff; font-family: inherit;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none; border-color: var(--rose);
+  box-shadow: 0 0 0 3px rgba(180,104,171,0.13);
+}
+textarea { resize: vertical; min-height: 70px; }
+.form-hint { font-size: 0.68rem; color: var(--warm-gray); }
+
+/* ── ITEMS TABLE (invoice form) ──────────── */
+.items-tbl { width: 100%; border-collapse: collapse; }
+.items-tbl th { background: var(--cream); font-size: 0.67rem; padding: 0.55rem 0.65rem; text-align: left; color: var(--warm-gray); letter-spacing: 0.07em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+.items-tbl td { padding: 0.4rem 0.5rem; border-bottom: 1px solid rgba(180,104,171,0.07); }
+.items-tbl input, .items-tbl select { padding: 0.32rem 0.5rem; font-size: 0.8rem; }
+.btn-rm { background: none; border: none; cursor: pointer; color: var(--warm-gray); font-size: 0.9rem; padding: 0.25rem 0.4rem; border-radius: 4px; transition: all 0.15s; }
+.btn-rm:hover { color: var(--danger); background: #fee2e2; }
+
+/* ── TOTALS ───────────────────────────────── */
+.totals-wrap { margin-top: 1.2rem; display: flex; justify-content: flex-end; }
+.totals-box { width: 300px; background: var(--cream); border-radius: 8px; padding: 0.9rem 1.1rem; }
+.tot-row { display: flex; justify-content: space-between; font-size: 0.82rem; padding: 0.25rem 0; color: var(--warm-gray); }
+.tot-row.grand { font-weight: 700; font-size: 1rem; color: var(--dark); border-top: 1px solid var(--border); padding-top: 0.55rem; margin-top: 0.2rem; }
+
+/* ── EMPTY STATE ──────────────────────────── */
+.empty { text-align: center; padding: 3.5rem 2rem; color: var(--warm-gray); }
+.empty .e-ico { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.empty h3 { font-size: 0.95rem; color: var(--dark); margin-bottom: 0.35rem; }
+.empty p { font-size: 0.82rem; }
+
+/* ── MODAL ────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(63,7,58,0.45);
+  z-index: 1000; display: none;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 12px; padding: 1.4rem; max-width: 500px; width: calc(100% - 2rem); box-shadow: 0 24px 80px rgba(63,7,58,0.25); max-height: 90vh; overflow-y: auto; }
+.modal-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
+.modal-title { font-size: 0.95rem; font-weight: 700; }
+.modal-x { background: none; border: none; font-size: 1.15rem; cursor: pointer; color: var(--warm-gray); padding: 0.2rem; }
+
+/* ── PRODUCT / CLIENT PICKER ──────────────── */
+.picker-list { max-height: 320px; overflow-y: auto; }
+.picker-item { display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 0.75rem; border-radius: 6px; cursor: pointer; transition: background 0.15s; }
+.picker-item:hover { background: var(--cream); }
+.picker-item .pi-name { font-weight: 500; font-size: 0.83rem; }
+.picker-item .pi-cat { font-size: 0.7rem; color: var(--warm-gray); margin-top: 0.1rem; }
+.picker-item .pi-price { font-weight: 700; color: var(--deep-rose); font-size: 0.83rem; flex-shrink: 0; margin-left: 0.75rem; }
+.picker-group-label { font-size: 0.63rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--warm-gray); padding: 0.35rem 0.75rem; background: var(--cream); border-radius: 4px; margin: 0.3rem 0 0.15rem; }
+
+/* ── SEARCH ───────────────────────────────── */
+.search-row { display: flex; gap: 0.65rem; margin-bottom: 1.2rem; align-items: center; }
+.search-row input, .search-row select { padding: 0.5rem 0.9rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.83rem; }
+.search-row input { flex: 1; }
+
+/* ── ALERT ────────────────────────────────── */
+.alert { padding: 0.7rem 0.9rem; border-radius: 6px; font-size: 0.8rem; }
+.alert-ok { background: #dcfce7; color: var(--success); border: 1px solid #bbf7d0; }
+.alert-err { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; }
+
+/* ── FLEX UTILS ───────────────────────────── */
+.flex { display: flex; }
+.gap-1 { gap: 0.35rem; }
+.gap-2 { gap: 0.6rem; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.text-right { text-align: right; }
+.text-muted { color: var(--warm-gray); }
+.fw-bold { font-weight: 700; }
+.mono { font-family: 'SF Mono', 'Fira Mono', monospace; }
+.color-rose { color: var(--deep-rose); }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+
+/* ── PRINT INVOICE AREA ───────────────────── */
+#print-area { display: none; }
+
+@media print {
+  #sidebar, .no-print { display: none !important; }
+  #main { margin-left: 0 !important; }
+  .view { display: none !important; }
+  #print-area { display: block !important; }
+  body { background: white; font-size: 12px; }
+  .pinv { max-width: 100%; padding: 1.5rem 2rem; }
+}
+
+.pinv { max-width: 800px; margin: 0 auto; padding: 2.5rem 2rem; font-size: 13px; line-height: 1.65; background: white; }
+.pinv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2.5px solid var(--deep-rose); }
+.pinv-logo { font-size: 1.7rem; font-weight: 800; color: var(--deep-rose); letter-spacing: -0.02em; }
+.pinv-logo small { display: block; font-size: 0.65rem; font-weight: 400; color: var(--warm-gray); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 0.15rem; }
+.pinv-meta { text-align: right; }
+.pinv-num { font-size: 1.15rem; font-weight: 700; color: var(--dark); }
+.pinv-date { font-size: 0.78rem; color: var(--warm-gray); margin-top: 0.15rem; }
+.pinv-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.8rem; }
+.pinv-party h4 { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warm-gray); margin-bottom: 0.4rem; }
+.pinv-party p { font-size: 0.83rem; line-height: 1.7; }
+.pinv-tbl { width: 100%; border-collapse: collapse; margin-bottom: 1.4rem; }
+.pinv-tbl th { background: var(--deep-rose); color: white; padding: 0.55rem 0.75rem; font-size: 0.67rem; letter-spacing: 0.07em; text-transform: uppercase; text-align: left; }
+.pinv-tbl td { padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
+.pinv-tbl tr:nth-child(even) td { background: rgba(241,227,239,0.3); }
+.pinv-tots { display: flex; justify-content: flex-end; }
+.pinv-tots-box { width: 270px; }
+.pinv-tot-row { display: flex; justify-content: space-between; padding: 0.25rem 0; font-size: 0.83rem; color: var(--warm-gray); }
+.pinv-tot-row.grand { font-weight: 700; font-size: 0.98rem; color: var(--dark); border-top: 2px solid var(--deep-rose); padding-top: 0.55rem; margin-top: 0.2rem; }
+.pinv-notes { margin-top: 1.5rem; padding: 0.75rem 1rem; background: var(--cream); border-radius: 6px; font-size: 0.8rem; color: #4a2a4a; }
+.pinv-footer { margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border); font-size: 0.72rem; color: var(--warm-gray); text-align: center; line-height: 1.8; }
+
+/* ── RESPONSIVE ───────────────────────────── */
+@media (max-width: 900px) {
+  :root { --sidebar-w: 0px; }
+  #sidebar { display: none; }
+  #main { margin-left: 0; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 580px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .pinv-parties { grid-template-columns: 1fr; }
+  .view { padding: 1.2rem 1rem 3rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="brand-name">Love<span>Essences</span></div>
+    <div class="brand-sub">Sistema de Faturação</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <button class="nav-item active" data-view="dashboard" onclick="go('dashboard')">
+      <span class="ico">📊</span> Dashboard
+    </button>
+    <button class="nav-item" data-view="new-invoice" onclick="go('new-invoice')">
+      <span class="ico">➕</span> Nova Fatura
+    </button>
+    <button class="nav-item" data-view="invoices" onclick="go('invoices')">
+      <span class="ico">📄</span> Faturas
+    </button>
+    <div class="nav-section">Gestão</div>
+    <button class="nav-item" data-view="clients" onclick="go('clients')">
+      <span class="ico">👤</span> Clientes
+    </button>
+    <button class="nav-item" data-view="products" onclick="go('products')">
+      <span class="ico">🛍️</span> Catálogo
+    </button>
+    <div class="nav-section">Sistema</div>
+    <button class="nav-item" data-view="settings" onclick="go('settings')">
+      <span class="ico">⚙️</span> Configurações
+    </button>
+    <a class="nav-item" href="index.html" target="_blank" style="text-decoration:none;">
+      <span class="ico">🌐</span> Ver Site
+    </a>
+  </div>
+</nav>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<main id="main">
+
+  <!-- ─── DASHBOARD ─── -->
+  <div class="view active" id="view-dashboard">
+    <div class="page-header no-print">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub" id="dash-greeting">Bem-vinda de volta!</div>
+      </div>
+      <button class="btn btn-primary" onclick="go('new-invoice')">➕ Nova Fatura</button>
+    </div>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Faturas Recentes</div>
+        <button class="btn btn-ghost btn-sm" onclick="go('invoices')">Ver todas →</button>
+      </div>
+      <div id="recent-list"></div>
+    </div>
+  </div>
+
+  <!-- ─── NOVA / EDITAR FATURA ─── -->
+  <div class="view" id="view-new-invoice">
+    <div class="page-header no-print">
+      <div>
+        <div class="page-title" id="form-title">Nova Fatura</div>
+        <div class="page-sub">Preencha os dados abaixo e guarde</div>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-secondary" onclick="go('invoices')">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveInvoice()">💾 Guardar</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem;">
+      <!-- INFO -->
+      <div class="card">
+        <div class="card-header"><div class="card-title">📋 Fatura</div></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Tipo</label>
+              <select id="f-type">
+                <option value="fatura-simplificada">Fatura Simplificada</option>
+                <option value="fatura">Fatura</option>
+                <option value="recibo">Recibo</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Estado</label>
+              <select id="f-status">
+                <option value="pendente">⏳ Pendente</option>
+                <option value="pago">✅ Pago</option>
+                <option value="cancelado">❌ Cancelado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Data</label>
+              <input type="date" id="f-date">
+            </div>
+            <div class="form-group">
+              <label>Pagamento</label>
+              <select id="f-payment">
+                <option value="mbway">MB Way</option>
+                <option value="numerario">Numerário</option>
+                <option value="transferencia">Transferência Bancária</option>
+                <option value="multibanco">Multibanco</option>
+                <option value="outro">Outro</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label>Notas / Observações</label>
+              <textarea id="f-notes" placeholder="Informações adicionais, condições..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLIENTE -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">👤 Cliente</div>
+          <div class="flex gap-1">
+            <button type="button" class="btn btn-ghost btn-sm" onclick="openClientPicker()">Selecionar</button>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="clearClient()">Limpar</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Nome / Empresa</label>
+              <input type="text" id="c-name" placeholder="Nome do cliente">
+            </div>
+            <div class="form-group">
+              <label>NIF</label>
+              <input type="text" id="c-nif" placeholder="000000000" maxlength="9">
+            </div>
+            <div class="form-group">
+              <label>Telefone</label>
+              <input type="tel" id="c-phone" placeholder="+351 9XX XXX XXX">
+            </div>
+            <div class="form-group full">
+              <label>Email</label>
+              <input type="email" id="c-email" placeholder="email@exemplo.pt">
+            </div>
+            <div class="form-group full">
+              <label>Morada</label>
+              <textarea id="c-address" placeholder="Rua, Nº · Localidade · Código Postal" style="min-height:56px;"></textarea>
+            </div>
+            <div class="form-group full">
+              <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;font-weight:400;">
+                <input type="checkbox" id="c-save" style="width:auto;padding:0;"> Guardar para futuras faturas
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARTIGOS -->
+    <div class="card" style="margin-bottom:1.2rem;">
+      <div class="card-header">
+        <div class="card-title">🛍️ Artigos</div>
+        <div class="flex gap-1">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="openProductPicker()">+ Do Catálogo</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="addEmptyItem()">+ Linha Manual</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding-top:0.75rem;">
+        <div class="table-wrap">
+          <table class="items-tbl">
+            <thead>
+              <tr>
+                <th style="width:38%;">Descrição</th>
+                <th style="width:9%;text-align:center;">Qtd</th>
+                <th style="width:13%;text-align:right;">Preço Unit.</th>
+                <th style="width:10%;text-align:center;">IVA %</th>
+                <th style="width:10%;text-align:center;">Desc. %</th>
+                <th style="width:13%;text-align:right;">Total</th>
+                <th style="width:4%;"></th>
+              </tr>
+            </thead>
+            <tbody id="items-body"></tbody>
+          </table>
+        </div>
+        <div class="totals-wrap">
+          <div class="totals-box">
+            <div class="tot-row"><span>Subtotal (s/ IVA)</span><span id="t-sub">0,00 €</span></div>
+            <div class="tot-row" id="t-disc-row" style="display:none;"><span>Desconto</span><span id="t-disc">−0,00 €</span></div>
+            <div class="tot-row"><span>IVA</span><span id="t-tax">0,00 €</span></div>
+            <div class="tot-row grand"><span>TOTAL</span><span id="t-total">0,00 €</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <input type="hidden" id="f-edit-id">
+  </div>
+
+  <!-- ─── LISTA DE FATURAS ─── -->
+  <div class="view" id="view-invoices">
+    <div class="page-header no-print">
+      <div>
+        <div class="page-title">Faturas</div>
+        <div class="page-sub" id="inv-count"></div>
+      </div>
+      <button class="btn btn-primary" onclick="go('new-invoice')">➕ Nova Fatura</button>
+    </div>
+    <div class="search-row">
+      <input type="text" id="inv-search" placeholder="🔍 Pesquisar por nº, cliente..." oninput="renderInvoicesList()">
+      <select id="inv-status-filter" onchange="renderInvoicesList()" style="padding:0.5rem 0.75rem;border:1px solid var(--border);border-radius:6px;">
+        <option value="">Todos os estados</option>
+        <option value="pago">Pago</option>
+        <option value="pendente">Pendente</option>
+        <option value="cancelado">Cancelado</option>
+      </select>
+    </div>
+    <div class="card">
+      <div id="invoices-tbl"></div>
+    </div>
+  </div>
+
+  <!-- ─── DETALHE FATURA ─── -->
+  <div class="view" id="view-invoice-detail">
+    <div class="page-header no-print">
+      <div>
+        <div class="page-title">Detalhe da Fatura</div>
+        <div class="page-sub" id="detail-sub"></div>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn btn-secondary" onclick="go('invoices')">← Voltar</button>
+        <button class="btn btn-ghost" id="detail-edit-btn">✏️ Editar</button>
+        <select id="detail-status-sel" onchange="changeDetailStatus()" style="padding:0.5rem 0.75rem;border:1px solid var(--border);border-radius:6px;font-size:0.8rem;">
+          <option value="pendente">⏳ Pendente</option>
+          <option value="pago">✅ Pago</option>
+          <option value="cancelado">❌ Cancelado</option>
+        </select>
+        <button class="btn btn-primary" onclick="printCurrentDetail()">🖨️ Imprimir / PDF</button>
+      </div>
+    </div>
+    <div id="detail-content"></div>
+  </div>
+
+  <!-- ─── CLIENTES ─── -->
+  <div class="view" id="view-clients">
+    <div class="page-header no-print">
+      <div>
+        <div class="page-title">Clientes</div>
+        <div class="page-sub">Clientes guardados para faturação rápida</div>
+      </div>
+      <button class="btn btn-primary" onclick="openAddClient()">➕ Novo Cliente</button>
+    </div>
+    <div class="card">
+      <div id="clients-tbl"></div>
+    </div>
+  </div>
+
+  <!-- ─── CATÁLOGO ─── -->
+  <div class="view" id="view-products">
+    <div class="page-header no-print">
+      <div>
+        <div class="page-title">Catálogo de Produtos</div>
+        <div class="page-sub">Produtos pré-definidos para adicionar rapidamente a faturas</div>
+      </div>
+      <button class="btn btn-primary" onclick="openAddProduct()">➕ Novo Produto</button>
+    </div>
+    <div class="card">
+      <div id="products-tbl"></div>
+    </div>
+  </div>
+
+  <!-- ─── CONFIGURAÇÕES ─── -->
+  <div class="view" id="view-settings">
+    <div class="page-header no-print">
+      <div>
+        <div class="page-title">Configurações</div>
+        <div class="page-sub">Dados da empresa que aparecem nas faturas</div>
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">💾 Guardar</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;">
+      <div class="card">
+        <div class="card-header"><div class="card-title">🏢 Dados da Empresa</div></div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group full"><label>Nome da Empresa</label><input id="s-name" type="text" value="Love Essences"></div>
+            <div class="form-group"><label>NIF</label><input id="s-nif" type="text" placeholder="000000000"></div>
+            <div class="form-group"><label>Telefone</label><input id="s-phone" type="tel" placeholder="+351 9XX XXX XXX"></div>
+            <div class="form-group full"><label>Email</label><input id="s-email" type="email" placeholder="love@essences.pt"></div>
+            <div class="form-group full"><label>Morada</label><textarea id="s-address" placeholder="Rua, Nº · Localidade · CP"></textarea></div>
+            <div class="form-group full"><label>IBAN</label><input id="s-iban" type="text" placeholder="PT50 XXXX XXXX XXXX XXXX XXXX X"></div>
+            <div class="form-group full"><label>Nota de Rodapé nas Faturas</label><textarea id="s-footer" placeholder="Ex: Obrigada pela sua preferência!"></textarea></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:1.2rem;">
+          <div class="card-header"><div class="card-title">🔢 Numeração</div></div>
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Prefixo</label>
+                <input id="s-prefix" type="text" value="FS">
+                <div class="form-hint">Ex: FAT, FS, REC</div>
+              </div>
+              <div class="form-group">
+                <label>Próximo Número</label>
+                <input id="s-nextnum" type="number" value="1" min="1">
+              </div>
+              <div class="form-group full">
+                <label>Taxa IVA Padrão</label>
+                <select id="s-tax">
+                  <option value="23">23% — Taxa Normal</option>
+                  <option value="13">13% — Taxa Intermédia</option>
+                  <option value="6">6% — Taxa Reduzida</option>
+                  <option value="0">0% — Isento / Regime de Isenção</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">ℹ️ Informação</div></div>
+          <div class="card-body">
+            <p style="font-size:0.78rem;color:var(--warm-gray);line-height:1.75;">
+              Os dados desta página aparecem em todas as faturas impressas.<br>
+              As faturas são guardadas localmente neste dispositivo (localStorage).<br><br>
+              <strong>IVA em Portugal (2026):</strong><br>
+              — 23% taxa normal (maioria dos produtos)<br>
+              — 6% taxa reduzida (alguns artigos artesanais)<br>
+              — Art. 53.º CIVA: isenção se volume &lt; 15 000 €/ano
+            </p>
+            <div id="settings-alert" style="display:none;margin-top:1rem;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main><!-- /main -->
+
+<!-- ══════════════════ PRINT AREA ══════════════════ -->
+<div id="print-area">
+  <div class="pinv" id="print-content"></div>
+</div>
+
+<!-- ══════════════════ MODALS ══════════════════ -->
+
+<!-- Client Picker -->
+<div class="overlay" id="ov-client-pick">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-hdr"><div class="modal-title">Selecionar Cliente</div><button class="modal-x" onclick="closeModal('ov-client-pick')">✕</button></div>
+    <input type="text" id="cp-search" placeholder="🔍 Pesquisar..." oninput="renderClientPicker()" style="width:100%;margin-bottom:0.75rem;padding:0.5rem 0.75rem;border:1px solid var(--border);border-radius:6px;">
+    <div class="picker-list" id="cp-list"></div>
+  </div>
+</div>
+
+<!-- Product Picker -->
+<div class="overlay" id="ov-product-pick">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-hdr"><div class="modal-title">Adicionar do Catálogo</div><button class="modal-x" onclick="closeModal('ov-product-pick')">✕</button></div>
+    <input type="text" id="pp-search" placeholder="🔍 Pesquisar produto..." oninput="renderProductPicker()" style="width:100%;margin-bottom:0.75rem;padding:0.5rem 0.75rem;border:1px solid var(--border);border-radius:6px;">
+    <div class="picker-list" id="pp-list"></div>
+  </div>
+</div>
+
+<!-- Add/Edit Client -->
+<div class="overlay" id="ov-add-client">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="ac-title">Novo Cliente</div><button class="modal-x" onclick="closeModal('ov-add-client')">✕</button></div>
+    <div class="form-grid">
+      <div class="form-group full"><label>Nome / Empresa *</label><input id="ac-name" type="text" placeholder="Nome do cliente"></div>
+      <div class="form-group"><label>NIF</label><input id="ac-nif" type="text" placeholder="000000000" maxlength="9"></div>
+      <div class="form-group"><label>Telefone</label><input id="ac-phone" type="tel" placeholder="+351 9XX XXX XXX"></div>
+      <div class="form-group full"><label>Email</label><input id="ac-email" type="email" placeholder="email@exemplo.pt"></div>
+      <div class="form-group full"><label>Morada</label><textarea id="ac-address" placeholder="Rua, Nº · Localidade · CP" style="min-height:56px;"></textarea></div>
+    </div>
+    <input type="hidden" id="ac-edit-id">
+    <div class="flex gap-2 mt-2" style="justify-content:flex-end;">
+      <button class="btn btn-secondary" onclick="closeModal('ov-add-client')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveClient()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Product -->
+<div class="overlay" id="ov-add-product">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="ap-title">Novo Produto</div><button class="modal-x" onclick="closeModal('ov-add-product')">✕</button></div>
+    <div class="form-grid">
+      <div class="form-group full"><label>Nome *</label><input id="ap-name" type="text" placeholder="Nome do produto"></div>
+      <div class="form-group full"><label>Descrição</label><input id="ap-desc" type="text" placeholder="Descrição curta (aparece na fatura)"></div>
+      <div class="form-group"><label>Preço (€)</label><input id="ap-price" type="number" placeholder="0.00" min="0" step="0.01"></div>
+      <div class="form-group"><label>IVA (%)</label><select id="ap-tax"><option value="23">23%</option><option value="13">13%</option><option value="6">6%</option><option value="0">0%</option></select></div>
+      <div class="form-group full"><label>Categoria</label><input id="ap-cat" type="text" placeholder="Ex: Coleção Assinatura, Lembranças..."></div>
+    </div>
+    <input type="hidden" id="ap-edit-id">
+    <div class="flex gap-2 mt-2" style="justify-content:flex-end;">
+      <button class="btn btn-secondary" onclick="closeModal('ov-add-product')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ SCRIPT ══════════════════ -->
+<script>
+// ──────────────────────────────────────────────
+// CONSTANTS
+// ──────────────────────────────────────────────
+const SK = {
+  invoices: 'le_invoices',
+  clients:  'le_clients',
+  products: 'le_products',
+  settings: 'le_settings'
+};
+
+const DEFAULT_PRODUCTS = [
+  { id:'dp01', name:'Bloom (S)',             description:'Peça artesanal em porcelana',          price:32.90, taxRate:23, category:'Coleção Assinatura' },
+  { id:'dp02', name:'Bloom (M)',             description:'Peça artesanal em porcelana',          price:44.90, taxRate:23, category:'Coleção Assinatura' },
+  { id:'dp03', name:'Bloom (L)',             description:'Peça artesanal em porcelana',          price:60.00, taxRate:23, category:'Coleção Assinatura' },
+  { id:'dp04', name:'Aurora',               description:'Moldura floral artesanal personalizada',price:25.00, taxRate:23, category:'Coleção Assinatura' },
+  { id:'dp05', name:'Serenata',             description:'Peça em gesso com acabamento sereno',   price:30.00, taxRate:23, category:'Coleção Assinatura' },
+  { id:'dp06', name:'Diamante',             description:'Peça em gesso com forma facetada',      price:21.00, taxRate:23, category:'Coleção Assinatura' },
+  { id:'dp07', name:'Prisma',               description:'Peça em gesso com vaso facetado',       price:25.00, taxRate:23, category:'Coleção Assinatura' },
+  { id:'dp08', name:'Nala',                 description:'Peça artesanal em gesso, forma orgânica',price:18.00,taxRate:23, category:'Coleção Assinatura' },
+  { id:'dp09', name:'Aura',                 description:'Peça compacta em gesso',                price:18.00, taxRate:23, category:'Coleção Assinatura' },
+  { id:'dp10', name:'Essência do Amor (S)', description:'Box presente artesanal — Tamanho S',    price:25.00, taxRate:23, category:'Coleção Memórias' },
+  { id:'dp11', name:'Essência do Amor (M)', description:'Box presente artesanal — Tamanho M',    price:35.00, taxRate:23, category:'Coleção Memórias' },
+  { id:'dp12', name:'Essência do Amor (L)', description:'Box presente artesanal — Tamanho L',    price:50.00, taxRate:23, category:'Coleção Memórias' },
+  { id:'dp13', name:'Pensar em Ti (S)',     description:'Box com mimos artesanais — Tamanho S',  price:29.90, taxRate:23, category:'Coleção Memórias' },
+  { id:'dp14', name:'Pensar em Ti (M)',     description:'Box com mimos artesanais — Tamanho M',  price:39.90, taxRate:23, category:'Coleção Memórias' },
+  { id:'dp15', name:'Pensar em Ti (L)',     description:'Box com mimos artesanais — Tamanho L',  price:55.00, taxRate:23, category:'Coleção Memórias' },
+  { id:'dp16', name:'Lembrei-me de Ti',     description:'Mini bouquet artesanal',                price:12.00, taxRate:23, category:'Coleção Memórias' },
+  { id:'dp17', name:'Mini Difusor',         description:'Lembrança perfumada c/ etiqueta personalizada',price:4.50,taxRate:23,category:'Lembranças para Eventos'},
+  { id:'dp18', name:'Mini Difusor + Sabonete',description:'Difusor e sabonete artesanal',        price:6.50, taxRate:23, category:'Lembranças para Eventos' },
+  { id:'dp19', name:'Memória Perfumada',    description:'Caixinha perfumada artesanal',           price:4.00, taxRate:23, category:'Lembranças para Eventos' },
+  { id:'dp20', name:'Luz Serena',           description:'Vela artesanal decorativa',              price:3.50, taxRate:23, category:'Lembranças para Eventos' },
+  { id:'dp21', name:'Bilhete Perfumado',    description:'Cartão perfumado artesanal',             price:2.50, taxRate:23, category:'Lembranças para Eventos' },
+  { id:'dp22', name:'Personalização',       description:'Acréscimo por texto/frase personalizada',price:1.50, taxRate:23, category:'Extras' },
+  { id:'dp23', name:'Embalagem de Oferta',  description:'Embalagem de presente adicional',        price:2.00, taxRate:23, category:'Extras' },
+];
+
+const DEFAULT_SETTINGS = {
+  name:'Love Essences', nif:'', phone:'', email:'', address:'', iban:'',
+  prefix:'FS', nextNumber:1, defaultTax:23,
+  footerNote:'Obrigada pela sua preferência! · Love Essences · Sabonetes Artesanais & Co.'
+};
+
+// ──────────────────────────────────────────────
+// STORAGE
+// ──────────────────────────────────────────────
+const store = {
+  get(key, fallback=[]) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+    catch { return fallback; }
+  },
+  set(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
+};
+
+function getInvoices()  { return store.get(SK.invoices, []); }
+function getClients()   { return store.get(SK.clients, []); }
+function getSettings()  { return { ...DEFAULT_SETTINGS, ...store.get(SK.settings, {}) }; }
+function getProducts()  {
+  const s = store.get(SK.products, null);
+  if (!s) { store.set(SK.products, DEFAULT_PRODUCTS); return DEFAULT_PRODUCTS; }
+  return s;
+}
+
+// ──────────────────────────────────────────────
+// HELPERS
+// ──────────────────────────────────────────────
+function uid() { return Math.random().toString(36).substr(2,9) + Date.now().toString(36); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmt(n) { return (n||0).toFixed(2).replace('.',',') + ' €'; }
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function typeLabel(t) {
+  return {'fatura':'Fatura','fatura-simplificada':'Fatura Simplificada','recibo':'Recibo'}[t] || t || '—';
+}
+function payLabel(p) {
+  return {'mbway':'MB Way','numerario':'Numerário','transferencia':'Transferência Bancária','multibanco':'Multibanco','outro':'Outro'}[p] || p || '—';
+}
+function badgeHtml(s) {
+  const map = {
+    pago:'<span class="badge badge-pago">Pago</span>',
+    pendente:'<span class="badge badge-pendente">Pendente</span>',
+    cancelado:'<span class="badge badge-cancelado">Cancelado</span>'
+  };
+  return map[s] || '<span class="badge badge-draft">—</span>';
+}
+
+// ──────────────────────────────────────────────
+// CALCULATIONS
+// ──────────────────────────────────────────────
+function itemTotal(item) {
+  const base = (item.quantity||0) * (item.unitPrice||0);
+  const disc = base * ((item.discount||0)/100);
+  const after = base - disc;
+  return { subtotal: after, tax: after * ((item.taxRate||0)/100), disc };
+}
+function invoiceTotals(items) {
+  return (items||[]).reduce((acc, item) => {
+    const t = itemTotal(item);
+    acc.subtotal += t.subtotal;
+    acc.tax      += t.tax;
+    acc.discount += t.disc;
+    acc.total     = acc.subtotal + acc.tax;
+    return acc;
+  }, { subtotal:0, tax:0, discount:0, total:0 });
+}
+
+// ──────────────────────────────────────────────
+// NAVIGATION
+// ──────────────────────────────────────────────
+let currentView = 'dashboard';
+let currentDetailId = null;
+
+function go(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const el = document.getElementById('view-' + view);
+  if (el) el.classList.add('active');
+  const nav = document.querySelector(`.nav-item[data-view="${view}"]`);
+  if (nav) nav.classList.add('active');
+  currentView = view;
+  if (view === 'dashboard')    renderDashboard();
+  if (view === 'invoices')     renderInvoicesList();
+  if (view === 'new-invoice')  initNewInvoice();
+  if (view === 'clients')      renderClientsList();
+  if (view === 'products')     renderProductsList();
+  if (view === 'settings')     loadSettings();
+}
+
+// ──────────────────────────────────────────────
+// DASHBOARD
+// ──────────────────────────────────────────────
+function renderDashboard() {
+  const invoices = getInvoices();
+  const paid = invoices.filter(i => i.status === 'pago');
+  const pending = invoices.filter(i => i.status === 'pendente');
+  const totalPaid = paid.reduce((s,i) => s + (i.totals?.total||0), 0);
+  const totalPend = pending.reduce((s,i) => s + (i.totals?.total||0), 0);
+  const clients = getClients();
+
+  const hr = new Date().getHours();
+  const greet = hr<12 ? 'Bom dia!' : hr<19 ? 'Boa tarde!' : 'Boa noite!';
+  const gEl = document.getElementById('dash-greeting');
+  if (gEl) gEl.textContent = greet;
+
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-ico">💰</div>
+      <div class="stat-label">Total Faturado (Pago)</div>
+      <div class="stat-value">${fmt(totalPaid)}</div>
+      <div class="stat-sub">${paid.length} fatura${paid.length!==1?'s':''} paga${paid.length!==1?'s':''}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">⏳</div>
+      <div class="stat-label">Valor Pendente</div>
+      <div class="stat-value" style="color:var(--warning);">${fmt(totalPend)}</div>
+      <div class="stat-sub">${pending.length} por cobrar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">📄</div>
+      <div class="stat-label">Total de Faturas</div>
+      <div class="stat-value">${invoices.length}</div>
+      <div class="stat-sub">${new Date().getFullYear()}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico">👤</div>
+      <div class="stat-label">Clientes</div>
+      <div class="stat-value">${clients.length}</div>
+      <div class="stat-sub">registados</div>
+    </div>`;
+
+  const recent = [...invoices].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,5);
+  const rl = document.getElementById('recent-list');
+  if (!rl) return;
+  if (!recent.length) {
+    rl.innerHTML = `<div class="empty"><div class="e-ico">📄</div><h3>Nenhuma fatura ainda</h3><p>Clique em "Nova Fatura" para começar</p></div>`;
+    return;
+  }
+  rl.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Nº</th><th>Cliente</th><th>Data</th><th>Total</th><th>Estado</th><th></th></tr></thead>
+    <tbody>${recent.map(inv => invRowHtml(inv)).join('')}</tbody>
+  </table></div>`;
+}
+
+function invRowHtml(inv) {
+  return `<tr>
+    <td><span class="mono color-rose" style="font-size:0.8rem;">${esc(inv.number)}</span></td>
+    <td>${inv.client?.name ? esc(inv.client.name) : '<span class="text-muted">Consumidor Final</span>'}</td>
+    <td class="text-muted">${fmtDate(inv.date)}</td>
+    <td><strong>${fmt(inv.totals?.total||0)}</strong></td>
+    <td>${badgeHtml(inv.status)}</td>
+    <td><div class="flex gap-1">
+      <button class="btn btn-ghost btn-sm" onclick="viewInvoice('${inv.id}')">👁</button>
+      <button class="btn btn-ghost btn-sm" onclick="editInvoice('${inv.id}')">✏️</button>
+      <button class="btn btn-ghost btn-sm" onclick="printById('${inv.id}')">🖨️</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteInvoice('${inv.id}')">🗑</button>
+    </div></td>
+  </tr>`;
+}
+
+// ──────────────────────────────────────────────
+// INVOICES LIST
+// ──────────────────────────────────────────────
+function renderInvoicesList() {
+  const invoices = getInvoices();
+  const q = (document.getElementById('inv-search')?.value||'').toLowerCase();
+  const sf = document.getElementById('inv-status-filter')?.value||'';
+
+  const filtered = invoices.filter(inv => {
+    const ms = !q || (inv.number||'').toLowerCase().includes(q) || (inv.client?.name||'').toLowerCase().includes(q);
+    const mst = !sf || inv.status === sf;
+    return ms && mst;
+  }).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+
+  const countEl = document.getElementById('inv-count');
+  if (countEl) countEl.textContent = `${filtered.length} fatura${filtered.length!==1?'s':''}`;
+
+  const container = document.getElementById('invoices-tbl');
+  if (!container) return;
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty"><div class="e-ico">🔍</div><h3>Nenhuma fatura encontrada</h3><p>Ajuste os filtros ou crie uma nova fatura</p></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Nº Fatura</th><th>Tipo</th><th>Cliente</th><th>Data</th><th>Pagamento</th><th style="text-align:right;">Total</th><th>Estado</th><th>Ações</th></tr></thead>
+    <tbody>${filtered.map(inv=>`<tr>
+      <td><span class="mono color-rose" style="font-size:0.8rem;">${esc(inv.number)}</span></td>
+      <td><span class="text-muted" style="font-size:0.76rem;">${typeLabel(inv.type)}</span></td>
+      <td>${inv.client?.name ? esc(inv.client.name) : '<span class="text-muted">Consumidor Final</span>'}</td>
+      <td class="text-muted">${fmtDate(inv.date)}</td>
+      <td><span class="text-muted" style="font-size:0.76rem;">${payLabel(inv.paymentMethod)}</span></td>
+      <td style="text-align:right;"><strong>${fmt(inv.totals?.total||0)}</strong></td>
+      <td>${badgeHtml(inv.status)}</td>
+      <td><div class="flex gap-1">
+        <button class="btn btn-ghost btn-sm" onclick="viewInvoice('${inv.id}')">👁</button>
+        <button class="btn btn-ghost btn-sm" onclick="editInvoice('${inv.id}')">✏️</button>
+        <button class="btn btn-ghost btn-sm" onclick="printById('${inv.id}')">🖨️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteInvoice('${inv.id}')">🗑</button>
+      </div></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+// ──────────────────────────────────────────────
+// INVOICE FORM
+// ──────────────────────────────────────────────
+let currentItems = [];
+
+function initNewInvoice(toEdit = null) {
+  currentItems = [];
+  document.getElementById('form-title').textContent = toEdit ? 'Editar Fatura' : 'Nova Fatura';
+  document.getElementById('f-edit-id').value = toEdit?.id || '';
+  document.getElementById('f-type').value    = toEdit?.type || 'fatura-simplificada';
+  document.getElementById('f-status').value  = toEdit?.status || 'pendente';
+  document.getElementById('f-date').value    = toEdit?.date || today();
+  document.getElementById('f-payment').value = toEdit?.paymentMethod || 'mbway';
+  document.getElementById('f-notes').value   = toEdit?.notes || '';
+
+  if (toEdit?.client) {
+    document.getElementById('c-name').value    = toEdit.client.name || '';
+    document.getElementById('c-nif').value     = toEdit.client.nif || '';
+    document.getElementById('c-phone').value   = toEdit.client.phone || '';
+    document.getElementById('c-email').value   = toEdit.client.email || '';
+    document.getElementById('c-address').value = toEdit.client.address || '';
+  } else {
+    clearClient();
+  }
+
+  currentItems = toEdit?.items ? toEdit.items.map(i=>({...i})) : [];
+  if (!currentItems.length) addEmptyItem(false);
+  else renderItems();
+  updateTotals();
+}
+
+function addEmptyItem(rerender=true) {
+  const s = getSettings();
+  currentItems.push({ id:uid(), description:'', quantity:1, unitPrice:0, taxRate:s.defaultTax||23, discount:0 });
+  if (rerender) renderItems();
+}
+
+function removeItem(idx) {
+  currentItems.splice(idx,1);
+  if (!currentItems.length) addEmptyItem(false);
+  renderItems();
+  updateTotals();
+}
+
+function renderItems() {
+  const tbody = document.getElementById('items-body');
+  if (!tbody) return;
+  tbody.innerHTML = currentItems.map((item, idx) => `
+    <tr id="irow-${idx}">
+      <td><input type="text" value="${esc(item.description)}" placeholder="Descrição do artigo..." oninput="setItem(${idx},'description',this.value)" style="width:100%;"></td>
+      <td><input type="number" value="${item.quantity}" min="0.01" step="0.01" oninput="setItem(${idx},'quantity',+this.value||0)" style="width:100%;text-align:center;"></td>
+      <td><input type="number" value="${item.unitPrice}" min="0" step="0.01" oninput="setItem(${idx},'unitPrice',+this.value||0)" style="width:100%;text-align:right;"></td>
+      <td><select oninput="setItem(${idx},'taxRate',+this.value)" style="width:100%;">
+        <option value="23"${item.taxRate==23?' selected':''}>23%</option>
+        <option value="13"${item.taxRate==13?' selected':''}>13%</option>
+        <option value="6"${item.taxRate==6?' selected':''}>6%</option>
+        <option value="0"${item.taxRate==0?' selected':''}>0%</option>
+      </select></td>
+      <td><input type="number" value="${item.discount||0}" min="0" max="100" step="0.01" oninput="setItem(${idx},'discount',+this.value||0)" style="width:100%;text-align:center;"></td>
+      <td style="text-align:right;" id="itot-${idx}"><strong class="color-rose">${fmt(itemTotal(item).subtotal + itemTotal(item).tax)}</strong></td>
+      <td><button class="btn-rm" onclick="removeItem(${idx})">✕</button></td>
+    </tr>`).join('');
+}
+
+function setItem(idx, field, val) {
+  currentItems[idx][field] = val;
+  updateTotals();
+  const cell = document.getElementById(`itot-${idx}`);
+  if (cell) {
+    const t = itemTotal(currentItems[idx]);
+    cell.innerHTML = `<strong class="color-rose">${fmt(t.subtotal + t.tax)}</strong>`;
+  }
+}
+
+function updateTotals() {
+  const t = invoiceTotals(currentItems);
+  const set = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('t-sub', fmt(t.subtotal));
+  set('t-tax', fmt(t.tax));
+  set('t-disc', '−'+fmt(t.discount));
+  set('t-total', fmt(t.total));
+  const dr = document.getElementById('t-disc-row');
+  if (dr) dr.style.display = t.discount > 0 ? 'flex' : 'none';
+}
+
+function clearClient() {
+  ['c-name','c-nif','c-phone','c-email','c-address'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+function genInvNumber() {
+  const s = getSettings();
+  const year = new Date().getFullYear();
+  const num = String(s.nextNumber||1).padStart(3,'0');
+  return `${s.prefix||'FS'}/${year}/${num}`;
+}
+
+function bumpInvNumber() {
+  const s = getSettings();
+  s.nextNumber = (s.nextNumber||1) + 1;
+  store.set(SK.settings, s);
+}
+
+function saveInvoice() {
+  const editId = document.getElementById('f-edit-id')?.value;
+  const invoices = getInvoices();
+  const totals = invoiceTotals(currentItems);
+
+  const client = {
+    name:    document.getElementById('c-name')?.value?.trim()    || '',
+    nif:     document.getElementById('c-nif')?.value?.trim()     || '',
+    phone:   document.getElementById('c-phone')?.value?.trim()   || '',
+    email:   document.getElementById('c-email')?.value?.trim()   || '',
+    address: document.getElementById('c-address')?.value?.trim() || ''
+  };
+
+  const data = {
+    type:          document.getElementById('f-type').value,
+    status:        document.getElementById('f-status').value,
+    date:          document.getElementById('f-date').value,
+    paymentMethod: document.getElementById('f-payment').value,
+    notes:         document.getElementById('f-notes').value,
+    client,
+    items:         currentItems.map(i=>({...i})),
+    totals
+  };
+
+  if (editId) {
+    const idx = invoices.findIndex(i => i.id === editId);
+    if (idx >= 0) invoices[idx] = { ...invoices[idx], ...data };
+  } else {
+    const number = genInvNumber();
+    bumpInvNumber();
+    invoices.push({ id:uid(), number, createdAt:new Date().toISOString(), ...data });
+
+    // auto-save client
+    if (document.getElementById('c-save')?.checked && client.name) {
+      const clients = getClients();
+      if (!clients.find(c => c.name.toLowerCase()===client.name.toLowerCase())) {
+        clients.push({ id:uid(), ...client });
+        store.set(SK.clients, clients);
+      }
+    }
+  }
+  store.set(SK.invoices, invoices);
+  go('invoices');
+}
+
+function editInvoice(id) {
+  const inv = getInvoices().find(i => i.id === id);
+  if (!inv) return;
+  go('new-invoice');
+  setTimeout(() => initNewInvoice(inv), 30);
+}
+
+function deleteInvoice(id) {
+  if (!confirm('Eliminar esta fatura? Esta ação não pode ser revertida.')) return;
+  store.set(SK.invoices, getInvoices().filter(i => i.id !== id));
+  if (currentView === 'dashboard') renderDashboard();
+  else renderInvoicesList();
+}
+
+// ──────────────────────────────────────────────
+// INVOICE DETAIL
+// ──────────────────────────────────────────────
+function viewInvoice(id) {
+  currentDetailId = id;
+  const inv = getInvoices().find(i => i.id === id);
+  if (!inv) return;
+  go('invoice-detail');
+  renderDetail(inv);
+}
+
+function renderDetail(inv) {
+  const subEl = document.getElementById('detail-sub');
+  if (subEl) subEl.textContent = `${inv.number} · ${fmtDate(inv.date)} · ${fmt(inv.totals?.total||0)}`;
+
+  const editBtn = document.getElementById('detail-edit-btn');
+  if (editBtn) editBtn.onclick = () => editInvoice(inv.id);
+
+  const statusSel = document.getElementById('detail-status-sel');
+  if (statusSel) statusSel.value = inv.status || 'pendente';
+
+  const content = document.getElementById('detail-content');
+  if (content) content.innerHTML = buildInvHtml(inv, getSettings());
+}
+
+function changeDetailStatus() {
+  if (!currentDetailId) return;
+  const invoices = getInvoices();
+  const idx = invoices.findIndex(i => i.id === currentDetailId);
+  if (idx < 0) return;
+  invoices[idx].status = document.getElementById('detail-status-sel').value;
+  store.set(SK.invoices, invoices);
+  const sub = document.getElementById('detail-sub');
+  if (sub) {
+    const inv = invoices[idx];
+    sub.textContent = `${inv.number} · ${fmtDate(inv.date)} · ${fmt(inv.totals?.total||0)}`;
+  }
+}
+
+function buildInvHtml(inv, settings) {
+  const items = inv.items || [];
+  const totals = inv.totals || invoiceTotals(items);
+  const rows = items.map(item => {
+    const t = itemTotal(item);
+    return `<tr>
+      <td>${esc(item.description||'—')}</td>
+      <td style="text-align:center;">${item.quantity}</td>
+      <td style="text-align:right;">${fmt(item.unitPrice)}</td>
+      <td style="text-align:center;">${item.taxRate}%</td>
+      <td style="text-align:center;">${item.discount>0?item.discount+'%':'—'}</td>
+      <td style="text-align:right;font-weight:700;">${fmt(t.subtotal+t.tax)}</td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="pinv">
+    <div class="pinv-header">
+      <div>
+        <div class="pinv-logo">Love Essences<small>Sabonetes Artesanais &amp; Co.</small></div>
+        ${settings.nif?`<div style="font-size:.76rem;color:var(--warm-gray);margin-top:.35rem;">NIF: ${esc(settings.nif)}</div>`:''}
+        ${settings.address?`<div style="font-size:.76rem;color:var(--warm-gray);">${esc(settings.address)}</div>`:''}
+        ${settings.phone?`<div style="font-size:.76rem;color:var(--warm-gray);">Tel: ${esc(settings.phone)}</div>`:''}
+        ${settings.email?`<div style="font-size:.76rem;color:var(--warm-gray);">${esc(settings.email)}</div>`:''}
+      </div>
+      <div class="pinv-meta">
+        <div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--warm-gray);">${typeLabel(inv.type)}</div>
+        <div class="pinv-num">${esc(inv.number)}</div>
+        <div class="pinv-date">Data: ${fmtDate(inv.date)}</div>
+        <div style="margin-top:.35rem;">${badgeHtml(inv.status)}</div>
+        ${inv.paymentMethod?`<div style="font-size:.73rem;color:var(--warm-gray);margin-top:.25rem;">${payLabel(inv.paymentMethod)}</div>`:''}
+      </div>
+    </div>
+
+    <div class="pinv-parties">
+      <div class="pinv-party">
+        <h4>Vendedor</h4>
+        <p>
+          <strong>${esc(settings.name||'Love Essences')}</strong><br>
+          ${settings.nif?`NIF: ${esc(settings.nif)}<br>`:''}
+          ${settings.address?`${esc(settings.address)}<br>`:''}
+          ${settings.phone?`${esc(settings.phone)}<br>`:''}
+          ${settings.email?`${esc(settings.email)}`:''}
+        </p>
+        ${settings.iban?`<p style="margin-top:.5rem;font-size:.73rem;color:var(--warm-gray);">IBAN: ${esc(settings.iban)}</p>`:''}
+      </div>
+      <div class="pinv-party">
+        <h4>Cliente</h4>
+        ${inv.client?.name?`<p>
+          <strong>${esc(inv.client.name)}</strong><br>
+          ${inv.client.nif?`NIF: ${esc(inv.client.nif)}<br>`:''}
+          ${inv.client.address?`${esc(inv.client.address)}<br>`:''}
+          ${inv.client.phone?`${esc(inv.client.phone)}<br>`:''}
+          ${inv.client.email?`${esc(inv.client.email)}`:''}
+        </p>`:'<p style="color:var(--warm-gray);">Consumidor Final</p>'}
+      </div>
+    </div>
+
+    <table class="pinv-tbl">
+      <thead><tr>
+        <th>Descrição</th>
+        <th style="text-align:center;">Qtd</th>
+        <th style="text-align:right;">Preço Unit.</th>
+        <th style="text-align:center;">IVA</th>
+        <th style="text-align:center;">Desc.</th>
+        <th style="text-align:right;">Total</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+
+    <div class="pinv-tots">
+      <div class="pinv-tots-box">
+        <div class="pinv-tot-row"><span>Subtotal (s/ IVA)</span><span>${fmt(totals.subtotal)}</span></div>
+        ${totals.discount>0?`<div class="pinv-tot-row"><span>Desconto</span><span>−${fmt(totals.discount)}</span></div>`:''}
+        <div class="pinv-tot-row"><span>IVA</span><span>${fmt(totals.tax)}</span></div>
+        <div class="pinv-tot-row grand"><span>TOTAL</span><span>${fmt(totals.total)}</span></div>
+      </div>
+    </div>
+
+    ${inv.notes?`<div class="pinv-notes"><strong>Notas:</strong> ${esc(inv.notes)}</div>`:''}
+
+    <div class="pinv-footer">
+      ${esc(settings.footerNote||'Obrigada pela sua preferência!')}
+      ${settings.iban?`<br>IBAN para transferência: ${esc(settings.iban)}`:''}
+    </div>
+  </div>`;
+}
+
+function printCurrentDetail() {
+  printById(currentDetailId);
+}
+
+function printById(id) {
+  const inv = getInvoices().find(i => i.id === id);
+  if (!inv) return;
+  document.getElementById('print-content').innerHTML = buildInvHtml(inv, getSettings());
+  window.print();
+}
+
+// ──────────────────────────────────────────────
+// PRODUCT PICKER
+// ──────────────────────────────────────────────
+function openProductPicker() {
+  document.getElementById('pp-search').value = '';
+  renderProductPicker();
+  openModal('ov-product-pick');
+}
+
+function renderProductPicker() {
+  const products = getProducts();
+  const q = (document.getElementById('pp-search')?.value||'').toLowerCase();
+  const filtered = products.filter(p => !q || p.name.toLowerCase().includes(q) || (p.category||'').toLowerCase().includes(q));
+
+  const container = document.getElementById('pp-list');
+  if (!container) return;
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty" style="padding:2rem;"><p>Nenhum produto encontrado</p></div>';
+    return;
+  }
+
+  const groups = {};
+  filtered.forEach(p => { const c = p.category||'Outros'; (groups[c]=groups[c]||[]).push(p); });
+
+  container.innerHTML = Object.entries(groups).map(([cat, prods]) => `
+    <div class="picker-group-label">${esc(cat)}</div>
+    ${prods.map(p => `
+      <div class="picker-item" onclick="addProductItem('${p.id}')">
+        <div>
+          <div class="pi-name">${esc(p.name)}</div>
+          ${p.description?`<div class="pi-cat">${esc(p.description)}</div>`:''}
+        </div>
+        <div class="pi-price">${fmt(p.price)}</div>
+      </div>`).join('')}
+  `).join('');
+}
+
+function addProductItem(pid) {
+  const p = getProducts().find(pr => pr.id === pid);
+  if (!p) return;
+  const s = getSettings();
+  currentItems.push({
+    id: uid(),
+    description: p.description ? `${p.name} — ${p.description}` : p.name,
+    quantity: 1,
+    unitPrice: p.price,
+    taxRate: p.taxRate ?? s.defaultTax ?? 23,
+    discount: 0
+  });
+  renderItems();
+  updateTotals();
+  closeModal('ov-product-pick');
+}
+
+// ──────────────────────────────────────────────
+// CLIENT PICKER
+// ──────────────────────────────────────────────
+function openClientPicker() {
+  document.getElementById('cp-search').value = '';
+  renderClientPicker();
+  openModal('ov-client-pick');
+}
+
+function renderClientPicker() {
+  const clients = getClients();
+  const q = (document.getElementById('cp-search')?.value||'').toLowerCase();
+  const filtered = clients.filter(c => !q || (c.name||'').toLowerCase().includes(q) || (c.nif||'').includes(q));
+
+  const container = document.getElementById('cp-list');
+  if (!container) return;
+  if (!clients.length) {
+    container.innerHTML = '<div class="empty" style="padding:2rem;"><p>Nenhum cliente guardado.</p><p>Preencha os dados do cliente e assinale "Guardar".</p></div>';
+    return;
+  }
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty" style="padding:2rem;"><p>Nenhum cliente encontrado</p></div>';
+    return;
+  }
+  container.innerHTML = filtered.map(c => `
+    <div class="picker-item" onclick="selectClient('${c.id}')">
+      <div>
+        <div class="pi-name">${esc(c.name)}</div>
+        <div class="pi-cat">${[c.nif?'NIF: '+c.nif:'', c.phone, c.email].filter(Boolean).join(' · ')}</div>
+      </div>
+    </div>`).join('');
+}
+
+function selectClient(id) {
+  const c = getClients().find(cl => cl.id === id);
+  if (!c) return;
+  document.getElementById('c-name').value    = c.name    || '';
+  document.getElementById('c-nif').value     = c.nif     || '';
+  document.getElementById('c-phone').value   = c.phone   || '';
+  document.getElementById('c-email').value   = c.email   || '';
+  document.getElementById('c-address').value = c.address || '';
+  closeModal('ov-client-pick');
+}
+
+// ──────────────────────────────────────────────
+// CLIENTS MANAGEMENT
+// ──────────────────────────────────────────────
+function renderClientsList() {
+  const clients = getClients();
+  const container = document.getElementById('clients-tbl');
+  if (!container) return;
+  if (!clients.length) {
+    container.innerHTML = `<div class="empty"><div class="e-ico">👤</div><h3>Nenhum cliente registado</h3><p>Os clientes são guardados automaticamente ao criar faturas</p></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Nome</th><th>NIF</th><th>Email</th><th>Telefone</th><th>Ações</th></tr></thead>
+    <tbody>${clients.map(c=>`<tr>
+      <td><strong>${esc(c.name)}</strong></td>
+      <td class="text-muted mono">${c.nif||'—'}</td>
+      <td class="text-muted">${c.email||'—'}</td>
+      <td class="text-muted">${c.phone||'—'}</td>
+      <td><div class="flex gap-1">
+        <button class="btn btn-ghost btn-sm" onclick="openEditClient('${c.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="delClient('${c.id}')">🗑</button>
+      </div></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+function openAddClient() { openEditClient(null); }
+
+function openEditClient(id=null) {
+  document.getElementById('ac-edit-id').value = id||'';
+  document.getElementById('ac-title').textContent = id ? 'Editar Cliente' : 'Novo Cliente';
+  const c = id ? getClients().find(cl=>cl.id===id) : null;
+  document.getElementById('ac-name').value    = c?.name    || '';
+  document.getElementById('ac-nif').value     = c?.nif     || '';
+  document.getElementById('ac-phone').value   = c?.phone   || '';
+  document.getElementById('ac-email').value   = c?.email   || '';
+  document.getElementById('ac-address').value = c?.address || '';
+  openModal('ov-add-client');
+}
+
+function saveClient() {
+  const name = document.getElementById('ac-name')?.value?.trim();
+  if (!name) { alert('O nome é obrigatório.'); return; }
+  const editId = document.getElementById('ac-edit-id')?.value;
+  const clients = getClients();
+  const data = {
+    name,
+    nif:     document.getElementById('ac-nif')?.value?.trim()||'',
+    phone:   document.getElementById('ac-phone')?.value?.trim()||'',
+    email:   document.getElementById('ac-email')?.value?.trim()||'',
+    address: document.getElementById('ac-address')?.value?.trim()||''
+  };
+  if (editId) {
+    const idx = clients.findIndex(c=>c.id===editId);
+    if (idx>=0) clients[idx] = { ...clients[idx], ...data };
+  } else {
+    clients.push({ id:uid(), ...data });
+  }
+  store.set(SK.clients, clients);
+  closeModal('ov-add-client');
+  renderClientsList();
+}
+
+function delClient(id) {
+  if (!confirm('Eliminar este cliente?')) return;
+  store.set(SK.clients, getClients().filter(c=>c.id!==id));
+  renderClientsList();
+}
+
+// ──────────────────────────────────────────────
+// PRODUCTS MANAGEMENT
+// ──────────────────────────────────────────────
+function renderProductsList() {
+  const products = getProducts();
+  const container = document.getElementById('products-tbl');
+  if (!container) return;
+  container.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>Nome</th><th>Categoria</th><th>Descrição</th><th style="text-align:right;">Preço</th><th style="text-align:center;">IVA</th><th>Ações</th></tr></thead>
+    <tbody>${products.map(p=>`<tr>
+      <td><strong>${esc(p.name)}</strong></td>
+      <td><span class="text-muted" style="font-size:.76rem;">${esc(p.category||'—')}</span></td>
+      <td><span class="text-muted" style="font-size:.76rem;">${esc(p.description||'—')}</span></td>
+      <td style="text-align:right;"><strong class="color-rose">${fmt(p.price)}</strong></td>
+      <td style="text-align:center;" class="text-muted">${p.taxRate}%</td>
+      <td><div class="flex gap-1">
+        <button class="btn btn-ghost btn-sm" onclick="openEditProduct('${p.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="delProduct('${p.id}')">🗑</button>
+      </div></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+function openAddProduct() { openEditProduct(null); }
+
+function openEditProduct(id=null) {
+  document.getElementById('ap-edit-id').value = id||'';
+  document.getElementById('ap-title').textContent = id ? 'Editar Produto' : 'Novo Produto';
+  const p = id ? getProducts().find(pr=>pr.id===id) : null;
+  document.getElementById('ap-name').value  = p?.name        || '';
+  document.getElementById('ap-desc').value  = p?.description || '';
+  document.getElementById('ap-price').value = p?.price       || '';
+  document.getElementById('ap-tax').value   = p?.taxRate     ?? 23;
+  document.getElementById('ap-cat').value   = p?.category    || '';
+  openModal('ov-add-product');
+}
+
+function saveProduct() {
+  const name = document.getElementById('ap-name')?.value?.trim();
+  if (!name) { alert('O nome é obrigatório.'); return; }
+  const editId = document.getElementById('ap-edit-id')?.value;
+  const products = getProducts();
+  const data = {
+    name,
+    description: document.getElementById('ap-desc')?.value?.trim()||'',
+    price:       parseFloat(document.getElementById('ap-price')?.value)||0,
+    taxRate:     parseInt(document.getElementById('ap-tax')?.value)||23,
+    category:    document.getElementById('ap-cat')?.value?.trim()||''
+  };
+  if (editId) {
+    const idx = products.findIndex(p=>p.id===editId);
+    if (idx>=0) products[idx] = { ...products[idx], ...data };
+  } else {
+    products.push({ id:uid(), ...data });
+  }
+  store.set(SK.products, products);
+  closeModal('ov-add-product');
+  renderProductsList();
+}
+
+function delProduct(id) {
+  if (!confirm('Eliminar este produto do catálogo?')) return;
+  store.set(SK.products, getProducts().filter(p=>p.id!==id));
+  renderProductsList();
+}
+
+// ──────────────────────────────────────────────
+// SETTINGS
+// ──────────────────────────────────────────────
+function loadSettings() {
+  const s = getSettings();
+  const set = (id, v) => { const el=document.getElementById(id); if(el) el.value=v||''; };
+  set('s-name',    s.name);
+  set('s-nif',     s.nif);
+  set('s-phone',   s.phone);
+  set('s-email',   s.email);
+  set('s-address', s.address);
+  set('s-iban',    s.iban);
+  set('s-prefix',  s.prefix||'FS');
+  set('s-nextnum', s.nextNumber||1);
+  set('s-footer',  s.footerNote);
+  const taxEl = document.getElementById('s-tax');
+  if (taxEl) taxEl.value = s.defaultTax||23;
+}
+
+function saveSettings() {
+  const g = id => document.getElementById(id)?.value||'';
+  const settings = {
+    name:        g('s-name'),
+    nif:         g('s-nif'),
+    phone:       g('s-phone'),
+    email:       g('s-email'),
+    address:     g('s-address'),
+    iban:        g('s-iban'),
+    prefix:      g('s-prefix')||'FS',
+    nextNumber:  parseInt(g('s-nextnum'))||1,
+    defaultTax:  parseInt(g('s-tax'))||23,
+    footerNote:  g('s-footer')
+  };
+  store.set(SK.settings, settings);
+  const al = document.getElementById('settings-alert');
+  if (al) {
+    al.className = 'alert alert-ok';
+    al.textContent = '✅ Configurações guardadas com sucesso!';
+    al.style.display = 'block';
+    setTimeout(()=>al.style.display='none', 3000);
+  }
+}
+
+// ──────────────────────────────────────────────
+// MODAL UTILS
+// ──────────────────────────────────────────────
+function openModal(id)  { const el=document.getElementById(id); if(el) el.classList.add('open'); }
+function closeModal(id) { const el=document.getElementById(id); if(el) el.classList.remove('open'); }
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Ensure products are seeded
+  getProducts();
+
+  // Close modals on overlay click
+  document.querySelectorAll('.overlay').forEach(ov => {
+    ov.addEventListener('click', e => { if (e.target===ov) ov.classList.remove('open'); });
+  });
+
+  // Keyboard: ESC closes modals
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(ov=>ov.classList.remove('open'));
+  });
+
+  go('dashboard');
+});
+</script>
+</body>
+</html>
