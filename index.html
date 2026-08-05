@@ -5901,6 +5901,90 @@
       font-size: 0.78rem;
     }
   }
+
+  /* Títulos mais leves e elegantes em todo o site */
+  h2,
+  h3,
+  h4,
+  .section-title,
+  .product-name,
+  .shop-products-grid .product-name,
+  .pd-name,
+  .occasion-content h3,
+  .occasion-products-title,
+  .value-card h4,
+  .why-card h4,
+  .home-occasion-preview .occasion-card h3,
+  .about-hero-text h2,
+  .contact-hero h2,
+  .contact-info h3,
+  .form-title,
+  .legal-title {
+    font-weight: 400 !important;
+  }
+
+  .section-title em {
+    font-weight: 300 !important;
+  }
+
+  /* Cabeçalhos e cartões dos valores/feedbacks alinhados na mesma grelha */
+  @media (min-width: 901px) {
+    .values-feedback-grid {
+      grid-template-rows: auto auto;
+      column-gap: clamp(3rem, 6vw, 6.5rem);
+      row-gap: 2.1rem;
+      align-items: start;
+    }
+
+    .values-panel,
+    .feedback-panel {
+      display: contents;
+    }
+
+    .values-panel-head {
+      grid-column: 1;
+      grid-row: 1;
+      min-width: 0;
+    }
+
+    .feedback-panel-head {
+      grid-column: 2;
+      grid-row: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-content: start;
+      gap: 1rem;
+      min-width: 0;
+      margin-bottom: 0;
+    }
+
+    .values-panel .section-title,
+    .feedback-panel .section-title {
+      font-size: clamp(2.2rem, 2.75vw, 3rem);
+      line-height: 1.12;
+    }
+
+    .feedback-panel .section-title {
+      white-space: nowrap;
+      margin-bottom: 0 !important;
+    }
+
+    .feedback-stats {
+      justify-content: flex-end;
+      margin-left: auto;
+    }
+
+    .values-panel .why-cards {
+      grid-column: 1;
+      grid-row: 2;
+      margin-top: 0;
+    }
+
+    .feedback-list {
+      grid-column: 2;
+      grid-row: 2;
+    }
+  }
 </style>
 
 <!-- ANNOUNCEMENT BAR -->
@@ -6352,9 +6436,11 @@
   <section class="values-feedback-section">
     <div class="values-feedback-grid">
       <div class="values-panel">
-        <p class="section-label">✦ Valores</p>
-        <h2 class="section-title">Presentes que<br/><em>contam histórias</em></h2>
-        <p class="section-sub">Numa época em que tudo é igual, criamos peças que se lembram. Não são apenas sabonetes, é a forma como alguém se sentiu quando abriu.</p>
+        <div class="values-panel-head">
+          <p class="section-label">✦ Valores</p>
+          <h2 class="section-title">Presentes que<br/><em>contam histórias</em></h2>
+          <p class="section-sub">Numa época em que tudo é igual, criamos peças que se lembram. Não são apenas sabonetes, é a forma como alguém se sentiu quando abriu.</p>
+        </div>
         <div class="why-cards">
           <div class="why-card">
             <span class="why-icon">🌿</span>
