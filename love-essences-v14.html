@@ -975,6 +975,9 @@
   }
   .events-discount-note {
     display: none;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2rem;
     margin: 0 0 2rem;
     padding: 1.25rem 1.4rem;
     border: 1px solid rgba(180,104,171,0.16);
@@ -6234,39 +6237,53 @@
     color: #ffffff !important;
   }
 
-  .footer-wedding-badge {
-    display: inline-flex;
+  .events-wedding-profile {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 0;
-    padding: 0.48rem 0.72rem;
-    border-radius: 10px;
-    background: #ffffff;
-    border: 1px solid rgba(255,255,255,0.72);
-    box-shadow: 0 8px 20px rgba(49,8,46,0.14);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    gap: 0.55rem;
+    min-width: 176px;
+    padding: 0.35rem 0.25rem 0.35rem 1.75rem;
+    border-left: 1px solid rgba(68,68,68,0.12);
+    color: #555555;
+    text-decoration: none;
+    transition: color 0.25s ease;
   }
 
-  .footer-wedding-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 34px rgba(49,8,46,0.24);
+  .events-wedding-profile:hover {
+    color: #66135e;
   }
 
-  .footer-wedding-badge img {
+  .events-wedding-profile img {
     display: block;
-    width: min(145px, 48vw);
+    width: min(135px, 42vw);
     height: auto;
   }
 
-  .footer-wedding-label {
-    display: block;
-    margin: 1.15rem 0 0.42rem;
-    color: rgba(255,255,255,0.68);
+  .events-wedding-profile span {
     font-size: 0.58rem;
     font-weight: 500;
     letter-spacing: 0.18em;
     line-height: 1;
     text-transform: uppercase;
+  }
+
+  @media (max-width: 820px) {
+    .events-discount-note {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+
+    .events-wedding-profile {
+      width: 100%;
+      min-width: 0;
+      flex-direction: row;
+      justify-content: flex-start;
+      padding: 1rem 0 0;
+      border-top: 1px solid rgba(68,68,68,0.12);
+      border-left: 0;
+    }
   }
 
   /* Preço e CTA centrados nos cartões de produto */
@@ -7270,14 +7287,20 @@
     </div>
 
     <div class="events-discount-note" id="events-discount-note">
-      <strong>Crie o seu kit personalizado</strong>
-      <p>Pode combinar dois ou mais artigos infantis no mesmo kit e beneficiar de desconto. Exemplo: Sopros de Alegria + Pequeno Artista.</p>
-      <span class="discount-rules-title">Descontos disponíveis:</span>
-      <ul>
-        <li>5% de desconto ao combinar dois ou mais artigos infantis no mesmo kit.</li>
-        <li>8% de desconto ao combinar artigos infantis com artigos para adulto, em encomendas a partir de 50 unidades.</li>
-        <li>Os descontos não são acumuláveis.</li>
-      </ul>
+      <div class="events-discount-content">
+        <strong>Crie o seu kit personalizado</strong>
+        <p>Pode combinar dois ou mais artigos infantis no mesmo kit e beneficiar de desconto. Exemplo: Sopros de Alegria + Pequeno Artista.</p>
+        <span class="discount-rules-title">Descontos disponíveis:</span>
+        <ul>
+          <li>5% de desconto ao combinar dois ou mais artigos infantis no mesmo kit.</li>
+          <li>8% de desconto ao combinar artigos infantis com artigos para adulto, em encomendas a partir de 50 unidades.</li>
+          <li>Os descontos não são acumuláveis.</li>
+        </ul>
+      </div>
+      <a class="events-wedding-profile" href="https://www.casamentos.pt/empresa.php?id_empresa=180157" target="_blank" rel="noopener noreferrer" aria-label="Ver o perfil Love Essences no casamentos.pt">
+        <span>Estamos em:</span>
+        <img src="assets/casamentos-pt-pro.png" alt="Love Essences no casamentos.pt PRO" loading="lazy"/>
+      </a>
     </div>
 
     <div class="shop-products-grid" id="shop-products-grid">
@@ -8599,10 +8622,6 @@
           </svg>
         </a>
       </div>
-      <span class="footer-wedding-label">Estamos em:</span>
-      <a class="footer-wedding-badge" href="https://www.casamentos.pt/empresa.php?id_empresa=180157" target="_blank" rel="noopener noreferrer" aria-label="Ver o perfil Love Essences no casamentos.pt">
-        <img src="assets/casamentos-pt-pro.png" alt="Love Essences no casamentos.pt PRO" loading="lazy"/>
-      </a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -11668,7 +11687,7 @@ function applyShopFilters() {
   if (discountNote) {
     var eventOccasions = ['casamentos-batizados', 'empresas', 'pequeninos'];
     var showDiscountNote = currentCategory === 'eventos' || eventOccasions.indexOf(currentOccasion) !== -1;
-    discountNote.style.display = showDiscountNote ? 'block' : 'none';
+    discountNote.style.display = showDiscountNote ? 'grid' : 'none';
   }
 
   updateShopMeta(visibleCount);
