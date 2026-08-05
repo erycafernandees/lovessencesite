@@ -134,13 +134,13 @@
 </script>
 <style>
   :root {
-    --cream: #f1e3ef;
-    --warm-white: #fcf8fc;
+    --cream: #f7f7f7;
+    --warm-white: #ffffff;
     --blush: #e3bedf;
     --rose: #b468ab;
     --deep-rose: #66135e;
     --nude: #d192ca;
-    --warm-gray: #8d7288;
+    --warm-gray: #555555;
     --dark: #3f073a;
     --serif: 'Cormorant Garamond', Georgia, serif;
     --sans: 'Quicksand', sans-serif;
@@ -6008,6 +6008,238 @@
     .feedback-list {
       grid-column: 2;
       grid-row: 2;
+    }
+  }
+
+  /* ── CONTRASTE PREMIUM: BRANCO + ROXO DE MARCA ─────────── */
+  body,
+  .page {
+    background: #ffffff;
+    color: #444444;
+  }
+
+  section:not(.hero-premium):not(.story-bg):not(.about-hero):not(.contact-hero):not(.cta-banner),
+  .featured-bg,
+  .values-section,
+  .occasion-detail,
+  .shop-grid,
+  .instagram-feed,
+  .product-detail,
+  .contact-body {
+    background: #ffffff !important;
+  }
+
+  .story-bg,
+  .about-hero,
+  .contact-hero,
+  .cta-banner,
+  .value-strip {
+    background-color: #66135e !important;
+  }
+
+  .about-hero,
+  .contact-hero,
+  .cta-banner,
+  .value-strip {
+    background-image: none !important;
+  }
+
+  .product-card,
+  .products-grid .product-card,
+  .shop-products-grid .product-card {
+    background: #ffffff !important;
+    border-color: rgba(68,68,68,0.10) !important;
+    box-shadow: 0 18px 48px rgba(55,34,53,0.08) !important;
+  }
+
+  .product-card::before {
+    background: transparent !important;
+  }
+
+  .why-card,
+  .value-card,
+  .channel,
+  .contact-form,
+  .shop-empty-state,
+  .events-discount-note,
+  .testimonial-stat,
+  .testimonial-author-card,
+  .testimonial-note-card,
+  .pd-content {
+    background: #ffffff !important;
+    border-color: rgba(68,68,68,0.10) !important;
+  }
+
+  .section-sub,
+  .shop-hero p,
+  .product-desc,
+  .product-fragrance-note,
+  .product-price-note,
+  .why-card p,
+  .value-card p,
+  .pillar-text p,
+  .occasion-products-sub,
+  .shop-empty-state p,
+  .events-discount-note,
+  .events-discount-note li,
+  .contact-info p,
+  .channel-text span,
+  .form-subtitle,
+  .pd-section p,
+  .pd-breadcrumb,
+  .pd-price-from {
+    color: #444444 !important;
+  }
+
+  .product-price,
+  .products-grid .product-price,
+  .shop-products-grid .product-price,
+  .pd-price {
+    color: #444444 !important;
+  }
+
+  .product-btn,
+  .product-btn.cart-add-btn,
+  .products-grid .product-btn,
+  .shop-products-grid .product-btn,
+  .btn-primary,
+  .pd-cta,
+  .cart-checkout-btn:not(.cart-checkout-alt),
+  .form-submit,
+  .nav-cta,
+  .mobile-menu .mobile-cta,
+  .tracking-button,
+  .tracking-whatsapp-button {
+    background: #66135e !important;
+    border-color: #66135e !important;
+    color: #ffffff !important;
+    box-shadow: 0 10px 24px rgba(102,19,94,0.16) !important;
+  }
+
+  .product-btn:hover,
+  .product-btn.cart-add-btn:hover,
+  .products-grid .product-btn:hover,
+  .shop-products-grid .product-btn:hover,
+  .btn-primary:hover,
+  .pd-cta:hover,
+  .cart-checkout-btn:not(.cart-checkout-alt):hover,
+  .form-submit:hover,
+  .nav-cta:hover,
+  .mobile-menu .mobile-cta:hover,
+  .tracking-button:hover,
+  .tracking-whatsapp-button:hover {
+    background: #b468ab !important;
+    border-color: #b468ab !important;
+    color: #ffffff !important;
+  }
+
+  .product-tag {
+    background: #b468ab !important;
+    border-color: #b468ab !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+  }
+
+  .cta-banner .section-label {
+    color: #e3bedf !important;
+  }
+
+  .cta-banner .section-title,
+  .cta-banner .section-title em,
+  .cta-banner .section-sub {
+    color: #ffffff !important;
+  }
+
+  .cta-banner .btn-primary {
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #66135e !important;
+    box-shadow: none !important;
+  }
+
+  .cta-banner .btn-primary:hover {
+    background: #b468ab !important;
+    border-color: #b468ab !important;
+    color: #ffffff !important;
+  }
+
+  footer {
+    background: #66135e !important;
+    border-top-color: rgba(255,255,255,0.12) !important;
+  }
+
+  footer::before,
+  footer::after {
+    background: radial-gradient(circle, rgba(180,104,171,0.28) 0%, rgba(180,104,171,0) 70%) !important;
+  }
+
+  footer .footer-grid {
+    background: transparent !important;
+    border-color: rgba(255,255,255,0.16) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  footer .footer-brand-title,
+  footer .footer-brand-mark,
+  footer .footer-brand .nav-logo,
+  footer .footer-brand .nav-logo span,
+  footer .nav-logo,
+  footer .nav-logo span,
+  footer .footer-tagline {
+    color: #ffffff !important;
+  }
+
+  footer .footer-brand-copy,
+  footer .footer-brand p,
+  footer .footer-col ul li a,
+  footer .footer-bottom p {
+    color: rgba(255,255,255,0.78) !important;
+  }
+
+  footer .footer-col h5,
+  footer .newsletter-kicker,
+  footer .footer-brand-values {
+    color: #e3bedf !important;
+  }
+
+  footer .footer-col h5::after,
+  footer .footer-brand-title::after {
+    background: #b468ab !important;
+  }
+
+  footer .footer-col ul li a:hover,
+  footer .footer-social-links a:hover,
+  footer .footer-contact-email:hover {
+    color: #ffffff !important;
+  }
+
+  footer .footer-social-links a,
+  footer .footer-contact-email {
+    color: #e3bedf !important;
+  }
+
+  footer .footer-brand-values,
+  footer .footer-contact-panel,
+  footer .footer-bottom {
+    border-color: rgba(255,255,255,0.16) !important;
+  }
+
+  footer .newsletter-form input {
+    border-color: rgba(255,255,255,0.32) !important;
+  }
+
+  footer .newsletter-form button {
+    background: #b468ab !important;
+    color: #ffffff !important;
+  }
+
+  @media (max-width: 768px) {
+    .product-btn,
+    .product-btn.cart-add-btn,
+    .products-grid .product-btn,
+    .shop-products-grid .product-btn {
+      box-shadow: none !important;
     }
   }
 </style>
