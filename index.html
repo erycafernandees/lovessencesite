@@ -96,9 +96,11 @@
       "description": "Mini difusor aromático com etiqueta temática, ideal para lembranças delicadas de eventos.",
       "image": "https://erycafernandees.github.io/lovessencesite/assets/products/mini-difusor4.jpg",
       "offers": {
-        "@type": "Offer",
-        "price": "4.50",
+        "@type": "AggregateOffer",
+        "lowPrice": "3.50",
+        "highPrice": "4.90",
         "priceCurrency": "EUR",
+        "offerCount": "2",
         "availability": "https://schema.org/InStock"
       }
     },
@@ -1357,6 +1359,29 @@
     outline: none;
     border-color: var(--rose);
     box-shadow: 0 0 0 3px rgba(209,146,202,0.16);
+  }
+  .pd-event-addon {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 48px;
+    padding: 0.78rem 0.9rem;
+    border: 1px solid rgba(180,104,171,0.25);
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+  }
+  .pd-event-addon input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+    padding: 0;
+    flex: 0 0 auto;
+    accent-color: var(--rose-dark);
+    box-shadow: none;
+  }
+  .pd-event-addon span {
+    font-size: 0.9rem;
+    color: var(--dark);
   }
   @media (max-width: 768px) {
     .pd-event-form {
@@ -6916,7 +6941,6 @@
         <li>8% de desconto ao combinar artigos infantis com artigos para adulto, em encomendas a partir de 50 unidades.</li>
         <li>Os descontos não são acumuláveis.</li>
       </ul>
-      <p><strong>Planeamento:</strong> para encomendas de maior volume, recomendamos 1 a 2 meses de antecedência. Para quantidades menores, o prazo é confirmado consoante o artigo e a disponibilidade.</p>
     </div>
 
     <div class="shop-products-grid" id="shop-products-grid">
@@ -7056,7 +7080,7 @@
           <h3 class="product-name">Mini Difusor + Mini Sabonete</h3>
           <p class="product-desc">Kit personalizado composto por mini difusor aromático e mini sabonete artesanal, uma lembrança perfumada e delicada para eventos especiais.</p>
           <p class="product-fragrance-note"><strong>Inclui</strong>Mini difusor com líquido aromático · Varetas · Mini sabonete artesanal redondo · Etiqueta personalizada com o tema escolhido</p>
-          <div class="product-footer"><span class="product-price">5,50€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor_sabonete')">Personalizar</button></div>
+          <div class="product-footer"><span class="product-price">5€/un</span><button type="button" class="product-btn" onclick="openProduct('mini_difusor_sabonete')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="aniversarios,casamentos-batizados,pequeninos">
@@ -7200,7 +7224,7 @@
 
       <!-- Opções de tecido (visível apenas para artigos em tecido) -->
       <div class="pd-section" id="pd-fabric-section" style="display:none;">
-        <h4>Escolhe o tecido</h4>
+        <h4 id="pd-fabric-title">Escolhe o tecido</h4>
         <div class="pd-fabrics" id="pd-fabrics"></div>
         <p class="pd-custom-note" id="pd-fabric-note"></p>
       </div>
@@ -7238,6 +7262,12 @@
           <div class="pd-event-field" id="pd-event-fragrance-wrap">
             <label for="pd-event-fragrance">Fragrância</label>
             <select id="pd-event-fragrance"></select>
+          </div>
+          <div class="pd-event-field pd-event-field-wide" id="pd-event-card-wrap" style="display:none;">
+            <label class="pd-event-addon" for="pd-event-card">
+              <input type="checkbox" id="pd-event-card"/>
+              <span id="pd-event-card-label">Adicionar cartão</span>
+            </label>
           </div>
           <div class="pd-event-field pd-event-field-wide">
             <label for="pd-event-phrase">Frase para colocar na etiqueta</label>
@@ -7495,7 +7525,6 @@
   <section class="cta-banner">
     <p class="section-label">✦ Datas especiais a aproximar-se?</p>
     <h2 class="section-title">Não deixes para última hora<br/>algo que merece <em>ser especial</em></h2>
-    <p class="section-sub" style="margin: 0 auto 2rem;">Para encomendas de maior volume, recomendamos 1 a 2 meses de antecedência. Para quantidades menores, o prazo é confirmado consoante o artigo e a disponibilidade.</p>
     <button type="button" class="btn-primary" onclick="showPage('contact')">Encomendar Agora</button>
   </section>
 </div>
@@ -7572,7 +7601,7 @@
           <span class="channel-icon">📦</span>
           <div class="channel-text">
             <strong>Envio Nacional</strong>
-            <span>3 a 5 dias úteis nos artigos standard; 1 a 2 meses apenas para maior volume</span>
+            <span>3 a 5 dias úteis nos artigos standard</span>
           </div>
         </div>
         <div class="channel">
@@ -7674,12 +7703,12 @@
             </optgroup>
             <optgroup label="Lembranças para Eventos">
               <option>Mini Difusor 30ml (3,50€/un)</option>
-              <option>Mini Difusor 50ml (4,50€/un)</option>
+              <option>Mini Difusor 50ml (4,90€/un)</option>
               <option>Aroma em Viagem (desde 3€)</option>
               <option>Brinde Perfeito (4€/un)</option>
               <option>Trouxinha Aromática (5€/un)</option>
               <option>Bem-Querer (4€/un)</option>
-              <option>Mini Difusor + Mini Sabonete (5,50€/un)</option>
+              <option>Mini Difusor + Mini Sabonete (5€/un)</option>
               <option>Sopros de Alegria (1,50€/un)</option>
               <option>Luz Serena (3,50€/un)</option>
               <option>Doce Luz (3,50€/un)</option>
@@ -8920,9 +8949,7 @@ var I18N_EXTRA_TEXT = {
     "Não deixes para última hora": "Do not leave it to the last minute",
     "algo que merece": "something that deserves",
     "ser especial": "to be special",
-    "Planeamento:": "Planning:",
-    "Para encomendas de maior volume, recomendamos 1 a 2 meses de antecedência. Para quantidades menores, o prazo é confirmado consoante o artigo e a disponibilidade.": "For larger-volume orders, we recommend 1 to 2 months' notice. For smaller quantities, timing is confirmed according to the item and availability.",
-    "3 a 5 dias úteis nos artigos standard; 1 a 2 meses apenas para maior volume": "3 to 5 business days for standard items; 1 to 2 months only for larger volumes",
+    "3 a 5 dias úteis nos artigos standard": "3 to 5 business days for standard items",
     "📅 Prazo confirmado consoante a quantidade · Para encomendas de maior volume, recomendamos 1 a 2 meses de antecedência": "📅 Timing confirmed according to quantity · For larger-volume orders, we recommend 1 to 2 months' notice",
     "Encomendar Agora": "Order Now",
     "✦ Envio CTT": "✦ CTT Shipping",
@@ -9327,9 +9354,7 @@ var I18N_EXTRA_TEXT = {
     "Não deixes para última hora": "No lo dejes para última hora",
     "algo que merece": "algo que merece",
     "ser especial": "ser especial",
-    "Planeamento:": "Planificación:",
-    "Para encomendas de maior volume, recomendamos 1 a 2 meses de antecedência. Para quantidades menores, o prazo é confirmado consoante o artigo e a disponibilidade.": "Para pedidos de mayor volumen, recomendamos entre 1 y 2 meses de antelación. Para cantidades menores, el plazo se confirma según el artículo y la disponibilidad.",
-    "3 a 5 dias úteis nos artigos standard; 1 a 2 meses apenas para maior volume": "3 a 5 días laborables para artículos estándar; entre 1 y 2 meses solo para mayor volumen",
+    "3 a 5 dias úteis nos artigos standard": "3 a 5 días laborables para artículos estándar",
     "📅 Prazo confirmado consoante a quantidade · Para encomendas de maior volume, recomendamos 1 a 2 meses de antecedência": "📅 Plazo confirmado según la cantidad · Para pedidos de mayor volumen, recomendamos entre 1 y 2 meses de antelación",
     "Encomendar Agora": "Pedir Ahora",
     "✦ Envio CTT": "✦ Envío CTT",
@@ -10182,7 +10207,17 @@ var PRODUCT_CATALOG = {
     defaultSizeId: '30ml',
     sizes: [
       { id: '30ml', label: '30 ml', price: 3.50 },
-      { id: '50ml', label: '50 ml', price: 4.50 }
+      {
+        id: '50ml',
+        label: '50 ml',
+        price: 4.90,
+        image: 'assets/products/mini-difusor-50ml-1.jpg',
+        gallery: [
+          'assets/products/mini-difusor-50ml-1.jpg',
+          'assets/products/mini-difusor-50ml-2.jpg',
+          'assets/products/mini-difusor-50ml-3.jpg'
+        ]
+      }
     ],
     basePrice: 3.50,
     priceSuffix: '/un',
@@ -10200,6 +10235,11 @@ var PRODUCT_CATALOG = {
     name: 'Aroma em Viagem',
     visual: '🚗',
     image: 'assets/products/aroma-em-viagem.jpg',
+    gallery: [
+      'assets/products/aroma-em-viagem.jpg',
+      'assets/products/aroma-em-viagem-2.jpg',
+      'assets/products/aroma-em-viagem-3.jpg'
+    ],
     visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
     storyTitle: 'O difusor',
     story: 'Mini difusor aromático artesanal para o carro, com varetas. Uma lembrança elegante e útil, que pode ser completada com cartão ou caixinha.',
@@ -10208,10 +10248,11 @@ var PRODUCT_CATALOG = {
     priceLabel: 'Desde 3€',
     priceSuffix: '/un',
     eventOptions: true,
+    cardAddonPrice: 0.50,
     defaultQty: 1,
     minQty: 1,
     fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
-    details: 'Inclui: mini difusor aromático artesanal para o carro · Varetas · Personalização de tema, nome e data. Cartão ou caixinha disponível mediante pedido.',
+    details: 'Inclui: mini difusor aromático artesanal para o carro · Varetas · Personalização de tema, nome e data. Cartão disponível por mais 0,50€ por unidade; caixinha disponível mediante pedido.',
     tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🏷️ Eventos & Empresas'],
     quote: '"Um aroma especial para levar consigo em cada viagem."',
     ctaLabel: 'Adicionar ao Carrinho'
@@ -10221,6 +10262,13 @@ var PRODUCT_CATALOG = {
     name: 'Brinde Perfeito',
     visual: '🥂',
     image: 'assets/products/brinde-perfeito.jpg',
+    gallery: [
+      'assets/products/brinde-perfeito.jpg',
+      'assets/products/brinde-perfeito-2.jpg',
+      'assets/products/brinde-perfeito-3.jpg',
+      'assets/products/brinde-perfeito-4.jpg',
+      'assets/products/brinde-perfeito-5.jpg'
+    ],
     visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
     storyTitle: 'O brinde',
     story: 'Mini licor com etiqueta personalizada no tema escolhido, pensado para agradecer a presença dos convidados com um detalhe elegante.',
@@ -10246,17 +10294,36 @@ var PRODUCT_CATALOG = {
     name: 'Trouxinha Aromática',
     visual: '🌸',
     image: 'assets/products/trouxinha-aromatica.jpg',
+    gallery: [
+      'assets/products/trouxinha-aromatica.jpg',
+      'assets/products/trouxinha-aromatica-2.jpg'
+    ],
     visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
     storyTitle: 'A trouxinha',
     story: 'Trouxinha artesanal com um mini sabonete perfumado no interior. Depois de retirar o sabonete, pode continuar a ser usada como pequeno pousa-objetos decorativo.',
     sizes: [],
     basePrice: 5,
     priceSuffix: '/un',
+    fabricTitle: 'Escolhe a cor da trouxinha',
+    fabricCartLabel: 'Cor da trouxinha',
+    fabricNote: 'A cor escolhida segue no carrinho. Os tons podem apresentar pequenas variações por se tratar de uma peça artesanal.',
+    fabricOptions: [
+      { id: 'branco_perola', label: 'Branco pérola' },
+      { id: 'bege', label: 'Bege' },
+      { id: 'rosa_pastel', label: 'Rosa pastel' },
+      { id: 'lilas_pastel', label: 'Lilás pastel' },
+      { id: 'azul_pastel', label: 'Azul pastel' },
+      { id: 'verde_menta', label: 'Verde menta' },
+      { id: 'amarelo_pastel', label: 'Amarelo pastel' },
+      { id: 'pessego', label: 'Pêssego' },
+      { id: 'rosa', label: 'Rosa' },
+      { id: 'vermelho', label: 'Vermelho' }
+    ],
     eventOptions: true,
     defaultQty: 1,
     minQty: 1,
     fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
-    details: 'Inclui: trouxinha artesanal · Mini sabonete perfumado · Personalização de tema, nome e data.',
+    details: 'Inclui: trouxinha artesanal com cor à escolha · Mini sabonete perfumado · Personalização de tema, nome e data.',
     tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🍎 Educadoras'],
     quote: '"Uma lembrança perfumada que continua a fazer parte da casa."',
     ctaLabel: 'Adicionar ao Carrinho'
@@ -10290,7 +10357,7 @@ var PRODUCT_CATALOG = {
     storyTitle: 'O kit',
     story: 'Um pequeno kit cheio de detalhe e carinho, composto por um mini difusor aromático e um mini sabonete artesanal. É uma opção equilibrada para quem procura uma lembrança personalizada, bonita e acessível.',
     sizes: [],
-    basePrice: 5.50,
+    basePrice: 5,
     priceSuffix: '/un',
     eventOptions: true,
     defaultQty: 1,
@@ -10629,6 +10696,9 @@ function renderProductEventOptions(p) {
   var sweetColors = document.getElementById('pd-event-sweet-colors');
   var fragranceWrap = document.getElementById('pd-event-fragrance-wrap');
   var fragrance = document.getElementById('pd-event-fragrance');
+  var cardWrap = document.getElementById('pd-event-card-wrap');
+  var cardInput = document.getElementById('pd-event-card');
+  var cardLabel = document.getElementById('pd-event-card-label');
   var note = document.getElementById('pd-event-note');
 
   if (qty) {
@@ -10662,6 +10732,19 @@ function renderProductEventOptions(p) {
     }
   }
 
+  if (cardWrap && cardInput && cardLabel) {
+    if (typeof p.cardAddonPrice === 'number') {
+      cardWrap.style.display = '';
+      cardInput.checked = false;
+      cardInput.onchange = updateProductPrice;
+      cardLabel.textContent = 'Adicionar cartão (+' + formatPrice(p.cardAddonPrice) + '/un)';
+    } else {
+      cardWrap.style.display = 'none';
+      cardInput.checked = false;
+      cardInput.onchange = null;
+    }
+  }
+
   if (note) {
     note.textContent = p.minQty && p.minQty > 1
       ? 'Quantidade mínima recomendada: ' + p.minQty + ' unidades. Estes dados seguem no carrinho ou no pedido para prepararmos a personalização.'
@@ -10672,6 +10755,7 @@ function renderProductEventOptions(p) {
 function renderProductFabricOptions(p) {
   var fabricSection = document.getElementById('pd-fabric-section');
   var fabricsEl = document.getElementById('pd-fabrics');
+  var titleEl = document.getElementById('pd-fabric-title');
   var noteEl = document.getElementById('pd-fabric-note');
   if (!fabricSection || !fabricsEl) return;
 
@@ -10682,6 +10766,7 @@ function renderProductFabricOptions(p) {
   }
 
   fabricSection.style.display = '';
+  if (titleEl) titleEl.textContent = p.fabricTitle || 'Escolhe o tecido';
   p.fabricOptions.forEach(function(option, idx) {
     var btn = document.createElement('button');
     btn.type = 'button';
@@ -10694,7 +10779,7 @@ function renderProductFabricOptions(p) {
   });
 
   if (noteEl) {
-    noteEl.textContent = 'A escolha do tecido segue no carrinho. As opções podem variar consoante o stock disponível no momento da produção.';
+    noteEl.textContent = p.fabricNote || 'A escolha do tecido segue no carrinho. As opções podem variar consoante o stock disponível no momento da produção.';
   }
 }
 
@@ -10942,6 +11027,7 @@ function getCurrentProductSelection() {
   var image = p.image || '';
   var qty = 1;
   var eventDetails = [];
+  var hasPaidAddon = false;
 
   if (p.sizes && p.sizes.length > 0 && currentSizeId) {
     size = p.sizes.find(function(s) { return s.id === currentSizeId; });
@@ -10976,6 +11062,7 @@ function getCurrentProductSelection() {
     var sweetColorsInput = document.getElementById('pd-event-sweet-colors');
     var fragranceInput = document.getElementById('pd-event-fragrance');
     var phraseInput = document.getElementById('pd-event-phrase');
+    var cardInput = document.getElementById('pd-event-card');
     var eventName = nameInput ? nameInput.value.trim() : '';
     var eventDate = dateInput ? dateInput.value.trim() : '';
     var sweetColors = sweetColorsInput ? sweetColorsInput.value.trim() : '';
@@ -10987,12 +11074,17 @@ function getCurrentProductSelection() {
     if (sweetColors) eventDetails.push('Cores dos doces: ' + sweetColors);
     if (fragrance) eventDetails.push('Fragrância: ' + fragrance);
     if (phrase) eventDetails.push('Frase da etiqueta: "' + phrase + '"');
+    if (typeof p.cardAddonPrice === 'number' && cardInput && cardInput.checked) {
+      price += p.cardAddonPrice;
+      hasPaidAddon = true;
+      eventDetails.push('Com cartão (+' + formatPrice(p.cardAddonPrice) + '/un)');
+    }
     if (eventDetails.length) itemName += ', ' + eventDetails.join(', ');
   }
 
   if (p.fabricOptions && p.fabricOptions.length && currentFabricId) {
     var fabric = p.fabricOptions.find(function(option) { return option.id === currentFabricId; });
-    if (fabric) itemName += ', Tecido: ' + fabric.label;
+    if (fabric) itemName += ', ' + (p.fabricCartLabel || 'Tecido') + ': ' + fabric.label;
   }
 
   if (p.customizable) {
@@ -11011,6 +11103,7 @@ function getCurrentProductSelection() {
     emoji: p.visual || '🎁',
     image: image || getCartImageForName(itemName),
     quoteOnly: !!p.quoteOnly,
+    hasPaidAddon: hasPaidAddon,
     formProductName: p.formProductName || p.name,
     summary: eventDetails.join('\n')
   };
@@ -11021,7 +11114,9 @@ function updateProductPrice() {
   if (!selection) return;
   var p = PRODUCT_CATALOG[currentProduct];
 
-  document.getElementById('pd-price').textContent = p.priceLabel || (formatPrice(selection.price) + (p.priceSuffix || ''));
+  document.getElementById('pd-price').textContent = selection.hasPaidAddon
+    ? formatPrice(selection.price) + (p.priceSuffix || '')
+    : p.priceLabel || (formatPrice(selection.price) + (p.priceSuffix || ''));
   document.getElementById('pd-price-from').style.display = 'none';
 }
 
@@ -11529,11 +11624,11 @@ function toggleEventoCelebracao() {
 
 var FRAGRANCE_PRODUCTS = [
   'Mini Difusor 30ml (3,50€/un)',
-  'Mini Difusor 50ml (4,50€/un)',
+  'Mini Difusor 50ml (4,90€/un)',
   'Aroma em Viagem (desde 3€)',
   'Trouxinha Aromática (5€/un)',
   'Bem-Querer (4€/un)',
-  'Mini Difusor + Mini Sabonete (5,50€/un)',
+  'Mini Difusor + Mini Sabonete (5€/un)',
   'Luz Serena (3,50€/un)',
   'Doce Luz (3,50€/un)',
   'Memória Perfumada (desde 3,50€/un)',
