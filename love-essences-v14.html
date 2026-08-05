@@ -6234,11 +6234,81 @@
     color: #ffffff !important;
   }
 
+  /* Preço e CTA centrados nos cartões de produto */
+  .product-footer,
+  .featured-bg .product-footer,
+  .products-grid .product-footer,
+  .shop-products-grid .product-footer {
+    width: 100%;
+    min-height: 0;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.85rem !important;
+    text-align: center !important;
+  }
+
+  .product-price,
+  .featured-bg .product-price,
+  .products-grid .product-price,
+  .shop-products-grid .product-price {
+    width: 100% !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .product-btn,
+  .product-btn.cart-add-btn,
+  .featured-bg .product-btn,
+  .products-grid .product-btn,
+  .shop-products-grid .product-btn {
+    width: min(100%, 190px) !important;
+    min-width: 0 !important;
+    align-self: center !important;
+    margin-inline: auto !important;
+  }
+
+  .event-cart-row {
+    justify-content: center;
+  }
+
+  /* Rodapé: fundo branco com o card roxo preservado */
+  footer {
+    background: #ffffff !important;
+    border-top-color: rgba(68,68,68,0.08) !important;
+  }
+
+  footer::before,
+  footer::after {
+    display: none !important;
+  }
+
+  footer .footer-grid {
+    background: #66135e !important;
+    border-color: rgba(255,255,255,0.16) !important;
+    box-shadow: 0 24px 64px rgba(102,19,94,0.16) !important;
+  }
+
+  footer .footer-bottom {
+    border-color: rgba(68,68,68,0.12) !important;
+  }
+
+  footer .footer-bottom p {
+    color: #555555 !important;
+  }
+
+  footer .footer-tagline {
+    color: #66135e !important;
+  }
+
   @media (max-width: 768px) {
     .product-btn,
     .product-btn.cart-add-btn,
     .products-grid .product-btn,
     .shop-products-grid .product-btn {
+      width: min(100%, 180px) !important;
       box-shadow: none !important;
     }
   }
@@ -7369,7 +7439,7 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/pequeno-artista.jpg" alt="Pequeno Artista, kit de pintura Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Infantil</span><img src="assets/products/pequeno-artista.jpg" alt="Pequeno Artista, kit de pintura Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Pequeno Artista</h3>
           <p class="product-desc">Kit de pintura em gesso para crianças: 1 peça com íman, 3 cores, pincel e autocolantes. Depois da atividade, pode decorar o frigorífico com a sua arte.</p>
@@ -7377,7 +7447,7 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/momento-criativo.jpg" alt="Momento Criativo, kit de pintura Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Infantil</span><img src="assets/products/momento-criativo.jpg" alt="Momento Criativo, kit de pintura Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Momento Criativo</h3>
           <p class="product-desc">Kit com 2 peças em gesso com íman, 4 cores, 1 pincel e autocolantes. Para criar e depois expor a arte no frigorífico.</p>
@@ -7385,7 +7455,7 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/caixinha-de-arte.jpg" alt="Caixinha de Arte, kit completo Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Infantil</span><img src="assets/products/caixinha-de-arte.jpg" alt="Caixinha de Arte, kit completo Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Caixinha de Arte</h3>
           <p class="product-desc">Kit completo: 3 peças em gesso com íman, 6 cores, 2 pincéis e autocolantes. Em caixa preparada para oferecer.</p>
@@ -7393,7 +7463,7 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="eventos" data-occasion="casamentos-batizados,pequeninos">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/miminho-doce-cone.jpg" alt="Miminho Doce, cone de doces Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Infantil</span><img src="assets/products/miminho-doce-cone.jpg" alt="Miminho Doce, cone de doces Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Miminho Doce</h3>
           <p class="product-desc">Três opções doces para crianças: laço de marshmallows, cone de miminhos ou espetada de alegria, sempre prontas para oferecer.</p>
