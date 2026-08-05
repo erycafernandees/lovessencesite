@@ -6238,12 +6238,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-top: 1.2rem;
-    padding: 0.72rem 1rem;
-    border-radius: 999px;
+    margin-top: 0;
+    padding: 0.48rem 0.72rem;
+    border-radius: 10px;
     background: #ffffff;
     border: 1px solid rgba(255,255,255,0.72);
-    box-shadow: 0 12px 28px rgba(49,8,46,0.18);
+    box-shadow: 0 8px 20px rgba(49,8,46,0.14);
     transition: transform 0.25s ease, box-shadow 0.25s ease;
   }
 
@@ -6254,8 +6254,19 @@
 
   .footer-wedding-badge img {
     display: block;
-    width: min(190px, 58vw);
+    width: min(145px, 48vw);
     height: auto;
+  }
+
+  .footer-wedding-label {
+    display: block;
+    margin: 1.15rem 0 0.42rem;
+    color: rgba(255,255,255,0.68);
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    text-transform: uppercase;
   }
 
   /* Preço e CTA centrados nos cartões de produto */
@@ -8588,6 +8599,7 @@
           </svg>
         </a>
       </div>
+      <span class="footer-wedding-label">Estamos em:</span>
       <a class="footer-wedding-badge" href="https://www.casamentos.pt/empresa.php?id_empresa=180157" target="_blank" rel="noopener noreferrer" aria-label="Ver o perfil Love Essences no casamentos.pt">
         <img src="assets/casamentos-pt-pro.png" alt="Love Essences no casamentos.pt PRO" loading="lazy"/>
       </a>
