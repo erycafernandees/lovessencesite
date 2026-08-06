@@ -6380,10 +6380,10 @@
     justify-content: center;
   }
 
-  /* Rodapé: fundo branco com o card roxo preservado */
+  /* Rodapé integralmente roxo */
   footer {
-    background: #ffffff !important;
-    border-top-color: rgba(68,68,68,0.08) !important;
+    background: #66135e !important;
+    border-top-color: #66135e !important;
   }
 
   footer::before,
@@ -6393,20 +6393,21 @@
 
   footer .footer-grid {
     background: #66135e !important;
-    border-color: rgba(255,255,255,0.16) !important;
-    box-shadow: 0 24px 64px rgba(102,19,94,0.16) !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
   footer .footer-bottom {
-    border-color: rgba(68,68,68,0.12) !important;
+    border-color: rgba(255,255,255,0.16) !important;
   }
 
   footer .footer-bottom p {
-    color: #555555 !important;
+    color: rgba(255,255,255,0.72) !important;
   }
 
   footer .footer-tagline {
-    color: #66135e !important;
+    color: #e3bedf !important;
   }
 
   @media (max-width: 768px) {
