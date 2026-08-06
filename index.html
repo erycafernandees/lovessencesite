@@ -6407,6 +6407,203 @@
     justify-content: center;
   }
 
+  /* Hero fotográfico da homepage */
+  .home-hero-photo {
+    position: relative !important;
+    width: 100% !important;
+    height: clamp(600px, 46.5vw, 760px) !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #eee2d0 !important;
+    text-align: left !important;
+  }
+
+  .home-hero-photo::before,
+  .home-hero-photo::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .home-hero-photo-image {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    border: 0;
+    border-radius: 0 !important;
+  }
+
+  .home-hero-photo-shade {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(250,243,232,0.98) 0%, rgba(250,243,232,0.88) 25%, rgba(250,243,232,0.42) 43%, rgba(250,243,232,0.05) 61%, rgba(250,243,232,0) 72%);
+    pointer-events: none;
+  }
+
+  .home-hero-photo .hero-premium-inner {
+    position: relative !important;
+    z-index: 2 !important;
+    display: flex !important;
+    align-items: center !important;
+    width: min(100%, 1460px) !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-width: 1460px !important;
+    margin: 0 auto !important;
+    padding: clamp(3.2rem, 6vw, 6rem) clamp(2rem, 7vw, 7rem) !important;
+  }
+
+  .home-hero-photo .hero-premium-copy {
+    width: min(49%, 680px) !important;
+    max-width: 680px !important;
+  }
+
+  .home-hero-photo .hero-premium-eyebrow {
+    display: block !important;
+    margin: 0 0 1.55rem !important;
+    color: #66135e !important;
+    font-size: clamp(0.68rem, 0.85vw, 0.82rem) !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.24em !important;
+    line-height: 1.45 !important;
+    text-transform: uppercase !important;
+  }
+
+  .home-hero-photo .hero-premium-title {
+    margin: 0 !important;
+    color: #32132e !important;
+    font-family: var(--serif) !important;
+    font-size: clamp(3.7rem, 6vw, 6.3rem) !important;
+    font-style: normal !important;
+    font-weight: 300 !important;
+    letter-spacing: -0.035em !important;
+    line-height: 0.94 !important;
+    text-align: left !important;
+    text-wrap: balance;
+  }
+
+  .home-hero-photo .hero-premium-title::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .home-hero-photo .hero-premium-text {
+    max-width: 34rem !important;
+    margin: 1.65rem 0 0 !important;
+    color: #5b4256 !important;
+    font-size: clamp(1rem, 1.35vw, 1.28rem) !important;
+    font-weight: 300 !important;
+    letter-spacing: 0.01em !important;
+    line-height: 1.6 !important;
+    text-align: left !important;
+  }
+
+  .home-hero-photo .hero-premium-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.85rem !important;
+    margin-top: 2.15rem !important;
+  }
+
+  .home-hero-photo .hero-premium-actions .btn-primary,
+  .home-hero-photo .hero-premium-actions .btn-outline {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    min-width: 220px !important;
+    min-height: 58px !important;
+    padding: 0.9rem 1.7rem !important;
+    border-radius: 0 !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.18em !important;
+    text-transform: uppercase !important;
+  }
+
+  .home-hero-photo .hero-premium-actions .btn-primary {
+    border-color: #66135e !important;
+    background: #66135e !important;
+    color: #ffffff !important;
+    box-shadow: 0 16px 34px rgba(102,19,94,0.18) !important;
+  }
+
+  .home-hero-photo .hero-premium-actions .btn-primary::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  .home-hero-photo .hero-premium-actions .btn-outline {
+    border-color: rgba(102,19,94,0.38) !important;
+    background: rgba(255,255,255,0.78) !important;
+    color: #66135e !important;
+    box-shadow: none !important;
+  }
+
+  .home-hero-photo .hero-premium-actions .btn-primary:hover,
+  .home-hero-photo .hero-premium-actions .btn-primary:focus-visible {
+    border-color: #b468ab !important;
+    background: #b468ab !important;
+    transform: translateY(-2px);
+  }
+
+  .home-hero-photo .hero-premium-actions .btn-outline:hover,
+  .home-hero-photo .hero-premium-actions .btn-outline:focus-visible {
+    border-color: #66135e !important;
+    background: #66135e !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+  }
+
+  .home-hero-personalized {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin: clamp(3.2rem, 6vw, 5.6rem) 0 0;
+    padding: 0.75rem 1.15rem;
+    border: 1px solid rgba(102,19,94,0.28);
+    border-radius: 999px;
+    color: #66135e;
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .home-hero-personalized span {
+    color: #b468ab;
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 1100px) {
+    .home-hero-photo {
+      height: clamp(580px, 58vw, 680px) !important;
+    }
+
+    .home-hero-photo .hero-premium-copy {
+      width: min(53%, 560px) !important;
+    }
+
+    .home-hero-photo .hero-premium-title {
+      font-size: clamp(3.35rem, 6.2vw, 4.9rem) !important;
+    }
+
+    .home-hero-photo .hero-premium-actions .btn-primary,
+    .home-hero-photo .hero-premium-actions .btn-outline {
+      min-width: 190px !important;
+      padding-inline: 1.25rem !important;
+    }
+  }
+
   /* Rodapé integralmente roxo */
   footer {
     background: #66135e !important;
@@ -6438,6 +6635,84 @@
   }
 
   @media (max-width: 768px) {
+    .home-hero-photo {
+      height: 740px !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+      background: #f7eddf !important;
+    }
+
+    .home-hero-photo-image {
+      inset: auto 0 0;
+      height: 48% !important;
+      object-position: 66% center;
+    }
+
+    .home-hero-photo-shade {
+      background: linear-gradient(180deg, #f7eddf 0%, #f7eddf 45%, rgba(247,237,223,0.96) 51%, rgba(247,237,223,0.28) 69%, rgba(247,237,223,0) 84%);
+    }
+
+    .home-hero-photo .hero-premium-inner {
+      display: flex !important;
+      align-items: flex-start !important;
+      width: 100% !important;
+      max-width: none !important;
+      height: 100% !important;
+      padding: 2.65rem 5.5vw 2rem !important;
+    }
+
+    .home-hero-photo .hero-premium-copy {
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    .home-hero-photo .hero-premium-eyebrow {
+      margin-bottom: 1rem !important;
+      font-size: 0.64rem !important;
+      letter-spacing: 0.16em !important;
+      text-align: left !important;
+    }
+
+    .home-hero-photo .hero-premium-title {
+      max-width: 20rem;
+      font-size: clamp(2.85rem, 13vw, 4rem) !important;
+      line-height: 0.96 !important;
+      text-align: left !important;
+    }
+
+    .home-hero-photo .hero-premium-text {
+      max-width: 23rem !important;
+      margin: 1rem 0 0 !important;
+      font-size: 1rem !important;
+      line-height: 1.5 !important;
+      text-align: left !important;
+    }
+
+    .home-hero-photo .hero-premium-actions {
+      display: grid !important;
+      grid-template-columns: 1fr 0.68fr !important;
+      gap: 0.65rem !important;
+      margin-top: 1.35rem !important;
+    }
+
+    .home-hero-photo .hero-premium-actions .btn-primary,
+    .home-hero-photo .hero-premium-actions .btn-outline {
+      display: inline-flex !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      min-height: 52px !important;
+      padding: 0.75rem 0.75rem !important;
+      font-size: 0.64rem !important;
+      letter-spacing: 0.12em !important;
+    }
+
+    .home-hero-personalized {
+      margin-top: 1.2rem;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.56rem;
+      letter-spacing: 0.14em;
+    }
+
     .story-bg {
       padding-top: 4.8rem !important;
       padding-bottom: 4.2rem !important;
@@ -6625,73 +6900,21 @@
 
   
   <!-- HERO -->
-  <section class="hero-premium">
+  <section class="hero-premium home-hero-photo">
+    <img class="home-hero-photo-image" src="assets/hero/hero-teddy-lavender.jpg" alt="Urso com bouquet lilás e vela personalizada Love Essences" loading="eager" fetchpriority="high"/>
+    <div class="home-hero-photo-shade" aria-hidden="true"></div>
     <div class="hero-premium-inner">
       <div class="hero-premium-copy">
-        <p class="hero-premium-eyebrow">✦ Feito à mão com amor · Portugal</p>
-
-<h1 class="hero-premium-title">
-          <div>
-            <span class="hero-line-soft">Não vendemos</span>
-            <span class="hero-line-soft"> produtos.</span>
-          </div>
-          <span class="hero-line-accent">Criamos momentos.</span>
-        </h1>
-
-        <p class="hero-premium-text">
-          Cada peça é pensada para ser mais do que um objeto, é um gesto com significado. Sabonetes, velas e aromas que ficam na memória de quem recebe.
-        </p>
-
-        <div class="hero-premium-mobile-photo">
-          <article class="hero-mobile-card">
-            <span class="hero-mobile-card-image">
-              <img src="assets/products/pensar-em-ti.jpg" alt="Arranjo de flores de sabonete com urso Love Essences" loading="eager"/>
-            </span>
-            <span class="hero-mobile-card-icon">🌸</span>
-            <span class="hero-mobile-card-title">Flores que Ficam</span>
-            <span class="hero-mobile-card-text">Delicadeza que encanta, beleza que perdura.</span>
-            <button type="button" class="hero-mobile-card-arrow" onclick="openShopCategory('pecas')" aria-label="Ver flores que ficam">→</button>
-          </article>
-          <article class="hero-mobile-card">
-            <span class="hero-mobile-card-image">
-              <img src="assets/hero/hero-vela-dinis.jpg" alt="Vela personalizada Love Essences com nome e data" loading="eager"/>
-            </span>
-            <span class="hero-mobile-card-icon">💛</span>
-            <span class="hero-mobile-card-title">Aromas que Acolhem</span>
-            <span class="hero-mobile-card-text">Momentos perfumados para guardar na memória.</span>
-            <button type="button" class="hero-mobile-card-arrow" onclick="openOccasion('casamentos-batizados')" aria-label="Ver aromas que acolhem">→</button>
-          </article>
-        </div>
+        <p class="hero-premium-eyebrow">✦ Sabonetes · Velas · Aromas · Lembranças</p>
+        <h1 class="hero-premium-title">Presentes que<br/>ficam na memória.</h1>
+        <p class="hero-premium-text">Feitos à mão, pensados para cada momento.</p>
 
         <div class="hero-premium-actions">
           <a href="#page-shop" id="hero-shop-btn" class="btn-primary" style="text-decoration:none;">Descobrir a Coleção</a>
           <a href="#page-about" id="hero-about-btn" class="btn-outline" style="text-decoration:none;">Sobre Nós</a>
         </div>
 
-        <div class="hero-premium-cards">
-          <div class="hero-premium-card">
-            <p class="hero-premium-card-label">feito à mão</p>
-            <p class="hero-premium-card-text">Cada peça nasce com detalhe, aroma e intenção.</p>
-          </div>
-          <div class="hero-premium-card">
-            <p class="hero-premium-card-label">premium</p>
-            <p class="hero-premium-card-text">Estética delicada para presentes que marcam.</p>
-          </div>
-          <div class="hero-premium-card">
-            <p class="hero-premium-card-label">personalizado</p>
-            <p class="hero-premium-card-text">Ajustamos cor, aroma e mensagem à ocasião.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="hero-premium-visual" aria-hidden="true">
-        <div class="hero-premium-panel-main hero-premium-photo-panel">
-          <img class="hero-premium-feature-img" src="assets/products/pensar-em-ti.jpg" alt="Arranjo de flores de sabonete com urso Love Essences" loading="eager"/>
-        </div>
-
-        <div class="hero-premium-panel-accent hero-premium-side-photo">
-          <img src="assets/hero/hero-vela-dinis.jpg" alt="Vela personalizada Love Essences com nome e data" loading="eager" decoding="async"/>
-        </div>
+        <p class="home-hero-personalized">Personalizado para si <span aria-hidden="true">♥</span></p>
       </div>
     </div>
   </section>
@@ -9140,6 +9363,10 @@ var I18N_EXTRA_TEXT = {
     "🚚 Envio calculado no checkout · Embalagem de oferta incluída": "🚚 Shipping calculated at checkout · Gift packaging included",
     "🚚 Portes de envio gratuitos para Portugal e ilhas · Embalagem de oferta incluída": "🚚 Free shipping to Portugal and islands · Gift packaging included",
     "✦ Feito à mão com amor · Portugal": "✦ Handmade with love · Portugal",
+    "✦ Sabonetes · Velas · Aromas · Lembranças": "✦ Soaps · Candles · Scents · Keepsakes",
+    "ficam na memória.": "stay in the memory.",
+    "Feitos à mão, pensados para cada momento.": "Handmade, created for every moment.",
+    "Personalizado para si": "Personalised for you",
     "Não vendemos": "We do not sell",
     "produtos.": "products.",
     "Criamos momentos.": "We create moments.",
@@ -9545,6 +9772,10 @@ var I18N_EXTRA_TEXT = {
     "🚚 Envio calculado no checkout · Embalagem de oferta incluída": "🚚 Envío calculado en el checkout · Embalaje de regalo incluido",
     "🚚 Portes de envio gratuitos para Portugal e ilhas · Embalagem de oferta incluída": "🚚 Envío gratis a Portugal e islas · Embalaje de regalo incluido",
     "✦ Feito à mão com amor · Portugal": "✦ Hecho a mano con amor · Portugal",
+    "✦ Sabonetes · Velas · Aromas · Lembranças": "✦ Jabones · Velas · Aromas · Recuerdos",
+    "ficam na memória.": "permanecen en la memoria.",
+    "Feitos à mão, pensados para cada momento.": "Hechos a mano, pensados para cada momento.",
+    "Personalizado para si": "Personalizado para ti",
     "Não vendemos": "No vendemos",
     "produtos.": "productos.",
     "Criamos momentos.": "Creamos momentos.",
