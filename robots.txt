@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://love-essences.pt/sitemap.xml
