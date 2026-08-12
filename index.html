@@ -30,6 +30,9 @@
 <link rel="preload" as="image" href="./assets/products/aurora.jpg"/>
 <link rel="preload" as="image" href="./assets/products/memoria-perfumada.png"/>
 <link rel="stylesheet" href="./dist/output.css"/>
+<link rel="stylesheet" href="./assets/css/analytics-consent.css"/>
+<script src="./assets/js/analytics-config.js"></script>
+<script defer src="./assets/js/analytics.js"></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -9250,7 +9253,8 @@
     <div class="legal-section">
       <span class="legal-num">04</span>
       <h2 class="legal-title">Cookies</h2>
-      <p class="legal-text">O website da Love Essences poderá utilizar cookies e tecnologias semelhantes para melhorar a navegação, memorizar preferências e analisar o desempenho do website. Pode configurar o seu navegador para bloquear ou eliminar cookies a qualquer momento, embora isso possa afetar o funcionamento de algumas áreas do website.</p>
+      <p class="legal-text">O website utiliza cookies necessários para manter o carrinho, o idioma e as preferências de privacidade. Apenas com a sua autorização, poderemos também ativar o <strong>Google Analytics 4</strong>, para medir a utilização e o percurso de compra, e o <strong>Microsoft Clarity</strong>, para mapas de calor e gravações de sessão. Os campos de formulários, dados do carrinho e zonas de personalização são mascarados; nomes, contactos, mensagens e textos personalizados não são enviados para estas ferramentas.</p>
+      <p class="legal-text">Pode aceitar, recusar ou alterar separadamente as categorias de analytics e marketing. A categoria de marketing fica registada como preferência para futuras funcionalidades, mas o website não instala atualmente plataformas publicitárias. Pode retirar o consentimento a qualquer momento através de <button type="button" class="le-consent-inline-button le-cookie-settings-link" onclick="LoveAnalytics.openPreferences()">Gerir preferências de cookies</button>.</p>
     </div>
 
     <div class="legal-section">
@@ -9665,6 +9669,7 @@
         <li><a href="#" onclick="showPage('terms'); return false;">Termos de Serviço</a></li>
         <li><a href="#" onclick="showPage('returns'); return false;">Devoluções &amp; Reembolsos</a></li>
         <li><a href="#" onclick="showPage('shipping'); return false;">Política de Envio</a></li>
+        <li><button type="button" class="le-cookie-settings-link" onclick="LoveAnalytics.openPreferences()">Gerir cookies</button></li>
       </ul>
     </div>
     <div class="footer-contact-panel">
@@ -13032,10 +13037,12 @@ async function handleSubmit(e) {
     if (res.ok) {
       form.style.display = 'none';
       success.style.display = 'block';
+      if (window.LoveAnalytics) LoveAnalytics.track('generate_lead', { lead_type: 'contact_form' });
     } else {
       throw new Error('Erro no servidor');
     }
   } catch {
+    if (window.LoveAnalytics) LoveAnalytics.trackCheckoutError('contact_form', 'formspree_error');
     errMsg.style.display = 'block';
     btn.disabled = false;
     btn.textContent = 'Enviar Pedido →';
