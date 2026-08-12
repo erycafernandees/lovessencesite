@@ -27,10 +27,16 @@ jobs:
       - name: Configurar Pages
         uses: actions/configure-pages@v5
 
+      - name: Gerar páginas e ficheiros SEO
+        run: python3 scripts/build_site.py --output _site
+
+      - name: Validar SEO gerado
+        run: python3 scripts/validate_site.py --output _site
+
       - name: Carregar ficheiros
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '_site'
 
       - name: Deploy para GitHub Pages
         id: deployment

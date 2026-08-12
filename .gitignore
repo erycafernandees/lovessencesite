@@ -2,3 +2,4 @@
 *.log
 love-essences-v13.html
 node_modules/
+_site/

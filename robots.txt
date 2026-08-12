@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /faturacao.html
+Disallow: /love-essences-v14.html
+Disallow: /love-essences-mobile-menu-premium-v3.html
 
 Sitemap: https://love-essences.pt/sitemap.xml
