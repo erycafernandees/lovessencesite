@@ -14,7 +14,7 @@ window.LOVE_ANALYTICS_CONFIG = Object.freeze({
   enableGA4: true,
   enableClarity: true,
   ga4MeasurementId: 'G-QVR15RSPT1',
-  clarityProjectId: '',
+  clarityProjectId: 'y162mkvrsf',
   currency: 'EUR',
   debug: false,
   consentStorageKey: 'le_cookie_consent_v1',
