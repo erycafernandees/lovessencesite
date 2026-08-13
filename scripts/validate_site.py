@@ -10,7 +10,15 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from build_site import DOMAIN, ROOT, get_routes, route_output_path
+from build_site import (
+    DOMAIN,
+    OCCASION_TAGS,
+    PRODUCT_TYPE_FILTERS,
+    ROOT,
+    get_routes,
+    load_commercial_content,
+    route_output_path,
+)
 
 
 def one(pattern: str, source: str, label: str, flags: int = 0) -> str:
@@ -23,6 +31,7 @@ def one(pattern: str, source: str, label: str, flags: int = 0) -> str:
 def validate(output: Path) -> None:
     source = (ROOT / "index.html").read_text(encoding="utf-8")
     products, routes = get_routes(source)
+    commercial_content = load_commercial_content()
     errors: list[str] = []
     titles: dict[str, str] = {}
     descriptions: dict[str, str] = {}
@@ -54,8 +63,23 @@ def validate(output: Path) -> None:
             assert page.count('name="twitter:card"') == 1, "twitter card ausente/duplicado"
             assert page.count('src="./assets/js/analytics-config.js"') == 1, "config analytics ausente/duplicada"
             assert page.count('src="./assets/js/analytics.js"') == 1, "analytics ausente/duplicada"
+            assert page.count('src="./assets/js/commercial-content.js"') == 1, "conteúdo comercial ausente/duplicado"
             assert page.count('href="/assets/css/site.css"') == 1, "CSS partilhado ausente/duplicado"
             assert page.count('src="/assets/js/site.js"') == 1, "JavaScript partilhado ausente/duplicado"
+
+            content_key = f"category:{route.category}" if route.category else f"occasion:{route.occasion}" if route.occasion else ""
+            route_content = commercial_content.get(content_key) if content_key else None
+            if route_content:
+                assert 'id="commercial-seo-content" hidden' not in page, "conteúdo comercial oculto"
+                commercial_match = re.search(
+                    r'<section class="commercial-seo-content" id="commercial-seo-content"[^>]*>(.*?)</section>',
+                    page,
+                    re.S,
+                )
+                assert commercial_match is not None, "secção comercial ausente"
+                assert commercial_match.group(1).count('<article class="commercial-seo-card">') == 3, "estrutura H2 comercial incompleta"
+                assert commercial_match.group(1).count("<details><summary>") == 3, "FAQ comercial incompleta"
+                assert route_content["resultsHeading"] in page, "título da seleção de produtos incorreto"
 
             if route.product:
                 graph_types = {item.get("@type") for item in schema["@graph"]}
@@ -64,6 +88,17 @@ def validate(output: Path) -> None:
                 assert "aggregateRating" not in schema_text and '"review"' not in schema_text, "avaliação inventada"
                 assert f'>{route.product.name}</h1>' in page, "H1 de produto incorreto"
                 assert f'alt="{route.product.name}, Love Essences"' in page, "imagem principal/alt ausente"
+                expected_related = sum(
+                    route.product.product_id in product_ids
+                    for product_ids in PRODUCT_TYPE_FILTERS.values()
+                ) + sum(
+                    any(tag in product_tag for product_tag in route.product.tags)
+                    for tag in OCCASION_TAGS.values()
+                )
+                expected_related = min(expected_related, 5)
+                related_match = re.search(r'id="pd-related-links"[^>]*>(.*?)</div>', page, re.S)
+                assert related_match is not None, "links relacionados de produto ausentes"
+                assert related_match.group(1).count("<a ") == expected_related, "links relacionados de produto incorretos"
 
             if route.index:
                 if title in titles:
@@ -82,6 +117,16 @@ def validate(output: Path) -> None:
         expected_urls = [DOMAIN + route.path for route in routes if route.index]
         assert sitemap_urls == expected_urls, "URLs do sitemap não correspondem às rotas indexáveis"
         assert len(sitemap_urls) == len(set(sitemap_urls)), "URLs duplicados no sitemap"
+        assert f"{DOMAIN}/ocasioes/casamentos-e-batizados/" not in sitemap_urls, "rota antiga incluída no sitemap"
+        for required_path in (
+            "/ocasioes/casamento/",
+            "/ocasioes/batizado/",
+            "/ocasioes/comunhao/",
+            "/categorias/difusores-personalizados/",
+            "/categorias/sabonetes-artesanais/",
+            "/categorias/velas-personalizadas/",
+        ):
+            assert DOMAIN + required_path in sitemap_urls, f"rota comercial ausente: {required_path}"
     except Exception as exc:
         errors.append(f"sitemap.xml: {exc}")
 
@@ -101,6 +146,20 @@ def validate(output: Path) -> None:
         errors.append("404.html ausente")
     elif 'name="robots" content="noindex, follow"' not in (output / "404.html").read_text(encoding="utf-8"):
         errors.append("404.html sem noindex")
+
+    try:
+        occasions_page = (output / "ocasioes" / "index.html").read_text(encoding="utf-8")
+        for required_path in (
+            "/ocasioes/casamento/",
+            "/ocasioes/batizado/",
+            "/ocasioes/comunhao/",
+            "/categorias/difusores-personalizados/",
+            "/categorias/sabonetes-artesanais/",
+            "/categorias/velas-personalizadas/",
+        ):
+            assert required_path in occasions_page, f"link interno ausente: {required_path}"
+    except Exception as exc:
+        errors.append(f"arquitetura comercial: {exc}")
 
     if errors:
         print("Validação falhou:")

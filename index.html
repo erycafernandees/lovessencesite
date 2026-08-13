@@ -66,6 +66,7 @@
 <link rel="stylesheet" href="./assets/css/analytics-consent.css"/>
 <script src="./assets/js/analytics-config.js"></script>
 <script defer src="./assets/js/analytics.js"></script>
+<script src="./assets/js/commercial-content.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -1189,6 +1190,30 @@
   .pd-section h4 { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--warm-gray); margin-bottom: 0.8rem; font-weight: 500; }
   .pd-section p { font-size: 0.92rem; line-height: 1.85; color: var(--dark); font-weight: 300; }
   .pd-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.8rem; }
+  .pd-related-links { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.9rem; }
+  .pd-related-links a { color: var(--deep-rose); font-size: 0.75rem; font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(102,19,94,0.28); }
+
+  .commercial-seo-content { padding: clamp(2.25rem, 4.5vw, 4rem) 5vw; background: linear-gradient(180deg, #fff 0%, #faf4f9 100%); }
+  .commercial-seo-inner { width: min(1040px, 100%); margin: 0 auto; }
+  .commercial-seo-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .commercial-seo-card { padding: 1.25rem 1.4rem; background: rgba(255,255,255,0.92); border: 1px solid rgba(180,104,171,0.18); border-radius: 18px; box-shadow: 0 12px 32px rgba(102,19,94,0.05); }
+  .commercial-seo-card h2, .commercial-faq h2 { margin: 0 0 0.6rem; color: var(--dark); font-family: var(--serif); font-size: 1.3rem; font-weight: 400; line-height: 1.12; }
+  .commercial-seo-card p, .commercial-faq p { margin: 0; color: var(--warm-gray); font-size: 0.79rem; line-height: 1.62; }
+  .commercial-related { display: flex; flex-wrap: wrap; gap: 0.55rem; margin: 1rem 0 0; }
+  .commercial-related a { padding: 0.55rem 0.8rem; color: var(--deep-rose); background: #fff; border: 1px solid rgba(180,104,171,0.25); border-radius: 999px; font-size: 0.68rem; font-weight: 600; text-decoration: none; }
+  .commercial-faq { margin-top: clamp(1.8rem, 3.5vw, 2.75rem); }
+  .commercial-faq-list { display: grid; gap: 0.6rem; }
+  .commercial-faq details { padding: 0.78rem 0.95rem; background: #fff; border: 1px solid rgba(180,104,171,0.16); border-radius: 12px; }
+  .commercial-faq summary { color: var(--dark); cursor: pointer; font-size: 0.78rem; font-weight: 600; }
+  .commercial-faq details p { padding-top: 0.65rem; }
+  .occasion-hub-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .occasion-hub-link { display: block; padding: 1rem 1.15rem; color: var(--dark); background: #fff; border: 1px solid rgba(180,104,171,0.18); border-radius: 16px; text-decoration: none; transition: transform .25s ease, box-shadow .25s ease; }
+  .occasion-hub-link:hover { transform: translateY(-3px); box-shadow: 0 18px 45px rgba(102,19,94,0.10); }
+  .occasion-hub-link strong { display: block; margin-bottom: 0.3rem; font-family: var(--serif); font-size: 1.12rem; font-weight: 400; }
+  .occasion-hub-link span { color: var(--warm-gray); font-size: 0.72rem; line-height: 1.5; }
+  @media (max-width: 820px) {
+    .commercial-seo-grid, .occasion-hub-links { grid-template-columns: 1fr; }
+  }
   .pd-tag { background: var(--cream); border: 1px solid rgba(180,104,171,0.2); color: var(--warm-gray); font-size: 0.75rem; padding: 0.3rem 0.9rem; border-radius: 20px; }
   .pd-cta { width: 100%; background: var(--dark); color: #fff; border: none; padding: 1.1rem 2rem; font-family: var(--sans); font-size: 0.85rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: background 0.3s; margin-top: 2rem; }
   .pd-cta:hover { background: var(--rose); }
@@ -1468,6 +1493,8 @@
   .occasion-card--romantic,
   .occasion-card--special,
   .occasion-card--wedding,
+  .occasion-card--baptism,
+  .occasion-card--communion,
   .occasion-card--business,
   .occasion-card--kids {
     background: #f1e3ef !important;
@@ -3077,7 +3104,7 @@
     }
 
     #nav-row2 a {
-      font-size: 0.72rem !important;
+      font-size: 0.79rem !important;
       letter-spacing: 0.12em !important;
     }
 
@@ -6657,7 +6684,7 @@
 
     #main-nav #nav-row2 a {
       color: #6e626b !important;
-      font-size: 0.72rem !important;
+      font-size: 0.79rem !important;
       font-weight: 400 !important;
       letter-spacing: 0.14em !important;
       line-height: 1 !important;
@@ -6684,6 +6711,8 @@
   .occasion-card--romantic,
   .occasion-card--special,
   .occasion-card--wedding,
+  .occasion-card--baptism,
+  .occasion-card--communion,
   .occasion-card--business,
   .occasion-card--kids {
     background-color: #66135e !important;
@@ -6705,6 +6734,16 @@
   }
 
   .occasion-card--wedding {
+    background-image: linear-gradient(180deg, rgba(38,8,35,0.18) 0%, rgba(38,8,35,0.42) 44%, rgba(38,8,35,0.92) 100%), url('assets/occasions/casamento.jpg') !important;
+    background-position: center 52% !important;
+  }
+
+  .occasion-card--baptism {
+    background-image: linear-gradient(180deg, rgba(38,8,35,0.18) 0%, rgba(38,8,35,0.42) 44%, rgba(38,8,35,0.92) 100%), url('assets/occasions/batizado.jpg') !important;
+    background-position: center 52% !important;
+  }
+
+  .occasion-card--communion {
     background-image: linear-gradient(180deg, rgba(38,8,35,0.18) 0%, rgba(38,8,35,0.42) 44%, rgba(38,8,35,0.92) 100%), url('assets/occasions/casamentos-batizados.jpg') !important;
   }
 
@@ -6731,7 +6770,7 @@
   }
 
   .occasion-card .occasion-icon {
-    background: rgba(255,255,255,0.78) !important;
+    background: transparent !important;
   }
 
   .occasion-card h3,
@@ -6750,7 +6789,45 @@
   }
 
   .occasions-cards-mockup .occasion-card {
-    min-height: 390px !important;
+    min-height: 250px !important;
+    padding: 1.05rem 1.25rem !important;
+  }
+
+  .occasions-cards-mockup {
+    padding-inline: clamp(1.25rem, 5vw, 5rem) !important;
+  }
+
+  .occasions-cards-mockup .occasions-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    max-width: 1000px !important;
+    gap: 1rem !important;
+    padding: 0 !important;
+  }
+
+  .occasions-cards-mockup .occasion-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1.8rem !important;
+  }
+
+  .occasions-cards-mockup .occasion-card h3 {
+    font-size: clamp(1.25rem, 1.5vw, 1.55rem) !important;
+  }
+
+  .occasions-cards-mockup .occasion-card p {
+    margin-top: 0.6rem !important;
+    font-size: 0.79rem !important;
+    line-height: 1.55 !important;
+  }
+
+  .occasions-cards-mockup .occasion-card .occasion-link {
+    margin-top: 0.8rem !important;
+    font-size: 0.72rem !important;
+  }
+
+  .occasions-cards-mockup .occasion-card .occasion-badge {
+    padding: 0.4rem 0.65rem !important;
+    font-size: 0.52rem !important;
   }
 
   /* Sobre Nós: transição contínua do roxo para a fotografia floral. */
@@ -6851,7 +6928,15 @@
     }
 
     .occasions-cards-mockup .occasion-card {
-      min-height: 330px !important;
+      width: 100% !important;
+      max-width: 340px !important;
+      min-height: 230px !important;
+      margin-inline: auto !important;
+      padding: 1rem 1.1rem !important;
+    }
+
+    .occasions-cards-mockup .occasions-grid {
+      grid-template-columns: 1fr !important;
     }
 
     .about-hero {
@@ -7452,6 +7537,83 @@
       width: 100% !important;
     }
   }
+
+  /* Tipografia consistente nos títulos das páginas do menu. */
+  #page-shop .shop-hero [data-page-heading],
+  #page-occasions .occasions-hero [data-page-heading],
+  #page-about .about-hero-text [data-page-heading],
+  #page-tracking .tracking-hero [data-page-heading],
+  #page-contact .contact-hero [data-page-heading],
+  #page-privacy [data-page-heading],
+  #page-terms [data-page-heading],
+  #page-returns [data-page-heading],
+  #page-shipping [data-page-heading] {
+    font-family: var(--sans) !important;
+    font-size: clamp(2.4rem, 3.5vw, 3.35rem) !important;
+    font-weight: 400 !important;
+    max-width: 980px;
+    margin-inline: auto;
+    letter-spacing: -0.035em !important;
+    line-height: 1.08 !important;
+    text-wrap: balance;
+  }
+
+  .shop-hero [data-page-heading] em,
+  .occasions-hero [data-page-heading] em {
+    font-family: inherit !important;
+    font-weight: 300 !important;
+  }
+
+  .shop-results-label {
+    max-width: 820px;
+    margin: 0;
+    color: var(--dark) !important;
+    font-family: var(--sans) !important;
+    font-size: clamp(1.5rem, 2.35vw, 2.1rem) !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.035em !important;
+    line-height: 1.12 !important;
+    text-transform: none !important;
+    text-wrap: balance;
+  }
+
+  .commercial-seo-card h2,
+  .commercial-faq h2,
+  .occasion-hub-link strong {
+    font-family: var(--sans) !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.025em !important;
+  }
+
+  .commercial-seo-card h2 {
+    font-size: clamp(1.15rem, 1.45vw, 1.35rem) !important;
+    line-height: 1.15 !important;
+  }
+
+  .commercial-faq h2 {
+    font-size: clamp(1.45rem, 2vw, 1.75rem) !important;
+    line-height: 1.1 !important;
+  }
+
+  @media (max-width: 768px) {
+    #page-shop .shop-hero [data-page-heading],
+    #page-occasions .occasions-hero [data-page-heading],
+    #page-about .about-hero-text [data-page-heading],
+    #page-tracking .tracking-hero [data-page-heading],
+    #page-contact .contact-hero [data-page-heading],
+    #page-privacy [data-page-heading],
+    #page-terms [data-page-heading],
+    #page-returns [data-page-heading],
+    #page-shipping [data-page-heading] {
+      font-size: clamp(2.05rem, 8vw, 2.5rem) !important;
+      letter-spacing: -0.03em !important;
+      line-height: 1.08 !important;
+    }
+
+    .shop-results-label {
+      font-size: clamp(1.4rem, 6.5vw, 1.8rem) !important;
+    }
+  }
 </style>
 
 <!-- ANNOUNCEMENT BAR -->
@@ -7531,6 +7693,9 @@
           <button type="button" class="mobile-nav-link" onclick="openShopCategory('pecas')">Coleção Assinatura</button>
           <button type="button" class="mobile-nav-link" onclick="openShopCategory('memorias')">Coleção Memórias</button>
           <button type="button" class="mobile-nav-link" onclick="openShopCategory('eventos')">Lembranças para Eventos</button>
+          <button type="button" class="mobile-nav-link" onclick="openShopCategory('difusores')">Difusores Personalizados</button>
+          <button type="button" class="mobile-nav-link" onclick="openShopCategory('sabonetes')">Sabonetes Artesanais</button>
+          <button type="button" class="mobile-nav-link" onclick="openShopCategory('velas')">Velas Personalizadas</button>
           <button type="button" class="mobile-nav-link" onclick="openShopCategory('todos')">Toda a Coleção</button>
         </div>
       </div>
@@ -7541,7 +7706,9 @@
           <button type="button" class="mobile-nav-link" onclick="openOccasion('aniversarios')">Aniversários</button>
           <button type="button" class="mobile-nav-link" onclick="openOccasion('presente-romantico')">Presente Romântico</button>
           <button type="button" class="mobile-nav-link" onclick="openOccasion('alguem-especial')">Para Alguém Especial</button>
-          <button type="button" class="mobile-nav-link" onclick="openOccasion('casamentos-batizados')">Casamentos &amp; Batizados</button>
+          <button type="button" class="mobile-nav-link" onclick="openOccasion('casamento')">Casamento</button>
+          <button type="button" class="mobile-nav-link" onclick="openOccasion('batizado')">Batizado</button>
+          <button type="button" class="mobile-nav-link" onclick="openOccasion('comunhao')">Comunhão</button>
           <button type="button" class="mobile-nav-link" onclick="openOccasion('empresas')">Eventos &amp; Empresas</button>
           <button type="button" class="mobile-nav-link" onclick="openOccasion('pequeninos')">Para os Mais Pequeninos</button>
         </div>
@@ -7793,8 +7960,8 @@
 
       <article
         class="occasion-card occasion-card--wedding group relative flex cursor-pointer flex-col justify-between overflow-hidden"
-        onclick="openOccasion('casamentos-batizados')"
-        onkeydown="handleOccasionCardKey(event, 'casamentos-batizados')"
+        onclick="openOccasion('casamento')"
+        onkeydown="handleOccasionCardKey(event, 'casamento')"
         role="button"
         tabindex="0"
       >
@@ -7803,9 +7970,45 @@
           <span class="occasion-icon text-3xl">💍</span>
         </div>
         <div class="relative z-10">
-          <h3>Casamentos &amp; Batizados</h3>
-          <p class="mt-4 text-sm leading-7">Lembranças delicadas para quem celebra convosco esses momentos únicos.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('casamentos-batizados')">Ver sugestões →</span>
+          <h3>Casamento</h3>
+          <p class="mt-4 text-sm leading-7">Lembranças personalizadas para agradecer a quem celebra convosco.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('casamento')">Ver sugestões →</span>
+        </div>
+      </article>
+
+      <article
+        class="occasion-card occasion-card--baptism group relative flex cursor-pointer flex-col justify-between overflow-hidden"
+        onclick="openOccasion('batizado')"
+        onkeydown="handleOccasionCardKey(event, 'batizado')"
+        role="button"
+        tabindex="0"
+      >
+        <div class="relative z-10 flex items-start justify-between gap-4">
+          <span class="occasion-badge px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]">celebração</span>
+          <span class="occasion-icon text-3xl">🕊️</span>
+        </div>
+        <div class="relative z-10">
+          <h3>Batizado</h3>
+          <p class="mt-4 text-sm leading-7">Detalhes artesanais para convidados adultos e crianças.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('batizado')">Ver sugestões →</span>
+        </div>
+      </article>
+
+      <article
+        class="occasion-card occasion-card--communion group relative flex cursor-pointer flex-col justify-between overflow-hidden"
+        onclick="openOccasion('comunhao')"
+        onkeydown="handleOccasionCardKey(event, 'comunhao')"
+        role="button"
+        tabindex="0"
+      >
+        <div class="relative z-10 flex items-start justify-between gap-4">
+          <span class="occasion-badge px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]">celebração</span>
+          <span class="occasion-icon text-3xl">🤍</span>
+        </div>
+        <div class="relative z-10">
+          <h3>Comunhão</h3>
+          <p class="mt-4 text-sm leading-7">Recordações personalizadas para a primeira comunhão.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('comunhao')">Ver sugestões →</span>
         </div>
       </article>
 
@@ -8281,7 +8484,7 @@
       <ol><li><a href="/" onclick="showPage('home'); return false;">Início</a></li><li aria-current="page">Loja</li></ol>
     </nav>
     <h2 class="section-title" id="shop-page-title" data-page-heading>Cada peça é única.<br/><em>Como quem a vai receber.</em></h2>
-    <p>Produtos artesanais feitos com intenção e amor, escolhe o teu presente perfeito.</p>
+    <p id="shop-page-intro">Produtos artesanais feitos com intenção e amor, escolhe o teu presente perfeito.</p>
     <div class="category-tabs">
       <button type="button" class="cat-tab" data-filter="pecas" onclick="filterCategory(this,'pecas')">Coleção Assinatura</button>
       <button type="button" class="cat-tab" data-filter="memorias" onclick="filterCategory(this,'memorias')">Coleção Memórias</button>
@@ -8296,7 +8499,9 @@
             <option value="aniversarios">Aniversários</option>
             <option value="presente-romantico">Presente Romântico</option>
             <option value="alguem-especial">Para Alguém Especial</option>
-            <option value="casamentos-batizados">Casamentos &amp; Batizados</option>
+            <option value="casamento">Casamento</option>
+            <option value="batizado">Batizado</option>
+            <option value="comunhao">Comunhão</option>
             <option value="empresas">Eventos &amp; Empresas</option>
             <option value="pequeninos">Para os Mais Pequeninos</option>
           </select>
@@ -8309,7 +8514,7 @@
   </section>
   <section class="shop-grid px-[5vw] pb-14 pt-10 md:px-[8vw]">
     <div class="shop-results-meta">
-      <p class="shop-results-label" id="shop-results-label">Sugestões para todos os momentos</p>
+      <h2 class="shop-results-label" id="shop-results-label">Sugestões para todos os momentos</h2>
       <button type="button" class="btn-sm" style="font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--rose);background:none;border:none;cursor:pointer;padding:0;font-weight:500;" onclick="showPage('occasions')">Escolher por ocasião →</button>
     </div>
 
@@ -8377,7 +8582,7 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/prisma.jpg" alt="Prisma, peça artesanal Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Mais Vendido</span><img src="assets/products/prisma.jpg" alt="Prisma, peça artesanal Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Prisma</h3>
           <p class="product-desc">Peça em gesso com presença facetada, semelhante ao Diamante, mas com um vaso ligeiramente diferente. Elegante, luminosa e muito especial.</p>
@@ -8570,6 +8775,10 @@
     </div>
   </section>
 
+  <section class="commercial-seo-content" id="commercial-seo-content" hidden aria-label="Informação para escolher e encomendar">
+    <div class="commercial-seo-inner" id="commercial-seo-inner"></div>
+  </section>
+
   <!-- Note personalizado -->
   <section class="bg-white px-[5vw] py-16 text-center md:px-[8vw]">
     <p class="section-label">✦ Não encontraste o que procuras?</p>
@@ -8694,6 +8903,7 @@
       <div class="pd-section">
         <h4>Ideal para</h4>
         <div class="pd-tags" id="pd-tags"></div>
+        <div class="pd-related-links" id="pd-related-links" aria-label="Explorar páginas relacionadas"></div>
       </div>
 
       <div style="background: var(--cream); border-radius: 8px; padding: 1.2rem 1.5rem; border-left: 3px solid var(--rose); margin-top: 1rem;">
@@ -8797,7 +9007,7 @@
     <div class="mx-auto max-w-[820px] text-center">
       <p class="section-label">✦ Para cada momento</p>
       <h2 class="section-title" data-page-heading>O presente certo<br/>para cada <em>ocasião</em></h2>
-      <p class="mx-auto mt-3 max-w-[42rem] text-[15px] leading-8 md:text-[16px]" style="color: var(--warm-gray);">Porque cada data especial merece um gesto que esteja à sua altura.</p>
+      <p class="mx-auto mt-3 max-w-[42rem] text-[15px] leading-8 md:text-[16px]" style="color: var(--warm-gray);">Descobre lembranças artesanais e personalizadas em Portugal para convidados, celebrações e momentos especiais.</p>
     </div>
   </section>
 
@@ -8866,8 +9076,8 @@
       <article
         class="occasion-card occasion-card--wedding group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
         style="background: #f1e3ef;"
-        onclick="openOccasion('casamentos-batizados')"
-        onkeydown="handleOccasionCardKey(event, 'casamentos-batizados')"
+        onclick="openOccasion('casamento')"
+        onkeydown="handleOccasionCardKey(event, 'casamento')"
         role="button"
         tabindex="0"
       >
@@ -8876,9 +9086,47 @@
           <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">💍</span>
         </div>
         <div class="p-1 pt-4">
-          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Casamentos &amp; Batizados</h3>
-          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Lembranças delicadas para quem celebra convosco esses momentos únicos.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('casamentos-batizados')">Ver sugestões →</span>
+          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Casamento</h3>
+          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Lembranças personalizadas para agradecer a presença dos convidados.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('casamento')">Ver sugestões →</span>
+        </div>
+      </article>
+
+      <article
+        class="occasion-card occasion-card--baptism group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
+        style="background: #f1e3ef;"
+        onclick="openOccasion('batizado')"
+        onkeydown="handleOccasionCardKey(event, 'batizado')"
+        role="button"
+        tabindex="0"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">celebração</div>
+          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">🕊️</span>
+        </div>
+        <div class="p-1 pt-4">
+          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Batizado</h3>
+          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Recordações de batizado ou batismo para adultos e crianças.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('batizado')">Ver sugestões →</span>
+        </div>
+      </article>
+
+      <article
+        class="occasion-card occasion-card--communion group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
+        style="background: #f1e3ef;"
+        onclick="openOccasion('comunhao')"
+        onkeydown="handleOccasionCardKey(event, 'comunhao')"
+        role="button"
+        tabindex="0"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">celebração</div>
+          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">🤍</span>
+        </div>
+        <div class="p-1 pt-4">
+          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Comunhão</h3>
+          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Lembranças personalizadas para a primeira comunhão.</p>
+          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('comunhao')">Ver sugestões →</span>
         </div>
       </article>
 
@@ -8921,6 +9169,44 @@
         </div>
       </article>
 
+    </div>
+  </section>
+
+  <section class="commercial-seo-content" aria-label="Escolher lembranças personalizadas">
+    <div class="commercial-seo-inner">
+      <div class="commercial-seo-grid">
+        <article class="commercial-seo-card">
+          <h2>Lembranças artesanais para convidados</h2>
+          <p>Escolhe entre difusores, sabonetes, velas, brindes e kits criativos. Algumas opções aromáticas e de utilização real podem continuar a acompanhar quem as recebe depois do evento.</p>
+        </article>
+        <article class="commercial-seo-card">
+          <h2>Personalizadas em Portugal</h2>
+          <p>Os detalhes disponíveis variam por produto e podem incluir tema, nome, data, frase, fragrância, cor e acabamento, sempre preparados artesanalmente em Portugal.</p>
+        </article>
+        <article class="commercial-seo-card">
+          <h2>Como encomendar</h2>
+          <p>Escolhe a ocasião ou o tipo de lembrança, abre os produtos adequados e adiciona-os ao carrinho. Confirmamos disponibilidade, prazo e envio antes da produção.</p>
+        </article>
+      </div>
+      <div class="occasion-hub-links" style="margin-top:1rem;">
+        <a class="occasion-hub-link" href="/ocasioes/casamento/" onclick="openOccasion('casamento'); return false;"><strong>Casamento</strong><span>Lembranças personalizadas para convidados de casamento.</span></a>
+        <a class="occasion-hub-link" href="/ocasioes/batizado/" onclick="openOccasion('batizado'); return false;"><strong>Batizado</strong><span>Detalhes artesanais para celebrar o batizado ou batismo.</span></a>
+        <a class="occasion-hub-link" href="/ocasioes/comunhao/" onclick="openOccasion('comunhao'); return false;"><strong>Comunhão</strong><span>Recordações cuidadas para a primeira comunhão.</span></a>
+      </div>
+      <div class="commercial-related" aria-label="Escolher por tipo de lembrança">
+        <a href="/categorias/difusores-personalizados/" onclick="openShopCategory('difusores'); return false;">Difusores personalizados</a>
+        <a href="/categorias/sabonetes-artesanais/" onclick="openShopCategory('sabonetes'); return false;">Sabonetes artesanais</a>
+        <a href="/categorias/velas-personalizadas/" onclick="openShopCategory('velas'); return false;">Velas personalizadas</a>
+        <a href="/categorias/lembrancas-para-eventos/" onclick="openShopCategory('eventos'); return false;">Todas as lembranças para eventos</a>
+      </div>
+      <div class="commercial-faq">
+        <h2>Perguntas frequentes</h2>
+        <div class="commercial-faq-list">
+          <details><summary>Que detalhes podem ser personalizados?</summary><p>As opções dependem do artigo e aparecem na página do produto. Podem incluir tema, nome, data, frase, fragrância, cor, tecido ou acabamento.</p></details>
+          <details><summary>Posso encomendar lembranças diferentes para adultos e crianças?</summary><p>Sim. Podes combinar artigos diferentes no mesmo pedido, sujeito à disponibilidade e às condições apresentadas no carrinho.</p></details>
+          <details><summary>Com quanta antecedência devo encomendar?</summary><p>Para quantidades maiores, recomendamos iniciar o pedido com um a dois meses de antecedência. O prazo final é confirmado antes da produção.</p></details>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -9610,6 +9896,9 @@
         <li><a href="/categorias/colecao-assinatura/" onclick="openShopCategory('pecas'); return false;">Coleção Assinatura</a></li>
         <li><a href="/categorias/colecao-memorias/" onclick="openShopCategory('memorias'); return false;">Coleção Memórias</a></li>
         <li><a href="/categorias/lembrancas-para-eventos/" onclick="openShopCategory('eventos'); return false;">Lembranças para Eventos</a></li>
+        <li><a href="/categorias/difusores-personalizados/" onclick="openShopCategory('difusores'); return false;">Difusores Personalizados</a></li>
+        <li><a href="/categorias/sabonetes-artesanais/" onclick="openShopCategory('sabonetes'); return false;">Sabonetes Artesanais</a></li>
+        <li><a href="/categorias/velas-personalizadas/" onclick="openShopCategory('velas'); return false;">Velas Personalizadas</a></li>
         <li><a href="/contactos/" onclick="showPage('contact'); return false;">Encomenda Personalizada</a></li>
       </ul>
     </div>
@@ -9619,7 +9908,9 @@
         <li><a href="/ocasioes/aniversarios/" onclick="openOccasion('aniversarios'); return false;">Aniversários</a></li>
         <li><a href="/ocasioes/presente-romantico/" onclick="openOccasion('presente-romantico'); return false;">Presente Romântico</a></li>
         <li><a href="/ocasioes/alguem-especial/" onclick="openOccasion('alguem-especial'); return false;">Para Alguém Especial</a></li>
-        <li><a href="/ocasioes/casamentos-e-batizados/" onclick="openOccasion('casamentos-batizados'); return false;">Casamentos &amp; Batizados</a></li>
+        <li><a href="/ocasioes/casamento/" onclick="openOccasion('casamento'); return false;">Casamento</a></li>
+        <li><a href="/ocasioes/batizado/" onclick="openOccasion('batizado'); return false;">Batizado</a></li>
+        <li><a href="/ocasioes/comunhao/" onclick="openOccasion('comunhao'); return false;">Comunhão</a></li>
         <li><a href="/ocasioes/eventos-e-empresas/" onclick="openOccasion('empresas'); return false;">Eventos &amp; Empresas</a></li>
         <li><a href="/ocasioes/mais-pequeninos/" onclick="openOccasion('pequeninos'); return false;">Para os Mais Pequeninos</a></li>
       </ul>
@@ -11310,7 +11601,10 @@ var LOVE_PAGE_ROUTES = {
 var LOVE_CATEGORY_ROUTES = {
   pecas: '/categorias/colecao-assinatura/',
   memorias: '/categorias/colecao-memorias/',
-  eventos: '/categorias/lembrancas-para-eventos/'
+  eventos: '/categorias/lembrancas-para-eventos/',
+  difusores: '/categorias/difusores-personalizados/',
+  sabonetes: '/categorias/sabonetes-artesanais/',
+  velas: '/categorias/velas-personalizadas/'
 };
 
 var LOVE_OCCASION_ROUTES = {
@@ -11318,6 +11612,9 @@ var LOVE_OCCASION_ROUTES = {
   'presente-romantico': '/ocasioes/presente-romantico/',
   'alguem-especial': '/ocasioes/alguem-especial/',
   'casamentos-batizados': '/ocasioes/casamentos-e-batizados/',
+  casamento: '/ocasioes/casamento/',
+  batizado: '/ocasioes/batizado/',
+  comunhao: '/ocasioes/comunhao/',
   empresas: '/ocasioes/eventos-e-empresas/',
   pequeninos: '/ocasioes/mais-pequeninos/'
 };
@@ -11332,8 +11629,8 @@ var LOVE_STATIC_SEO = {
     description: 'Explora presentes artesanais, boxes, difusores, sabonetes, velas e lembranças personalizadas, criados à mão em Portugal.'
   },
   occasions: {
-    title: 'Presentes Personalizados para Cada Ocasião | Love Essences',
-    description: 'Encontra presentes e lembranças personalizadas para aniversários, casamentos, batizados, empresas e momentos especiais.'
+    title: 'Lembranças Personalizadas em Portugal | Love Essences',
+    description: 'Descobre lembranças personalizadas e artesanais para convidados, casamentos, batizados, comunhões e eventos, feitas à mão em Portugal.'
   },
   about: {
     title: 'Sobre Nós | Love Essences',
@@ -11384,6 +11681,24 @@ var LOVE_CATEGORY_SEO = {
     description: 'Descobre difusores, sabonetes, velas e outras lembranças personalizadas para casamentos, batizados, comunhões e eventos.',
     heading: 'Lembranças personalizadas<br/><em>para eventos</em>',
     label: 'Lembranças para Eventos'
+  },
+  difusores: {
+    title: 'Difusores Personalizados para Eventos | Love Essences',
+    description: 'Descobre mini difusores personalizados para casamento, batizado, comunhão e eventos, com fragrância e detalhes adaptados à celebração.',
+    heading: 'Difusores<br/><em>personalizados</em>',
+    label: 'Difusores Personalizados'
+  },
+  sabonetes: {
+    title: 'Sabonetes Artesanais para Lembranças | Love Essences',
+    description: 'Descobre sabonetes artesanais e lembranças personalizadas com sabonete para casamentos, batizados, comunhões e eventos.',
+    heading: 'Sabonetes artesanais<br/><em>e personalizados</em>',
+    label: 'Sabonetes Artesanais'
+  },
+  velas: {
+    title: 'Velas Personalizadas para Eventos | Love Essences',
+    description: 'Encontra velas personalizadas para casamento, batizado, comunhão e eventos, com fragrâncias e acabamentos do catálogo Love Essences.',
+    heading: 'Velas<br/><em>personalizadas</em>',
+    label: 'Velas Personalizadas'
   }
 };
 
@@ -11407,10 +11722,29 @@ var LOVE_OCCASION_SEO = {
     label: 'Para Alguém Especial'
   },
   'casamentos-batizados': {
-    title: 'Lembranças de Casamento e Batizado | Love Essences',
-    description: 'Descobre lembranças personalizadas para casamentos, batizados e comunhões, feitas à mão para combinar com cada celebração.',
-    heading: 'Lembranças de casamento<br/><em>e batizado</em>',
-    label: 'Casamentos e Batizados'
+    title: 'Lembranças para Casamento, Batizado e Comunhão | Love Essences',
+    description: 'Escolhe a celebração para encontrares lembranças personalizadas de casamento, batizado ou comunhão.',
+    heading: 'Escolhe a tua<br/><em>celebração</em>',
+    label: 'Casamento, Batizado e Comunhão',
+    noindex: true
+  },
+  casamento: {
+    title: 'Lembranças de Casamento Personalizadas | Love Essences',
+    description: 'Descobre lembranças de casamento personalizadas para convidados, incluindo difusores, sabonetes, velas e detalhes artesanais.',
+    heading: 'Lembranças de casamento<br/><em>personalizadas</em>',
+    label: 'Casamento'
+  },
+  batizado: {
+    title: 'Lembranças de Batizado Personalizadas | Love Essences',
+    description: 'Encontra lembranças de batizado ou batismo personalizadas para convidados e crianças, feitas artesanalmente em Portugal.',
+    heading: 'Lembranças de batizado<br/><em>personalizadas</em>',
+    label: 'Batizado'
+  },
+  comunhao: {
+    title: 'Lembranças de Comunhão Personalizadas | Love Essences',
+    description: 'Descobre lembranças de primeira comunhão personalizadas para convidados, com opções artesanais para adultos e crianças.',
+    heading: 'Lembranças de comunhão<br/><em>personalizadas</em>',
+    label: 'Comunhão'
   },
   empresas: {
     title: 'Lembranças para Eventos e Empresas | Love Essences',
@@ -11535,6 +11869,53 @@ function getRouteSeo(state) {
   return LOVE_STATIC_SEO[state.page] || LOVE_STATIC_SEO.home;
 }
 
+function getCommercialContentForState(state) {
+  if (!window.LOVE_COMMERCIAL_CONTENT) return null;
+  var key = state.category
+    ? 'category:' + state.category
+    : state.occasion
+      ? 'occasion:' + state.occasion
+      : '';
+  return key ? window.LOVE_COMMERCIAL_CONTENT[key] || null : null;
+}
+
+function escapeLoveHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderCommercialSeoContent(state) {
+  var section = document.getElementById('commercial-seo-content');
+  var inner = document.getElementById('commercial-seo-inner');
+  if (!section || !inner) return;
+
+  var content = getCommercialContentForState(state);
+  if (!content || state.page !== 'shop') {
+    section.hidden = true;
+    inner.innerHTML = '';
+    return;
+  }
+
+  var sections = (content.sections || []).map(function(item) {
+    return '<article class="commercial-seo-card"><h2>' + escapeLoveHtml(item.title) + '</h2><p>' + escapeLoveHtml(item.body) + '</p></article>';
+  }).join('');
+  var related = (content.related || []).map(function(item) {
+    return '<a href="' + escapeLoveHtml(item.url) + '">' + escapeLoveHtml(item.label) + '</a>';
+  }).join('');
+  var faq = (content.faq || []).map(function(item) {
+    return '<details><summary>' + escapeLoveHtml(item.question) + '</summary><p>' + escapeLoveHtml(item.answer) + '</p></details>';
+  }).join('');
+
+  inner.innerHTML = '<div class="commercial-seo-grid">' + sections + '</div>' +
+    (related ? '<nav class="commercial-related" aria-label="Explorar páginas relacionadas">' + related + '</nav>' : '') +
+    (faq ? '<div class="commercial-faq"><h2>Perguntas frequentes</h2><div class="commercial-faq-list">' + faq + '</div></div>' : '');
+  section.hidden = false;
+}
+
 function setMetaContent(selector, value) {
   var node = document.querySelector(selector);
   if (node && value) node.setAttribute('content', value);
@@ -11640,9 +12021,16 @@ function buildStructuredData(state, canonical, seo) {
 function updateRouteContent(state) {
   var shopTitle = document.getElementById('shop-page-title');
   var shopBreadcrumb = document.getElementById('shop-breadcrumb');
+  var shopIntro = document.getElementById('shop-page-intro');
   var routeSeo = getRouteSeo(state);
+  var commercialContent = getCommercialContentForState(state);
   if (shopTitle && state.page === 'shop') {
     shopTitle.innerHTML = routeSeo.heading || 'Cada peça é única.<br/><em>Como quem a vai receber.</em>';
+  }
+  if (shopIntro && state.page === 'shop') {
+    shopIntro.textContent = commercialContent && commercialContent.intro
+      ? commercialContent.intro
+      : 'Produtos artesanais feitos com intenção e amor, escolhe o teu presente perfeito.';
   }
   if (shopBreadcrumb && state.page === 'shop') {
     var list = shopBreadcrumb.querySelector('ol');
@@ -11661,6 +12049,7 @@ function updateRouteContent(state) {
     if (categoryNode) categoryNode.innerHTML = '<a href="' + LOVE_CATEGORY_ROUTES[categoryKey] + '" onclick="openShopCategory(\'' + categoryKey + '\'); return false;">' + product.category + '</a>';
     if (nameNode) nameNode.textContent = product.name;
   }
+  renderCommercialSeoContent(state);
 }
 
 function updateSeoForState(state) {
@@ -12463,6 +12852,7 @@ function openProduct(productId, options) {
     span.textContent = t;
     tagsEl.appendChild(span);
   });
+  renderProductRelatedLinks(productId, p);
 
   // Tamanhos
   var sizeSection = document.getElementById('pd-size-section');
@@ -12506,6 +12896,55 @@ function openProduct(productId, options) {
   renderProductFabricOptions(p);
   updateProductPrice();
   showPage('product', { history: options.history !== false, productId: productId });
+}
+
+var LOVE_PRODUCT_TYPE_FILTERS = {
+  difusores: ['mini_difusor', 'aroma_em_viagem', 'mini_difusor_sabonete'],
+  sabonetes: ['trouxinha_aromatica', 'bem_querer', 'mini_difusor_sabonete', 'bilhete_perfumado'],
+  velas: ['luz_serena', 'doce_luz', 'memoria_perfumada']
+};
+
+var LOVE_OCCASION_TAGS = {
+  casamento: 'Casamentos',
+  batizado: 'Batizados',
+  comunhao: 'Comunhões'
+};
+
+function productHasOccasion(product, occasion) {
+  var tag = LOVE_OCCASION_TAGS[occasion];
+  if (!tag || !product) return false;
+  return (product.tags || []).some(function(value) {
+    return String(value).indexOf(tag) !== -1;
+  });
+}
+
+function getProductIdFromCard(card) {
+  var nameNode = card.querySelector('.product-name');
+  var name = nameNode ? nameNode.textContent.trim() : '';
+  return Object.keys(PRODUCT_CATALOG).find(function(productId) {
+    return PRODUCT_CATALOG[productId].name === name;
+  }) || '';
+}
+
+function renderProductRelatedLinks(productId, product) {
+  var container = document.getElementById('pd-related-links');
+  if (!container) return;
+  var links = [];
+
+  Object.keys(LOVE_PRODUCT_TYPE_FILTERS).forEach(function(category) {
+    if (LOVE_PRODUCT_TYPE_FILTERS[category].indexOf(productId) !== -1) {
+      links.push({ label: LOVE_CATEGORY_SEO[category].label, url: LOVE_CATEGORY_ROUTES[category] });
+    }
+  });
+  Object.keys(LOVE_OCCASION_TAGS).forEach(function(occasion) {
+    if (productHasOccasion(product, occasion)) {
+      links.push({ label: LOVE_OCCASION_SEO[occasion].label, url: LOVE_OCCASION_ROUTES[occasion] });
+    }
+  });
+
+  container.innerHTML = links.slice(0, 5).map(function(link) {
+    return '<a href="' + escapeLoveHtml(link.url) + '">' + escapeLoveHtml(link.label) + '</a>';
+  }).join('');
 }
 
 function renderProductEventOptions(p) {
@@ -13087,6 +13526,9 @@ var occasionLabels = {
   'presente-romantico': 'presentes românticos',
   'alguem-especial': 'alguém especial',
   'casamentos-batizados': 'casamentos & batizados',
+  'casamento': 'casamento',
+  'batizado': 'batizado',
+  'comunhao': 'comunhão',
   'empresas': 'eventos & empresas',
   'pequeninos': 'os mais pequeninos'
 };
@@ -13095,7 +13537,10 @@ var categoryLabels = {
   'todos': 'Sugestões para todos os momentos',
   'pecas': 'Coleção Assinatura',
   'memorias': 'Coleção Memórias',
-  'eventos': 'Lembranças Personalizadas para Eventos'
+  'eventos': 'Lembranças Personalizadas para Eventos',
+  'difusores': 'Difusores Personalizados',
+  'sabonetes': 'Sabonetes Artesanais',
+  'velas': 'Velas Personalizadas'
 };
 
 function setActiveFilter(selector, attribute, value) {
@@ -13107,6 +13552,15 @@ function setActiveFilter(selector, attribute, value) {
 function updateShopMeta(visibleCount) {
   var label = document.getElementById('shop-results-label');
   if (!label) return;
+
+  var state = { page: 'shop' };
+  if (currentCategory !== 'todos') state.category = currentCategory;
+  if (currentOccasion !== 'todos') state.occasion = currentOccasion;
+  var commercialContent = getCommercialContentForState(state);
+  if (commercialContent && commercialContent.resultsHeading) {
+    label.textContent = commercialContent.resultsHeading;
+    return;
+  }
 
   var categoryText = categoryLabels[currentCategory] || 'Sugestões para todos os momentos';
   var occasionText = occasionLabels[currentOccasion] || 'todos os momentos';
@@ -13129,7 +13583,12 @@ function applyShopFilters() {
   cards.forEach(function(card) {
     var cardOccasions = (card.dataset.occasion || '').split(',');
     var cardCategory = card.dataset.category;
-    var categoryMatch = currentCategory === 'todos' || cardCategory === currentCategory;
+    var productId = getProductIdFromCard(card);
+    var product = productId ? PRODUCT_CATALOG[productId] : null;
+    var typeProducts = LOVE_PRODUCT_TYPE_FILTERS[currentCategory];
+    var categoryMatch = currentCategory === 'todos' ||
+      cardCategory === currentCategory ||
+      (typeProducts && typeProducts.indexOf(productId) !== -1);
 
     // Lógica de ocasião:
     // - "todos" mostra tudo
@@ -13138,6 +13597,8 @@ function applyShopFilters() {
     var occasionMatch;
     if (currentOccasion === 'todos') {
       occasionMatch = true;
+    } else if (LOVE_OCCASION_TAGS[currentOccasion]) {
+      occasionMatch = productHasOccasion(product, currentOccasion);
     } else {
       occasionMatch = cardOccasions.indexOf(currentOccasion) !== -1;
     }
@@ -13156,7 +13617,7 @@ function applyShopFilters() {
 
   var discountNote = document.getElementById('events-discount-note');
   if (discountNote) {
-    var eventOccasions = ['casamentos-batizados', 'empresas', 'pequeninos'];
+    var eventOccasions = ['casamentos-batizados', 'casamento', 'batizado', 'comunhao', 'empresas', 'pequeninos'];
     var showDiscountNote = currentCategory === 'eventos' || eventOccasions.indexOf(currentOccasion) !== -1;
     discountNote.style.display = showDiscountNote ? 'grid' : 'none';
   }

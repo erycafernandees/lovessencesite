@@ -33,6 +33,7 @@ class Product:
     image: str
     story: str
     details: str
+    tags: tuple[str, ...]
     price: Optional[float]
 
     @property
@@ -63,7 +64,7 @@ class Route:
 STATIC_ROUTES = [
     Route("/", "home", "Love Essences | Lembranças Personalizadas e Presentes Artesanais", "Descobre presentes artesanais e personalizados, sabonetes, velas, difusores e lembranças para momentos especiais, feitos à mão em Portugal.", label="Início"),
     Route("/loja/", "shop", "Loja de Presentes Artesanais e Personalizados | Love Essences", "Explora presentes artesanais, boxes, difusores, sabonetes, velas e lembranças personalizadas, criados à mão em Portugal.", heading="Cada peça é única.<br/><em>Como quem a vai receber.</em>", label="Loja"),
-    Route("/ocasioes/", "occasions", "Presentes Personalizados para Cada Ocasião | Love Essences", "Encontra presentes e lembranças personalizadas para aniversários, casamentos, batizados, empresas e momentos especiais.", label="Ocasiões"),
+    Route("/ocasioes/", "occasions", "Lembranças Personalizadas em Portugal | Love Essences", "Descobre lembranças personalizadas e artesanais para convidados, casamentos, batizados, comunhões e eventos, feitas à mão em Portugal.", label="Lembranças Personalizadas"),
     Route("/sobre-nos/", "about", "Sobre Nós | Love Essences", "Conhece a Love Essences, uma marca portuguesa de presentes artesanais feitos à mão com cuidado, intenção e personalização.", label="Sobre Nós"),
     Route("/contactos/", "contact", "Contactos e Encomendas Personalizadas | Love Essences", "Fala com a Love Essences para criar um presente ou lembrança personalizada para a tua ocasião, mensagem e pessoa especial.", label="Contactos"),
     Route("/acompanhar-encomenda/", "tracking", "Acompanhar Encomenda | Love Essences", "Consulta como acompanhar a tua encomenda Love Essences através do serviço oficial dos CTT.", label="Acompanhar Encomenda", index=False),
@@ -77,13 +78,19 @@ CATEGORY_ROUTES = {
     "pecas": Route("/categorias/colecao-assinatura/", "shop", "Coleção Assinatura | Love Essences", "Descobre a Coleção Assinatura Love Essences: peças artesanais feitas à mão para oferecer e guardar momentos especiais.", heading="Coleção <em>Assinatura</em>", label="Coleção Assinatura", category="pecas"),
     "memorias": Route("/categorias/colecao-memorias/", "shop", "Boxes e Presentes da Coleção Memórias | Love Essences", "Descobre boxes e presentes artesanais da Coleção Memórias, preparados para oferecer a alguém especial.", heading="Coleção <em>Memórias</em>", label="Coleção Memórias", category="memorias"),
     "eventos": Route("/categorias/lembrancas-para-eventos/", "shop", "Lembranças Personalizadas para Eventos | Love Essences", "Descobre difusores, sabonetes, velas e outras lembranças personalizadas para casamentos, batizados, comunhões e eventos.", heading="Lembranças personalizadas<br/><em>para eventos</em>", label="Lembranças para Eventos", category="eventos"),
+    "difusores": Route("/categorias/difusores-personalizados/", "shop", "Difusores Personalizados para Eventos | Love Essences", "Descobre mini difusores personalizados para casamento, batizado, comunhão e eventos, com fragrância e detalhes adaptados à celebração.", heading="Difusores<br/><em>personalizados</em>", label="Difusores Personalizados", category="difusores"),
+    "sabonetes": Route("/categorias/sabonetes-artesanais/", "shop", "Sabonetes Artesanais para Lembranças | Love Essences", "Descobre sabonetes artesanais e lembranças personalizadas com sabonete para casamentos, batizados, comunhões e eventos.", heading="Sabonetes artesanais<br/><em>e personalizados</em>", label="Sabonetes Artesanais", category="sabonetes"),
+    "velas": Route("/categorias/velas-personalizadas/", "shop", "Velas Personalizadas para Eventos | Love Essences", "Encontra velas personalizadas para casamento, batizado, comunhão e eventos, com fragrâncias e acabamentos do catálogo Love Essences.", heading="Velas<br/><em>personalizadas</em>", label="Velas Personalizadas", category="velas"),
 }
 
 OCCASION_ROUTES = {
     "aniversarios": Route("/ocasioes/aniversarios/", "shop", "Presentes de Aniversário Personalizados | Love Essences", "Encontra presentes artesanais e personalizados para celebrar aniversários com um gesto único e feito à mão.", heading="Presentes personalizados<br/><em>para aniversários</em>", label="Aniversários", occasion="aniversarios"),
     "presente-romantico": Route("/ocasioes/presente-romantico/", "shop", "Presentes Românticos Personalizados | Love Essences", "Descobre presentes românticos artesanais e personalizados, criados para celebrar histórias, pessoas e momentos especiais.", heading="Presentes românticos<br/><em>personalizados</em>", label="Presente Romântico", occasion="presente-romantico"),
     "alguem-especial": Route("/ocasioes/alguem-especial/", "shop", "Presentes Personalizados para Alguém Especial | Love Essences", "Escolhe um presente artesanal e personalizado para surpreender alguém especial com intenção e cuidado.", heading="Presentes para<br/><em>alguém especial</em>", label="Para Alguém Especial", occasion="alguem-especial"),
-    "casamentos-batizados": Route("/ocasioes/casamentos-e-batizados/", "shop", "Lembranças de Casamento e Batizado | Love Essences", "Descobre lembranças personalizadas para casamentos, batizados e comunhões, feitas à mão para combinar com cada celebração.", heading="Lembranças de casamento<br/><em>e batizado</em>", label="Casamentos e Batizados", occasion="casamentos-batizados"),
+    "casamentos-batizados": Route("/ocasioes/casamentos-e-batizados/", "shop", "Lembranças para Casamento, Batizado e Comunhão | Love Essences", "Escolhe a celebração para encontrares lembranças personalizadas de casamento, batizado ou comunhão.", heading="Escolhe a tua<br/><em>celebração</em>", label="Casamento, Batizado e Comunhão", index=False, occasion="casamentos-batizados"),
+    "casamento": Route("/ocasioes/casamento/", "shop", "Lembranças de Casamento Personalizadas | Love Essences", "Descobre lembranças de casamento personalizadas para convidados, incluindo difusores, sabonetes, velas e detalhes artesanais.", heading="Lembranças de casamento<br/><em>personalizadas</em>", label="Casamento", occasion="casamento"),
+    "batizado": Route("/ocasioes/batizado/", "shop", "Lembranças de Batizado Personalizadas | Love Essences", "Encontra lembranças de batizado ou batismo personalizadas para convidados e crianças, feitas artesanalmente em Portugal.", heading="Lembranças de batizado<br/><em>personalizadas</em>", label="Batizado", occasion="batizado"),
+    "comunhao": Route("/ocasioes/comunhao/", "shop", "Lembranças de Comunhão Personalizadas | Love Essences", "Descobre lembranças de primeira comunhão personalizadas para convidados, com opções artesanais para adultos e crianças.", heading="Lembranças de comunhão<br/><em>personalizadas</em>", label="Comunhão", occasion="comunhao"),
     "empresas": Route("/ocasioes/eventos-e-empresas/", "shop", "Lembranças para Eventos e Empresas | Love Essences", "Encontra lembranças e brindes personalizados para eventos e empresas, adaptados ao tema e à identidade de cada ocasião.", heading="Lembranças para eventos<br/><em>e empresas</em>", label="Eventos e Empresas", occasion="empresas"),
     "pequeninos": Route("/ocasioes/mais-pequeninos/", "shop", "Lembranças Personalizadas para Crianças | Love Essences", "Descobre kits criativos, doces e lembranças personalizadas pensadas para festas, batizados e pequenos convidados.", heading="Lembranças para<br/><em>os mais pequeninos</em>", label="Para os Mais Pequeninos", occasion="pequeninos"),
 }
@@ -92,6 +99,18 @@ CATEGORY_BY_NAME = {
     "Coleção Assinatura": "pecas",
     "Coleção Memórias": "memorias",
     "Lembranças para Eventos": "eventos",
+}
+
+PRODUCT_TYPE_FILTERS = {
+    "difusores": {"mini_difusor", "aroma_em_viagem", "mini_difusor_sabonete"},
+    "sabonetes": {"trouxinha_aromatica", "bem_querer", "mini_difusor_sabonete", "bilhete_perfumado"},
+    "velas": {"luz_serena", "doce_luz", "memoria_perfumada"},
+}
+
+OCCASION_TAGS = {
+    "casamento": "Casamentos",
+    "batizado": "Batizados",
+    "comunhao": "Comunhões",
 }
 
 
@@ -120,6 +139,8 @@ def parse_products(source: str) -> list[Product]:
         block = catalog[match.start():block_end]
         price_values = [float(value) for value in re.findall(r"\bprice:\s*([0-9]+(?:\.[0-9]+)?)", block)]
         base_price = re.search(r"(?m)^    basePrice:\s*([0-9]+(?:\.[0-9]+)?)", block)
+        tags_match = re.search(r"(?m)^    tags:\s*\[(.*?)\]", block)
+        tags = tuple(re.findall(r"'((?:\\.|[^'])*)'", tags_match.group(1))) if tags_match else ()
         if base_price:
             price_values.append(float(base_price.group(1)))
         product = Product(
@@ -129,6 +150,7 @@ def parse_products(source: str) -> list[Product]:
             image=js_string(block, "image"),
             story=js_string(block, "story"),
             details=js_string(block, "details"),
+            tags=tags,
             price=min(price_values) if price_values else None,
         )
         if not all((product.name, product.category, product.image, product.story)):
@@ -138,6 +160,72 @@ def parse_products(source: str) -> list[Product]:
     if len(slugs) != len(set(slugs)):
         raise ValueError("Existem slugs de produto duplicados")
     return products
+
+
+def load_commercial_content() -> dict[str, dict]:
+    source = (ROOT / "assets" / "js" / "commercial-content.js").read_text(encoding="utf-8")
+    match = re.search(r"window\.LOVE_COMMERCIAL_CONTENT\s*=\s*(\{.*\})\s*;\s*$", source, re.S)
+    if not match:
+        raise ValueError("Conteúdo comercial não encontrado")
+    content = json.loads(match.group(1))
+    if not isinstance(content, dict):
+        raise ValueError("Conteúdo comercial inválido")
+    return content
+
+
+def commercial_content_for(route: Route, content: dict[str, dict]) -> Optional[dict]:
+    key = f"category:{route.category}" if route.category else f"occasion:{route.occasion}" if route.occasion else ""
+    return content.get(key) if key else None
+
+
+def render_commercial_content(content: dict) -> str:
+    cards = "".join(
+        '<article class="commercial-seo-card"><h2>'
+        + html_lib.escape(item["title"])
+        + "</h2><p>"
+        + html_lib.escape(item["body"])
+        + "</p></article>"
+        for item in content.get("sections", [])
+    )
+    related = "".join(
+        '<a href="' + html_lib.escape(item["url"], quote=True) + '">' + html_lib.escape(item["label"]) + "</a>"
+        for item in content.get("related", [])
+    )
+    faq = "".join(
+        "<details><summary>"
+        + html_lib.escape(item["question"])
+        + "</summary><p>"
+        + html_lib.escape(item["answer"])
+        + "</p></details>"
+        for item in content.get("faq", [])
+    )
+    return (
+        '<section class="commercial-seo-content" id="commercial-seo-content" aria-label="Informação para escolher e encomendar">'
+        '<div class="commercial-seo-inner" id="commercial-seo-inner">'
+        '<div class="commercial-seo-grid">'
+        + cards
+        + '</div><nav class="commercial-related" aria-label="Explorar páginas relacionadas">'
+        + related
+        + '</nav><div class="commercial-faq"><h2>Perguntas frequentes</h2><div class="commercial-faq-list">'
+        + faq
+        + "</div></div></div></section>"
+    )
+
+
+def product_related_links(product: Product) -> str:
+    links: list[tuple[str, str]] = []
+    for category, product_ids in PRODUCT_TYPE_FILTERS.items():
+        if product.product_id in product_ids:
+            route = CATEGORY_ROUTES[category]
+            links.append((route.label, route.path))
+    for occasion, tag in OCCASION_TAGS.items():
+        if any(tag in product_tag for product_tag in product.tags):
+            route = OCCASION_ROUTES[occasion]
+            links.append((route.label, route.path))
+    return "".join(
+        '<a href="' + html_lib.escape(url, quote=True) + '">' + html_lib.escape(label) + "</a>"
+        for label, url in links[:5]
+    )
 
 
 def clean_description(value: str, limit: int = 160) -> str:
@@ -322,7 +410,7 @@ def activate_page(source: str, page: str) -> str:
     return source.replace(target, f'<div class="page active" id="page-{page}">', 1)
 
 
-def prerender_route(source: str, route: Route) -> str:
+def prerender_route(source: str, route: Route, commercial_content: dict[str, dict]) -> str:
     source = activate_page(source, route.page)
     if route.page == "shop" and route.heading:
         source = re.sub(
@@ -332,6 +420,29 @@ def prerender_route(source: str, route: Route) -> str:
             count=1,
             flags=re.S,
         )
+        route_content = commercial_content_for(route, commercial_content)
+        if route_content:
+            source = re.sub(
+                r'(<p id="shop-page-intro">).*?(</p>)',
+                lambda match: match.group(1) + html_lib.escape(route_content["intro"]) + match.group(2),
+                source,
+                count=1,
+                flags=re.S,
+            )
+            source = re.sub(
+                r'(<h2 class="shop-results-label" id="shop-results-label">).*?(</h2>)',
+                lambda match: match.group(1) + html_lib.escape(route_content["resultsHeading"]) + match.group(2),
+                source,
+                count=1,
+                flags=re.S,
+            )
+            source = re.sub(
+                r'<section class="commercial-seo-content" id="commercial-seo-content" hidden[^>]*>.*?</section>',
+                render_commercial_content(route_content),
+                source,
+                count=1,
+                flags=re.S,
+            )
     if route.product:
         product = route.product
         category_key = CATEGORY_BY_NAME[product.category]
@@ -344,6 +455,13 @@ def prerender_route(source: str, route: Route) -> str:
         source = source.replace('<p id="pd-details"></p>', f'<p id="pd-details">{html_lib.escape(product.details)}</p>', 1)
         source = re.sub(r'(<li id="product-breadcrumb-category">).*?(</li>)', lambda match: match.group(1) + f'<a href="{CATEGORY_ROUTES[category_key].path}">{html_lib.escape(product.category)}</a>' + match.group(2), source, count=1, flags=re.S)
         source = re.sub(r'(<li id="product-breadcrumb-name" aria-current="page">).*?(</li>)', lambda match: match.group(1) + html_lib.escape(product.name) + match.group(2), source, count=1, flags=re.S)
+        source = re.sub(
+            r'(<div class="pd-related-links" id="pd-related-links"[^>]*>).*?(</div>)',
+            lambda match: match.group(1) + product_related_links(product) + match.group(2),
+            source,
+            count=1,
+            flags=re.S,
+        )
     return source
 
 
@@ -519,6 +637,7 @@ def build(output: Path, sync_root_seo: bool) -> None:
 
     source = (ROOT / "index.html").read_text(encoding="utf-8")
     products, routes = get_routes(source)
+    commercial_content = load_commercial_content()
     source = source.replace('<meta name="viewport" content="width=device-width, initial-scale=1.0"/>', '<meta name="viewport" content="width=device-width, initial-scale=1.0"/>\n<base href="/"/>', 1)
     source = extract_inline_logo(source, output)
     source = add_product_links(source, products)
@@ -526,7 +645,7 @@ def build(output: Path, sync_root_seo: bool) -> None:
 
     for route in routes:
         rendered = replace_seo(source, route)
-        rendered = prerender_route(rendered, route)
+        rendered = prerender_route(rendered, route, commercial_content)
         rendered = enforce_single_h1(rendered, route.page)
         rendered = add_image_dimensions(rendered, output)
         destination = route_output_path(output, route)
