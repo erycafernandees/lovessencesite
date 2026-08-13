@@ -14210,6 +14210,11 @@ async function handleSubmit(e) {
     if (res.ok) {
       form.style.display = 'none';
       success.style.display = 'block';
+      if (form.dataset.cartCheckout === 'true' && typeof completeCartCheckout === 'function') {
+        completeCartCheckout(form.dataset.cartSignature || '');
+      }
+      delete form.dataset.cartCheckout;
+      delete form.dataset.cartSignature;
       if (window.LoveAnalytics) LoveAnalytics.track('generate_lead', { lead_type: 'contact_form' });
     } else {
       throw new Error('Erro no servidor');
@@ -14294,6 +14299,8 @@ function resetForm() {
   const success = document.getElementById('form-success');
   const btn     = document.getElementById('submit-btn');
   form.reset();
+  delete form.dataset.cartCheckout;
+  delete form.dataset.cartSignature;
   form.style.display = 'block';
   success.style.display = 'none';
   btn.disabled = false;
@@ -14541,6 +14548,21 @@ function clearCart() {
   renderCart();
 }
 
+function getCartSignature() {
+  return JSON.stringify(cart.map(function(item) {
+    return [item.name, Number(item.price) || 0, Number(item.qty) || 0];
+  }));
+}
+
+function completeCartCheckout(expectedSignature) {
+  if (expectedSignature && expectedSignature !== getCartSignature()) return false;
+  cart = [];
+  saveCart();
+  renderCart();
+  closeCart();
+  return true;
+}
+
 function getTotal() {
   var subtotal = getSubtotal();
   var discount = getCartDiscount();
@@ -14671,12 +14693,18 @@ function checkoutWhatsApp() {
   var msg = 'Olá! Gostaria de fazer uma encomenda:\n\n' + summary + '\n\nPodem confirmar disponibilidade e envio? Obrigada 🌸';
   var url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
   window.open(url, '_blank');
+  completeCartCheckout();
 }
 
 function checkoutForm() {
   closeCart();
   // Pre-fill the contact form textarea with cart summary
   var summary = buildOrderSummary();
+  var form = document.getElementById('contact-form');
+  if (form) {
+    form.dataset.cartCheckout = 'true';
+    form.dataset.cartSignature = getCartSignature();
+  }
   var textarea = document.querySelector('#contact-form textarea[name="descricao"]');
   if (textarea) {
     textarea.value = 'Encomenda de stock:\n' + summary + '\n\n(Por favor confirmar disponibilidade e envio)';
@@ -14692,8 +14720,8 @@ function checkoutForm() {
   if (typeof toggleFragranceField === 'function') toggleFragranceField();
   showPage('contact');
   setTimeout(function(){
-    var form = document.getElementById('contact-form');
-    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var checkoutFormElement = document.getElementById('contact-form');
+    if (checkoutFormElement) checkoutFormElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 400);
 }
 
