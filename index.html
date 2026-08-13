@@ -1358,6 +1358,147 @@
     border-color: var(--rose);
     box-shadow: 0 0 0 3px rgba(209,146,202,0.16);
   }
+  .pd-fragrance-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem 1rem;
+    max-width: 420px;
+    margin-top: 0.2rem;
+  }
+  .pd-fragrance-option {
+    min-height: 42px;
+    padding: 0.65rem 1rem;
+    border: 1px solid rgba(115, 137, 105, 0.14);
+    border-radius: 999px;
+    background: #e7ede3;
+    color: var(--dark);
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    line-height: 1.2;
+    text-align: center;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .pd-fragrance-option:hover {
+    transform: translateY(-1px);
+    border-color: rgba(102, 19, 94, 0.28);
+  }
+  .pd-fragrance-option.active {
+    border-color: var(--deep-rose);
+    background: #f3e6f1;
+    color: var(--deep-rose);
+    box-shadow: 0 0 0 2px rgba(102, 19, 94, 0.08);
+  }
+  .pd-fragrance-select-fallback {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+  .pd-fragrance-availability {
+    max-width: 520px;
+    margin-top: 0.15rem;
+  }
+  .pd-soap-options {
+    display: grid;
+    gap: 1.35rem;
+  }
+  .pd-soap-field {
+    display: grid;
+    gap: 0.65rem;
+  }
+  .pd-soap-field > label,
+  .pd-fragrance-group-title {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+  }
+  .pd-required-mark { color: var(--deep-rose); }
+  .pd-soap-fragrance-groups {
+    display: grid;
+    gap: 1.1rem;
+  }
+  .pd-fragrance-group {
+    display: grid;
+    gap: 0.65rem;
+    padding: 1rem;
+    border: 1px solid rgba(180,104,171,0.14);
+    border-radius: 16px;
+    background: rgba(250,246,240,0.46);
+  }
+  .pd-fragrance-group-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+  .pd-limited-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: #f2dce9;
+    color: var(--deep-rose);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .pd-soap-fragrance-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+  .pd-soap-fragrance-option {
+    min-height: 46px;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid rgba(180,104,171,0.18);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--dark);
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    line-height: 1.3;
+    text-align: left;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .pd-soap-fragrance-option:hover {
+    transform: translateY(-1px);
+    border-color: rgba(102,19,94,0.3);
+  }
+  .pd-soap-fragrance-option.active {
+    border-color: var(--deep-rose);
+    background: #f6ebf3;
+    color: var(--deep-rose);
+    box-shadow: 0 0 0 2px rgba(102,19,94,0.08);
+  }
+  .pd-soap-field input[type="text"] {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.82rem 0.95rem;
+    border: 1px solid rgba(180,104,171,0.25);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--dark);
+    font-family: var(--sans);
+    font-size: 0.9rem;
+  }
+  .pd-soap-field input[type="text"]:focus {
+    outline: none;
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(209,146,202,0.16);
+  }
+  .pd-field-error {
+    border-color: #a23a66 !important;
+    box-shadow: 0 0 0 3px rgba(162,58,102,0.12) !important;
+  }
   .pd-event-addon {
     display: flex;
     align-items: center;
@@ -1383,6 +1524,10 @@
   }
   @media (max-width: 768px) {
     .pd-event-form {
+      grid-template-columns: 1fr;
+    }
+    .pd-soap-fragrance-list,
+    .pd-fragrance-options {
       grid-template-columns: 1fr;
     }
   }
@@ -8534,7 +8679,7 @@
         <div class="product-info">
           <h3 class="product-name">Serenata</h3>
           <p class="product-desc">Peça larga em gesso, com presença escultórica e acabamento sereno. Ideal para quem aprecia um detalhe que ocupa o espaço com elegância.</p>
-          <div class="product-footer"><span class="product-price">30€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Serenata',30,'🤍')">Adicionar 🛒</button></div>
+          <div class="product-footer"><span class="product-price">30€</span><button type="button" class="product-btn" onclick="openProduct('serenata')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
@@ -8542,7 +8687,7 @@
         <div class="product-info">
           <h3 class="product-name">Diamante</h3>
           <p class="product-desc">Peça em gesso com forma facetada, inspirada no brilho silencioso de um diamante. Uma das peças assinatura da Love Essences.</p>
-          <div class="product-footer"><span class="product-price">21€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Diamante',21,'💎')">Adicionar 🛒</button></div>
+          <div class="product-footer"><span class="product-price">21€</span><button type="button" class="product-btn" onclick="openProduct('diamante')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
@@ -8550,7 +8695,7 @@
         <div class="product-info">
           <h3 class="product-name">Prisma</h3>
           <p class="product-desc">Peça em gesso com presença facetada, semelhante ao Diamante, mas com um vaso ligeiramente diferente. Elegante, luminosa e muito especial.</p>
-          <div class="product-footer"><span class="product-price">25€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Prisma',25,'💎')">Adicionar 🛒</button></div>
+          <div class="product-footer"><span class="product-price">25€</span><button type="button" class="product-btn" onclick="openProduct('prisma')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
@@ -8558,7 +8703,7 @@
         <div class="product-info">
           <h3 class="product-name">Nala</h3>
           <p class="product-desc">A peça que dá nome à coleção. Forma orgânica, presença suave, uma escolha para quem prefere o detalhe ao excesso.</p>
-          <div class="product-footer"><span class="product-price">18€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Nala',18,'✨')">Adicionar 🛒</button></div>
+          <div class="product-footer"><span class="product-price">18€</span><button type="button" class="product-btn" onclick="openProduct('nala')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial,empresas">
@@ -8566,7 +8711,7 @@
         <div class="product-info">
           <h3 class="product-name">Aura</h3>
           <p class="product-desc">Peça compacta em gesso, delicada e luminosa. Perfeita para um gesto subtil, sem perder carácter.</p>
-          <div class="product-footer"><span class="product-price">18€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Aura',18,'🔹')">Adicionar 🛒</button></div>
+          <div class="product-footer"><span class="product-price">18€</span><button type="button" class="product-btn" onclick="openProduct('aura')">Personalizar</button></div>
         </div>
       </div>
 
@@ -8839,9 +8984,11 @@
             <label for="pd-event-sweet-colors">Cores pretendidas dos doces</label>
             <input type="text" id="pd-event-sweet-colors" placeholder="Ex: rosa, branco e amarelo" maxlength="80"/>
           </div>
-          <div class="pd-event-field" id="pd-event-fragrance-wrap">
+          <div class="pd-event-field pd-event-field-wide" id="pd-event-fragrance-wrap">
             <label for="pd-event-fragrance">Fragrância</label>
-            <select id="pd-event-fragrance"></select>
+            <div class="pd-fragrance-options" id="pd-event-fragrance-options" role="group" aria-label="Fragrância"></div>
+            <select class="pd-fragrance-select-fallback" id="pd-event-fragrance" aria-label="Fragrância"></select>
+            <p class="pd-custom-note pd-fragrance-availability" id="pd-event-fragrance-note"></p>
           </div>
           <div class="pd-event-field pd-event-field-wide" id="pd-event-card-wrap" style="display:none;">
             <label class="pd-event-addon" for="pd-event-card">
@@ -8855,6 +9002,23 @@
           </div>
         </div>
         <p class="pd-custom-note" id="pd-event-note"></p>
+      </div>
+
+      <!-- Opções obrigatórias, exclusivas dos produtos Flores de Sabão -->
+      <div class="pd-section" id="pd-soap-options-section" style="display:none;">
+        <h4>Personaliza as Flores de Sabão</h4>
+        <div class="pd-soap-options">
+          <div class="pd-soap-field">
+            <label>Fragrância <span class="pd-required-mark" aria-hidden="true">*</span></label>
+            <div class="pd-soap-fragrance-groups" id="pd-soap-fragrance-groups" role="radiogroup" aria-label="Fragrância obrigatória"></div>
+            <p class="pd-custom-note">As fragrâncias sazonais estão disponíveis por tempo limitado e sujeitas ao stock existente.</p>
+          </div>
+          <div class="pd-soap-field">
+            <label for="pd-soap-colors">Cores e tons pretendidos <span class="pd-required-mark" aria-hidden="true">*</span></label>
+            <input type="text" id="pd-soap-colors" required aria-required="true" placeholder="Ex.: tons nude, rosa velho, verde-sálvia, tons pastel…" maxlength="160"/>
+            <p class="pd-custom-note">Por se tratar de um produto artesanal, poderão existir ligeiras variações de tonalidade. Confirmaremos consigo todos os detalhes da personalização.</p>
+          </div>
+        </div>
       </div>
 
       <!-- Composição / Detalhes do produto -->
@@ -10050,6 +10214,15 @@ var I18N_TEXT = {
     "Nome": "Name",
     "Fragrância": "Fragrance",
     "Seleciona uma fragrância...": "Choose a fragrance...",
+    "Personaliza as Flores de Sabão": "Personalise the Soap Flowers",
+    "Coleção Permanente": "Permanent Collection",
+    "Edição Limitada de Verão — Stock limitado": "Limited Summer Edition — Limited stock",
+    "Edição Limitada": "Limited Edition",
+    "As fragrâncias sazonais estão disponíveis por tempo limitado e sujeitas ao stock existente.": "Seasonal fragrances are available for a limited time and subject to existing stock.",
+    "Cores e tons pretendidos": "Preferred colours and tones",
+    "Ex.: tons nude, rosa velho, verde-sálvia, tons pastel…": "E.g. nude tones, dusty pink, sage green, pastel tones…",
+    "Por se tratar de um produto artesanal, poderão existir ligeiras variações de tonalidade. Confirmaremos consigo todos os detalhes da personalização.": "As this is a handmade product, slight variations in shade may occur. We will confirm all personalisation details with you.",
+    "Possibilidade de outra fragrância mediante disponibilidade.": "Another fragrance may be possible, subject to availability.",
     "Frase para colocar na etiqueta": "Phrase for the label",
     "Cores pretendidas de doces": "Preferred sweet colours",
     "Estes dados seguem no carrinho para prepararmos a personalização.": "These details go in the cart so we can prepare the personalisation.",
@@ -10247,6 +10420,15 @@ var I18N_TEXT = {
     "Nome": "Nombre",
     "Fragrância": "Fragancia",
     "Seleciona uma fragrância...": "Selecciona una fragancia...",
+    "Personaliza as Flores de Sabão": "Personaliza las Flores de Jabón",
+    "Coleção Permanente": "Colección Permanente",
+    "Edição Limitada de Verão — Stock limitado": "Edición Limitada de Verano — Stock limitado",
+    "Edição Limitada": "Edición Limitada",
+    "As fragrâncias sazonais estão disponíveis por tempo limitado e sujeitas ao stock existente.": "Las fragancias de temporada están disponibles por tiempo limitado y sujetas al stock existente.",
+    "Cores e tons pretendidos": "Colores y tonos deseados",
+    "Ex.: tons nude, rosa velho, verde-sálvia, tons pastel…": "Ej.: tonos nude, rosa empolvado, verde salvia, tonos pastel…",
+    "Por se tratar de um produto artesanal, poderão existir ligeiras variações de tonalidade. Confirmaremos consigo todos os detalhes da personalização.": "Al tratarse de un producto artesanal, pueden existir ligeras variaciones de tonalidad. Confirmaremos contigo todos los detalles de la personalización.",
+    "Possibilidade de outra fragrância mediante disponibilidade.": "Posibilidad de otra fragancia según disponibilidad.",
     "Frase para colocar na etiqueta": "Frase para poner en la etiqueta",
     "Cores pretendidas de doces": "Colores deseados de dulces",
     "Estes dados seguem no carrinho para prepararmos a personalização.": "Estos datos van en el carrito para preparar la personalización.",
@@ -12203,6 +12385,7 @@ function openTrackingWhatsApp() {
 var PRODUCT_CATALOG = {
   bloom: {
     category: 'Coleção Assinatura',
+    soapFlowerOptions: true,
     name: 'Bloom',
     visual: '🌸',
     image: 'assets/products/bloom.jpg',
@@ -12234,6 +12417,7 @@ var PRODUCT_CATALOG = {
   },
   aurora: {
     category: 'Coleção Assinatura',
+    soapFlowerOptions: true,
     name: 'Aurora',
     visual: '🖼️',
     image: 'assets/products/aurora.jpg',
@@ -12261,6 +12445,7 @@ var PRODUCT_CATALOG = {
   },
   serenata: {
     category: 'Coleção Assinatura',
+    soapFlowerOptions: true,
     name: 'Serenata',
     visual: '🤍',
     image: 'assets/products/serenata.jpg',
@@ -12281,6 +12466,7 @@ var PRODUCT_CATALOG = {
   },
   diamante: {
     category: 'Coleção Assinatura',
+    soapFlowerOptions: true,
     name: 'Diamante',
     visual: '💎',
     image: 'assets/products/diamante-v2.jpg',
@@ -12300,6 +12486,7 @@ var PRODUCT_CATALOG = {
   },
   prisma: {
     category: 'Coleção Assinatura',
+    soapFlowerOptions: true,
     name: 'Prisma',
     visual: '💎',
     image: 'assets/products/prisma.jpg',
@@ -12322,6 +12509,7 @@ var PRODUCT_CATALOG = {
   },
   nala: {
     category: 'Coleção Assinatura',
+    soapFlowerOptions: true,
     name: 'Nala',
     visual: '✨',
     image: 'assets/products/nala.jpg',
@@ -12348,6 +12536,7 @@ var PRODUCT_CATALOG = {
   },
   aura: {
     category: 'Coleção Assinatura',
+    soapFlowerOptions: true,
     name: 'Aura',
     visual: '🔹',
     image: 'assets/products/pequeno-diamante.jpg',
@@ -12456,6 +12645,7 @@ var PRODUCT_CATALOG = {
     defaultQty: 1,
     minQty: 1,
     fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
+    fragranceNote: 'Possibilidade de outra fragrância mediante disponibilidade.',
     details: 'Inclui: mini frasco difusor com líquido aromático · Varetas · Etiqueta personalizada com o tema escolhido.',
     tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🍎 Educadoras', '🏷️ Eventos & Empresas'],
     quote: '"Uma lembrança pequena no tamanho, mas cheia de intenção."',
@@ -12483,6 +12673,7 @@ var PRODUCT_CATALOG = {
     defaultQty: 1,
     minQty: 1,
     fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
+    fragranceNote: 'Possibilidade de outra fragrância mediante disponibilidade.',
     details: 'Inclui: mini difusor aromático artesanal para o carro · Varetas · Personalização de tema, nome e data. Cartão disponível por mais 0,50€ por unidade; caixinha disponível mediante pedido.',
     tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🏷️ Eventos & Empresas'],
     quote: '"Um aroma especial para levar consigo em cada viagem."',
@@ -12594,6 +12785,7 @@ var PRODUCT_CATALOG = {
     defaultQty: 1,
     minQty: 1,
     fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
+    fragranceNote: 'Possibilidade de outra fragrância mediante disponibilidade.',
     details: 'Inclui: mini difusor com líquido aromático · Varetas · Mini sabonete artesanal redondo · Etiqueta personalizada com o tema escolhido.',
     tags: ['🎂 Aniversários', '🕊️ Batizados', '🤍 Comunhões', '💍 Casamentos', '🍼 Baby Shower', '🍎 Educadoras', '🏷️ Eventos & Empresas'],
     quote: '"Dois detalhes delicados para uma memória perfumada."',
@@ -12702,6 +12894,7 @@ var PRODUCT_CATALOG = {
     defaultQty: 12,
     minQty: 12,
     fragrances: ['Baunilha', 'Colónia de bebé', 'Dove', 'Explosão floral', 'Flor de algodão', 'Lavanda', 'Talco', 'Talco com jasmim'],
+    fragranceNote: 'Possibilidade de outra fragrância mediante disponibilidade.',
     details: 'Inclui: sabonete artesanal em forma sujeita a disponibilidade · Cartão personalizado · Fragrância à escolha sujeita a disponibilidade. Mínimo 12 unidades.',
     tags: ['💍 Casamentos', '🕊️ Batizados', '🤍 Comunhões', '🧸 Festas infantis'],
     quote: '"Um pequeno bilhete, uma fragrância e uma memória bonita."',
@@ -12829,6 +13022,7 @@ var currentSizeId = null;
 var currentBoxColor = null;
 var currentBearColor = null;
 var currentFabricId = null;
+var currentSoapFragrance = '';
 var currentGalleryImages = [];
 var currentGalleryIndex = 0;
 var productGalleryTimer = null;
@@ -12843,6 +13037,7 @@ function openProduct(productId, options) {
   currentBoxColor = p.boxColors && p.boxColors.length > 0 ? p.boxColors[0] : null;
   currentBearColor = p.bearColors && p.bearColors.length > 0 ? p.bearColors[0] : null;
   currentFabricId = p.fabricOptions && p.fabricOptions.length > 0 ? p.fabricOptions[0].id : null;
+  currentSoapFragrance = '';
 
   updateProductVisual();
 
@@ -12909,6 +13104,7 @@ function openProduct(productId, options) {
   }
 
   renderProductEventOptions(p);
+  renderSoapFlowerOptions(p);
   renderProductBoxColors(p);
   renderProductBearColors(p);
   renderProductFabricOptions(p);
@@ -12984,6 +13180,8 @@ function renderProductEventOptions(p) {
   var sweetColors = document.getElementById('pd-event-sweet-colors');
   var fragranceWrap = document.getElementById('pd-event-fragrance-wrap');
   var fragrance = document.getElementById('pd-event-fragrance');
+  var fragranceOptions = document.getElementById('pd-event-fragrance-options');
+  var fragranceNote = document.getElementById('pd-event-fragrance-note');
   var cardWrap = document.getElementById('pd-event-card-wrap');
   var cardInput = document.getElementById('pd-event-card');
   var cardLabel = document.getElementById('pd-event-card-label');
@@ -13001,8 +13199,9 @@ function renderProductEventOptions(p) {
   if (sweetColors) sweetColors.value = '';
   if (sweetColorsWrap) sweetColorsWrap.style.display = p.sweetColorOptions ? '' : 'none';
 
-  if (fragrance && fragranceWrap) {
+  if (fragrance && fragranceWrap && fragranceOptions) {
     fragrance.innerHTML = '';
+    fragranceOptions.innerHTML = '';
     if (p.fragrances && p.fragrances.length) {
       fragranceWrap.style.display = '';
       var emptyOpt = document.createElement('option');
@@ -13014,9 +13213,28 @@ function renderProductEventOptions(p) {
         opt.value = label;
         opt.textContent = label;
         fragrance.appendChild(opt);
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pd-fragrance-option';
+        btn.dataset.fragrance = label;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.textContent = label;
+        btn.onclick = function() {
+          fragrance.value = label;
+          fragranceOptions.querySelectorAll('.pd-fragrance-option').forEach(function(optionButton) {
+            var active = optionButton.dataset.fragrance === label;
+            optionButton.classList.toggle('active', active);
+            optionButton.setAttribute('aria-pressed', active ? 'true' : 'false');
+          });
+          updateProductPrice();
+        };
+        fragranceOptions.appendChild(btn);
       });
+      if (fragranceNote) fragranceNote.textContent = p.fragranceNote || '';
     } else {
       fragranceWrap.style.display = 'none';
+      if (fragranceNote) fragranceNote.textContent = '';
     }
   }
 
@@ -13038,6 +13256,73 @@ function renderProductEventOptions(p) {
       ? 'Quantidade mínima recomendada: ' + p.minQty + ' unidades. Estes dados seguem no carrinho ou no pedido para prepararmos a personalização.'
       : 'Estes dados seguem no carrinho para prepararmos a personalização.';
   }
+}
+
+var SOAP_FLOWER_FRAGRANCES = {
+  permanent: [
+    'Pure Cotton',
+    'Explosão Floral',
+    'Doce Encanto',
+    'Marselha',
+    'Pétalas de Rosa com Pêssego',
+    'Jasmim',
+    'Talco com Jasmim'
+  ],
+  summer: [
+    'Framboesa com Limão',
+    'Morango com Champanhe',
+    'Lima com Bergamota',
+    'Piña Colada',
+    'Mousse de Limão',
+    'Coco com Baunilha',
+    'Limão Golden',
+    'Manga',
+    'Pêssego com Açúcar Mascavado'
+  ]
+};
+
+function selectSoapFlowerFragrance(label) {
+  currentSoapFragrance = label;
+  var groups = document.getElementById('pd-soap-fragrance-groups');
+  if (groups) {
+    groups.classList.remove('pd-field-error');
+    groups.removeAttribute('aria-invalid');
+  }
+  document.querySelectorAll('#pd-soap-fragrance-groups .pd-soap-fragrance-option').forEach(function(btn) {
+    var active = btn.dataset.fragrance === label;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-checked', active ? 'true' : 'false');
+  });
+}
+
+function renderSoapFlowerFragranceGroup(title, labels, limited) {
+  var heading = '<div class="pd-fragrance-group-heading"><span class="pd-fragrance-group-title">' + productEscapeHtml(title) + '</span>' +
+    (limited ? '<span class="pd-limited-badge">Edição Limitada</span>' : '') + '</div>';
+  var options = labels.map(function(label) {
+    return '<button type="button" class="pd-soap-fragrance-option" role="radio" aria-checked="false" data-fragrance="' + productEscapeHtml(label) + '" onclick="selectSoapFlowerFragrance(this.dataset.fragrance)">' + productEscapeHtml(label) + '</button>';
+  }).join('');
+  return '<div class="pd-fragrance-group">' + heading + '<div class="pd-soap-fragrance-list">' + options + '</div></div>';
+}
+
+function renderSoapFlowerOptions(p) {
+  var section = document.getElementById('pd-soap-options-section');
+  var groups = document.getElementById('pd-soap-fragrance-groups');
+  var colors = document.getElementById('pd-soap-colors');
+  if (!section || !groups || !colors) return;
+
+  currentSoapFragrance = '';
+  colors.value = '';
+  colors.classList.remove('pd-field-error');
+
+  if (!p.soapFlowerOptions) {
+    section.style.display = 'none';
+    groups.innerHTML = '';
+    return;
+  }
+
+  section.style.display = '';
+  groups.innerHTML = renderSoapFlowerFragranceGroup('Coleção Permanente', SOAP_FLOWER_FRAGRANCES.permanent, false) +
+    renderSoapFlowerFragranceGroup('Edição Limitada de Verão — Stock limitado', SOAP_FLOWER_FRAGRANCES.summer, true);
 }
 
 function renderProductFabricOptions(p) {
@@ -13370,6 +13655,19 @@ function getCurrentProductSelection() {
     if (eventDetails.length) itemName += ', ' + eventDetails.join(', ');
   }
 
+  if (p.soapFlowerOptions) {
+    var soapColorsInput = document.getElementById('pd-soap-colors');
+    var soapColors = soapColorsInput ? soapColorsInput.value.trim() : '';
+    if (currentSoapFragrance) eventDetails.push('Fragrância: ' + currentSoapFragrance);
+    if (soapColors) eventDetails.push('Cores e tons: ' + soapColors);
+    if (currentSoapFragrance || soapColors) {
+      itemName += ', ' + [
+        currentSoapFragrance ? 'Fragrância: ' + currentSoapFragrance : '',
+        soapColors ? 'Cores e tons: ' + soapColors : ''
+      ].filter(Boolean).join(', ');
+    }
+  }
+
   if (p.fabricOptions && p.fabricOptions.length && currentFabricId) {
     var fabric = p.fabricOptions.find(function(option) { return option.id === currentFabricId; });
     if (fabric) itemName += ', ' + (p.fabricCartLabel || 'Tecido') + ': ' + fabric.label;
@@ -13416,6 +13714,43 @@ function formatPrice(value) {
 
 function handleProductCta() {
   if (!currentProduct) { showPage('contact'); return; }
+  var product = PRODUCT_CATALOG[currentProduct];
+  if (product && product.soapFlowerOptions) {
+    var fragranceGroups = document.getElementById('pd-soap-fragrance-groups');
+    var colorsInput = document.getElementById('pd-soap-colors');
+    var colorsValue = colorsInput ? colorsInput.value.trim() : '';
+    var missingFragrance = !currentSoapFragrance;
+    var missingColors = !colorsValue;
+
+    if (fragranceGroups) {
+      fragranceGroups.classList.toggle('pd-field-error', missingFragrance);
+      fragranceGroups.setAttribute('aria-invalid', missingFragrance ? 'true' : 'false');
+    }
+    if (colorsInput) {
+      colorsInput.classList.toggle('pd-field-error', missingColors);
+      colorsInput.setAttribute('aria-invalid', missingColors ? 'true' : 'false');
+      colorsInput.oninput = function() {
+        var valid = Boolean(colorsInput.value.trim());
+        colorsInput.classList.toggle('pd-field-error', !valid);
+        colorsInput.setAttribute('aria-invalid', valid ? 'false' : 'true');
+      };
+    }
+
+    if (missingFragrance || missingColors) {
+      alert(missingFragrance && missingColors
+        ? 'Seleciona uma fragrância e indica as cores e tons pretendidos.'
+        : missingFragrance
+          ? 'Seleciona uma fragrância antes de adicionar o produto ao carrinho.'
+          : 'Indica as cores e tons pretendidos antes de adicionar o produto ao carrinho.');
+      var target = missingFragrance ? fragranceGroups : colorsInput;
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var focusTarget = missingFragrance ? target.querySelector('button') : target;
+        if (focusTarget) focusTarget.focus({ preventScroll: true });
+      }
+      return;
+    }
+  }
   var selection = getCurrentProductSelection();
   if (!selection) { showPage('contact'); return; }
 
