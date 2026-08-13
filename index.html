@@ -5013,14 +5013,20 @@
   }
 
   .instagram-grid a {
+    position: relative;
     display: block;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 8px;
   }
 
   .instagram-grid img {
     width: 100%;
-    aspect-ratio: 1/1;
+    height: 100%;
+    aspect-ratio: auto;
     object-fit: cover;
-    border-radius: 8px;
+    object-position: center;
     transition: opacity 0.2s;
     display: block;
   }
@@ -10209,7 +10215,15 @@ var I18N_TEXT = {
     "Data do evento": "Event date",
     "Nome": "Name",
     "Fragrância": "Fragrance",
+    "Fragrância obrigatória": "Required fragrance",
     "Seleciona uma fragrância...": "Choose a fragrance...",
+    "Pure Cotton": "Pure Cotton",
+    "Explosão Floral": "Floral Explosion",
+    "Doce Encanto": "Sweet Enchantment",
+    "Marselha": "Marseille",
+    "Pétalas de Rosa com Pêssego": "Rose Petals with Peach",
+    "Morango com Champanhe": "Strawberry with Champagne",
+    "Talco com Jasmim": "Talc with Jasmine",
     "Cores e tons pretendidos": "Preferred colours and tones",
     "Ex.: tons nude, rosa velho, verde-sálvia, tons pastel…": "E.g. nude tones, dusty pink, sage green, pastel tones…",
     "Por se tratar de um produto artesanal, poderão existir ligeiras variações de tonalidade. Confirmaremos consigo todos os detalhes da personalização.": "As this is a handmade product, slight variations in shade may occur. We will confirm all personalisation details with you.",
@@ -10410,7 +10424,15 @@ var I18N_TEXT = {
     "Data do evento": "Fecha del evento",
     "Nome": "Nombre",
     "Fragrância": "Fragancia",
+    "Fragrância obrigatória": "Fragancia obligatoria",
     "Seleciona uma fragrância...": "Selecciona una fragancia...",
+    "Pure Cotton": "Algodón Puro",
+    "Explosão Floral": "Explosión Floral",
+    "Doce Encanto": "Dulce Encanto",
+    "Marselha": "Marsella",
+    "Pétalas de Rosa com Pêssego": "Pétalos de Rosa con Melocotón",
+    "Morango com Champanhe": "Fresa con Champán",
+    "Talco com Jasmim": "Talco con Jazmín",
     "Cores e tons pretendidos": "Colores y tonos deseados",
     "Ex.: tons nude, rosa velho, verde-sálvia, tons pastel…": "Ej.: tonos nude, rosa empolvado, verde salvia, tonos pastel…",
     "Por se tratar de um produto artesanal, poderão existir ligeiras variações de tonalidade. Confirmaremos consigo todos os detalhes da personalização.": "Al tratarse de un producto artesanal, pueden existir ligeras variaciones de tonalidad. Confirmaremos contigo todos los detalles de la personalización.",
@@ -11394,6 +11416,13 @@ var I18N_REPLACE_TEXT = {
     "Preto": "Black",
     "Branco": "White",
     "Castanho": "Brown",
+    "Pure Cotton": "Pure Cotton",
+    "Explosão Floral": "Floral Explosion",
+    "Doce Encanto": "Sweet Enchantment",
+    "Marselha": "Marseille",
+    "Pétalas de Rosa com Pêssego": "Rose Petals with Peach",
+    "Morango com Champanhe": "Strawberry with Champagne",
+    "Talco com Jasmim": "Talc with Jasmine",
     "Baunilha": "Vanilla",
     "Colónia de bebé": "Baby cologne",
     "Explosão floral": "Floral explosion",
@@ -11483,6 +11512,13 @@ var I18N_REPLACE_TEXT = {
     "Preto": "Negro",
     "Branco": "Blanco",
     "Castanho": "Marrón",
+    "Pure Cotton": "Algodón Puro",
+    "Explosão Floral": "Explosión Floral",
+    "Doce Encanto": "Dulce Encanto",
+    "Marselha": "Marsella",
+    "Pétalas de Rosa com Pêssego": "Pétalos de Rosa con Melocotón",
+    "Morango com Champanhe": "Fresa con Champán",
+    "Talco com Jasmim": "Talco con Jazmín",
     "Baunilha": "Vainilla",
     "Colónia de bebé": "Colonia de bebé",
     "Explosão floral": "Explosión floral",
@@ -13293,6 +13329,7 @@ function renderSoapFlowerOptions(p) {
 
   section.style.display = '';
   groups.innerHTML = renderSoapFlowerFragranceGroup(SOAP_FLOWER_FRAGRANCES);
+  applyLanguage(groups);
 }
 
 function renderProductFabricOptions(p) {
