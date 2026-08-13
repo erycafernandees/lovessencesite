@@ -1411,8 +1411,7 @@
     display: grid;
     gap: 0.65rem;
   }
-  .pd-soap-field > label,
-  .pd-fragrance-group-title {
+  .pd-soap-field > label {
     font-size: 0.68rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -1421,63 +1420,63 @@
   .pd-required-mark { color: var(--deep-rose); }
   .pd-soap-fragrance-groups {
     display: grid;
-    gap: 1.1rem;
+    gap: 1.25rem;
   }
   .pd-fragrance-group {
     display: grid;
-    gap: 0.65rem;
-    padding: 1rem;
-    border: 1px solid rgba(180,104,171,0.14);
-    border-radius: 16px;
-    background: rgba(250,246,240,0.46);
-  }
-  .pd-fragrance-group-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.7rem;
-    flex-wrap: wrap;
-  }
-  .pd-limited-badge {
-    display: inline-flex;
-    align-items: center;
-    min-height: 24px;
-    padding: 0.3rem 0.65rem;
-    border-radius: 999px;
-    background: #f2dce9;
-    color: var(--deep-rose);
-    font-size: 0.58rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    gap: 0.55rem;
   }
   .pd-soap-fragrance-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.65rem;
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(102,19,94,0.12);
+    border-bottom: 1px solid rgba(102,19,94,0.12);
   }
   .pd-soap-fragrance-option {
-    min-height: 46px;
-    padding: 0.7rem 0.85rem;
-    border: 1px solid rgba(180,104,171,0.18);
-    border-radius: 12px;
-    background: #fff;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-height: 40px;
+    padding: 0.58rem 0.2rem;
+    border: 0;
+    border-bottom: 1px solid rgba(102,19,94,0.08);
+    border-radius: 0;
+    background: transparent;
     color: var(--dark);
     font-family: var(--sans);
     font-size: 0.78rem;
     line-height: 1.3;
     text-align: left;
-    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease;
+  }
+  .pd-soap-fragrance-option:last-child {
+    border-bottom: 0;
+  }
+  .pd-soap-fragrance-option::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    border: 1px solid rgba(102,19,94,0.35);
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: inset 0 0 0 3px #fff;
+    transition: border-color 0.2s ease, background 0.2s ease;
   }
   .pd-soap-fragrance-option:hover {
-    transform: translateY(-1px);
-    border-color: rgba(102,19,94,0.3);
+    background: rgba(246,235,243,0.4);
+    color: var(--deep-rose);
   }
   .pd-soap-fragrance-option.active {
-    border-color: var(--deep-rose);
-    background: #f6ebf3;
+    background: transparent;
     color: var(--deep-rose);
-    box-shadow: 0 0 0 2px rgba(102,19,94,0.08);
+    font-weight: 600;
+  }
+  .pd-soap-fragrance-option.active::before {
+    border-color: var(--deep-rose);
+    background: var(--deep-rose);
   }
   .pd-soap-field input[type="text"] {
     width: 100%;
@@ -1526,7 +1525,6 @@
     .pd-event-form {
       grid-template-columns: 1fr;
     }
-    .pd-soap-fragrance-list,
     .pd-fragrance-options {
       grid-template-columns: 1fr;
     }
@@ -9006,17 +9004,15 @@
 
       <!-- Opções obrigatórias, exclusivas dos produtos Flores de Sabão -->
       <div class="pd-section" id="pd-soap-options-section" style="display:none;">
-        <h4>Personaliza as Flores de Sabão</h4>
         <div class="pd-soap-options">
-          <div class="pd-soap-field">
-            <label>Fragrância <span class="pd-required-mark" aria-hidden="true">*</span></label>
-            <div class="pd-soap-fragrance-groups" id="pd-soap-fragrance-groups" role="radiogroup" aria-label="Fragrância obrigatória"></div>
-            <p class="pd-custom-note">As fragrâncias sazonais estão disponíveis por tempo limitado e sujeitas ao stock existente.</p>
-          </div>
           <div class="pd-soap-field">
             <label for="pd-soap-colors">Cores e tons pretendidos <span class="pd-required-mark" aria-hidden="true">*</span></label>
             <input type="text" id="pd-soap-colors" required aria-required="true" placeholder="Ex.: tons nude, rosa velho, verde-sálvia, tons pastel…" maxlength="160"/>
             <p class="pd-custom-note">Por se tratar de um produto artesanal, poderão existir ligeiras variações de tonalidade. Confirmaremos consigo todos os detalhes da personalização.</p>
+          </div>
+          <div class="pd-soap-field">
+            <label>Fragrância <span class="pd-required-mark" aria-hidden="true">*</span></label>
+            <div class="pd-soap-fragrance-groups" id="pd-soap-fragrance-groups" role="radiogroup" aria-label="Fragrância obrigatória"></div>
           </div>
         </div>
       </div>
@@ -10214,11 +10210,6 @@ var I18N_TEXT = {
     "Nome": "Name",
     "Fragrância": "Fragrance",
     "Seleciona uma fragrância...": "Choose a fragrance...",
-    "Personaliza as Flores de Sabão": "Personalise the Soap Flowers",
-    "Coleção Permanente": "Permanent Collection",
-    "Edição Limitada de Verão — Stock limitado": "Limited Summer Edition — Limited stock",
-    "Edição Limitada": "Limited Edition",
-    "As fragrâncias sazonais estão disponíveis por tempo limitado e sujeitas ao stock existente.": "Seasonal fragrances are available for a limited time and subject to existing stock.",
     "Cores e tons pretendidos": "Preferred colours and tones",
     "Ex.: tons nude, rosa velho, verde-sálvia, tons pastel…": "E.g. nude tones, dusty pink, sage green, pastel tones…",
     "Por se tratar de um produto artesanal, poderão existir ligeiras variações de tonalidade. Confirmaremos consigo todos os detalhes da personalização.": "As this is a handmade product, slight variations in shade may occur. We will confirm all personalisation details with you.",
@@ -10420,11 +10411,6 @@ var I18N_TEXT = {
     "Nome": "Nombre",
     "Fragrância": "Fragancia",
     "Seleciona uma fragrância...": "Selecciona una fragancia...",
-    "Personaliza as Flores de Sabão": "Personaliza las Flores de Jabón",
-    "Coleção Permanente": "Colección Permanente",
-    "Edição Limitada de Verão — Stock limitado": "Edición Limitada de Verano — Stock limitado",
-    "Edição Limitada": "Edición Limitada",
-    "As fragrâncias sazonais estão disponíveis por tempo limitado e sujeitas ao stock existente.": "Las fragancias de temporada están disponibles por tiempo limitado y sujetas al stock existente.",
     "Cores e tons pretendidos": "Colores y tonos deseados",
     "Ex.: tons nude, rosa velho, verde-sálvia, tons pastel…": "Ej.: tonos nude, rosa empolvado, verde salvia, tonos pastel…",
     "Por se tratar de um produto artesanal, poderão existir ligeiras variações de tonalidade. Confirmaremos consigo todos os detalhes da personalização.": "Al tratarse de un producto artesanal, pueden existir ligeras variaciones de tonalidad. Confirmaremos contigo todos los detalles de la personalización.",
@@ -13258,28 +13244,15 @@ function renderProductEventOptions(p) {
   }
 }
 
-var SOAP_FLOWER_FRAGRANCES = {
-  permanent: [
-    'Pure Cotton',
-    'Explosão Floral',
-    'Doce Encanto',
-    'Marselha',
-    'Pétalas de Rosa com Pêssego',
-    'Jasmim',
-    'Talco com Jasmim'
-  ],
-  summer: [
-    'Framboesa com Limão',
-    'Morango com Champanhe',
-    'Lima com Bergamota',
-    'Piña Colada',
-    'Mousse de Limão',
-    'Coco com Baunilha',
-    'Limão Golden',
-    'Manga',
-    'Pêssego com Açúcar Mascavado'
-  ]
-};
+var SOAP_FLOWER_FRAGRANCES = [
+  'Pure Cotton',
+  'Explosão Floral',
+  'Doce Encanto',
+  'Marselha',
+  'Pétalas de Rosa com Pêssego',
+  'Morango com Champanhe',
+  'Talco com Jasmim'
+];
 
 function selectSoapFlowerFragrance(label) {
   currentSoapFragrance = label;
@@ -13295,13 +13268,11 @@ function selectSoapFlowerFragrance(label) {
   });
 }
 
-function renderSoapFlowerFragranceGroup(title, labels, limited) {
-  var heading = '<div class="pd-fragrance-group-heading"><span class="pd-fragrance-group-title">' + productEscapeHtml(title) + '</span>' +
-    (limited ? '<span class="pd-limited-badge">Edição Limitada</span>' : '') + '</div>';
+function renderSoapFlowerFragranceGroup(labels) {
   var options = labels.map(function(label) {
     return '<button type="button" class="pd-soap-fragrance-option" role="radio" aria-checked="false" data-fragrance="' + productEscapeHtml(label) + '" onclick="selectSoapFlowerFragrance(this.dataset.fragrance)">' + productEscapeHtml(label) + '</button>';
   }).join('');
-  return '<div class="pd-fragrance-group">' + heading + '<div class="pd-soap-fragrance-list">' + options + '</div></div>';
+  return '<div class="pd-fragrance-group"><div class="pd-soap-fragrance-list">' + options + '</div></div>';
 }
 
 function renderSoapFlowerOptions(p) {
@@ -13321,8 +13292,7 @@ function renderSoapFlowerOptions(p) {
   }
 
   section.style.display = '';
-  groups.innerHTML = renderSoapFlowerFragranceGroup('Coleção Permanente', SOAP_FLOWER_FRAGRANCES.permanent, false) +
-    renderSoapFlowerFragranceGroup('Edição Limitada de Verão — Stock limitado', SOAP_FLOWER_FRAGRANCES.summer, true);
+  groups.innerHTML = renderSoapFlowerFragranceGroup(SOAP_FLOWER_FRAGRANCES);
 }
 
 function renderProductFabricOptions(p) {
