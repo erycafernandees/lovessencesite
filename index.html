@@ -8958,6 +8958,16 @@
         <p class="pd-custom-note" id="pd-fabric-note"></p>
       </div>
 
+      <!-- Campo livre de escolha (visível apenas nos produtos que o exigem) -->
+      <div class="pd-section" id="pd-free-text-section" style="display:none;">
+        <h4 id="pd-free-text-title">Escolhe a opção</h4>
+        <div class="pd-custom">
+          <label for="pd-free-text" id="pd-free-text-label">Indica a tua escolha</label>
+          <input type="text" id="pd-free-text" maxlength="120"/>
+          <p class="pd-custom-note" id="pd-free-text-note"></p>
+        </div>
+      </div>
+
       <!-- Bloco de personalização (visível apenas para produtos personalizáveis) -->
       <div class="pd-section" id="pd-custom-section" style="display:none;">
         <h4>Personalização</h4>
@@ -10240,6 +10250,11 @@ var I18N_TEXT = {
     "Escolhe a cor da caixa": "Choose the box colour",
     "Escolhe a cor do ursinho": "Choose the bear colour",
     "Escolhe o tecido": "Choose the fabric",
+    "Escolhe a cor/cores da trouxinha": "Choose the pouch colour/colours",
+    "Indica a cor ou combinação de cores pretendida": "Enter the colour or colour combination you would like",
+    "Indica a cor ou combinação de cores pretendida antes de adicionar o produto ao carrinho.": "Enter the colour or colour combination you would like before adding the product to the cart.",
+    "Ex.: lilás e branco, rosa, verde e amarelo…": "E.g. lilac and white, pink, green and yellow…",
+    "Indica livremente as cores pretendidas. Confirmaremos contigo a disponibilidade antes da produção.": "Enter your preferred colours freely. We will confirm availability with you before production.",
     "Branco pérola": "Pearl white",
     "Cinza claro": "Light grey",
     "Cinza escuro": "Dark grey",
@@ -10449,6 +10464,11 @@ var I18N_TEXT = {
     "Escolhe a cor da caixa": "Elige el color de la caja",
     "Escolhe a cor do ursinho": "Elige el color del osito",
     "Escolhe o tecido": "Elige la tela",
+    "Escolhe a cor/cores da trouxinha": "Elige el color o los colores del saquito",
+    "Indica a cor ou combinação de cores pretendida": "Indica el color o la combinación de colores deseada",
+    "Indica a cor ou combinação de cores pretendida antes de adicionar o produto ao carrinho.": "Indica el color o la combinación de colores deseada antes de añadir el producto al carrito.",
+    "Ex.: lilás e branco, rosa, verde e amarelo…": "Ej.: lila y blanco, rosa, verde y amarillo…",
+    "Indica livremente as cores pretendidas. Confirmaremos contigo a disponibilidade antes da produção.": "Indica libremente los colores deseados. Confirmaremos contigo la disponibilidad antes de la producción.",
     "Branco pérola": "Blanco perla",
     "Cinza claro": "Gris claro",
     "Cinza escuro": "Gris oscuro",
@@ -11358,6 +11378,7 @@ var I18N_REPLACE_TEXT = {
     "Frase da etiqueta:": "Label phrase:",
     "Fragrância:": "Fragrance:",
     "Tecido:": "Fabric:",
+    "Cor/cores da trouxinha:": "Pouch colour/colours:",
     "Texto a gravar:": "Text to engrave:",
     "Frase na caixa:": "Phrase on the box:",
     "Personalização:": "Personalisation:",
@@ -11454,6 +11475,7 @@ var I18N_REPLACE_TEXT = {
     "Frase da etiqueta:": "Frase de la etiqueta:",
     "Fragrância:": "Fragancia:",
     "Tecido:": "Tela:",
+    "Cor/cores da trouxinha:": "Color/colores del saquito:",
     "Texto a gravar:": "Texto para grabar:",
     "Frase na caixa:": "Frase en la caja:",
     "Personalização:": "Personalización:",
@@ -12740,7 +12762,10 @@ var PRODUCT_CATALOG = {
     image: 'assets/products/trouxinha-aromatica.jpg',
     gallery: [
       'assets/products/trouxinha-aromatica.jpg',
-      'assets/products/trouxinha-aromatica-2.jpg'
+      'assets/products/trouxinha-aromatica-2.jpg',
+      'assets/products/trouxinha-aromatica-3.jpg',
+      'assets/products/trouxinha-aromatica-4.jpg',
+      'assets/products/trouxinha-aromatica-5.jpg'
     ],
     visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
     storyTitle: 'A trouxinha',
@@ -12748,21 +12773,14 @@ var PRODUCT_CATALOG = {
     sizes: [],
     basePrice: 5,
     priceSuffix: '/un',
-    fabricTitle: 'Escolhe a cor da trouxinha',
-    fabricCartLabel: 'Cor da trouxinha',
-    fabricNote: 'A cor escolhida segue no carrinho. Os tons podem apresentar pequenas variações por se tratar de uma peça artesanal.',
-    fabricOptions: [
-      { id: 'branco_perola', label: 'Branco pérola' },
-      { id: 'bege', label: 'Bege' },
-      { id: 'rosa_pastel', label: 'Rosa pastel' },
-      { id: 'lilas_pastel', label: 'Lilás pastel' },
-      { id: 'azul_pastel', label: 'Azul pastel' },
-      { id: 'verde_menta', label: 'Verde menta' },
-      { id: 'amarelo_pastel', label: 'Amarelo pastel' },
-      { id: 'pessego', label: 'Pêssego' },
-      { id: 'rosa', label: 'Rosa' },
-      { id: 'vermelho', label: 'Vermelho' }
-    ],
+    freeTextOption: {
+      title: 'Escolhe a cor/cores da trouxinha',
+      label: 'Indica a cor ou combinação de cores pretendida',
+      placeholder: 'Ex.: lilás e branco, rosa, verde e amarelo…',
+      note: 'Indica livremente as cores pretendidas. Confirmaremos contigo a disponibilidade antes da produção.',
+      cartLabel: 'Cor/cores da trouxinha',
+      required: true
+    },
     eventOptions: true,
     defaultQty: 1,
     minQty: 1,
@@ -13130,6 +13148,7 @@ function openProduct(productId, options) {
   renderProductBoxColors(p);
   renderProductBearColors(p);
   renderProductFabricOptions(p);
+  renderProductFreeTextOption(p);
   updateProductPrice();
   showPage('product', { history: options.history !== false, productId: productId });
 }
@@ -13361,6 +13380,37 @@ function renderProductFabricOptions(p) {
   if (noteEl) {
     noteEl.textContent = p.fabricNote || 'A escolha do tecido segue no carrinho. As opções podem variar consoante o stock disponível no momento da produção.';
   }
+}
+
+function renderProductFreeTextOption(p) {
+  var section = document.getElementById('pd-free-text-section');
+  var title = document.getElementById('pd-free-text-title');
+  var label = document.getElementById('pd-free-text-label');
+  var input = document.getElementById('pd-free-text');
+  var note = document.getElementById('pd-free-text-note');
+  if (!section || !input) return;
+
+  input.value = '';
+  input.classList.remove('pd-field-error');
+  input.removeAttribute('aria-invalid');
+  if (!p.freeTextOption) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = '';
+  if (title) title.textContent = p.freeTextOption.title || 'Escolhe a opção';
+  if (label) label.textContent = p.freeTextOption.label || p.freeTextOption.title || 'Indica a tua escolha';
+  input.placeholder = p.freeTextOption.placeholder || '';
+  input.maxLength = p.freeTextOption.maxLength || 120;
+  input.required = Boolean(p.freeTextOption.required);
+  input.oninput = function() {
+    var valid = Boolean(input.value.trim());
+    input.classList.toggle('pd-field-error', Boolean(p.freeTextOption.required && !valid));
+    input.setAttribute('aria-invalid', p.freeTextOption.required && !valid ? 'true' : 'false');
+  };
+  if (note) note.textContent = p.freeTextOption.note || '';
+  applyLanguage(section);
 }
 
 function renderProductBoxColors(p) {
@@ -13680,6 +13730,16 @@ function getCurrentProductSelection() {
     if (fabric) itemName += ', ' + (p.fabricCartLabel || 'Tecido') + ': ' + fabric.label;
   }
 
+  if (p.freeTextOption) {
+    var freeTextInput = document.getElementById('pd-free-text');
+    var freeTextValue = freeTextInput ? freeTextInput.value.trim() : '';
+    if (freeTextValue) {
+      var freeTextDetail = (p.freeTextOption.cartLabel || p.freeTextOption.title || 'Escolha') + ': ' + freeTextValue;
+      itemName += ', ' + freeTextDetail;
+      eventDetails.push(freeTextDetail);
+    }
+  }
+
   if (p.customizable) {
     var input = document.getElementById('pd-custom-text');
     if (input && input.value.trim().length > 0 && typeof p.customPrice === 'number') {
@@ -13722,6 +13782,22 @@ function formatPrice(value) {
 function handleProductCta() {
   if (!currentProduct) { showPage('contact'); return; }
   var product = PRODUCT_CATALOG[currentProduct];
+  if (product && product.freeTextOption && product.freeTextOption.required) {
+    var freeTextInput = document.getElementById('pd-free-text');
+    var missingFreeText = !freeTextInput || !freeTextInput.value.trim();
+    if (freeTextInput) {
+      freeTextInput.classList.toggle('pd-field-error', missingFreeText);
+      freeTextInput.setAttribute('aria-invalid', missingFreeText ? 'true' : 'false');
+    }
+    if (missingFreeText) {
+      alert(translatedText('Indica a cor ou combinação de cores pretendida antes de adicionar o produto ao carrinho.', currentLanguage));
+      if (freeTextInput) {
+        freeTextInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        freeTextInput.focus({ preventScroll: true });
+      }
+      return;
+    }
+  }
   if (product && product.soapFlowerOptions) {
     var fragranceGroups = document.getElementById('pd-soap-fragrance-groups');
     var colorsInput = document.getElementById('pd-soap-colors');
