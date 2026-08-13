@@ -7840,7 +7840,6 @@
     <div class="products-grid">
       <div class="product-card">
         <div class="product-img has-photo">
-          <span class="product-tag">Mais Vendido</span>
           <img src="assets/products/bloom.jpg" alt="Bloom, peça artesanal Love Essences" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
@@ -8012,41 +8011,6 @@
         </div>
       </article>
 
-      <article
-        class="occasion-card occasion-card--business group relative flex cursor-pointer flex-col justify-between overflow-hidden"
-        onclick="openOccasion('empresas')"
-        onkeydown="handleOccasionCardKey(event, 'empresas')"
-        role="button"
-        tabindex="0"
-      >
-        <div class="relative z-10 flex items-start justify-between gap-4">
-          <span class="occasion-badge px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]">celebração</span>
-          <span class="occasion-icon text-3xl">✦</span>
-        </div>
-        <div class="relative z-10">
-          <h3>Eventos &amp; Empresas</h3>
-          <p class="mt-4 text-sm leading-7">Brindes corporativos e lembranças com curadoria, à medida da vossa marca.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('empresas')">Ver sugestões →</span>
-        </div>
-      </article>
-
-      <article
-        class="occasion-card occasion-card--kids group relative flex cursor-pointer flex-col justify-between overflow-hidden"
-        onclick="openOccasion('pequeninos')"
-        onkeydown="handleOccasionCardKey(event, 'pequeninos')"
-        role="button"
-        tabindex="0"
-      >
-        <div class="relative z-10 flex items-start justify-between gap-4">
-          <span class="occasion-badge px-4 py-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]">para crianças</span>
-          <span class="occasion-icon text-3xl">🧸</span>
-        </div>
-        <div class="relative z-10">
-          <h3>Para os Mais Pequeninos</h3>
-          <p class="mt-4 text-sm leading-7">Kits criativos, doces e mimos pensados para encantar os pequenos convidados.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" onclick="event.stopPropagation(); openOccasion('pequeninos')">Ver sugestões →</span>
-        </div>
-      </article>
     </div>
   </section>
 
@@ -8550,7 +8514,7 @@
     <div class="shop-products-grid" id="shop-products-grid">
       <!-- ========== COLEÇÃO ASSINATURA ========== -->
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
-        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Mais Vendido</span><img src="assets/products/bloom.jpg" alt="Bloom, peça artesanal Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/bloom.jpg" alt="Bloom, peça artesanal Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Bloom</h3>
           <p class="product-desc">Peça artesanal em porcelana, delicada e atemporal. Disponível em três tamanhos. A peça que fala por ti.</p>
@@ -8590,7 +8554,7 @@
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/nala.jpg" alt="Nala, peça artesanal Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><span class="product-tag">Mais Vendido</span><img src="assets/products/nala.jpg" alt="Nala, peça artesanal Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Nala</h3>
           <p class="product-desc">A peça que dá nome à coleção. Forma orgânica, presença suave, uma escolha para quem prefere o detalhe ao excesso.</p>
@@ -12246,9 +12210,22 @@ var PRODUCT_CATALOG = {
     storyTitle: 'A peça',
     story: 'O Bloom é a nossa peça âncora, feita à mão em porcelana, com o cuidado lento de quem sabe que cada detalhe importa. Não é um objeto. É uma presença discreta, atemporal, que se torna parte do espaço onde fica.',
     sizes: [
-      { id: 'Mini', label: 'Mini', price: 18, note: 'um gesto delicado' },
+      {
+        id: 'Mini',
+        label: 'Mini',
+        price: 18,
+        note: 'um gesto delicado',
+        image: 'assets/products/bloom-mini-5.jpg',
+        gallery: [
+          'assets/products/bloom-mini-5.jpg',
+          'assets/products/bloom-mini-1.jpg',
+          'assets/products/bloom-mini-2.jpg',
+          'assets/products/bloom-mini-3.jpg',
+          'assets/products/bloom-mini-4.jpg'
+        ]
+      },
       { id: 'M', label: 'M', price: 44.90, note: 'peça central' },
-      { id: 'L', label: 'L', price: 60,    note: 'afirmação' }
+      { id: 'L', label: 'L', price: 60, note: 'afirmação', image: 'assets/products/bloom-l-60.jpg' }
     ],
     details: 'Material: porcelana artesanal · Acabamento à mão · Cada peça tem variações naturais que a tornam única · Embalagem de oferta incluída · Possibilidade de cartão personalizado mediante pedido.',
     tags: ['🎂 Aniversários', '💝 Presente Romântico', '🤍 Para Alguém Especial', '✨ Sem Ocasião'],
@@ -12260,6 +12237,12 @@ var PRODUCT_CATALOG = {
     name: 'Aurora',
     visual: '🖼️',
     image: 'assets/products/aurora.jpg',
+    gallery: [
+      'assets/products/aurora.jpg',
+      'assets/products/aurora-2.jpg',
+      'assets/products/aurora-3.jpg',
+      'assets/products/aurora-4.jpg'
+    ],
     visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
     storyTitle: 'A peça',
     story: 'A Aurora é uma moldura floral artesanal, criada para guardar uma palavra, uma data, um nome, uma frase que faz sentido para os dois. Cada Aurora é única porque cada momento que a inspira também o é.',
@@ -12281,6 +12264,11 @@ var PRODUCT_CATALOG = {
     name: 'Serenata',
     visual: '🤍',
     image: 'assets/products/serenata.jpg',
+    gallery: [
+      'assets/products/serenata.jpg',
+      'assets/products/serenata-2.jpg',
+      'assets/products/serenata-3.jpg'
+    ],
     visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
     storyTitle: 'A peça',
     story: 'Peça larga em gesso, com presença escultórica e acabamento sereno. Uma escolha elegante para quem gosta de detalhes que preenchem o espaço com suavidade.',
@@ -12296,6 +12284,10 @@ var PRODUCT_CATALOG = {
     name: 'Diamante',
     visual: '💎',
     image: 'assets/products/diamante-v2.jpg',
+    gallery: [
+      'assets/products/diamante-2.jpg',
+      'assets/products/diamante-3.jpg'
+    ],
     visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
     storyTitle: 'A peça',
     story: 'Peça em gesso com forma facetada, inspirada no brilho discreto de um diamante. Elegante, luminosa e pensada para oferecer com intenção.',
@@ -12312,7 +12304,12 @@ var PRODUCT_CATALOG = {
     visual: '💎',
     image: 'assets/products/prisma.jpg',
     galleryFirst: true,
-    gallery: [{ type: 'video', src: 'assets/products/prisma-video.mov', poster: 'assets/products/prisma.jpg' }, 'assets/products/prisma3.jpg'],
+    gallery: [
+      { type: 'video', src: 'assets/products/prisma-video.mov', poster: 'assets/products/prisma.jpg' },
+      'assets/products/prisma3.jpg',
+      'assets/products/prisma4.jpg',
+      'assets/products/prisma5.jpg'
+    ],
     visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
     storyTitle: 'A peça',
     story: 'Peça em gesso com presença facetada, semelhante ao Diamante, mas com um vaso ligeiramente diferente. Uma opção maior, elegante e muito especial.',
@@ -12328,6 +12325,17 @@ var PRODUCT_CATALOG = {
     name: 'Nala',
     visual: '✨',
     image: 'assets/products/nala.jpg',
+    gallery: [
+      'assets/products/nala.jpg',
+      'assets/products/nala-2.jpg',
+      'assets/products/nala-3.jpg',
+      'assets/products/nala-4.jpg',
+      'assets/products/nala-5.jpg',
+      'assets/products/nala-6.jpg',
+      'assets/products/nala-7.jpg',
+      'assets/products/nala-8.jpg',
+      'assets/products/nala-9.jpg'
+    ],
     visualBg: 'linear-gradient(160deg, #faf3f8 0%, #e8c8e0 100%)',
     storyTitle: 'A peça',
     story: 'A peça que dá nome à coleção. Forma orgânica, presença suave e acabamento delicado, ideal para quem prefere o detalhe ao excesso.',
@@ -12358,6 +12366,10 @@ var PRODUCT_CATALOG = {
     name: 'Essência do Amor',
     visual: '💝',
     image: 'assets/products/essencia-amor-m2.jpg',
+    gallery: [
+      'assets/products/essencia-amor-2.jpg',
+      { type: 'video', src: 'assets/products/essencia-amor-video.mp4', poster: 'assets/products/essencia-amor-m2.jpg' }
+    ],
     visualBg: 'linear-gradient(160deg, #f5e8f3 0%, #d8a8d0 100%)',
     storyTitle: 'A box',
     story: 'A Essência do Amor é a box presente que dispensa apresentações. Criada para os momentos em que precisas de oferecer algo que se sente, não apenas que se vê. Composição cuidada, embalagem pronta a entregar.',
@@ -12634,6 +12646,7 @@ var PRODUCT_CATALOG = {
     name: 'Doce Luz',
     visual: '🕯️',
     image: 'assets/products/doce-luz.png',
+    gallery: ['assets/products/doce-luz-2.jpg'],
     visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
     storyTitle: 'A vela',
     story: 'Vela bubble com tag e cordão ou com caixa personalizada. Uma lembrança suave e memorável para eventos delicados.',
@@ -12699,6 +12712,11 @@ var PRODUCT_CATALOG = {
     name: 'Laço de Memória',
     visual: '🎀',
     image: 'assets/products/laco-de-memoria.jpg',
+    gallery: [
+      'assets/products/laco-de-memoria.jpg',
+      'assets/products/laco-de-memoria-2.jpg',
+      'assets/products/laco-de-memoria-3.jpg'
+    ],
     visualBg: 'linear-gradient(160deg, #faf1f9 0%, #e3bedf 100%)',
     storyTitle: 'O porta-chaves',
     story: 'Porta-chaves artesanal em tecido, criado em pequenas quantidades por artesã local. Um detalhe leve, bonito e útil para oferecer em casamentos, batizados ou como mimo especial.',
@@ -13196,7 +13214,7 @@ function getProductGalleryImages(p, activeSize) {
   if (activeSize && Array.isArray(activeSize.gallery)) activeSize.gallery.forEach(addImage);
   if (Array.isArray(p.gallery)) p.gallery.forEach(addImage);
 
-  return images.slice(0, 5);
+  return images.slice(0, 12);
 }
 
 function renderProductGallery(images, altBase) {
