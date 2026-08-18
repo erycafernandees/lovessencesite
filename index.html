@@ -1217,6 +1217,92 @@
   .pd-tag { background: var(--cream); border: 1px solid rgba(180,104,171,0.2); color: var(--warm-gray); font-size: 0.75rem; padding: 0.3rem 0.9rem; border-radius: 20px; }
   .pd-cta { width: 100%; background: var(--dark); color: #fff; border: none; padding: 1.1rem 2rem; font-family: var(--sans); font-size: 0.85rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: background 0.3s; margin-top: 2rem; }
   .pd-cta:hover { background: var(--rose); }
+  .pd-lead-time { margin-top: 0.9rem; font-size: 0.78rem; color: var(--warm-gray); line-height: 1.55; }
+  .pd-lead-time--simple { text-align: center; }
+  .pd-lead-time--simple span { display: block; }
+  .pd-lead-time--events {
+    padding: 0.2rem 0 0;
+    text-align: left;
+  }
+  .pd-lead-time-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    margin-bottom: 0.85rem;
+    padding: 0.2rem 0 0.85rem;
+    border-bottom: 1px solid rgba(180,104,171,0.15);
+  }
+  .pd-lead-time-step {
+    display: grid;
+    grid-template-columns: auto minmax(0,1fr);
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+    padding: 0.15rem 1rem;
+  }
+  .pd-lead-time-step:first-child { padding-left: 0; }
+  .pd-lead-time-step:last-child { padding-right: 0; }
+  .pd-lead-time-step + .pd-lead-time-step { border-left: 1px solid rgba(102,19,94,0.13); }
+  .pd-lead-time-icon {
+    display: inline-flex;
+    width: 2.15rem;
+    height: 2.15rem;
+    flex: 0 0 2.15rem;
+    align-items: center;
+    justify-content: center;
+    color: var(--deep-rose);
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  .pd-lead-time-icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .pd-lead-time-label {
+    display: block;
+    margin-bottom: 0.08rem;
+    color: var(--deep-rose);
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+  .pd-lead-time-value { display: block; color: var(--dark); font-size: 0.8rem; line-height: 1.45; }
+  .pd-lead-time-detail {
+    display: flex !important;
+    align-items: center;
+    gap: 0.65rem;
+    margin-top: 0;
+    padding: 0.72rem 0.9rem;
+    border-left: 3px solid var(--rose);
+    border-radius: 8px;
+    background: var(--cream);
+    color: var(--dark);
+    font-size: 0.7rem;
+    line-height: 1.5;
+  }
+  .pd-lead-time-detail .pd-lead-time-icon { width: 1.45rem; height: 1.45rem; flex-basis: 1.45rem; font-size: 1.05rem; }
+  .pd-lead-time-recommendation {
+    display: flex !important;
+    align-items: center;
+    gap: 0.62rem;
+    margin-top: 0.58rem;
+    padding: 0.16rem 0.18rem 0;
+    color: var(--dark);
+    font-size: 0.69rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+  .pd-lead-time-recommendation .pd-lead-time-icon { width: 1.45rem; height: 1.45rem; flex-basis: 1.45rem; font-size: 1.08rem; }
+
+  @media (max-width: 520px) {
+    .pd-lead-time--events { padding-top: 0.1rem; }
+    .pd-lead-time-overview { grid-template-columns: 1fr; gap: 0.55rem; }
+    .pd-lead-time-step { padding: 0.22rem 0.4rem; }
+    .pd-lead-time-step + .pd-lead-time-step {
+      border-top: 1px solid rgba(102,19,94,0.12);
+      border-left: 0;
+      padding-top: 0.72rem;
+    }
+    .pd-lead-time-detail { align-items: flex-start; }
+  }
 
   /* Seletor de tamanho, refinado, premium */
   .pd-sizes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; margin-top: 0.6rem; }
@@ -1331,6 +1417,8 @@
     flex-direction: column;
     gap: 0.35rem;
   }
+  .pd-event-field-name,
+  .pd-event-field-phrase { justify-content: flex-end; }
   .pd-event-field.pd-event-field-wide {
     grid-column: 1 / -1;
   }
@@ -1501,24 +1589,29 @@
   .pd-event-addon {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
-    min-height: 48px;
-    padding: 0.78rem 0.9rem;
+    align-self: flex-start;
+    width: fit-content;
+    max-width: 100%;
+    gap: 0.48rem;
+    min-height: 36px;
+    padding: 0.48rem 0.7rem;
     border: 1px solid rgba(180,104,171,0.25);
-    border-radius: 8px;
+    border-radius: 7px;
     background: #fff;
     cursor: pointer;
   }
   .pd-event-addon input[type="checkbox"] {
-    width: 1.1rem;
-    height: 1.1rem;
+    width: 0.9rem;
+    height: 0.9rem;
     padding: 0;
     flex: 0 0 auto;
     accent-color: var(--rose-dark);
     box-shadow: none;
   }
   .pd-event-addon span {
-    font-size: 0.9rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    line-height: 1.35;
     color: var(--dark);
   }
   @media (max-width: 768px) {
@@ -2582,6 +2675,67 @@
   }
   .cart-shipping-note.free-shipping {
     color: var(--deep-rose);
+    font-weight: 500;
+  }
+  .cart-shipping-settings {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0.8rem 0;
+    padding: 0.85rem;
+    border: 1px solid rgba(180,104,171,0.16);
+    border-radius: 9px;
+    background: rgba(255,255,255,0.62);
+  }
+  .cart-shipping-settings label {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+  }
+  .cart-shipping-settings select {
+    width: 100%;
+    min-height: 42px;
+    padding: 0.62rem 2.2rem 0.62rem 0.75rem;
+    border: 1px solid rgba(180,104,171,0.24);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--dark);
+    font: 0.78rem var(--sans);
+  }
+  .cart-shipping-method,
+  .cart-order-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+  .cart-shipping-method span:last-child,
+  .cart-order-total span:last-child { white-space: nowrap; color: var(--deep-rose); font-weight: 600; }
+  .cart-transport-note {
+    margin: 0.1rem 0 0;
+    color: var(--warm-gray);
+    font-size: 0.7rem;
+    line-height: 1.5;
+  }
+  .cart-order-total {
+    margin: 0.75rem 0 0.65rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(180,104,171,0.14);
+    font-family: var(--serif);
+    font-size: 1.08rem;
+  }
+  .cart-shipping-progress {
+    display: none;
+    margin: 0 0 0.75rem;
+    padding: 0.62rem 0.75rem;
+    border-radius: 8px;
+    background: rgba(241,227,239,0.72);
+    color: var(--deep-rose);
+    font-size: 0.75rem;
+    line-height: 1.45;
     font-weight: 500;
   }
   .cart-checkout-btn {
@@ -7770,16 +7924,16 @@
   <div class="announce-marquee">
     <div class="announce-track">
       <div class="announce-group">
-        <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
-        <span aria-hidden="true">✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
-        <span aria-hidden="true">✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
-        <span aria-hidden="true">✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+        <span>✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦</span>
+        <span aria-hidden="true">✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦</span>
+        <span aria-hidden="true">✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦</span>
+        <span aria-hidden="true">✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦</span>
       </div>
       <div class="announce-group" aria-hidden="true">
-        <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
-        <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
-        <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
-        <span>✦ Envio gratuito para Portugal e ilhas em encomendas acima de 60€ · Feito à mão em Portugal ✦</span>
+        <span>✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦</span>
+        <span>✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦</span>
+        <span>✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦</span>
+        <span>✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦</span>
       </div>
     </div>
   </div>
@@ -7903,14 +8057,32 @@
   <!-- Footer with total + checkout -->
   <div class="cart-footer" id="cart-footer" style="display:none">
     <div class="cart-subtotal">
-      <span>Total</span>
+      <span>Total dos produtos</span>
       <span id="cart-total-price">0€</span>
     </div>
     <div class="cart-discount-line" id="cart-discount-line">
       <span id="cart-discount-label"></span>
       <span id="cart-discount-value"></span>
     </div>
-    <p class="cart-shipping-note" id="cart-shipping-note">🚚 Envio calculado no checkout · Embalagem de oferta incluída</p>
+    <div class="cart-shipping-settings">
+      <label for="cart-shipping-destination">Destino da entrega</label>
+      <select id="cart-shipping-destination" onchange="setShippingDestination(this.value)">
+        <option value="mainland">Portugal Continental</option>
+        <option value="islands">Madeira e Açores</option>
+        <option value="international">Espanha e outros destinos internacionais</option>
+      </select>
+      <div class="cart-shipping-method">
+        <span id="cart-shipping-method-label">Envio Expresso</span>
+        <span id="cart-shipping-price">5,90 €</span>
+      </div>
+      <p class="cart-transport-note" id="cart-transport-note">Entrega normalmente realizada em 2 dias úteis após a expedição.</p>
+    </div>
+    <p class="cart-shipping-progress" id="cart-shipping-progress"></p>
+    <p class="cart-shipping-note" id="cart-shipping-note">🚚 Portes fixos aplicados uma única vez por encomenda · Embalagem de oferta incluída</p>
+    <div class="cart-order-total">
+      <span>Total da encomenda</span>
+      <span id="cart-order-total-price">0€</span>
+    </div>
     <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="closeCart();showPage('shop')">Continuar a comprar</button>
     <button type="button" class="cart-checkout-btn" onclick="checkoutWhatsApp()">Finalizar via WhatsApp 💬</button>
     <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="checkoutForm()">Finalizar via Formulário ✉️</button>
@@ -7989,7 +8161,7 @@
     <div class="products-grid">
       <div class="product-card">
         <div class="product-img has-photo">
-          <img src="assets/products/bloom.jpg" alt="Bloom, peça artesanal Love Essences" loading="lazy" decoding="async"/>
+          <img src="assets/products/bloom-mini-5.jpg" alt="Bloom, peça artesanal Love Essences" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Bloom</h3>
@@ -8663,7 +8835,7 @@
     <div class="shop-products-grid" id="shop-products-grid">
       <!-- ========== COLEÇÃO ASSINATURA ========== -->
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
-        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/bloom.jpg" alt="Bloom, peça artesanal Love Essences" loading="lazy"/></div>
+        <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/bloom-mini-5.jpg" alt="Bloom, peça artesanal Love Essences" loading="lazy"/></div>
         <div class="product-info">
           <h3 class="product-name">Bloom</h3>
           <p class="product-desc">Peça artesanal em porcelana, delicada e atemporal. Disponível em três tamanhos. A peça que fala por ti.</p>
@@ -8990,9 +9162,13 @@
             <label for="pd-event-date">Data do evento</label>
             <input type="date" id="pd-event-date"/>
           </div>
-          <div class="pd-event-field">
+          <div class="pd-event-field pd-event-field-name">
             <label for="pd-event-name">Nome</label>
             <input type="text" id="pd-event-name" placeholder="Ex: Leonor" maxlength="80"/>
+          </div>
+          <div class="pd-event-field pd-event-field-phrase">
+            <label for="pd-event-phrase">Frase para colocar na etiqueta</label>
+            <input type="text" id="pd-event-phrase" placeholder="Ex: Obrigada por fazeres parte deste dia" maxlength="100"/>
           </div>
           <div class="pd-event-field" id="pd-event-sweet-colors-wrap">
             <label for="pd-event-sweet-colors">Cores pretendidas dos doces</label>
@@ -9009,10 +9185,6 @@
               <input type="checkbox" id="pd-event-card"/>
               <span id="pd-event-card-label">Adicionar cartão</span>
             </label>
-          </div>
-          <div class="pd-event-field pd-event-field-wide">
-            <label for="pd-event-phrase">Frase para colocar na etiqueta</label>
-            <input type="text" id="pd-event-phrase" placeholder="Ex: Obrigada por fazeres parte deste dia" maxlength="100"/>
           </div>
         </div>
         <p class="pd-custom-note" id="pd-event-note"></p>
@@ -9051,7 +9223,7 @@
       </div>
 
       <button type="button" class="pd-cta" id="pd-cta" onclick="handleProductCta()">Encomendar</button>
-      <p id="pd-lead-time" style="text-align: center; font-size: 0.78rem; color: var(--warm-gray); margin-top: 0.8rem;">🚚 Envio em 3 a 5 dias úteis · Embalagem de oferta incluída</p>
+      <div class="pd-lead-time pd-lead-time--simple" id="pd-lead-time">📦 Produção: 3–5 dias úteis · 🚚 Entrega: 2 dias úteis após expedição</div>
     </div>
   </div>
 </div>
@@ -9434,7 +9606,7 @@
           <span class="channel-icon">📦</span>
           <div class="channel-text">
             <strong>Envio Nacional</strong>
-            <span>3 a 5 dias úteis nos artigos standard</span>
+            <span>Produção: 3–5 dias úteis · Entrega: 2 dias úteis após expedição</span>
           </div>
         </div>
         <div class="channel">
@@ -9920,99 +10092,28 @@
   <section style="padding:calc(var(--header-offset) + 3rem) 5vw 3rem; text-align:center; background:linear-gradient(180deg,rgba(241,227,239,0.4) 0%,transparent 100%); border-bottom:1px solid rgba(180,104,171,0.1);">
     <p class="section-label">✦ Documentos Legais</p>
     <h2 class="section-title" data-page-heading style="font-size:clamp(2rem,4.5vw,3.2rem);">Política de <em>Envio</em></h2>
-    <p style="font-size:0.78rem; color:var(--warm-gray); letter-spacing:0.06em; margin-top:0.5rem;">Última atualização: 14 de abril de 2026</p>
+    <p style="font-size:0.78rem; color:var(--warm-gray); letter-spacing:0.06em; margin-top:0.5rem;">Última atualização: 18 de agosto de 2026</p>
   </section>
 
   <div style="max-width:820px; margin:0 auto; padding:3.5rem 5vw 5rem;">
 
-    <p style="font-size:0.9rem; line-height:1.9; color:var(--warm-gray); border-left:2px solid var(--blush); padding-left:1.4rem; margin-bottom:3rem;">Na <strong>Love Essences</strong>: cada encomenda é preparada com cuidado, atenção ao detalhe e sensibilidade artesanal. Por se tratarem de produtos feitos à mão, muitas vezes produzidos por encomenda, os prazos de preparação e envio podem variar consoante o tipo de artigo, o nível de personalização e o volume de pedidos em curso.</p>
-
     <div class="legal-section">
       <span class="legal-num">01</span>
-      <h2 class="legal-title">Prazo de produção e expedição</h2>
-      <p class="legal-text">A maioria dos produtos da Love Essences é produzida por encomenda, pelo que o tempo de preparação pode variar consoante a complexidade de cada pedido.</p>
-      <p class="legal-text">De forma geral, o prazo estimado de produção é de <strong>2 a 3 dias úteis</strong>: contados a partir da confirmação do pagamento. Após conclusão, a encomenda é expedida, em regra, no prazo adicional de <strong>1 dia útil</strong>.</p>
-      <p class="legal-text">O prazo total de receção corresponde à soma do tempo de produção com o prazo do método de envio selecionado. Caso surja algum imprevisto ou necessidade de ajuste, a Love Essences entrará em contacto com o cliente sempre que possível.</p>
+      <h2 class="legal-title">Portugal Continental</h2>
+      <p class="legal-text">Todas as encomendas têm um custo fixo de envio de 5,90 €. Oferecemos os portes em encomendas de valor igual ou superior a 60 €. Após a conclusão da produção, a encomenda é expedida através de serviço Expresso, com entrega prevista em 2 dias úteis.</p>
+      <p class="legal-text">O prazo de transporte não inclui o período necessário para produção e personalização dos artigos.</p>
     </div>
 
     <div class="legal-section">
       <span class="legal-num">02</span>
-      <h2 class="legal-title">Método de envio e custos</h2>
-      <p class="legal-text">Os envios são efetuados exclusivamente através de <strong>CTT envio registado</strong>: de forma a garantir maior segurança e possibilidade de acompanhamento da encomenda.</p>
-      <p class="legal-sub-title">Tabela de custos por peso</p>
-      <div style="overflow-x:auto; border-radius:8px; border:1px solid rgba(180,104,171,0.15); margin:1rem 0 1.2rem;">
-        <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
-          <thead>
-            <tr style="background:rgba(180,104,171,0.08);">
-              <th style="padding:0.8rem 1.2rem; text-align:left; font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--deep-rose); font-weight:500; border-bottom:1px solid rgba(180,104,171,0.15);">Peso</th>
-              <th style="padding:0.8rem 1.2rem; text-align:left; font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--deep-rose); font-weight:500; border-bottom:1px solid rgba(180,104,171,0.15);">Custo</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="border-bottom:1px solid rgba(180,104,171,0.07);"><td style="padding:0.75rem 1.2rem; color:#5a3257;">Até 100 g</td><td style="padding:0.75rem 1.2rem; color:var(--deep-rose); font-weight:500;">4,60 €</td></tr>
-            <tr style="border-bottom:1px solid rgba(180,104,171,0.07);"><td style="padding:0.75rem 1.2rem; color:#5a3257;">Até 500 g</td><td style="padding:0.75rem 1.2rem; color:var(--deep-rose); font-weight:500;">5,40 €</td></tr>
-            <tr style="border-bottom:1px solid rgba(180,104,171,0.07);"><td style="padding:0.75rem 1.2rem; color:#5a3257;">Até 2 kg</td><td style="padding:0.75rem 1.2rem; color:var(--deep-rose); font-weight:500;">8,93 €</td></tr>
-            <tr><td style="padding:0.75rem 1.2rem; color:#5a3257;">Mais de 2 kg</td><td style="padding:0.75rem 1.2rem; color:var(--deep-rose); font-weight:500;">10,50 €</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="legal-text">O prazo estimado de entrega para envios registados é de <strong>1 a 2 dias úteis</strong> após expedição. Para envios para as ilhas, o prazo poderá ser superior em média 1 a 2 dias úteis adicionais.</p>
-      <p class="legal-text">Os valores apresentados poderão ser atualizados sem aviso prévio, sempre que haja alterações por parte da transportadora ou necessidade de revisão logística.</p>
-    </div>
-
-    <div class="legal-section">
-      <span class="legal-num">03</span>
-      <h2 class="legal-title">Prazo de entrega</h2>
-      <p class="legal-text">O prazo de entrega depende da conclusão da produção da encomenda e do destino de entrega.</p>
-      <p class="legal-text">A Love Essences não se responsabiliza por atrasos imputáveis a terceiros ou resultantes de circunstâncias externas, incluindo greves, feriados, falhas operacionais da transportadora, condições meteorológicas adversas ou outros constrangimentos logísticos.</p>
-    </div>
-
-    <div class="legal-section">
-      <span class="legal-num">04</span>
-      <h2 class="legal-title">Rastreamento da encomenda</h2>
-      <p class="legal-text">Após o envio da encomenda, o cliente receberá a informação necessária para acompanhar a entrega através do serviço de rastreamento disponibilizado pelos CTT.</p>
-      <p class="legal-text">Caso existam dificuldades no acompanhamento da encomenda, o cliente poderá entrar em contacto com a Love Essences para apoio.</p>
-    </div>
-
-    <div class="legal-section">
-      <span class="legal-num">05</span>
-      <h2 class="legal-title">Morada de envio</h2>
-      <p class="legal-text">É da responsabilidade do cliente garantir que a morada de entrega e o endereço de e-mail fornecidos no momento da compra estão corretos e completos.</p>
-      <p class="legal-text">A Love Essences não se responsabiliza por envios para moradas incorretas, incompletas ou mal introduzidas pelo cliente. Caso a encomenda seja devolvida ou seja necessário efetuar novo envio devido a erro nos dados fornecidos, os custos do reenvio ficarão a cargo do cliente.</p>
-    </div>
-
-    <div class="legal-section">
-      <span class="legal-num">06</span>
-      <h2 class="legal-title">Portes grátis</h2>
-      <p class="legal-text">Em campanhas promocionais ou em compras acima de determinado valor, a Love Essences poderá oferecer portes grátis. Neste momento, os portes grátis aplicam-se a encomendas acima de 60€ para Portugal e ilhas. Sempre que aplicável, essa condição será apresentada no website ou no checkout, de acordo com os critérios definidos para a campanha em vigor.</p>
-      <p class="legal-text">A oferta de portes grátis poderá ser alterada, limitada ou removida sem aviso prévio.</p>
-    </div>
-
-    <div class="legal-section">
-      <span class="legal-num">07</span>
-      <h2 class="legal-title">Problemas com a entrega</h2>
-      <p class="legal-text">Se a encomenda não chegar dentro do prazo estimado ou se existir qualquer problema na entrega, como extravio, atraso anormal ou embalagem danificada, o cliente deverá entrar em contacto com a Love Essences com a maior brevidade possível.</p>
-      <p class="legal-text">Sempre que necessário, poderão ser solicitadas fotografias da embalagem, do produto ou outras informações relevantes para análise da situação junto da transportadora. A Love Essences fará o possível para acompanhar o processo e ajudar a encontrar a solução mais adequada.</p>
-    </div>
-
-    <div class="legal-section">
-      <span class="legal-num">08</span>
-      <h2 class="legal-title">Destinos de envio</h2>
-      <p class="legal-text">Atualmente, a Love Essences realiza envios para <strong>Portugal Continental e Ilhas</strong>.</p>
-      <p class="legal-text">Caso pretendas envio para outro destino, deverás entrar em contacto previamente para verificação de disponibilidade e condições de envio.</p>
+      <h2 class="legal-title">Madeira e Açores</h2>
+      <p class="legal-text">Os portes são calculados de acordo com o peso e o destino. Contacta-nos antes de finalizares a encomenda para confirmação do valor.</p>
     </div>
 
     <div class="legal-section" style="border-bottom:none;">
-      <span class="legal-num">09</span>
-      <h2 class="legal-title">Alterações à Política de Envio</h2>
-      <p class="legal-text">A Love Essences reserva-se o direito de atualizar, alterar ou modificar a presente Política de Envio a qualquer momento. Quaisquer alterações entrarão em vigor a partir da sua publicação no website.</p>
-      <p class="legal-text" style="margin-top:1.5rem;">Para qualquer questão relacionada com o envio da sua encomenda, contacte-nos:</p>
-      <div class="legal-contact-block">
-        <p><strong style="color:var(--dark);">Love Essences</strong></p>
-        <p>📧 <a href="mailto:love-essences@outlook.com">love-essences@outlook.com</a></p>
-        <p>🌐 <a href="https://love-essences.pt/">love-essences.pt</a></p>
-        <p>📍 Sintra, Portugal</p>
-      </div>
+      <span class="legal-num">03</span>
+      <h2 class="legal-title">Espanha e outros destinos</h2>
+      <p class="legal-text">Os portes são calculados de acordo com o peso, dimensões e destino. Contacta-nos para receberes uma estimativa antes de finalizares a encomenda.</p>
     </div>
 
   </div>
@@ -10551,6 +10652,36 @@ var I18N_EXTRA_TEXT = {
     "Adiciona produtos da nossa loja para começar.": "Add products from our shop to get started.",
     "Finalizar via WhatsApp 💬": "Checkout via WhatsApp 💬",
     "Finalizar via Formulário ✉️": "Checkout by Form ✉️",
+    "✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦": "✦ Fixed shipping €5.90 · Free over €60 in mainland Portugal · Handmade in Portugal ✦",
+    "📦 Produção: 3–5 dias úteis · 🚚 Entrega: 2 dias úteis após expedição": "📦 Production: 3–5 business days · 🚚 Delivery: 2 business days after dispatch",
+    "📦 Produção habitual: 3–5 dias úteis · 🚚 Entrega: 2 dias úteis após expedição": "📦 Usual production: 3–5 business days · 🚚 Delivery: 2 business days after dispatch",
+    "Produção habitual": "Usual production",
+    "3–5 dias úteis": "3–5 business days",
+    "Entrega": "Delivery",
+    "2 dias úteis após expedição": "2 business days after dispatch",
+    "Para quantidades elevadas, confirmamos o prazo de acordo com a quantidade e a data do evento.": "For large quantities, we confirm the timeframe according to the quantity and event date.",
+    "Recomendamos realizar a encomenda com 1 a 2 meses de antecedência para eventos.": "We recommend placing event orders 1 to 2 months in advance.",
+    "Produção: 3–5 dias úteis · Entrega: 2 dias úteis após expedição": "Production: 3–5 business days · Delivery: 2 business days after dispatch",
+    "Total dos produtos": "Product total",
+    "Destino da entrega": "Delivery destination",
+    "Portugal Continental": "Mainland Portugal",
+    "Madeira e Açores": "Madeira and the Azores",
+    "Espanha e outros destinos internacionais": "Spain and other international destinations",
+    "Envio Expresso": "Express Shipping",
+    "Entrega normalmente realizada em 2 dias úteis após a expedição.": "Delivery is normally completed within 2 business days after dispatch.",
+    "🚚 Portes fixos aplicados uma única vez por encomenda · Embalagem de oferta incluída": "🚚 Fixed shipping applied once per order · Gift packaging included",
+    "Total da encomenda": "Order total",
+    "Portes sob consulta": "Shipping on request",
+    "Portes calculados de acordo com o peso e o destino": "Shipping calculated according to weight and destination",
+    "Conseguiste portes gratuitos! 💜": "You have unlocked free shipping! 💜",
+    "Grátis": "Free",
+    "A confirmar": "To be confirmed",
+    "Última atualização: 18 de agosto de 2026": "Last updated: 18 August 2026",
+    "Todas as encomendas têm um custo fixo de envio de 5,90 €. Oferecemos os portes em encomendas de valor igual ou superior a 60 €. Após a conclusão da produção, a encomenda é expedida através de serviço Expresso, com entrega prevista em 2 dias úteis.": "All orders have a fixed shipping cost of €5.90. We offer free shipping on orders worth €60 or more. Once production is complete, the order is dispatched using an Express service, with delivery expected within 2 business days.",
+    "O prazo de transporte não inclui o período necessário para produção e personalização dos artigos.": "The transport time does not include the period required to produce and personalise the items.",
+    "Os portes são calculados de acordo com o peso e o destino. Contacta-nos antes de finalizares a encomenda para confirmação do valor.": "Shipping costs are calculated according to weight and destination. Contact us before finalising your order to confirm the amount.",
+    "Espanha e outros destinos": "Spain and other destinations",
+    "Os portes são calculados de acordo com o peso, dimensões e destino. Contacta-nos para receberes uma estimativa antes de finalizares a encomenda.": "Shipping costs are calculated according to weight, dimensions and destination. Contact us for an estimate before finalising your order.",
     "🚚 Envio calculado no checkout · Embalagem de oferta incluída": "🚚 Shipping calculated at checkout · Gift packaging included",
     "🚚 Portes de envio gratuitos para Portugal e ilhas · Embalagem de oferta incluída": "🚚 Free shipping to Portugal and islands · Gift packaging included",
     "✦ Feito à mão com amor · Portugal": "✦ Handmade with love · Portugal",
@@ -10960,6 +11091,36 @@ var I18N_EXTRA_TEXT = {
     "Adiciona produtos da nossa loja para começar.": "Añade productos de nuestra tienda para empezar.",
     "Finalizar via WhatsApp 💬": "Finalizar por WhatsApp 💬",
     "Finalizar via Formulário ✉️": "Finalizar por Formulario ✉️",
+    "✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦": "✦ Envío fijo 5,90 € · Gratis a partir de 60 € en Portugal continental · Hecho a mano en Portugal ✦",
+    "📦 Produção: 3–5 dias úteis · 🚚 Entrega: 2 dias úteis após expedição": "📦 Producción: 3–5 días laborables · 🚚 Entrega: 2 días laborables después de la expedición",
+    "📦 Produção habitual: 3–5 dias úteis · 🚚 Entrega: 2 dias úteis após expedição": "📦 Producción habitual: 3–5 días laborables · 🚚 Entrega: 2 días laborables después de la expedición",
+    "Produção habitual": "Producción habitual",
+    "3–5 dias úteis": "3–5 días laborables",
+    "Entrega": "Entrega",
+    "2 dias úteis após expedição": "2 días laborables después de la expedición",
+    "Para quantidades elevadas, confirmamos o prazo de acordo com a quantidade e a data do evento.": "Para cantidades elevadas, confirmamos el plazo según la cantidad y la fecha del evento.",
+    "Recomendamos realizar a encomenda com 1 a 2 meses de antecedência para eventos.": "Recomendamos realizar el pedido con 1 o 2 meses de antelación para eventos.",
+    "Produção: 3–5 dias úteis · Entrega: 2 dias úteis após expedição": "Producción: 3–5 días laborables · Entrega: 2 días laborables después de la expedición",
+    "Total dos produtos": "Total de productos",
+    "Destino da entrega": "Destino de entrega",
+    "Portugal Continental": "Portugal continental",
+    "Madeira e Açores": "Madeira y Azores",
+    "Espanha e outros destinos internacionais": "España y otros destinos internacionales",
+    "Envio Expresso": "Envío Exprés",
+    "Entrega normalmente realizada em 2 dias úteis após a expedição.": "La entrega se realiza normalmente en 2 días laborables después de la expedición.",
+    "🚚 Portes fixos aplicados uma única vez por encomenda · Embalagem de oferta incluída": "🚚 Envío fijo aplicado una sola vez por pedido · Embalaje de regalo incluido",
+    "Total da encomenda": "Total del pedido",
+    "Portes sob consulta": "Envío bajo consulta",
+    "Portes calculados de acordo com o peso e o destino": "Envío calculado según el peso y el destino",
+    "Conseguiste portes gratuitos! 💜": "¡Has conseguido el envío gratuito! 💜",
+    "Grátis": "Gratis",
+    "A confirmar": "Por confirmar",
+    "Última atualização: 18 de agosto de 2026": "Última actualización: 18 de agosto de 2026",
+    "Todas as encomendas têm um custo fixo de envio de 5,90 €. Oferecemos os portes em encomendas de valor igual ou superior a 60 €. Após a conclusão da produção, a encomenda é expedida através de serviço Expresso, com entrega prevista em 2 dias úteis.": "Todos los pedidos tienen un coste fijo de envío de 5,90 €. Ofrecemos el envío en pedidos de valor igual o superior a 60 €. Una vez finalizada la producción, el pedido se envía mediante servicio Exprés, con entrega prevista en 2 días laborables.",
+    "O prazo de transporte não inclui o período necessário para produção e personalização dos artigos.": "El plazo de transporte no incluye el periodo necesario para la producción y personalización de los artículos.",
+    "Os portes são calculados de acordo com o peso e o destino. Contacta-nos antes de finalizares a encomenda para confirmação do valor.": "Los gastos de envío se calculan según el peso y el destino. Contáctanos antes de finalizar el pedido para confirmar el importe.",
+    "Espanha e outros destinos": "España y otros destinos",
+    "Os portes são calculados de acordo com o peso, dimensões e destino. Contacta-nos para receberes uma estimativa antes de finalizares a encomenda.": "Los gastos de envío se calculan según el peso, las dimensiones y el destino. Contáctanos para recibir una estimación antes de finalizar el pedido.",
     "🚚 Envio calculado no checkout · Embalagem de oferta incluída": "🚚 Envío calculado en el checkout · Embalaje de regalo incluido",
     "🚚 Portes de envio gratuitos para Portugal e ilhas · Embalagem de oferta incluída": "🚚 Envío gratis a Portugal e islas · Embalaje de regalo incluido",
     "✦ Feito à mão com amor · Portugal": "✦ Hecho a mano con amor · Portugal",
@@ -11698,7 +11859,14 @@ function setLanguage(lang) {
   try { localStorage.setItem('loveEssencesLanguage', lang); } catch (err) {}
 
   document.documentElement.lang = lang === 'pt' ? 'pt-PT' : (lang === 'es' ? 'es' : 'en');
+  if (typeof renderCart === 'function') renderCart();
   applyLanguage(document.body);
+  var shippingHeading = document.querySelector('#page-shipping [data-page-heading]');
+  if (shippingHeading) {
+    shippingHeading.innerHTML = lang === 'en'
+      ? 'Shipping <em>Policy</em>'
+      : (lang === 'es' ? 'Política de <em>Envío</em>' : 'Política de <em>Envio</em>');
+  }
   updateLanguageButtons();
 }
 
@@ -12432,7 +12600,7 @@ var PRODUCT_CATALOG = {
     soapFlowerOptions: true,
     name: 'Bloom',
     visual: '🌸',
-    image: 'assets/products/bloom.jpg',
+    image: 'assets/products/bloom-mini-5.jpg',
     visualBg: 'linear-gradient(160deg, #f8eff8 0%, #e3bedf 100%)',
     storyTitle: 'A peça',
     story: 'O Bloom é a nossa peça âncora, feita à mão em porcelana, com o cuidado lento de quem sabe que cada detalhe importa. Não é um objeto. É uma presença discreta, atemporal, que se torna parte do espaço onde fica.',
@@ -12448,7 +12616,8 @@ var PRODUCT_CATALOG = {
           'assets/products/bloom-mini-1.jpg',
           'assets/products/bloom-mini-2.jpg',
           'assets/products/bloom-mini-3.jpg',
-          'assets/products/bloom-mini-4.jpg'
+          'assets/products/bloom-mini-4.jpg',
+          'assets/products/bloom.jpg'
         ]
       },
       { id: 'M', label: 'M', price: 44.90, note: 'peça central' },
@@ -13091,9 +13260,69 @@ function openProduct(productId, options) {
   document.getElementById('pd-cta').textContent = p.ctaLabel || 'Adicionar ao Carrinho';
   var leadTimeEl = document.getElementById('pd-lead-time');
   if (leadTimeEl) {
-    leadTimeEl.textContent = p.eventOptions
-      ? '📅 Prazo confirmado consoante a quantidade · Para encomendas de maior volume, recomendamos 1 a 2 meses de antecedência'
-      : '🚚 Envio em 3 a 5 dias úteis · Embalagem de oferta incluída';
+    leadTimeEl.innerHTML = '';
+    var isEventFavour = p.category === 'Lembranças para Eventos';
+    leadTimeEl.className = 'pd-lead-time ' + (isEventFavour ? 'pd-lead-time--events' : 'pd-lead-time--simple');
+
+    function createLeadTimeIcon(type) {
+      var icon = document.createElement('span');
+      icon.className = 'pd-lead-time-icon';
+      icon.setAttribute('aria-hidden', 'true');
+      var emojis = {
+        box: '📦',
+        truck: '🚚',
+        info: 'ℹ️',
+        calendar: '📅'
+      };
+      icon.textContent = emojis[type] || '';
+      return icon;
+    }
+
+    function createLeadTimeStep(type, label, value) {
+      var step = document.createElement('div');
+      step.className = 'pd-lead-time-step';
+      step.appendChild(createLeadTimeIcon(type));
+      var copy = document.createElement('div');
+      var labelEl = document.createElement('span');
+      labelEl.className = 'pd-lead-time-label';
+      labelEl.textContent = label;
+      var valueEl = document.createElement('span');
+      valueEl.className = 'pd-lead-time-value';
+      valueEl.textContent = value;
+      copy.appendChild(labelEl);
+      copy.appendChild(valueEl);
+      step.appendChild(copy);
+      return step;
+    }
+
+    if (isEventFavour) {
+      var leadOverview = document.createElement('div');
+      leadOverview.className = 'pd-lead-time-overview';
+      leadOverview.appendChild(createLeadTimeStep('box', 'Produção habitual', '3–5 dias úteis'));
+      leadOverview.appendChild(createLeadTimeStep('truck', 'Entrega', '2 dias úteis após expedição'));
+      leadTimeEl.appendChild(leadOverview);
+
+      var leadDetail = document.createElement('div');
+      leadDetail.className = 'pd-lead-time-detail';
+      leadDetail.appendChild(createLeadTimeIcon('info'));
+      var leadDetailText = document.createElement('span');
+      leadDetailText.textContent = 'Para quantidades elevadas, confirmamos o prazo de acordo com a quantidade e a data do evento.';
+      leadDetail.appendChild(leadDetailText);
+      leadTimeEl.appendChild(leadDetail);
+
+      var leadRecommendation = document.createElement('div');
+      leadRecommendation.className = 'pd-lead-time-recommendation';
+      leadRecommendation.appendChild(createLeadTimeIcon('calendar'));
+      var leadRecommendationText = document.createElement('span');
+      leadRecommendationText.textContent = 'Recomendamos realizar a encomenda com 1 a 2 meses de antecedência para eventos.';
+      leadRecommendation.appendChild(leadRecommendationText);
+      leadTimeEl.appendChild(leadRecommendation);
+    } else {
+      var leadPrimary = document.createElement('span');
+      leadPrimary.textContent = '📦 Produção: 3–5 dias úteis · 🚚 Entrega: 2 dias úteis após expedição';
+      leadTimeEl.appendChild(leadPrimary);
+    }
+    applyLanguage(leadTimeEl);
   }
 
   // Tags
@@ -14442,6 +14671,17 @@ try {
   cart = [];
 }
 
+var SHIPPING_FLAT_RATE = 5.90;
+var FREE_SHIPPING_THRESHOLD = 60;
+var SHIPPING_DESTINATIONS = ['mainland', 'islands', 'international'];
+var shippingDestination = 'mainland';
+try {
+  var savedShippingDestination = localStorage.getItem('le_shipping_destination');
+  if (SHIPPING_DESTINATIONS.indexOf(savedShippingDestination) !== -1) {
+    shippingDestination = savedShippingDestination;
+  }
+} catch (err) {}
+
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, function(char) {
     return {
@@ -14466,7 +14706,7 @@ function saveCart() {
 }
 
 var CART_IMAGE_MAP = {
-  'Bloom': 'assets/products/bloom.jpg',
+  'Bloom': 'assets/products/bloom-mini-5.jpg',
   'Aurora': 'assets/products/aurora.jpg',
   'Serenata': 'assets/products/serenata.jpg',
   'Diamante': 'assets/products/diamante-v2.jpg',
@@ -14682,6 +14922,53 @@ function getTotal() {
   return Math.max(0, subtotal - (discount.amount || 0));
 }
 
+function getShippingDestinationLabel(destination) {
+  if (destination === 'islands') return 'Madeira e Açores';
+  if (destination === 'international') return 'Espanha e outros destinos internacionais';
+  return 'Portugal Continental';
+}
+
+function getShippingQuote() {
+  var productSubtotal = getSubtotal();
+  if (shippingDestination === 'islands') {
+    return {
+      cost: null,
+      method: 'Portes sob consulta',
+      note: 'Portes sob consulta'
+    };
+  }
+  if (shippingDestination === 'international') {
+    return {
+      cost: null,
+      method: 'Portes calculados de acordo com o peso e o destino',
+      note: 'Portes calculados de acordo com o peso e o destino'
+    };
+  }
+  return {
+    cost: productSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FLAT_RATE,
+    method: 'Envio Expresso',
+    note: '🚚 Portes fixos aplicados uma única vez por encomenda · Embalagem de oferta incluída'
+  };
+}
+
+function setShippingDestination(destination) {
+  if (SHIPPING_DESTINATIONS.indexOf(destination) === -1) destination = 'mainland';
+  shippingDestination = destination;
+  try { localStorage.setItem('le_shipping_destination', destination); } catch (err) {}
+  renderCart();
+}
+
+function getFreeShippingProgressText(remaining) {
+  var amount = formatShippingPrice(remaining);
+  if (currentLanguage === 'en') return 'Spend ' + amount + ' more to get free shipping.';
+  if (currentLanguage === 'es') return 'Te faltan ' + amount + ' para conseguir el envío gratuito.';
+  return 'Faltam ' + amount + ' para teres portes gratuitos.';
+}
+
+function formatShippingPrice(value) {
+  return Number(value).toFixed(2).replace('.', ',') + ' €';
+}
+
 function getCount() {
   return cart.reduce(function(sum, i){ return sum + (Number(i.qty) || 0); }, 0);
 }
@@ -14697,6 +14984,12 @@ function renderCart() {
   var footerEl = document.getElementById('cart-footer');
   var totalEl  = document.getElementById('cart-total-price');
   var shippingEl = document.getElementById('cart-shipping-note');
+  var shippingDestinationEl = document.getElementById('cart-shipping-destination');
+  var shippingMethodLabel = document.getElementById('cart-shipping-method-label');
+  var shippingPrice = document.getElementById('cart-shipping-price');
+  var transportNote = document.getElementById('cart-transport-note');
+  var shippingProgress = document.getElementById('cart-shipping-progress');
+  var orderTotalEl = document.getElementById('cart-order-total-price');
   var discountLine = document.getElementById('cart-discount-line');
   var discountLabel = document.getElementById('cart-discount-label');
   var discountValue = document.getElementById('cart-discount-value');
@@ -14714,6 +15007,7 @@ function renderCart() {
   var subtotal = getSubtotal();
   var discount = getCartDiscount();
   var total = getTotal();
+  var shipping = getShippingQuote();
   totalEl.textContent = formatPrice(total);
   if (discountLine && discountLabel && discountValue) {
     if (discount.amount > 0) {
@@ -14726,14 +15020,37 @@ function renderCart() {
       discountValue.textContent = '';
     }
   }
+  if (shippingDestinationEl) shippingDestinationEl.value = shippingDestination;
+  if (shippingMethodLabel) shippingMethodLabel.textContent = translatedText(shipping.method, currentLanguage);
+  if (shippingPrice) {
+    shippingPrice.textContent = shipping.cost === null
+      ? '—'
+      : shipping.cost === 0
+        ? translatedText('Grátis', currentLanguage)
+        : formatShippingPrice(shipping.cost);
+  }
+  if (transportNote) transportNote.style.display = shippingDestination === 'mainland' ? '' : 'none';
   if (shippingEl) {
-    if (total >= 60) {
-      shippingEl.textContent = '🚚 Portes de envio gratuitos para Portugal e ilhas · Embalagem de oferta incluída';
-      shippingEl.classList.add('free-shipping');
+    shippingEl.textContent = translatedText(shipping.note, currentLanguage);
+    shippingEl.classList.toggle('free-shipping', shippingDestination === 'mainland' && shipping.cost === 0);
+  }
+  if (shippingProgress) {
+    var remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+    if (shippingDestination === 'mainland' && remaining <= 0) {
+      shippingProgress.textContent = translatedText('Conseguiste portes gratuitos! 💜', currentLanguage);
+      shippingProgress.style.display = 'block';
+    } else if (shippingDestination === 'mainland' && remaining > 0 && remaining < 15) {
+      shippingProgress.textContent = getFreeShippingProgressText(remaining);
+      shippingProgress.style.display = 'block';
     } else {
-      shippingEl.textContent = '🚚 Envio calculado no checkout · Embalagem de oferta incluída';
-      shippingEl.classList.remove('free-shipping');
+      shippingProgress.textContent = '';
+      shippingProgress.style.display = 'none';
     }
+  }
+  if (orderTotalEl) {
+    orderTotalEl.textContent = shipping.cost === null
+      ? translatedText('A confirmar', currentLanguage)
+      : formatPrice(total + shipping.cost);
   }
 
   itemsEl.innerHTML = cart.map(function(item) {
@@ -14797,7 +15114,17 @@ function buildOrderSummary() {
     lines.push('Subtotal: ' + formatPrice(subtotal));
     lines.push(discount.label + ': -' + formatPrice(discount.amount));
   }
-  lines.push('Total: ' + formatPrice(getTotal()));
+  var shipping = getShippingQuote();
+  lines.push(translatedText('Total dos produtos', currentLanguage) + ': ' + formatPrice(getTotal()));
+  lines.push(translatedText('Destino da entrega', currentLanguage) + ': ' + translatedText(getShippingDestinationLabel(shippingDestination), currentLanguage));
+  if (shipping.cost === null) {
+    lines.push(translatedText(shipping.method, currentLanguage));
+    lines.push(translatedText('Total da encomenda', currentLanguage) + ': ' + translatedText('A confirmar', currentLanguage));
+  } else {
+    lines.push(translatedText('Envio Expresso', currentLanguage) + ': ' + (shipping.cost === 0 ? translatedText('Grátis', currentLanguage) : formatShippingPrice(shipping.cost)));
+    lines.push(translatedText('Entrega normalmente realizada em 2 dias úteis após a expedição.', currentLanguage));
+    lines.push(translatedText('Total da encomenda', currentLanguage) + ': ' + formatPrice(getTotal() + shipping.cost));
+  }
   return lines.join('\n');
 }
 
