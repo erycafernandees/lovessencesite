@@ -66,7 +66,10 @@ STATIC_ROUTES = [
     Route("/loja/", "shop", "Loja de Presentes Artesanais e Personalizados | Love Essences", "Explora presentes artesanais, boxes, difusores, sabonetes, velas e lembranças personalizadas, criados à mão em Portugal.", heading="Cada peça é única.<br/><em>Como quem a vai receber.</em>", label="Loja"),
     Route("/ocasioes/", "occasions", "Lembranças Personalizadas em Portugal | Love Essences", "Descobre lembranças personalizadas e artesanais para convidados, casamentos, batizados, comunhões e eventos, feitas à mão em Portugal.", label="Lembranças Personalizadas"),
     Route("/sobre-nos/", "about", "Sobre Nós | Love Essences", "Conhece a Love Essences, uma marca portuguesa de presentes artesanais feitos à mão com cuidado, intenção e personalização.", label="Sobre Nós"),
-    Route("/contactos/", "contact", "Contactos e Encomendas Personalizadas | Love Essences", "Fala com a Love Essences para criar um presente ou lembrança personalizada para a tua ocasião, mensagem e pessoa especial.", label="Contactos"),
+    Route("/contactos/", "contact", "Projetos Totalmente Personalizados | Love Essences", "Conta-nos a tua ideia para criarmos lembranças e presentes totalmente personalizados, com proposta e orçamento à tua medida.", label="Personalizados"),
+    Route("/checkout/", "checkout", "Checkout Seguro | Love Essences", "Conclui a tua encomenda Love Essences através do checkout seguro.", label="Checkout", index=False),
+    Route("/projeto/orcamento/", "quote", "Proposta Personalizada | Love Essences", "Consulta e aprova a tua proposta personalizada Love Essences.", label="Proposta", index=False),
+    Route("/encomenda/confirmacao/", "confirmation", "Confirmação da Encomenda | Love Essences", "Consulta a confirmação da tua encomenda Love Essences.", label="Confirmação", index=False),
     Route("/acompanhar-encomenda/", "tracking", "Acompanhar Encomenda | Love Essences", "Consulta como acompanhar a tua encomenda Love Essences através do serviço oficial dos CTT.", label="Acompanhar Encomenda", index=False),
     Route("/politica-de-privacidade/", "privacy", "Política de Privacidade | Love Essences", "Consulta como a Love Essences recolhe, utiliza e protege dados pessoais e gere cookies no website.", label="Política de Privacidade"),
     Route("/termos-de-servico/", "terms", "Termos de Serviço | Love Essences", "Consulta os termos aplicáveis a produtos, personalizações, encomendas, pagamentos e utilização do website Love Essences.", label="Termos de Serviço"),
@@ -631,9 +634,13 @@ def build(output: Path, sync_root_seo: bool) -> None:
         shutil.rmtree(output)
     output.mkdir(parents=True)
 
-    for directory in ("assets", "dist"):
+    for directory in ("assets", "dist", "admin"):
         shutil.copytree(ROOT / directory, output / directory)
     shutil.copy2(ROOT / ".nojekyll", output / ".nojekyll")
+    for filename in ("_headers", "_redirects"):
+        source_file = ROOT / filename
+        if source_file.exists():
+            shutil.copy2(source_file, output / filename)
 
     source = (ROOT / "index.html").read_text(encoding="utf-8")
     products, routes = get_routes(source)

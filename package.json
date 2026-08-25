@@ -2,7 +2,9 @@
   "scripts": {
     "build": "python3 scripts/build_site.py --output _site --sync-root-seo",
     "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify",
-    "validate:seo": "python3 scripts/validate_site.py --output _site"
+    "validate:seo": "python3 scripts/validate_site.py --output _site",
+    "validate:commerce": "python3 scripts/validate_commerce.py",
+    "validate": "python3 scripts/validate_site.py --output _site && python3 scripts/validate_commerce.py"
   },
   "devDependencies": {
     "tailwindcss": "3.4.17"

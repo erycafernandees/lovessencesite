@@ -64,6 +64,7 @@
 <link rel="preload" as="image" href="./assets/hero/hero-teddy-lavender-mobile.jpg" media="(max-width: 768px)" fetchpriority="high"/>
 <link rel="stylesheet" href="./dist/output.css"/>
 <link rel="stylesheet" href="./assets/css/analytics-consent.css"/>
+<link rel="stylesheet" href="./assets/css/commerce.css"/>
 <script src="./assets/js/analytics-config.js"></script>
 <script defer src="./assets/js/analytics.js"></script>
 <script src="./assets/js/commercial-content.js"></script>
@@ -72,9 +73,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <!-- ============================================================ -->
-<!--  CHECKOUT, V14                                              -->
-<!--  Versão pronta para preview: encomendas por WhatsApp/formulário.
-      Shopify fica desativado até existirem loja, token e produtos reais. -->
+<!--  CHECKOUT LOVE ESSENCES: backend próprio + Stripe Checkout   -->
 <!-- ============================================================ -->
 <script>
   var WHATSAPP_NUMBER = '351966389161';
@@ -4439,6 +4438,26 @@
     border-left: 1px solid rgba(180,104,171,0.12);
   }
 
+  /* Keep the selected products visible even when the order summary is tall. */
+  .cart-items {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: min(36dvh, 420px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .cart-items:not(:empty) {
+    min-height: 124px;
+  }
+
+  .cart-footer {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
   .cart-header,
   .cart-footer {
     border-color: rgba(180,104,171,0.12) !important;
@@ -8084,8 +8103,8 @@
       <span id="cart-order-total-price">0€</span>
     </div>
     <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="closeCart();showPage('shop')">Continuar a comprar</button>
-    <button type="button" class="cart-checkout-btn" onclick="checkoutWhatsApp()">Finalizar via WhatsApp 💬</button>
-    <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="checkoutForm()">Finalizar via Formulário ✉️</button>
+    <button type="button" class="cart-checkout-btn" onclick="LoveCommerce.startCatalogCheckout(this)">Avançar para pagamento seguro</button>
+    <p style="text-align:center;font-size:.7rem;color:var(--warm-gray);line-height:1.5;">Pagamento protegido pela Stripe · métodos apresentados conforme elegibilidade</p>
     <button type="button" class="cart-clear-btn" onclick="clearCart()">Esvaziar carrinho</button>
   </div>
 </div>
@@ -9205,6 +9224,19 @@
         </div>
       </div>
 
+      <div class="pd-section" id="pd-reference-section">
+        <h4>Imagem de referência <span style="font-weight:400;text-transform:none;letter-spacing:0;">(opcional)</span></h4>
+        <div class="pd-reference-upload">
+          <input type="file" id="pd-reference-files" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" multiple onchange="LoveCommerce.setProductFiles(this.files)"/>
+          <div class="pd-reference-upload-row">
+            <label class="pd-reference-trigger" for="pd-reference-files"><span class="pd-reference-trigger-mark" aria-hidden="true">+</span> Adicionar referência</label>
+            <p class="pd-custom-note pd-reference-status" id="pd-reference-status" aria-live="polite">Nenhum ficheiro selecionado</p>
+          </div>
+          <p class="pd-custom-note pd-reference-hint">Até 3 ficheiros · JPG, PNG ou PDF · máx. 10 MB cada</p>
+        </div>
+        <a class="pd-special-link" href="/contactos/" onclick="showPage('contact'); return false;">Queres uma personalização diferente? Fala connosco</a>
+      </div>
+
       <!-- Composição / Detalhes do produto -->
       <div class="pd-section" id="pd-details-section">
         <h4>Detalhes</h4>
@@ -9577,15 +9609,15 @@
 <!-- ============================================================ -->
 <div class="page" id="page-contact">
   <div class="contact-hero">
-    <p class="section-label">✦ Vamos criar juntos</p>
-    <h2 data-page-heading>Conta-nos<br/><em>tudo sobre ela.</em></h2>
-    <p>Cada encomenda personalizada começa aqui, com uma história.</p>
+    <p class="section-label">✦ Projetos totalmente personalizados</p>
+    <h2 data-page-heading>Cria algo<br/><em>só teu.</em></h2>
+    <p>Não encontraste exatamente o que procuras? Criamos lembranças e presentes totalmente personalizados para a tua ocasião. Conta-nos a tua ideia e entraremos em contacto contigo para desenvolvermos uma proposta à tua medida.</p>
   </div>
 
   <div class="contact-body">
     <div class="contact-info">
-      <h3>Como funciona<br/>a personalização</h3>
-      <p>Não precisas de saber exatamente o que queres. Diz-nos a ocasião, quem é a pessoa, e o que queres transmitir. Nós tratamos do resto, desde o aroma à embalagem, desde a cor à mensagem.</p>
+      <h3>Como funciona<br/>um projeto especial</h3>
+      <p>Recebemos a tua ideia, analisamos os detalhes e entramos em contacto contigo. Só depois preparamos o orçamento. O pagamento é feito através de um checkout seguro apenas quando aprovares a proposta.</p>
 
       <div class="contact-channels">
         <div class="channel">
@@ -9625,8 +9657,8 @@
     </div>
 
     <div class="contact-form">
-      <h3 class="form-title">Pede o teu presente</h3>
-      <p class="form-subtitle">Preenche o formulário e entraremos em contacto em menos de 24 horas.</p>
+      <h3 class="form-title">Conta-nos a tua ideia</h3>
+      <p class="form-subtitle">Este formulário destina-se a criações que não correspondem diretamente aos artigos da loja. Não existe pagamento no momento da submissão.</p>
 
       <!-- ✅ Mensagem de sucesso (aparece após envio) -->
       <div id="form-success" style="display:none; text-align:center; padding: 2.5rem 1rem; animation: fadeIn 0.5s ease;">
@@ -9636,8 +9668,7 @@
         <button type="button" onclick="resetForm()" style="margin-top: 1.5rem; background: transparent; border: 1px solid rgba(180,104,171,0.4); color: var(--rose); padding: 0.6rem 1.5rem; font-family: var(--sans); font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 2px;">Novo Pedido</button>
       </div>
 
-      <!-- ✅ Formulário Formspree, substitui YOUR_FORM_ID pelo teu código -->
-      <form id="contact-form" action="https://formspree.io/f/mqegwdkb" method="POST" onsubmit="handleSubmit(event)">
+      <form id="contact-form" onsubmit="handleSubmit(event)">
 
         <div class="form-row">
           <div class="form-group">
@@ -9645,124 +9676,77 @@
             <input type="text" name="nome" placeholder="Ana Silva" required/>
           </div>
           <div class="form-group">
-            <label>Email ou WhatsApp</label>
-            <input type="text" name="contacto" placeholder="ana@email.com" required/>
+            <label>Email</label>
+            <input type="email" name="email" placeholder="ana@email.com" required/>
           </div>
         </div>
         <div class="form-group">
-          <label>Qual é a ocasião?</label>
-          <select name="ocasiao" id="form-ocasiao" onchange="toggleEventoCelebracao()">
+          <label>Telefone / WhatsApp <span style="font-weight:400;">(opcional)</span></label>
+          <input type="tel" name="telefone" placeholder="+351 9xx xxx xxx"/>
+        </div>
+        <div class="form-group">
+          <label>Ocasião</label>
+          <select name="ocasiao" id="form-ocasiao" required>
             <option value="">Seleciona uma ocasião...</option>
-            <option value="Aniversário">Aniversário</option>
-            <option value="Presente Romântico">Presente Romântico</option>
-            <option value="Para Alguém Especial">Para Alguém Especial</option>
-            <option value="Casamento ou Batizado">Casamento ou Batizado</option>
-            <option value="Eventos & Empresas">Eventos &amp; Empresas</option>
-            <option value="Para os Mais Pequeninos">Para os Mais Pequeninos</option>
-            <option value="Outra Celebração">Outra Celebração</option>
-            <option value="Sem ocasião especial">Sem ocasião especial</option>
+            <option>Casamento</option>
+            <option>Batizado</option>
+            <option>Aniversário</option>
+            <option>Comunhão</option>
+            <option>Baby Shower</option>
+            <option>Empresa</option>
             <option value="Outra">Outra</option>
           </select>
         </div>
 
-        <!-- Campo condicional: aparece apenas se a ocasião for de evento/celebração -->
-        <div class="form-group" id="form-tipo-evento" style="display:none;">
-          <label>Tipo de evento (se aplicável)</label>
-          <select name="tipo_evento">
-            <option value="">Não se aplica</option>
-            <option>Casamento</option>
-            <option>Batizado</option>
-            <option>Comunhão</option>
-            <option>Aniversário Infantil</option>
-            <option>Festa de Empresa</option>
-            <option>Brinde Corporativo</option>
-            <option>Lançamento / Evento de Marca</option>
-            <option>Workshop / Formação</option>
+        <div class="form-group">
+          <label>Tipo de projeto</label>
+          <select name="tipo_projeto" required>
+            <option value="">Seleciona o tipo de projeto...</option>
+            <option>Lembranças</option>
+            <option>Presentes</option>
+            <option>Sabonetes</option>
+            <option>Velas</option>
+            <option>Difusores</option>
+            <option>Papelaria/embalagem</option>
+            <option>Conjunto personalizado</option>
             <option>Outro</option>
           </select>
         </div>
 
-        <div class="form-group">
-          <label>Que artigo específico te interessa?</label>
-          <select name="produto" id="form-produto" onchange="toggleFragranceField()">
-            <option value="">Seleciona um artigo...</option>
-            <optgroup label="Coleção Assinatura">
-              <option>Bloom Mini (18€)</option>
-              <option>Bloom M (44,90€)</option>
-              <option>Bloom L (60€)</option>
-              <option>Aurora (25€ + 1,50€ personalização)</option>
-              <option>Serenata (30€)</option>
-              <option>Diamante (21€)</option>
-              <option>Prisma (25€)</option>
-              <option>Nala (18€)</option>
-              <option>Aura (18€)</option>
-            </optgroup>
-            <optgroup label="Coleção Memórias">
-              <option>Essência do Amor S (25€)</option>
-              <option>Essência do Amor M (35€)</option>
-              <option>Essência do Amor L (50€)</option>
-              <option>Pensar em Ti S (29,90€)</option>
-              <option>Pensar em Ti M (39,90€)</option>
-              <option>Pensar em Ti L (55€)</option>
-              <option>Lembrei-me de Ti (12€)</option>
-            </optgroup>
-            <optgroup label="Lembranças para Eventos">
-              <option>Mini Difusor 30ml (3,50€/un)</option>
-              <option>Mini Difusor 50ml (4,90€/un)</option>
-              <option>Aroma em Viagem (desde 3€)</option>
-              <option>Brinde Perfeito (4€/un)</option>
-              <option>Trouxinha Aromática (5€/un)</option>
-              <option>Bem-Querer (4€/un)</option>
-              <option>Mini Difusor + Mini Sabonete (5€/un)</option>
-              <option>Sopros de Alegria (1,50€/un)</option>
-              <option>Luz Serena (3,50€/un)</option>
-              <option>Doce Luz (3,50€/un)</option>
-              <option>Memória Perfumada (desde 3,50€/un)</option>
-              <option>Bilhete Perfumado (2€/un, mínimo 12)</option>
-              <option>Laço de Memória (4,90€)</option>
-            </optgroup>
-            <optgroup label="Para os Mais Pequeninos">
-              <option>Pequeno Artista (Kit Pintura)</option>
-              <option>Momento Criativo (4€/un)</option>
-              <option>Caixinha de Arte (Kit Pintura)</option>
-              <option>Miminho Doce (Saco de Doces)</option>
-            </optgroup>
-            <option>Combinação de Vários Artigos</option>
-            <option>Encomenda Totalmente Personalizada</option>
-            <option>Ainda não sei, preciso de ajuda</option>
-          </select>
-        </div>
-
-        <div class="form-group" id="form-fragrancia" style="display:none;">
-          <label>Fragrância preferida</label>
-          <select name="fragrancia" id="form-fragrancia-select">
-            <option value="">Seleciona uma fragrância...</option>
-            <option>Baunilha</option>
-            <option>Colónia de bebé</option>
-            <option>Dove</option>
-            <option>Explosão floral</option>
-            <option>Flor de algodão</option>
-            <option>Lavanda</option>
-            <option>Talco</option>
-            <option>Talco com jasmim</option>
-          </select>
-        </div>
-
-        <!-- Campo condicional: quantidade (relevante para eventos / encomendas grandes) -->
-        <div class="form-group" id="form-quantidade" style="display:none;">
+        <div class="form-group" id="form-quantidade">
           <label>Quantidade aproximada</label>
           <input type="text" name="quantidade" placeholder="Ex: 50 unidades, 80 a 100..."/>
         </div>
 
-        <div class="form-group">
-          <label>Conta-nos mais sobre o que procuras</label>
-          <textarea name="descricao" placeholder="Ex: É para o aniversário da minha mãe, que adora flores e tons rosa. Ou: É para o nosso casamento dia 15 de julho, esperamos 80 convidados..."></textarea>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Data do evento</label>
+            <input type="date" name="data_evento"/>
+          </div>
+          <div class="form-group">
+            <label>Orçamento aproximado <span style="font-weight:400;">(opcional)</span></label>
+            <input type="text" name="orcamento" placeholder="Ex: até 250€"/>
+          </div>
         </div>
 
         <div class="form-group">
-          <label>Mensagem para incluir na encomenda (opcional)</label>
-          <input type="text" name="mensagem" placeholder="Ex: Para a mãe mais especial do mundo 🌸"/>
+          <label>Conta-nos a tua ideia</label>
+          <textarea name="ideia" required placeholder="Conta-nos o que imaginas, o estilo, as cores e tudo o que consideres importante."></textarea>
         </div>
+
+        <div class="inspiration-upload">
+          <h4>Mostra-nos a tua inspiração</h4>
+          <p>Tens uma referência do que imaginas? Envia-nos fotografias, inspirações, convites, paletas de cores ou até um desenho. Não precisa de ser exatamente o resultado final — serve para percebermos melhor a tua ideia.</p>
+          <label for="project-inspirations" class="btn-outline" style="display:inline-block;margin-bottom:.8rem;">+ Adicionar imagens ou ficheiros</label>
+          <input id="project-inspirations" type="file" name="inspiracoes" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" multiple/>
+          <p>Até 5 ficheiros JPG, PNG ou PDF, máximo 10 MB cada.</p>
+          <p>As imagens enviadas servem apenas como referência de estilo. O resultado final será adaptado e criado pela Love Essences.</p>
+        </div>
+
+        <label class="form-consent">
+          <input type="checkbox" name="privacidade" required/>
+          <span>Li e aceito a <a href="/politica-de-privacidade/" onclick="showPage('privacy'); return false;">Política de Privacidade</a> e autorizo o tratamento destes dados para análise do meu pedido.</span>
+        </label>
 
         <button type="submit" class="form-submit" id="submit-btn">Enviar Pedido →</button>
         <p id="form-error" style="display:none; text-align:center; font-size:0.8rem; color:#c0392b; margin-top:0.8rem;">Ocorreu um erro. Por favor, tenta novamente.</p>
@@ -9770,6 +9754,49 @@
       </form>
     </div>
   </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CHECKOUT / CONFIRMAÇÃO                                       -->
+<!-- ============================================================ -->
+<div class="page" id="page-checkout">
+  <section class="checkout-system-page">
+    <div class="checkout-system-card">
+      <p class="section-label">✦ Pagamento seguro</p>
+      <h2 data-page-heading>Concluir a <em>encomenda</em></h2>
+      <p>O teu carrinho mantém-se guardado. Abre-o e seleciona “Avançar para pagamento seguro” para continuares no checkout Stripe.</p>
+      <button type="button" class="btn-primary" style="margin-top:1.5rem;" onclick="openCart()">Abrir o carrinho</button>
+    </div>
+  </section>
+</div>
+
+<div class="page" id="page-quote">
+  <section class="checkout-system-page">
+    <div class="checkout-system-card" style="text-align:left;">
+      <p class="section-label">✦ Proposta personalizada</p>
+      <h2 data-page-heading>O teu projeto <em>Love Essences</em></h2>
+      <p class="checkout-reference" id="quote-reference"></p>
+      <div id="quote-content"><p>A carregar a proposta…</p></div>
+      <label class="form-consent" style="margin-top:1.2rem;">
+        <input type="checkbox" id="quote-approval"/>
+        <span>Li os detalhes e aprovo esta proposta. Ao continuar, serei encaminhada para o checkout Stripe para efetuar o pagamento.</span>
+      </label>
+      <button type="button" class="btn-primary" id="quote-pay-button" style="width:100%;margin-top:1.2rem;" onclick="LoveCommerce.approveQuote(this)">Aprovar e avançar para pagamento</button>
+      <p id="quote-error" style="color:#a12635;font-size:.78rem;margin-top:.8rem;"></p>
+    </div>
+  </section>
+</div>
+
+<div class="page" id="page-confirmation">
+  <section class="checkout-system-page">
+    <div class="checkout-system-card">
+      <p class="section-label">✦ Obrigada</p>
+      <h2 data-page-heading>Recebemos a tua <em>encomenda</em></h2>
+      <p class="checkout-reference" id="confirmation-number"></p>
+      <p id="confirmation-status">A confirmar o pagamento…</p>
+      <button type="button" class="btn-primary" style="margin-top:1.5rem;" onclick="showPage('shop')">Continuar a explorar</button>
+    </div>
+  </section>
 </div>
 
 <!-- ============================================================ -->
@@ -9797,14 +9824,14 @@
       <p class="legal-sub-title">Dados fornecidos diretamente</p>
       <ul class="legal-list">
         <li><strong>Dados de contacto</strong>: nome, morada, endereço de e-mail, número de telefone.</li>
-        <li><strong>Dados de encomenda</strong>: informações de faturação, entrega e pagamento.</li>
+        <li><strong>Dados de encomenda</strong>: informações de faturação, entrega, pagamento, opções de personalização e ficheiros de referência enviados.</li>
         <li><strong>Comunicações</strong>: informações inseridas em formulários de contacto ou pedidos de apoio.</li>
         <li><strong>Dados de conta</strong>: quando aplicável, informações associadas à criação de conta.</li>
       </ul>
       <p class="legal-sub-title">Dados recolhidos automaticamente</p>
       <p class="legal-text">Poderemos recolher automaticamente informações técnicas quando utiliza o website, incluindo endereço IP, tipo de dispositivo, navegador, páginas visitadas, tempo de navegação e interações realizadas. Estas informações podem ser recolhidas através de cookies e tecnologias semelhantes, com o objetivo de melhorar o funcionamento do website e a experiência de navegação.</p>
       <p class="legal-sub-title">Dados obtidos de terceiros</p>
-      <p class="legal-text">Em determinadas situações, poderemos receber informações através de serviços externos que apoiam o funcionamento da loja online, como plataformas de alojamento, processadores de pagamento, ferramentas analíticas ou serviços técnicos associados à gestão do website e das encomendas.</p>
+      <p class="legal-text">Em determinadas situações, poderemos receber informações através de serviços externos que apoiam o funcionamento da loja online, incluindo Cloudflare no alojamento, Supabase na base de dados e armazenamento privado, Stripe no processamento de pagamentos, Resend no envio de mensagens transacionais, transportadoras e ferramentas analíticas autorizadas.</p>
     </div>
 
     <div class="legal-section">
@@ -9924,14 +9951,14 @@
     <div class="legal-section">
       <span class="legal-num">03</span>
       <h2 class="legal-title">Personalização e encomendas especiais</h2>
-      <p class="legal-text">Alguns artigos podem ser personalizados de acordo com as preferências do cliente, mediante as opções disponíveis no momento da compra ou através de contacto direto pelos canais oficiais da marca.</p>
+      <p class="legal-text">Os artigos existentes no catálogo podem ser personalizados através das opções apresentadas na página do produto e pagos diretamente no checkout. Uma imagem ou ficheiro de referência é opcional, não exige aprovação prévia e não impede a conclusão da compra. A Love Essences poderá contactar o cliente depois do pagamento apenas quando for necessário confirmar algum detalhe de execução.</p>
       <p class="legal-text">Ao solicitar uma encomenda personalizada, o cliente compromete-se a fornecer as informações necessárias de forma correta e completa. Após confirmação da encomenda e início da produção, poderá não ser possível proceder a alterações. A viabilidade de qualquer modificação dependerá da fase de produção em que a encomenda se encontrar.</p>
     </div>
 
     <div class="legal-section">
       <span class="legal-num">04</span>
       <h2 class="legal-title">Encomendas e pagamento</h2>
-      <p class="legal-text">As encomendas podem ser realizadas através do website ou pelos canais oficiais de contacto da marca. O pagamento deve ser efetuado pelos métodos disponibilizados no momento da compra, sendo a produção iniciada apenas após confirmação do mesmo.</p>
+      <p class="legal-text">As encomendas de artigos do catálogo são concluídas através do checkout seguro disponibilizado no website. Os pedidos totalmente personalizados seguem um percurso separado de análise, contacto, orçamento e aprovação; a submissão desse formulário não cria qualquer pagamento automático. A produção é iniciada apenas após confirmação do pagamento aplicável.</p>
       <p class="legal-text">A Love Essences reserva-se o direito de recusar ou cancelar encomendas em situações excecionais, nomeadamente em caso de erro técnico, indisponibilidade de materiais, suspeita de fraude ou informação incorreta fornecida pelo cliente.</p>
     </div>
 
@@ -10243,8 +10270,6 @@ var I18N_TEXT = {
     "Subtotal": "Subtotal",
     "Total": "Total",
     "Continuar a comprar": "Continue Shopping",
-    "Finalizar via WhatsApp": "Checkout via WhatsApp",
-    "Finalizar via Formulário": "Checkout by Form",
     "Esvaziar carrinho": "Empty cart",
     "Envio calculado no checkout · Embalagem de oferta incluída": "Shipping calculated at checkout · Gift packaging included",
     "Envio gratuito aplicado": "Free shipping applied",
@@ -10457,8 +10482,6 @@ var I18N_TEXT = {
     "Subtotal": "Subtotal",
     "Total": "Total",
     "Continuar a comprar": "Seguir Comprando",
-    "Finalizar via WhatsApp": "Finalizar por WhatsApp",
-    "Finalizar via Formulário": "Finalizar por Formulario",
     "Esvaziar carrinho": "Vaciar carrito",
     "Envio calculado no checkout · Embalagem de oferta incluída": "Envío calculado en el checkout · Embalaje de regalo incluido",
     "Envio gratuito aplicado": "Envío gratis aplicado",
@@ -10650,8 +10673,6 @@ var I18N_EXTRA_TEXT = {
   en: {
     "Love Essences, Presentes que contam histórias": "Love Essences, Gifts that tell stories",
     "Adiciona produtos da nossa loja para começar.": "Add products from our shop to get started.",
-    "Finalizar via WhatsApp 💬": "Checkout via WhatsApp 💬",
-    "Finalizar via Formulário ✉️": "Checkout by Form ✉️",
     "✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦": "✦ Fixed shipping €5.90 · Free over €60 in mainland Portugal · Handmade in Portugal ✦",
     "📦 Produção: 3–5 dias úteis · 🚚 Entrega: 2 dias úteis após expedição": "📦 Production: 3–5 business days · 🚚 Delivery: 2 business days after dispatch",
     "📦 Produção habitual: 3–5 dias úteis · 🚚 Entrega: 2 dias úteis após expedição": "📦 Usual production: 3–5 business days · 🚚 Delivery: 2 business days after dispatch",
@@ -11089,8 +11110,6 @@ var I18N_EXTRA_TEXT = {
   es: {
     "Love Essences, Presentes que contam histórias": "Love Essences, Regalos que cuentan historias",
     "Adiciona produtos da nossa loja para começar.": "Añade productos de nuestra tienda para empezar.",
-    "Finalizar via WhatsApp 💬": "Finalizar por WhatsApp 💬",
-    "Finalizar via Formulário ✉️": "Finalizar por Formulario ✉️",
     "✦ Portes fixos 5,90 € · Grátis acima de 60 € em Portugal Continental · Feito à mão em Portugal ✦": "✦ Envío fijo 5,90 € · Gratis a partir de 60 € en Portugal continental · Hecho a mano en Portugal ✦",
     "📦 Produção: 3–5 dias úteis · 🚚 Entrega: 2 dias úteis após expedição": "📦 Producción: 3–5 días laborables · 🚚 Entrega: 2 días laborables después de la expedición",
     "📦 Produção habitual: 3–5 dias úteis · 🚚 Entrega: 2 dias úteis após expedição": "📦 Producción habitual: 3–5 días laborables · 🚚 Entrega: 2 días laborables después de la expedición",
@@ -11950,6 +11969,9 @@ var LOVE_PAGE_ROUTES = {
   about: '/sobre-nos/',
   tracking: '/acompanhar-encomenda/',
   contact: '/contactos/',
+  checkout: '/checkout/',
+  quote: '/projeto/orcamento/',
+  confirmation: '/encomenda/confirmacao/',
   privacy: '/politica-de-privacidade/',
   terms: '/termos-de-servico/',
   returns: '/devolucoes-e-reembolsos/',
@@ -11995,8 +12017,23 @@ var LOVE_STATIC_SEO = {
     description: 'Conhece a Love Essences, uma marca portuguesa de presentes artesanais feitos à mão com cuidado, intenção e personalização.'
   },
   contact: {
-    title: 'Contactos e Encomendas Personalizadas | Love Essences',
-    description: 'Fala com a Love Essences para criar um presente ou lembrança personalizada para a tua ocasião, mensagem e pessoa especial.'
+    title: 'Projetos Totalmente Personalizados | Love Essences',
+    description: 'Conta-nos a tua ideia para criarmos lembranças e presentes totalmente personalizados, com proposta e orçamento à tua medida.'
+  },
+  checkout: {
+    title: 'Checkout Seguro | Love Essences',
+    description: 'Conclui a tua encomenda Love Essences através do checkout seguro.',
+    noindex: true
+  },
+  quote: {
+    title: 'Proposta Personalizada | Love Essences',
+    description: 'Consulta e aprova a tua proposta personalizada Love Essences.',
+    noindex: true
+  },
+  confirmation: {
+    title: 'Confirmação da Encomenda | Love Essences',
+    description: 'Consulta a confirmação da tua encomenda Love Essences.',
+    noindex: true
   },
   tracking: {
     title: 'Acompanhar Encomenda | Love Essences',
@@ -12533,6 +12570,8 @@ function showPage(name, options) {
     target.classList.add('active');
     syncActivePageHeading(name);
     scrollToPageTopInstant();
+    if (name === 'confirmation' && window.LoveCommerce) window.LoveCommerce.loadConfirmation();
+    if (name === 'quote' && window.LoveCommerce) window.LoveCommerce.loadQuote();
   }
 
   // Reset de filtros ao entrar na loja "limpa" (sem vir de openOccasion).
@@ -12614,13 +12653,19 @@ var PRODUCT_CATALOG = {
         gallery: [
           'assets/products/bloom-mini-5.jpg',
           'assets/products/bloom-mini-1.jpg',
-          'assets/products/bloom-mini-2.jpg',
           'assets/products/bloom-mini-3.jpg',
           'assets/products/bloom-mini-4.jpg',
           'assets/products/bloom.jpg'
         ]
       },
-      { id: 'M', label: 'M', price: 44.90, note: 'peça central' },
+      {
+        id: 'M',
+        label: 'M',
+        price: 44.90,
+        note: 'peça central',
+        image: 'assets/products/bloom-mini-2.jpg',
+        gallery: ['assets/products/bloom-mini-2.jpg']
+      },
       { id: 'L', label: 'L', price: 60, note: 'afirmação', image: 'assets/products/bloom-l-60.jpg' }
     ],
     details: 'Material: porcelana artesanal · Acabamento à mão · Cada peça tem variações naturais que a tornam única · Embalagem de oferta incluída · Possibilidade de cartão personalizado mediante pedido.',
@@ -13247,6 +13292,7 @@ function openProduct(productId, options) {
   currentBearColor = p.bearColors && p.bearColors.length > 0 ? p.bearColors[0] : null;
   currentFabricId = p.fabricOptions && p.fabricOptions.length > 0 ? p.fabricOptions[0].id : null;
   currentSoapFragrance = '';
+  if (window.LoveCommerce) window.LoveCommerce.setProductFiles([]);
 
   updateProductVisual();
 
@@ -13887,6 +13933,8 @@ function getCurrentProductSelection() {
   var qty = 1;
   var eventDetails = [];
   var hasPaidAddon = false;
+  var personalization = {};
+  var addonCodes = [];
 
   if (p.sizes && p.sizes.length > 0 && currentSizeId) {
     size = p.sizes.find(function(s) { return s.id === currentSizeId; });
@@ -13901,10 +13949,12 @@ function getCurrentProductSelection() {
 
   if (p.boxColors && p.boxColors.length && currentBoxColor) {
     itemName += ', Cor da caixa: ' + currentBoxColor;
+    personalization.boxColor = currentBoxColor;
   }
 
   if (p.bearColors && p.bearColors.length && currentBearColor) {
     itemName += ', Cor do ursinho: ' + currentBearColor;
+    personalization.bearColor = currentBearColor;
   }
 
   if (p.eventOptions) {
@@ -13933,9 +13983,11 @@ function getCurrentProductSelection() {
     if (sweetColors) eventDetails.push('Cores dos doces: ' + sweetColors);
     if (fragrance) eventDetails.push('Fragrância: ' + fragrance);
     if (phrase) eventDetails.push('Frase da etiqueta: "' + phrase + '"');
+    personalization.event = { name: eventName, date: eventDate, sweetColors: sweetColors, fragrance: fragrance, labelPhrase: phrase };
     if (typeof p.cardAddonPrice === 'number' && cardInput && cardInput.checked) {
       price += p.cardAddonPrice;
       hasPaidAddon = true;
+      addonCodes.push(currentProduct + ':event_card');
       eventDetails.push('Com cartão (+' + formatPrice(p.cardAddonPrice) + '/un)');
     }
     if (eventDetails.length) itemName += ', ' + eventDetails.join(', ');
@@ -13952,11 +14004,15 @@ function getCurrentProductSelection() {
         soapColors ? 'Cores e tons: ' + soapColors : ''
       ].filter(Boolean).join(', ');
     }
+    personalization.soap = { fragrance: currentSoapFragrance, colors: soapColors };
   }
 
   if (p.fabricOptions && p.fabricOptions.length && currentFabricId) {
     var fabric = p.fabricOptions.find(function(option) { return option.id === currentFabricId; });
-    if (fabric) itemName += ', ' + (p.fabricCartLabel || 'Tecido') + ': ' + fabric.label;
+    if (fabric) {
+      itemName += ', ' + (p.fabricCartLabel || 'Tecido') + ': ' + fabric.label;
+      personalization.fabric = { id: fabric.id, label: fabric.label };
+    }
   }
 
   if (p.freeTextOption) {
@@ -13966,6 +14022,7 @@ function getCurrentProductSelection() {
       var freeTextDetail = (p.freeTextOption.cartLabel || p.freeTextOption.title || 'Escolha') + ': ' + freeTextValue;
       itemName += ', ' + freeTextDetail;
       eventDetails.push(freeTextDetail);
+      personalization.freeText = { label: p.freeTextOption.cartLabel || p.freeTextOption.title || 'Escolha', value: freeTextValue };
     }
   }
 
@@ -13975,6 +14032,8 @@ function getCurrentProductSelection() {
       var customText = input.value.trim();
       price += p.customPrice;
       itemName += ', ' + (p.customCartLabel || 'Personalização') + ': "' + customText + '"';
+      personalization.customText = customText;
+      addonCodes.push(currentProduct + ':custom_text');
     }
   }
 
@@ -13987,7 +14046,11 @@ function getCurrentProductSelection() {
     quoteOnly: !!p.quoteOnly,
     hasPaidAddon: hasPaidAddon,
     formProductName: p.formProductName || p.name,
-    summary: eventDetails.join('\n')
+    summary: eventDetails.join('\n'),
+    productCode: currentProduct,
+    variantCode: currentProduct + ':' + String(currentSizeId || 'default').toLowerCase(),
+    personalization: personalization,
+    addonCodes: addonCodes
   };
 }
 
@@ -14071,7 +14134,17 @@ function handleProductCta() {
     return;
   }
 
-  addCartLine(selection.name, selection.price, selection.emoji, selection.image, selection.qty || 1);
+  var lineKey = addCartLine(selection.name, selection.price, selection.emoji, selection.image, selection.qty || 1, {
+    productCode: selection.productCode,
+    variantCode: selection.variantCode,
+    personalization: selection.personalization,
+    addonCodes: selection.addonCodes
+  });
+  if (window.LoveCommerce) {
+    window.LoveCommerce.attachProductFiles(lineKey).catch(function(error) {
+      alert(error.message || 'Não foi possível guardar os ficheiros de referência.');
+    });
+  }
 
   var cta = document.getElementById('pd-cta');
   if (cta) {
@@ -14086,7 +14159,7 @@ function handleProductCta() {
 function openProductQuoteRequest(selection) {
   openQuoteRequest(selection.formProductName);
   setTimeout(function() {
-    var descricao = document.querySelector('#contact-form textarea[name="descricao"]');
+    var descricao = document.querySelector('#contact-form textarea[name="ideia"]');
     var quantidade = document.querySelector('#form-quantidade input');
     var ocasiao = document.getElementById('form-ocasiao');
     if (ocasiao) {
@@ -14530,7 +14603,7 @@ function initTestimonialsCarousel() {
   startAutoplay();
 }
 
-// ── Formspree handler ────────────────────────────────────────────
+// ── Pedido de projeto totalmente personalizado ──────────────────
 async function handleSubmit(e) {
   e.preventDefault();
   const form    = document.getElementById('contact-form');
@@ -14543,26 +14616,16 @@ async function handleSubmit(e) {
   errMsg.style.display = 'none';
 
   try {
-    const res = await fetch(form.action, {
-      method: 'POST',
-      body: new FormData(form),
-      headers: { 'Accept': 'application/json' }
-    });
-
-    if (res.ok) {
-      form.style.display = 'none';
-      success.style.display = 'block';
-      if (form.dataset.cartCheckout === 'true' && typeof completeCartCheckout === 'function') {
-        completeCartCheckout(form.dataset.cartSignature || '');
-      }
-      delete form.dataset.cartCheckout;
-      delete form.dataset.cartSignature;
-      if (window.LoveAnalytics) LoveAnalytics.track('generate_lead', { lead_type: 'contact_form' });
-    } else {
-      throw new Error('Erro no servidor');
-    }
-  } catch {
-    if (window.LoveAnalytics) LoveAnalytics.trackCheckoutError('contact_form', 'formspree_error');
+    if (!window.LoveCommerce) throw new Error('O serviço de pedidos ainda não está disponível.');
+    var result = await window.LoveCommerce.submitProject(form);
+    var successCopy = success.querySelector('p');
+    if (successCopy) successCopy.textContent = 'Obrigada! Recebemos o pedido ' + result.projectNumber + '. Vamos analisá-lo e entrar em contacto contigo antes de preparar o orçamento.';
+    form.style.display = 'none';
+    success.style.display = 'block';
+    if (window.LoveAnalytics) LoveAnalytics.track('generate_lead', { lead_type: 'custom_project' });
+  } catch (error) {
+    if (window.LoveAnalytics) LoveAnalytics.trackCheckoutError('custom_project', 'submit_error');
+    errMsg.textContent = error.message || 'Ocorreu um erro. Por favor, tenta novamente.';
     errMsg.style.display = 'block';
     btn.disabled = false;
     btn.textContent = 'Enviar Pedido →';
@@ -14622,14 +14685,8 @@ function toggleFragranceField() {
 function openQuoteRequest(productName) {
   showPage('contact');
   setTimeout(function() {
-    var select = document.getElementById('form-produto');
-    if (select) {
-      var option = Array.prototype.find.call(select.options, function(o) {
-        return sourceI18nText(o.text) === productName;
-      });
-      if (option) select.value = option.value;
-    }
-    toggleFragranceField();
+    var idea = document.querySelector('#contact-form textarea[name="ideia"]');
+    if (idea && productName) idea.value = 'Gostaria de criar uma versão especial inspirada em ' + productName + '. ';
 
     var form = document.getElementById('contact-form');
     if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -14647,16 +14704,9 @@ function resetForm() {
   success.style.display = 'none';
   btn.disabled = false;
   btn.textContent = 'Enviar Pedido →';
-  // Garantir que campos condicionais ficam escondidos
-  var tipoEvento = document.getElementById('form-tipo-evento');
-  var quantidade = document.getElementById('form-quantidade');
-  var fragranceGroup = document.getElementById('form-fragrancia');
-  if (tipoEvento) tipoEvento.style.display = 'none';
-  if (quantidade) quantidade.style.display = 'none';
-  if (fragranceGroup) fragranceGroup.style.display = 'none';
 }
 </script>
-<!-- Shopify removido na v14: esta preview usa WhatsApp e formulário como checkout principal. -->
+<!-- Checkout online próprio: Stripe + Supabase. WhatsApp mantém-se apenas como apoio. -->
 
 <!-- ============================================================ -->
 <!-- CART JAVASCRIPT                                              -->
@@ -14735,6 +14785,21 @@ var CART_IMAGE_MAP = {
   'Momento Criativo': 'assets/products/momento-criativo.jpg',
   'Caixinha de Arte': 'assets/products/caixinha-de-arte.jpg',
   'Miminho Doce': 'assets/products/miminho-doce-cone.jpg'
+};
+
+var LOVE_PRODUCT_CODE_BY_NAME = {
+  'Bloom':'bloom','Aurora':'aurora','Serenata':'serenata','Diamante':'diamante','Prisma':'prisma','Nala':'nala','Aura':'aura',
+  'Essência do Amor':'essencia_amor','Pensar em Ti':'pensar_em_ti','Lembrei-me de Ti':'lembrei_me_de_ti',
+  'Mini Difusor':'mini_difusor','Aroma em Viagem':'aroma_em_viagem','Brinde Perfeito':'brinde_perfeito',
+  'Trouxinha Aromática':'trouxinha_aromatica','Bem-Querer':'bem_querer','Mini Difusor + Mini Sabonete':'mini_difusor_sabonete',
+  'Sopros de Alegria':'sopros_alegria','Luz Serena':'luz_serena','Doce Luz':'doce_luz','Memória Perfumada':'memoria_perfumada',
+  'Bilhete Perfumado':'bilhete_perfumado','Laço de Memória':'laco_memoria','Pequeno Artista':'pequeno_artista',
+  'Momento Criativo':'momento_criativo','Caixinha de Arte':'caixinha_arte','Miminho Doce':'miminho_doce'
+};
+
+var LOVE_DEFAULT_VARIANT_BY_CODE = {
+  bloom:'bloom:mini',essencia_amor:'essencia_amor:s',pensar_em_ti:'pensar_em_ti:s',mini_difusor:'mini_difusor:30ml',
+  brinde_perfeito:'brinde_perfeito:porto',memoria_perfumada:'memoria_perfumada:simples',miminho_doce:'miminho_doce:laco_marshmallows'
 };
 
 function getCartImageForName(name) {
@@ -14822,21 +14887,39 @@ function getCartDiscount() {
   return { amount: 0, label: '' };
 }
 
-function addCartLine(name, price, emoji, image, qty) {
+function addCartLine(name, price, emoji, image, qty, commerceDetails) {
   qty = parseInt(qty, 10);
   if (!Number.isFinite(qty) || qty < 1) qty = 1;
   var cartImage = image || getCartImageForName(name);
   var existing = cart.find(function(i){ return i.name === name; });
+  var baseName = getCartBaseName(name);
+  var productCode = commerceDetails && commerceDetails.productCode ? commerceDetails.productCode : LOVE_PRODUCT_CODE_BY_NAME[baseName];
+  var variantCode = commerceDetails && commerceDetails.variantCode ? commerceDetails.variantCode : (LOVE_DEFAULT_VARIANT_BY_CODE[productCode] || (productCode ? productCode + ':default' : ''));
   if (existing) {
     existing.qty += qty;
     if (cartImage && !existing.image) existing.image = cartImage;
+    if (!existing.lineKey) existing.lineKey = 'line-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+    if (productCode) existing.productCode = productCode;
+    if (variantCode) existing.variantCode = variantCode;
+    if (commerceDetails) {
+      existing.personalization = commerceDetails.personalization || {};
+      existing.addonCodes = commerceDetails.addonCodes || [];
+    }
   } else {
-    cart.push({ name: name, price: price, emoji: emoji, image: cartImage, qty: qty });
+    existing = {
+      lineKey: 'line-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9),
+      name: name, price: price, emoji: emoji, image: cartImage, qty: qty,
+      productCode: productCode || '', variantCode: variantCode || '',
+      personalization: commerceDetails && commerceDetails.personalization || {},
+      addonCodes: commerceDetails && commerceDetails.addonCodes || []
+    };
+    cart.push(existing);
   }
   saveCart();
   renderCart();
   openCart();
   flashCartButton(name);
+  return existing.lineKey;
 }
 
 function addToCart(name, price, emoji, image) {
@@ -14877,6 +14960,8 @@ function flashCartButton(name) {
 }
 
 function removeFromCart(name) {
+  var removed = cart.find(function(i){ return i.name === name; });
+  if (removed && removed.lineKey && window.LoveCommerce) window.LoveCommerce.deleteFiles(removed.lineKey).catch(function() {});
   cart = cart.filter(function(i){ return i.name !== name; });
   saveCart();
   renderCart();
@@ -14896,6 +14981,7 @@ function updateQty(name, delta) {
 
 function clearCart() {
   if (!confirm('Esvaziar o carrinho?')) return;
+  if (window.LoveCommerce) cart.forEach(function(item) { if (item.lineKey) window.LoveCommerce.deleteFiles(item.lineKey).catch(function() {}); });
   cart = [];
   saveCart();
   renderCart();
@@ -14903,12 +14989,13 @@ function clearCart() {
 
 function getCartSignature() {
   return JSON.stringify(cart.map(function(item) {
-    return [item.name, Number(item.price) || 0, Number(item.qty) || 0];
+    return [item.lineKey || '', item.name, Number(item.price) || 0, Number(item.qty) || 0];
   }));
 }
 
 function completeCartCheckout(expectedSignature) {
   if (expectedSignature && expectedSignature !== getCartSignature()) return false;
+  if (window.LoveCommerce) cart.forEach(function(item) { if (item.lineKey) window.LoveCommerce.deleteFiles(item.lineKey).catch(function() {}); });
   cart = [];
   saveCart();
   renderCart();
@@ -15129,40 +15216,11 @@ function buildOrderSummary() {
 }
 
 function checkoutWhatsApp() {
-  var summary = buildOrderSummary();
-  var msg = 'Olá! Gostaria de fazer uma encomenda:\n\n' + summary + '\n\nPodem confirmar disponibilidade e envio? Obrigada 🌸';
-  var url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
-  window.open(url, '_blank');
-  completeCartCheckout();
+  if (window.LoveCommerce) window.LoveCommerce.startCatalogCheckout();
 }
 
 function checkoutForm() {
-  closeCart();
-  // Pre-fill the contact form textarea with cart summary
-  var summary = buildOrderSummary();
-  var form = document.getElementById('contact-form');
-  if (form) {
-    form.dataset.cartCheckout = 'true';
-    form.dataset.cartSignature = getCartSignature();
-  }
-  var textarea = document.querySelector('#contact-form textarea[name="descricao"]');
-  if (textarea) {
-    textarea.value = 'Encomenda de stock:\n' + summary + '\n\n(Por favor confirmar disponibilidade e envio)';
-  }
-  // Selecionar "Combinação de Vários Artigos" para encomendas multi-item do carrinho
-  var select = document.querySelector('#contact-form select[name="produto"]');
-  if (select) {
-    var combo = Array.prototype.find.call(select.options, function(o) {
-      return sourceI18nText(o.text) === 'Combinação de Vários Artigos';
-    });
-    if (combo) select.value = combo.value;
-  }
-  if (typeof toggleFragranceField === 'function') toggleFragranceField();
-  showPage('contact');
-  setTimeout(function(){
-    var checkoutFormElement = document.getElementById('contact-form');
-    if (checkoutFormElement) checkoutFormElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 400);
+  if (window.LoveCommerce) window.LoveCommerce.startCatalogCheckout();
 }
 
 // ── Init ─────────────────────────────────────────────────────
@@ -15549,5 +15607,7 @@ renderCart();
 })();
 </script>
 
+<script src="./assets/js/commerce-config.js"></script>
+<script src="./assets/js/commerce.js"></script>
 </body>
 </html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="robots" content="noindex,nofollow,noarchive"/>
+  <meta name="referrer" content="no-referrer"/>
+  <title>Gestão | Love Essences</title>
+  <link rel="icon" href="/assets/love-essences-social-logo.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/admin/admin.css"/>
+</head>
+<body>
+  <main class="auth-shell" id="auth-shell">
+    <section class="auth-card" id="login-card">
+      <img src="/assets/love-essences-social-logo.png" alt="Love Essences"/>
+      <p class="eyebrow">Área reservada</p>
+      <h1>Gestão Love Essences</h1>
+      <form id="login-form">
+        <label>Email<input type="email" name="email" autocomplete="username" required/></label>
+        <label>Palavra-passe<input type="password" name="password" autocomplete="current-password" required/></label>
+        <button type="submit">Entrar</button>
+        <p class="error" id="login-error"></p>
+      </form>
+    </section>
+    <section class="auth-card" id="mfa-card" hidden>
+      <p class="eyebrow">Proteção da conta</p>
+      <h1>Confirma o código MFA</h1>
+      <div id="mfa-enrolment" hidden>
+        <p>Lê este QR code na tua aplicação autenticadora e confirma o primeiro código.</p>
+        <img id="mfa-qr" alt="QR code para autenticação de dois fatores"/>
+      </div>
+      <form id="mfa-form">
+        <label>Código de 6 dígitos<input type="text" name="code" inputmode="numeric" pattern="[0-9]{6}" autocomplete="one-time-code" maxlength="6" required/></label>
+        <button type="submit">Confirmar</button>
+        <p class="error" id="mfa-error"></p>
+      </form>
+    </section>
+  </main>
+
+  <div class="admin-app" id="admin-app" hidden>
+    <header class="admin-header">
+      <a href="/" class="brand">Love Essences <span>Gestão</span></a>
+      <div><span id="admin-email"></span><button class="text-button" id="logout-button">Terminar sessão</button></div>
+    </header>
+    <nav class="tabs" aria-label="Área administrativa">
+      <button class="active" data-view="orders">Encomendas</button>
+      <button data-view="projects">Projetos personalizados</button>
+    </nav>
+    <section class="workspace">
+      <div class="toolbar">
+        <div><p class="eyebrow" id="view-eyebrow">Operação</p><h1 id="view-title">Encomendas</h1></div>
+        <button id="refresh-button" class="secondary">Atualizar</button>
+      </div>
+      <div class="summary-grid" id="summary-grid"></div>
+      <div class="table-card"><div class="table-scroll"><table><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div><p class="empty" id="empty-state" hidden>Não existem registos para apresentar.</p></div>
+    </section>
+  </div>
+
+  <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+  <aside class="detail-drawer" id="detail-drawer" aria-label="Detalhe" aria-hidden="true">
+    <button class="drawer-close" id="drawer-close" aria-label="Fechar">×</button>
+    <div id="drawer-content"></div>
+  </aside>
+
+  <script src="/assets/js/commerce-config.js"></script>
+  <script type="module" src="/admin/admin.js"></script>
+</body>
+</html>
+
