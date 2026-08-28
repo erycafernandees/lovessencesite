@@ -7939,9 +7939,121 @@
 
   /* Homepage mobile editorial: fotografia, mensagem e compra num único bloco. */
   .hero-eyebrow-mobile,
-  .mobile-home-benefits,
-  .mobile-home-occasions {
+  .mobile-home-benefits {
     display: none;
+  }
+
+  /* Seleção de ocasiões — o mesmo cartão editorial em todos os ecrãs. */
+  .mobile-home-occasions {
+    display: block;
+    padding: clamp(4rem, 5.5vw, 5.5rem) 0;
+    overflow-x: clip;
+    overflow-y: visible;
+    background: linear-gradient(180deg, #fffaf6 0%, #fffaf6 82%, #fff 100%);
+  }
+
+  .mobile-home-occasions-head {
+    padding: 0 7vw clamp(2rem, 3vw, 2.7rem);
+    text-align: center;
+  }
+
+  .mobile-home-occasions-head p {
+    margin: 0;
+    color: var(--primary);
+    font-size: .82rem;
+    font-weight: 500;
+    letter-spacing: .32em;
+    text-transform: uppercase;
+  }
+
+  .mobile-home-occasions-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem auto 0;
+    color: var(--accent);
+    font-size: 1.5rem;
+  }
+
+  .mobile-home-occasions-divider::before,
+  .mobile-home-occasions-divider::after {
+    width: 78px;
+    height: 1px;
+    content: '';
+    background: rgba(102, 19, 94, .22);
+  }
+
+  .mobile-home-occasion-track {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1rem, 2vw, 1.5rem);
+    width: min(1120px, 86vw);
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  .mobile-home-occasion-card {
+    display: grid;
+    grid-template-rows: clamp(245px, 24vw, 345px) 86px;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 16px 32px rgba(102, 19, 94, .09);
+    color: var(--primary);
+    cursor: pointer;
+    text-align: left;
+    transition: transform .28s ease, box-shadow .28s ease;
+  }
+
+  .mobile-home-occasion-card:hover,
+  .mobile-home-occasion-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 38px rgba(102, 19, 94, .14);
+  }
+
+  .mobile-home-occasion-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .35s ease;
+  }
+
+  .mobile-home-occasion-card:hover img {
+    transform: scale(1.02);
+  }
+
+  .mobile-home-occasion-card span {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 86px;
+    padding: 1rem 1.45rem;
+    background: #fff;
+    font-size: .9rem;
+    font-weight: 500;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .mobile-home-occasion-card span::after {
+    content: '›';
+    color: var(--primary);
+    font-size: 1.65rem;
+    font-weight: 300;
+    line-height: 1;
+  }
+
+  .mobile-home-occasion-dots {
+    display: none !important;
+  }
+
+  /* A nova seleção substitui o bloco antigo de ocasiões na homepage. */
+  #page-home > .home-occasion-preview {
+    display: none !important;
   }
 
   @media (max-width: 768px) {
@@ -8176,50 +8288,37 @@
     }
 
     .mobile-home-occasions {
-      display: block;
-      padding: 3rem 0 2.8rem;
-      overflow: hidden;
-      background: #fffaf6;
+      padding: 2.35rem 0 1.35rem;
     }
 
     .mobile-home-occasions-head {
-      padding: 0 7vw 1.7rem;
-      text-align: center;
+      padding: 0 7vw 1.35rem;
     }
 
     .mobile-home-occasions-head p {
-      margin: 0;
-      color: #66135e;
       font-size: 0.75rem;
-      font-weight: 500;
       letter-spacing: 0.3em;
       line-height: 1.3;
-      text-transform: uppercase;
     }
 
     .mobile-home-occasions-divider {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       gap: 0.85rem;
       margin-top: 0.9rem;
-      color: #b468ab;
     }
 
     .mobile-home-occasions-divider::before,
     .mobile-home-occasions-divider::after {
-      content: '';
       width: 64px;
-      height: 1px;
-      background: rgba(102,19,94,0.22);
     }
 
     .mobile-home-occasion-track {
-      display: grid;
+      grid-template-columns: none;
       grid-auto-flow: column;
-      grid-auto-columns: min(78vw, 310px);
-      gap: 1rem;
-      padding: 0 7vw 1.1rem;
+      grid-auto-columns: min(72vw, 280px);
+      gap: 0.85rem;
+      width: auto;
+      margin: 0;
+      padding: 0 7vw 0.5rem;
       overflow-x: auto;
       overscroll-behavior-inline: contain;
       scroll-snap-type: inline mandatory;
@@ -8232,69 +8331,29 @@
     }
 
     .mobile-home-occasion-card {
-      display: grid;
-      grid-template-rows: 220px auto;
-      min-width: 0;
-      padding: 0;
-      overflow: hidden;
-      border: 0;
-      border-radius: 22px;
-      background: #ffffff;
-      box-shadow: 0 13px 28px rgba(71,30,63,0.13);
-      color: #4b2347;
-      cursor: pointer;
+      grid-template-rows: 190px 66px;
+      border-radius: 20px;
+      box-shadow: 0 12px 26px -13px rgba(71, 30, 63, 0.28);
       scroll-snap-align: start;
       scroll-snap-stop: always;
-      text-align: left;
     }
 
-    .mobile-home-occasion-card img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .mobile-home-occasion-card:hover,
+    .mobile-home-occasion-card:focus-visible {
+      transform: none;
     }
 
     .mobile-home-occasion-card span {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 78px;
-      padding: 1rem 1.35rem;
-      font-size: 0.84rem;
-      font-weight: 500;
-      letter-spacing: 0.09em;
+      min-height: 66px;
+      padding: 0.85rem 1.1rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
       line-height: 1.2;
-      text-transform: uppercase;
     }
 
     .mobile-home-occasion-card span::after {
-      content: '\203A';
-      color: #66135e;
       font-family: var(--serif);
-      font-size: 1.7rem;
-      font-weight: 300;
-      line-height: 1;
-    }
-
-    .mobile-home-occasion-dots {
-      display: flex;
-      justify-content: center;
-      gap: 0.55rem;
-      margin-top: 0.35rem;
-    }
-
-    .mobile-home-occasion-dots span {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(102,19,94,0.14);
-      transition: background-color 180ms ease, transform 180ms ease;
-    }
-
-    .mobile-home-occasion-dots span.is-active {
-      background: #66135e;
-      transform: scale(1.08);
+      font-size: 1.55rem;
     }
 
     #page-home > .value-strip,
@@ -8303,7 +8362,7 @@
     }
 
     #page-home > .featured-bg {
-      padding-top: 3.5rem !important;
+      padding-top: 1.25rem !important;
     }
   }
 
@@ -8555,7 +8614,6 @@
         <span>Aniversários</span>
       </button>
     </div>
-    <div class="mobile-home-occasion-dots" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div>
   </section>
 
 
@@ -15888,11 +15946,9 @@ renderCart();
 
   function setupMobileOccasionsCarousel() {
     var track = document.querySelector('.mobile-home-occasion-track');
-    var dotsWrap = document.querySelector('.mobile-home-occasion-dots');
-    if (!track || !dotsWrap || track.dataset.carouselReady === 'true') return;
+    if (!track || track.dataset.carouselReady === 'true') return;
 
     var cards = Array.prototype.slice.call(track.querySelectorAll('.mobile-home-occasion-card'));
-    var dots = Array.prototype.slice.call(dotsWrap.querySelectorAll('span'));
     if (cards.length < 2) return;
 
     var mobileQuery = window.matchMedia('(max-width: 768px)');
@@ -15904,12 +15960,6 @@ renderCart();
 
     function targetScrollLeft(index) {
       return Math.max(0, cards[index].offsetLeft - firstCardOffset());
-    }
-
-    function paintDots(index) {
-      dots.forEach(function (dot, dotIndex) {
-        dot.classList.toggle('is-active', dotIndex === index);
-      });
     }
 
     function nearestCardIndex() {
@@ -15927,7 +15977,6 @@ renderCart();
 
     function goToSlide(index, behavior) {
       currentIndex = (index + cards.length) % cards.length;
-      paintDots(currentIndex);
       track.scrollTo({
         left: targetScrollLeft(currentIndex),
         behavior: behavior || 'smooth'
@@ -15952,7 +16001,6 @@ renderCart();
       if (scrollTimer) window.clearTimeout(scrollTimer);
       scrollTimer = window.setTimeout(function () {
         currentIndex = nearestCardIndex();
-        paintDots(currentIndex);
       }, 90);
     }, { passive: true });
 
@@ -15970,7 +16018,6 @@ renderCart();
     function finishInteraction() {
       isInteracting = false;
       currentIndex = nearestCardIndex();
-      paintDots(currentIndex);
       scheduleAutoplay();
     }
 
@@ -15999,7 +16046,6 @@ renderCart();
       scheduleAutoplay();
     });
 
-    paintDots(0);
     track.dataset.carouselReady = 'true';
     scheduleAutoplay();
   }
