@@ -169,7 +169,7 @@
       window.location.assign(session.checkoutUrl);
     } catch (error) {
       alert(error.message || 'Não foi possível iniciar o pagamento.');
-      if (button) { button.disabled = false; button.textContent = 'Avançar para pagamento seguro'; }
+      if (button) { button.disabled = false; button.textContent = 'Finalizar compra'; }
       if (window.LoveAnalytics) window.LoveAnalytics.trackCheckoutError('stripe_checkout', 'prepare_error');
     }
   }

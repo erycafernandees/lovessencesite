@@ -7946,7 +7946,7 @@
   /* Seleção de ocasiões — o mesmo cartão editorial em todos os ecrãs. */
   .mobile-home-occasions {
     display: block;
-    padding: clamp(4rem, 5.5vw, 5.5rem) 0;
+    padding: clamp(3.4rem, 4.5vw, 4.7rem) 0;
     overflow-x: clip;
     overflow-y: visible;
     background: linear-gradient(180deg, #fffaf6 0%, #fffaf6 82%, #fff 100%);
@@ -7987,15 +7987,15 @@
   .mobile-home-occasion-track {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(1rem, 2vw, 1.5rem);
-    width: min(1120px, 86vw);
+    gap: clamp(1rem, 1.5vw, 1.35rem);
+    width: min(1600px, 92vw);
     margin: 0 auto;
     padding: 0;
   }
 
   .mobile-home-occasion-card {
     display: grid;
-    grid-template-rows: clamp(245px, 24vw, 345px) 86px;
+    grid-template-rows: clamp(200px, 16vw, 285px) 72px;
     min-width: 0;
     padding: 0;
     overflow: hidden;
@@ -8030,8 +8030,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 86px;
-    padding: 1rem 1.45rem;
+    min-height: 72px;
+    padding: .8rem 1.35rem;
     background: #fff;
     font-size: .9rem;
     font-weight: 500;
@@ -8388,6 +8388,57 @@
       font-size: 0.57rem;
     }
   }
+
+  /* Carrinho: informação de entrega compacta e discreta. */
+  .cart-footer {
+    padding: 1.15rem 1.35rem 1.55rem;
+  }
+
+  .cart-footer .cart-subtotal {
+    font-size: 1.15rem;
+  }
+
+  .cart-footer .cart-shipping-settings {
+    gap: .42rem;
+    margin: .55rem 0 .35rem;
+    padding: .65rem 0;
+    border: 0;
+    border-top: 1px solid rgba(102, 19, 94, .1);
+    border-bottom: 1px solid rgba(102, 19, 94, .1);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .cart-footer .cart-shipping-settings label {
+    font-size: .58rem;
+    letter-spacing: .18em;
+  }
+
+  .cart-footer .cart-shipping-settings select {
+    min-height: 36px;
+    padding: .45rem 2rem .45rem .65rem;
+    border-color: rgba(102, 19, 94, .15);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .55);
+    font-size: .72rem;
+  }
+
+  .cart-footer .cart-shipping-method {
+    font-size: .72rem;
+  }
+
+  .cart-footer .cart-transport-note {
+    font-size: .64rem;
+    line-height: 1.4;
+  }
+
+  .cart-footer .cart-shipping-note {
+    margin: .2rem 0 .65rem;
+    font-size: .62rem;
+    line-height: 1.35;
+    letter-spacing: .01em;
+    opacity: .76;
+  }
 </style>
 
 <!-- ANNOUNCEMENT BAR -->
@@ -8549,14 +8600,14 @@
       <p class="cart-transport-note" id="cart-transport-note">Entrega normalmente realizada em 2 dias úteis após a expedição.</p>
     </div>
     <p class="cart-shipping-progress" id="cart-shipping-progress"></p>
-    <p class="cart-shipping-note" id="cart-shipping-note">🚚 Portes fixos aplicados uma única vez por encomenda · Embalagem de oferta incluída</p>
+    <p class="cart-shipping-note" id="cart-shipping-note">Portes aplicados uma única vez · Embalagem de oferta incluída</p>
     <div class="cart-order-total">
       <span>Total da encomenda</span>
       <span id="cart-order-total-price">0€</span>
     </div>
     <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="closeCart();showPage('shop')">Continuar a comprar</button>
-    <button type="button" class="cart-checkout-btn" onclick="LoveCommerce.startCatalogCheckout(this)">Avançar para pagamento seguro</button>
-    <p style="text-align:center;font-size:.7rem;color:var(--warm-gray);line-height:1.5;">Pagamento protegido pela Stripe · métodos apresentados conforme elegibilidade</p>
+    <button type="button" class="cart-checkout-btn" onclick="checkoutForm()">Finalizar compra</button>
+    <p style="text-align:center;font-size:.7rem;color:var(--warm-gray);line-height:1.5;">Pedido enviado por formulário · pagamento combinado após confirmação</p>
     <button type="button" class="cart-clear-btn" onclick="clearCart()">Esvaziar carrinho</button>
   </div>
 </div>
@@ -10136,8 +10187,8 @@
     </div>
 
     <div class="contact-form">
-      <h3 class="form-title">Conta-nos a tua ideia</h3>
-      <p class="form-subtitle">Este formulário destina-se a criações que não correspondem diretamente aos artigos da loja. Não existe pagamento no momento da submissão.</p>
+      <h3 class="form-title" id="contact-form-title">Conta-nos a tua ideia</h3>
+      <p class="form-subtitle" id="contact-form-subtitle">Este formulário destina-se a criações que não correspondem diretamente aos artigos da loja. Não existe pagamento no momento da submissão.</p>
 
       <!-- ✅ Mensagem de sucesso (aparece após envio) -->
       <div id="form-success" style="display:none; text-align:center; padding: 2.5rem 1rem; animation: fadeIn 0.5s ease;">
@@ -10241,9 +10292,9 @@
 <div class="page" id="page-checkout">
   <section class="checkout-system-page">
     <div class="checkout-system-card">
-      <p class="section-label">✦ Pagamento seguro</p>
+      <p class="section-label">✦ Pedido por formulário</p>
       <h2 data-page-heading>Concluir a <em>encomenda</em></h2>
-      <p>O teu carrinho mantém-se guardado. Abre-o e seleciona “Avançar para pagamento seguro” para continuares no checkout Stripe.</p>
+      <p>O teu carrinho mantém-se guardado. Abre-o e seleciona “Finalizar compra” para preencheres os teus dados e enviares o pedido.</p>
       <button type="button" class="btn-primary" style="margin-top:1.5rem;" onclick="openCart()">Abrir o carrinho</button>
     </div>
   </section>
@@ -11169,8 +11220,9 @@ var I18N_EXTRA_TEXT = {
     "Espanha e outros destinos internacionais": "Spain and other international destinations",
     "Envio Expresso": "Express Shipping",
     "Entrega normalmente realizada em 2 dias úteis após a expedição.": "Delivery is normally completed within 2 business days after dispatch.",
-    "🚚 Portes fixos aplicados uma única vez por encomenda · Embalagem de oferta incluída": "🚚 Fixed shipping applied once per order · Gift packaging included",
+    "Portes aplicados uma única vez · Embalagem de oferta incluída": "Shipping applied once · Gift packaging included",
     "Total da encomenda": "Order total",
+    "Finalizar compra": "Complete order",
     "Portes sob consulta": "Shipping on request",
     "Portes calculados de acordo com o peso e o destino": "Shipping calculated according to weight and destination",
     "Conseguiste portes gratuitos! 💜": "You have unlocked free shipping! 💜",
@@ -11606,8 +11658,9 @@ var I18N_EXTRA_TEXT = {
     "Espanha e outros destinos internacionais": "España y otros destinos internacionales",
     "Envio Expresso": "Envío Exprés",
     "Entrega normalmente realizada em 2 dias úteis após a expedição.": "La entrega se realiza normalmente en 2 días laborables después de la expedición.",
-    "🚚 Portes fixos aplicados uma única vez por encomenda · Embalagem de oferta incluída": "🚚 Envío fijo aplicado una sola vez por pedido · Embalaje de regalo incluido",
+    "Portes aplicados uma única vez · Embalagem de oferta incluída": "Envío aplicado una sola vez · Embalaje de regalo incluido",
     "Total da encomenda": "Total del pedido",
+    "Finalizar compra": "Finalizar compra",
     "Portes sob consulta": "Envío bajo consulta",
     "Portes calculados de acordo com o peso e o destino": "Envío calculado según el peso y el destino",
     "Conseguiste portes gratuitos! 💜": "¡Has conseguido el envío gratuito! 💜",
@@ -15089,6 +15142,8 @@ async function handleSubmit(e) {
   const btn     = document.getElementById('submit-btn');
   const errMsg  = document.getElementById('form-error');
   const success = document.getElementById('form-success');
+  const isCartCheckout = form.dataset.cartCheckout === 'true';
+  const cartSignature = form.dataset.cartSignature || '';
 
   btn.disabled = true;
   btn.textContent = 'A enviar…';
@@ -15098,16 +15153,19 @@ async function handleSubmit(e) {
     if (!window.LoveCommerce) throw new Error('O serviço de pedidos ainda não está disponível.');
     var result = await window.LoveCommerce.submitProject(form);
     var successCopy = success.querySelector('p');
-    if (successCopy) successCopy.textContent = 'Obrigada! Recebemos o pedido ' + result.projectNumber + '. Vamos analisá-lo e entrar em contacto contigo antes de preparar o orçamento.';
+    if (successCopy) successCopy.textContent = isCartCheckout
+      ? 'Obrigada! Recebemos a tua encomenda ' + result.projectNumber + '. Vamos confirmar a disponibilidade, o prazo e a forma de pagamento por contacto.'
+      : 'Obrigada! Recebemos o pedido ' + result.projectNumber + '. Vamos analisá-lo e entrar em contacto contigo antes de preparar o orçamento.';
+    if (isCartCheckout) completeCartCheckout(cartSignature);
     form.style.display = 'none';
     success.style.display = 'block';
-    if (window.LoveAnalytics) LoveAnalytics.track('generate_lead', { lead_type: 'custom_project' });
+    if (window.LoveAnalytics) LoveAnalytics.track('generate_lead', { lead_type: isCartCheckout ? 'catalog_form' : 'custom_project' });
   } catch (error) {
-    if (window.LoveAnalytics) LoveAnalytics.trackCheckoutError('custom_project', 'submit_error');
+    if (window.LoveAnalytics) LoveAnalytics.trackCheckoutError(isCartCheckout ? 'catalog_form' : 'custom_project', 'submit_error');
     errMsg.textContent = error.message || 'Ocorreu um erro. Por favor, tenta novamente.';
     errMsg.style.display = 'block';
     btn.disabled = false;
-    btn.textContent = 'Enviar Pedido →';
+    btn.textContent = isCartCheckout ? 'Finalizar pedido →' : 'Enviar Pedido →';
   }
 }
 
@@ -15176,6 +15234,8 @@ function resetForm() {
   const form    = document.getElementById('contact-form');
   const success = document.getElementById('form-success');
   const btn     = document.getElementById('submit-btn');
+  const title   = document.getElementById('contact-form-title');
+  const subtitle = document.getElementById('contact-form-subtitle');
   form.reset();
   delete form.dataset.cartCheckout;
   delete form.dataset.cartSignature;
@@ -15183,9 +15243,11 @@ function resetForm() {
   success.style.display = 'none';
   btn.disabled = false;
   btn.textContent = 'Enviar Pedido →';
+  if (title) title.textContent = 'Conta-nos a tua ideia';
+  if (subtitle) subtitle.textContent = 'Este formulário destina-se a criações que não correspondem diretamente aos artigos da loja. Não existe pagamento no momento da submissão.';
 }
 </script>
-<!-- Checkout online próprio: Stripe + Supabase. WhatsApp mantém-se apenas como apoio. -->
+<!-- Checkout do catálogo temporariamente por formulário. As propostas aprovadas mantêm o fluxo Stripe. -->
 
 <!-- ============================================================ -->
 <!-- CART JAVASCRIPT                                              -->
@@ -15513,7 +15575,7 @@ function getShippingQuote() {
   return {
     cost: productSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FLAT_RATE,
     method: 'Envio Expresso',
-    note: '🚚 Portes fixos aplicados uma única vez por encomenda · Embalagem de oferta incluída'
+    note: 'Portes aplicados uma única vez · Embalagem de oferta incluída'
   };
 }
 
@@ -15699,7 +15761,62 @@ function checkoutWhatsApp() {
 }
 
 function checkoutForm() {
-  if (window.LoveCommerce) window.LoveCommerce.startCatalogCheckout();
+  if (!cart.length) {
+    alert(translatedText('O teu carrinho está vazio', currentLanguage));
+    return;
+  }
+
+  var signature = getCartSignature();
+  var summary = buildOrderSummary();
+  var totalQty = cart.reduce(function(total, item) {
+    return total + (Number(item.qty) || 0);
+  }, 0);
+  var shipping = getShippingQuote();
+  var budget = shipping.cost === null
+    ? formatPrice(getTotal()) + ' + portes a confirmar'
+    : formatPrice(getTotal() + shipping.cost);
+
+  closeCart();
+  showPage('contact');
+
+  setTimeout(function() {
+    var form = document.getElementById('contact-form');
+    if (!form) return;
+
+    var success = document.getElementById('form-success');
+    var errMsg = document.getElementById('form-error');
+    var btn = document.getElementById('submit-btn');
+    var title = document.getElementById('contact-form-title');
+    var subtitle = document.getElementById('contact-form-subtitle');
+
+    form.reset();
+    form.style.display = 'block';
+    if (success) success.style.display = 'none';
+    if (errMsg) errMsg.style.display = 'none';
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Finalizar pedido →';
+    }
+
+    form.dataset.cartCheckout = 'true';
+    form.dataset.cartSignature = signature;
+    if (title) title.textContent = 'Finalizar pedido';
+    if (subtitle) subtitle.textContent = 'Confirma os teus dados e envia o pedido. Vamos validar a disponibilidade, o prazo e a forma de pagamento por contacto. Se adicionaste imagens de referência aos produtos, anexa-as novamente abaixo.';
+
+    var occasion = form.querySelector('[name="ocasiao"]');
+    var project = form.querySelector('[name="tipo_projeto"]');
+    var quantity = form.querySelector('[name="quantidade"]');
+    var budgetField = form.querySelector('[name="orcamento"]');
+    var idea = form.querySelector('[name="ideia"]');
+
+    if (occasion) occasion.value = 'Outra';
+    if (project) project.value = 'Conjunto personalizado';
+    if (quantity) quantity.value = totalQty + (totalQty === 1 ? ' unidade' : ' unidades');
+    if (budgetField) budgetField.value = 'Total estimado: ' + budget;
+    if (idea) idea.value = 'Pedido iniciado no carrinho:\n\n' + summary + '\n\nDetalhes adicionais:\n';
+
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 250);
 }
 
 // ── Init ─────────────────────────────────────────────────────
