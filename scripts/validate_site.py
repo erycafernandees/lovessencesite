@@ -13,8 +13,12 @@ from pathlib import Path
 from build_site import (
     DOMAIN,
     OCCASION_TAGS,
+    ORGANIZATION_ID,
     PRODUCT_TYPE_FILTERS,
+    RETURN_POLICY_ID,
+    RETURN_POLICY_URL,
     ROOT,
+    SHIPPING_SERVICE_ID,
     get_routes,
     load_commercial_content,
     route_output_path,
@@ -35,6 +39,7 @@ def validate(output: Path) -> None:
     errors: list[str] = []
     titles: dict[str, str] = {}
     descriptions: dict[str, str] = {}
+    home_output = (output / "index.html").read_text(encoding="utf-8")
 
     for route in routes:
         path = route_output_path(output, route)
@@ -86,8 +91,18 @@ def validate(output: Path) -> None:
                 assert "Product" in graph_types, "Product schema ausente"
                 assert "BreadcrumbList" in graph_types, "BreadcrumbList ausente"
                 assert "aggregateRating" not in schema_text and '"review"' not in schema_text, "avaliação inventada"
+                product_schema = next(item for item in schema["@graph"] if item.get("@type") == "Product")
+                assert product_schema.get("brand", {}).get("name") == "Love Essences", "marca do produto ausente"
+                assert product_schema.get("sku") == route.product.product_id, "código interno do produto ausente"
+                offer = product_schema.get("offers", {})
+                assert offer.get("availability") == "https://schema.org/InStock", "disponibilidade ausente"
+                assert offer.get("itemCondition") == "https://schema.org/NewCondition", "condição do produto ausente"
+                assert offer.get("seller", {}).get("@id") == ORGANIZATION_ID, "vendedor ausente"
+                assert offer.get("hasMerchantReturnPolicy", {}).get("@id") == RETURN_POLICY_ID, "referência à política de devoluções ausente"
+                assert offer.get("shippingDetails", {}).get("hasShippingService", {}).get("@id") == SHIPPING_SERVICE_ID, "referência à política de envio ausente"
                 assert f'>{route.product.name}</h1>' in page, "H1 de produto incorreto"
                 assert f'alt="{route.product.name}, Love Essences"' in page, "imagem principal/alt ausente"
+                assert f'href="{route.path}"' in home_output, "produto sem link interno na página inicial"
                 expected_related = sum(
                     route.product.product_id in product_ids
                     for product_ids in PRODUCT_TYPE_FILTERS.values()
@@ -99,6 +114,35 @@ def validate(output: Path) -> None:
                 related_match = re.search(r'id="pd-related-links"[^>]*>(.*?)</div>', page, re.S)
                 assert related_match is not None, "links relacionados de produto ausentes"
                 assert related_match.group(1).count("<a ") == expected_related, "links relacionados de produto incorretos"
+
+            if route.page == "home":
+                store = next(item for item in schema["@graph"] if item.get("@type") == "OnlineStore")
+                assert store.get("@id") == ORGANIZATION_ID, "OnlineStore sem identificador"
+                assert store.get("hasMerchantReturnPolicy", {}).get("@id") == RETURN_POLICY_ID, "OnlineStore sem política de devoluções"
+                assert store.get("hasShippingService", {}).get("@id") == SHIPPING_SERVICE_ID, "OnlineStore sem política de envio"
+
+            if route.page == "returns":
+                store = next(item for item in schema["@graph"] if item.get("@type") == "OnlineStore")
+                policy = store.get("hasMerchantReturnPolicy", {})
+                assert policy.get("@id") == RETURN_POLICY_ID, "identificador da política de devoluções incorreto"
+                assert policy.get("merchantReturnLink") == RETURN_POLICY_URL, "link da política de devoluções incorreto"
+                assert policy.get("applicableCountry") == "PT", "país da política de devoluções incorreto"
+                assert policy.get("returnPolicyCategory") == "https://schema.org/MerchantReturnNotPermitted", "regra de devoluções incorreta"
+
+            if route.page == "shipping":
+                store = next(item for item in schema["@graph"] if item.get("@type") == "OnlineStore")
+                service = store.get("hasShippingService", {})
+                assert service.get("@id") == SHIPPING_SERVICE_ID, "identificador da política de envio incorreto"
+                handling = service.get("handlingTime", {}).get("duration", {})
+                assert (handling.get("minValue"), handling.get("maxValue"), handling.get("unitCode")) == (3, 5, "DAY"), "prazo de produção incorreto"
+                conditions = service.get("shippingConditions", [])
+                assert len(conditions) == 2, "escalões de portes incompletos"
+                assert [condition.get("shippingRate", {}).get("value") for condition in conditions] == [5.9, 0], "custos de envio incorretos"
+                assert [condition.get("orderValue", {}).get("minValue") for condition in conditions] == [0, 60], "limites de portes incorretos"
+                for condition in conditions:
+                    assert condition.get("shippingDestination", {}).get("name") == "Portugal Continental", "destino de envio incorreto"
+                    transit = condition.get("transitTime", {}).get("duration", {})
+                    assert (transit.get("minValue"), transit.get("maxValue"), transit.get("unitCode")) == (2, 2, "DAY"), "prazo de transporte incorreto"
 
             if route.index:
                 if title in titles:

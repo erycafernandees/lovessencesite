@@ -23,6 +23,18 @@ DOMAIN = "https://love-essences.pt"
 SEO_START = "<!-- SEO:START -->"
 SEO_END = "<!-- SEO:END -->"
 SOCIAL_IMAGE = f"{DOMAIN}/assets/love-essences-social-preview.jpg?v=20260811"
+ORGANIZATION_ID = f"{DOMAIN}/#organization"
+RETURN_POLICY_URL = f"{DOMAIN}/devolucoes-e-reembolsos/"
+RETURN_POLICY_ID = f"{RETURN_POLICY_URL}#policy"
+SHIPPING_POLICY_URL = f"{DOMAIN}/politica-de-envio/"
+SHIPPING_SERVICE_ID = f"{SHIPPING_POLICY_URL}#mainland-standard"
+BUSINESS_DAYS = [
+    "https://schema.org/Monday",
+    "https://schema.org/Tuesday",
+    "https://schema.org/Wednesday",
+    "https://schema.org/Thursday",
+    "https://schema.org/Friday",
+]
 
 
 @dataclass(frozen=True)
@@ -255,14 +267,95 @@ def breadcrumb(items: list[tuple[str, str]]) -> dict:
     }
 
 
+def merchant_return_policy() -> dict:
+    """Standard policy for personalised and made-to-order products."""
+    return {
+        "@type": "MerchantReturnPolicy",
+        "@id": RETURN_POLICY_ID,
+        "merchantReturnLink": RETURN_POLICY_URL,
+        "applicableCountry": "PT",
+        "returnPolicyCountry": "PT",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted",
+    }
+
+
+def mainland_shipping_service() -> dict:
+    """Shipping terms shown on the site for mainland Portugal."""
+    destination = {
+        "@type": "DefinedRegion",
+        "name": "Portugal Continental",
+        "addressCountry": "PT",
+    }
+    transit_time = {
+        "@type": "ServicePeriod",
+        "duration": {
+            "@type": "QuantitativeValue",
+            "minValue": 2,
+            "maxValue": 2,
+            "unitCode": "DAY",
+        },
+        "businessDays": BUSINESS_DAYS,
+    }
+    return {
+        "@type": "ShippingService",
+        "@id": SHIPPING_SERVICE_ID,
+        "name": "Envio Expresso — Portugal Continental",
+        "description": "Portes de 5,90 € abaixo de 60 € e gratuitos a partir de 60 €; produção habitual de 3 a 5 dias úteis e entrega em 2 dias úteis após expedição.",
+        "fulfillmentType": "https://schema.org/FulfillmentTypeDelivery",
+        "handlingTime": {
+            "@type": "ServicePeriod",
+            "duration": {
+                "@type": "QuantitativeValue",
+                "minValue": 3,
+                "maxValue": 5,
+                "unitCode": "DAY",
+            },
+            "businessDays": BUSINESS_DAYS,
+        },
+        "shippingConditions": [
+            {
+                "@type": "ShippingConditions",
+                "shippingDestination": destination,
+                "orderValue": {
+                    "@type": "MonetaryAmount",
+                    "minValue": 0,
+                    "maxValue": 59.99,
+                    "currency": "EUR",
+                },
+                "shippingRate": {
+                    "@type": "MonetaryAmount",
+                    "value": 5.90,
+                    "currency": "EUR",
+                },
+                "transitTime": transit_time,
+            },
+            {
+                "@type": "ShippingConditions",
+                "shippingDestination": destination,
+                "orderValue": {
+                    "@type": "MonetaryAmount",
+                    "minValue": 60,
+                    "currency": "EUR",
+                },
+                "shippingRate": {
+                    "@type": "MonetaryAmount",
+                    "value": 0,
+                    "currency": "EUR",
+                },
+                "transitTime": transit_time,
+            },
+        ],
+    }
+
+
 def schema_for(route: Route) -> dict:
     canonical = DOMAIN + route.path
     graph: list[dict] = []
     if route.page == "home":
         graph.extend([
             {
-                "@type": "Organization",
-                "@id": f"{DOMAIN}/#organization",
+                "@type": "OnlineStore",
+                "@id": ORGANIZATION_ID,
                 "name": "Love Essences",
                 "url": f"{DOMAIN}/",
                 "logo": f"{DOMAIN}/assets/love-essences-social-logo.png",
@@ -270,6 +363,8 @@ def schema_for(route: Route) -> dict:
                 "email": "love-essences@outlook.com",
                 "address": {"@type": "PostalAddress", "addressCountry": "PT"},
                 "sameAs": ["https://www.instagram.com/lovessences.art"],
+                "hasMerchantReturnPolicy": {"@id": RETURN_POLICY_ID},
+                "hasShippingService": {"@id": SHIPPING_SERVICE_ID},
             },
             {
                 "@type": "WebSite",
@@ -277,7 +372,7 @@ def schema_for(route: Route) -> dict:
                 "url": f"{DOMAIN}/",
                 "name": "Love Essences",
                 "inLanguage": "pt-PT",
-                "publisher": {"@id": f"{DOMAIN}/#organization"},
+                "publisher": {"@id": ORGANIZATION_ID},
             },
         ])
     elif route.product:
@@ -289,6 +384,7 @@ def schema_for(route: Route) -> dict:
             "image": [absolute_asset(product.image)],
             "description": product.story,
             "brand": {"@type": "Brand", "name": "Love Essences"},
+            "sku": product.product_id,
             "url": canonical,
         }
         if product.price is not None:
@@ -297,6 +393,14 @@ def schema_for(route: Route) -> dict:
                 "url": canonical,
                 "price": f"{product.price:.2f}",
                 "priceCurrency": "EUR",
+                "availability": "https://schema.org/InStock",
+                "itemCondition": "https://schema.org/NewCondition",
+                "seller": {"@id": ORGANIZATION_ID},
+                "hasMerchantReturnPolicy": {"@id": RETURN_POLICY_ID},
+                "shippingDetails": {
+                    "@type": "OfferShippingDetails",
+                    "hasShippingService": {"@id": SHIPPING_SERVICE_ID},
+                },
             }
         category_key = CATEGORY_BY_NAME[product.category]
         category_route = CATEGORY_ROUTES[category_key]
@@ -332,6 +436,22 @@ def schema_for(route: Route) -> dict:
             crumb_items.append(("Loja", f"{DOMAIN}/loja/"))
         crumb_items.append((route.label, canonical))
         graph.append(breadcrumb(crumb_items))
+        if route.page == "returns":
+            graph.append({
+                "@type": "OnlineStore",
+                "@id": ORGANIZATION_ID,
+                "name": "Love Essences",
+                "url": f"{DOMAIN}/",
+                "hasMerchantReturnPolicy": merchant_return_policy(),
+            })
+        elif route.page == "shipping":
+            graph.append({
+                "@type": "OnlineStore",
+                "@id": ORGANIZATION_ID,
+                "name": "Love Essences",
+                "url": f"{DOMAIN}/",
+                "hasShippingService": mainland_shipping_service(),
+            })
     return {"@context": "https://schema.org", "@graph": graph}
 
 

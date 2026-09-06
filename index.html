@@ -12857,6 +12857,96 @@ function getProductMinimumPrice(product) {
   return prices.length ? Math.min.apply(Math, prices) : null;
 }
 
+function buildMerchantReturnPolicy() {
+  return {
+    '@type': 'MerchantReturnPolicy',
+    '@id': 'https://love-essences.pt/devolucoes-e-reembolsos/#policy',
+    merchantReturnLink: 'https://love-essences.pt/devolucoes-e-reembolsos/',
+    applicableCountry: 'PT',
+    returnPolicyCountry: 'PT',
+    returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
+  };
+}
+
+function buildMainlandShippingService() {
+  var businessDays = [
+    'https://schema.org/Monday',
+    'https://schema.org/Tuesday',
+    'https://schema.org/Wednesday',
+    'https://schema.org/Thursday',
+    'https://schema.org/Friday'
+  ];
+  function destination() {
+    return {
+      '@type': 'DefinedRegion',
+      name: 'Portugal Continental',
+      addressCountry: 'PT'
+    };
+  }
+  function transitTime() {
+    return {
+      '@type': 'ServicePeriod',
+      duration: {
+        '@type': 'QuantitativeValue',
+        minValue: 2,
+        maxValue: 2,
+        unitCode: 'DAY'
+      },
+      businessDays: businessDays
+    };
+  }
+  return {
+    '@type': 'ShippingService',
+    '@id': 'https://love-essences.pt/politica-de-envio/#mainland-standard',
+    name: 'Envio Expresso — Portugal Continental',
+    description: 'Portes de 5,90 € abaixo de 60 € e gratuitos a partir de 60 €; produção habitual de 3 a 5 dias úteis e entrega em 2 dias úteis após expedição.',
+    fulfillmentType: 'https://schema.org/FulfillmentTypeDelivery',
+    handlingTime: {
+      '@type': 'ServicePeriod',
+      duration: {
+        '@type': 'QuantitativeValue',
+        minValue: 3,
+        maxValue: 5,
+        unitCode: 'DAY'
+      },
+      businessDays: businessDays
+    },
+    shippingConditions: [
+      {
+        '@type': 'ShippingConditions',
+        shippingDestination: destination(),
+        orderValue: {
+          '@type': 'MonetaryAmount',
+          minValue: 0,
+          maxValue: 59.99,
+          currency: 'EUR'
+        },
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          value: 5.90,
+          currency: 'EUR'
+        },
+        transitTime: transitTime()
+      },
+      {
+        '@type': 'ShippingConditions',
+        shippingDestination: destination(),
+        orderValue: {
+          '@type': 'MonetaryAmount',
+          minValue: 60,
+          currency: 'EUR'
+        },
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          value: 0,
+          currency: 'EUR'
+        },
+        transitTime: transitTime()
+      }
+    ]
+  };
+}
+
 function buildBreadcrumbSchema(items) {
   return {
     '@type': 'BreadcrumbList',
@@ -12875,7 +12965,7 @@ function buildStructuredData(state, canonical, seo) {
   var graph = [];
   if (state.page === 'home') {
     graph.push({
-      '@type': 'Organization',
+      '@type': 'OnlineStore',
       '@id': 'https://love-essences.pt/#organization',
       name: 'Love Essences',
       url: 'https://love-essences.pt/',
@@ -12883,7 +12973,9 @@ function buildStructuredData(state, canonical, seo) {
       description: LOVE_STATIC_SEO.home.description,
       email: 'love-essences@outlook.com',
       address: { '@type': 'PostalAddress', addressCountry: 'PT' },
-      sameAs: ['https://www.instagram.com/lovessences.art']
+      sameAs: ['https://www.instagram.com/lovessences.art'],
+      hasMerchantReturnPolicy: { '@id': 'https://love-essences.pt/devolucoes-e-reembolsos/#policy' },
+      hasShippingService: { '@id': 'https://love-essences.pt/politica-de-envio/#mainland-standard' }
     });
     graph.push({
       '@type': 'WebSite',
@@ -12908,6 +13000,7 @@ function buildStructuredData(state, canonical, seo) {
       image: ['https://love-essences.pt/' + product.image.replace(/^\//, '')],
       description: product.story,
       brand: { '@type': 'Brand', name: 'Love Essences' },
+      sku: state.productId,
       url: canonical
     };
     var minimumPrice = getProductMinimumPrice(product);
@@ -12916,7 +13009,15 @@ function buildStructuredData(state, canonical, seo) {
         '@type': 'Offer',
         url: canonical,
         price: minimumPrice.toFixed(2),
-        priceCurrency: 'EUR'
+        priceCurrency: 'EUR',
+        availability: 'https://schema.org/InStock',
+        itemCondition: 'https://schema.org/NewCondition',
+        seller: { '@id': 'https://love-essences.pt/#organization' },
+        hasMerchantReturnPolicy: { '@id': 'https://love-essences.pt/devolucoes-e-reembolsos/#policy' },
+        shippingDetails: {
+          '@type': 'OfferShippingDetails',
+          hasShippingService: { '@id': 'https://love-essences.pt/politica-de-envio/#mainland-standard' }
+        }
       };
     }
     graph.push(productSchema);
@@ -12941,6 +13042,23 @@ function buildStructuredData(state, canonical, seo) {
     if (state.category || state.occasion) breadcrumbItems.push({ name: 'Loja', url: 'https://love-essences.pt/loja/' });
     breadcrumbItems.push({ name: seo.label || seo.title.replace(/ \| Love Essences$/, ''), url: canonical });
     graph.push(buildBreadcrumbSchema(breadcrumbItems));
+    if (state.page === 'returns') {
+      graph.push({
+        '@type': 'OnlineStore',
+        '@id': 'https://love-essences.pt/#organization',
+        name: 'Love Essences',
+        url: 'https://love-essences.pt/',
+        hasMerchantReturnPolicy: buildMerchantReturnPolicy()
+      });
+    } else if (state.page === 'shipping') {
+      graph.push({
+        '@type': 'OnlineStore',
+        '@id': 'https://love-essences.pt/#organization',
+        name: 'Love Essences',
+        url: 'https://love-essences.pt/',
+        hasShippingService: buildMainlandShippingService()
+      });
+    }
   }
   return { '@context': 'https://schema.org', '@graph': graph };
 }
