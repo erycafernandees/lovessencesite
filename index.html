@@ -5694,6 +5694,121 @@
     }
   }
 
+  /* Contactos: linguagem visual Love Essences e upload compacto. */
+  #page-contact .contact-hero {
+    padding: clamp(4.8rem, 7vw, 7rem) 8vw !important;
+    background: #66135e !important;
+    text-align: center;
+  }
+  #page-contact .contact-hero::before,
+  #page-contact .contact-hero::after { display: none !important; }
+  #page-contact .contact-hero .section-label { color: rgba(244, 195, 236, .72) !important; }
+  #page-contact .contact-hero [data-page-heading] {
+    max-width: 760px;
+    margin: .9rem auto 0;
+    color: #fff !important;
+    font-family: var(--sans) !important;
+    font-size: clamp(3.15rem, 4.5vw, 4.9rem) !important;
+    font-weight: 300 !important;
+    letter-spacing: -.045em !important;
+    line-height: 1.02 !important;
+  }
+  #page-contact .contact-hero [data-page-heading] em {
+    color: #d9a3d2 !important;
+    font-family: inherit !important;
+    font-style: italic !important;
+    font-weight: 300 !important;
+  }
+  #page-contact .contact-hero > p:not(.section-label) {
+    max-width: 46rem;
+    margin: 1.35rem auto 0;
+    color: rgba(255, 255, 255, .62) !important;
+    line-height: 1.7;
+  }
+  #page-contact .contact-body { background: #fff; }
+  #page-contact .contact-info > h3 { font-weight: 300; }
+  .contact-reference-section { margin: 1.8rem 0 1.45rem; }
+  .contact-reference-label {
+    margin: 0 0 .65rem;
+    color: #b468ab;
+    font-family: var(--sans);
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .19em;
+    text-transform: uppercase;
+  }
+  .contact-reference-label span {
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .contact-reference-upload {
+    padding: .9rem 1rem .8rem;
+    border: 1px solid rgba(180, 104, 171, .3);
+    border-radius: 14px;
+    background: #fff;
+  }
+  .contact-reference-upload input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .contact-reference-upload-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+  }
+  .contact-reference-trigger {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    min-height: 42px;
+    padding: .65rem 1rem;
+    border: 1px solid rgba(102, 19, 94, .35);
+    border-radius: 999px;
+    color: #66135e;
+    font-size: .76rem;
+    cursor: pointer;
+    transition: background .2s, color .2s, border-color .2s;
+  }
+  .contact-reference-trigger:hover {
+    border-color: #66135e;
+    background: #66135e;
+    color: #fff;
+  }
+  .contact-reference-status {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--warm-gray);
+    font-size: .76rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .contact-reference-hint {
+    margin: .65rem 0 0;
+    color: var(--warm-gray);
+    font-size: .7rem;
+    line-height: 1.5;
+  }
+  @media (max-width: 768px) {
+    #page-contact .contact-hero { padding: 3.8rem 6vw 4rem !important; }
+    #page-contact .contact-hero [data-page-heading] {
+      font-size: clamp(2.65rem, 12vw, 3.4rem) !important;
+    }
+    .contact-reference-upload-row {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: .65rem;
+    }
+    .contact-reference-status { width: 100%; }
+  }
 </style>
 </head>
 <body>
@@ -8606,8 +8721,7 @@
       <span id="cart-order-total-price">0€</span>
     </div>
     <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="closeCart();showPage('shop')">Continuar a comprar</button>
-    <button type="button" class="cart-checkout-btn" onclick="checkoutForm()">Finalizar compra</button>
-    <p style="text-align:center;font-size:.7rem;color:var(--warm-gray);line-height:1.5;">Pedido enviado por formulário · pagamento combinado após confirmação</p>
+      <button type="button" class="cart-checkout-btn" onclick="checkoutWhatsApp()">Finalizar compra</button>
     <button type="button" class="cart-clear-btn" onclick="clearCart()">Esvaziar carrinho</button>
   </div>
 </div>
@@ -10139,15 +10253,15 @@
 <!-- ============================================================ -->
 <div class="page" id="page-contact">
   <div class="contact-hero">
-    <p class="section-label">✦ Projetos totalmente personalizados</p>
-    <h2 data-page-heading>Cria algo<br/><em>só teu.</em></h2>
-    <p>Não encontraste exatamente o que procuras? Criamos lembranças e presentes totalmente personalizados para a tua ocasião. Conta-nos a tua ideia e entraremos em contacto contigo para desenvolvermos uma proposta à tua medida.</p>
+    <p class="section-label">✦ Vamos criar juntos</p>
+    <h2 data-page-heading>Conta-nos<br/><em>tudo sobre ela.</em></h2>
+    <p>Cada encomenda personalizada começa aqui, com uma história.</p>
   </div>
 
   <div class="contact-body">
     <div class="contact-info">
-      <h3>Como funciona<br/>um projeto especial</h3>
-      <p>Recebemos a tua ideia, analisamos os detalhes e entramos em contacto contigo. Só depois preparamos o orçamento. O pagamento é feito através de um checkout seguro apenas quando aprovares a proposta.</p>
+      <h3>Como funciona<br/>a personalização</h3>
+      <p>Não precisas de saber exatamente o que queres. Diz-nos a ocasião, quem é a pessoa, e o que queres transmitir. Nós tratamos do resto, desde o aroma à embalagem, desde a cor à mensagem.</p>
 
       <div class="contact-channels">
         <div class="channel">
@@ -10264,14 +10378,17 @@
           <textarea name="ideia" required placeholder="Conta-nos o que imaginas, o estilo, as cores e tudo o que consideres importante."></textarea>
         </div>
 
-        <div class="inspiration-upload">
-          <h4>Mostra-nos a tua inspiração</h4>
-          <p>Tens uma referência do que imaginas? Envia-nos fotografias, inspirações, convites, paletas de cores ou até um desenho. Não precisa de ser exatamente o resultado final — serve para percebermos melhor a tua ideia.</p>
-          <label for="project-inspirations" class="btn-outline" style="display:inline-block;margin-bottom:.8rem;">+ Adicionar imagens ou ficheiros</label>
-          <input id="project-inspirations" type="file" name="inspiracoes" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" multiple/>
-          <p>Até 5 ficheiros JPG, PNG ou PDF, máximo 10 MB cada.</p>
-          <p>As imagens enviadas servem apenas como referência de estilo. O resultado final será adaptado e criado pela Love Essences.</p>
-        </div>
+          <div class="contact-reference-section">
+            <p class="contact-reference-label">Imagem de referência <span>(opcional)</span></p>
+            <div class="contact-reference-upload">
+              <input id="project-inspirations" type="file" name="inspiracoes" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" multiple onchange="updateContactReferenceStatus(this.files)"/>
+              <div class="contact-reference-upload-row">
+                <label class="contact-reference-trigger" for="project-inspirations"><span aria-hidden="true">+</span> Adicionar referência</label>
+                <p class="contact-reference-status" id="project-inspirations-status" aria-live="polite">Nenhum ficheiro selecionado</p>
+              </div>
+              <p class="contact-reference-hint">Até 5 ficheiros · JPG, PNG ou PDF · máx. 10 MB cada</p>
+            </div>
+          </div>
 
         <label class="form-consent">
           <input type="checkbox" name="privacidade" required/>
@@ -10292,9 +10409,9 @@
 <div class="page" id="page-checkout">
   <section class="checkout-system-page">
     <div class="checkout-system-card">
-      <p class="section-label">✦ Pedido por formulário</p>
+      <p class="section-label">✦ Pedido por WhatsApp</p>
       <h2 data-page-heading>Concluir a <em>encomenda</em></h2>
-      <p>O teu carrinho mantém-se guardado. Abre-o e seleciona “Finalizar compra” para preencheres os teus dados e enviares o pedido.</p>
+      <p>O teu carrinho mantém-se guardado. Abre-o e seleciona “Finalizar compra” para enviares o resumo diretamente por WhatsApp.</p>
       <button type="button" class="btn-primary" style="margin-top:1.5rem;" onclick="openCart()">Abrir o carrinho</button>
     </div>
   </section>
@@ -15348,6 +15465,18 @@ function openQuoteRequest(productName) {
   }, 250);
 }
 
+function updateContactReferenceStatus(files) {
+  var status = document.getElementById('project-inspirations-status');
+  if (!status) return;
+
+  var count = files ? files.length : 0;
+  status.textContent = !count
+    ? 'Nenhum ficheiro selecionado'
+    : count === 1
+      ? files[0].name
+      : count + ' ficheiros selecionados';
+}
+
 function resetForm() {
   const form    = document.getElementById('contact-form');
   const success = document.getElementById('form-success');
@@ -15355,6 +15484,7 @@ function resetForm() {
   const title   = document.getElementById('contact-form-title');
   const subtitle = document.getElementById('contact-form-subtitle');
   form.reset();
+  updateContactReferenceStatus([]);
   delete form.dataset.cartCheckout;
   delete form.dataset.cartSignature;
   form.style.display = 'block';
@@ -15875,7 +16005,33 @@ function buildOrderSummary() {
 }
 
 function checkoutWhatsApp() {
-  if (window.LoveCommerce) window.LoveCommerce.startCatalogCheckout();
+  if (!cart.length) {
+    alert(currentLanguage === 'en'
+      ? 'Your cart is empty.'
+      : currentLanguage === 'es'
+        ? 'Tu carrito está vacío.'
+        : 'O teu carrinho está vazio.');
+    return;
+  }
+
+  var intro = currentLanguage === 'en'
+    ? 'Hello! I would like to place this order:'
+    : currentLanguage === 'es'
+      ? '¡Hola! Me gustaría realizar este pedido:'
+      : 'Olá! Gostaria de finalizar esta encomenda:';
+  var closing = currentLanguage === 'en'
+    ? 'Could you please confirm availability and the next steps?'
+    : currentLanguage === 'es'
+      ? '¿Puedes confirmar la disponibilidad y los próximos pasos?'
+      : 'Podes confirmar a disponibilidade e os próximos passos?';
+  var message = intro + '\n\n' + buildOrderSummary() + '\n\n' + closing;
+
+  closeCart();
+  window.open(
+    'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message),
+    '_blank',
+    'noopener,noreferrer'
+  );
 }
 
 function checkoutForm() {
