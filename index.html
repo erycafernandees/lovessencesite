@@ -16018,17 +16018,24 @@ function checkoutWhatsApp() {
     return;
   }
 
-  var intro = currentLanguage === 'en'
-    ? 'Hello! I would like to place this order:'
-    : currentLanguage === 'es'
-      ? '¡Hola! Me gustaría realizar este pedido:'
-      : 'Olá! Gostaria de finalizar esta encomenda:';
-  var closing = currentLanguage === 'en'
-    ? 'Could you please confirm availability and the next steps?'
-    : currentLanguage === 'es'
-      ? '¿Puedes confirmar la disponibilidad y los próximos pasos?'
-      : 'Podes confirmar a disponibilidade e os próximos passos?';
-  var message = intro + '\n\n' + buildOrderSummary() + '\n\n' + closing;
+  var shipping = getShippingQuote();
+  var productLines = cart.map(function(item) {
+    var qty = Number(item.qty) || 0;
+    var price = Number(item.price) || 0;
+    return '**' + qty + 'x ' + item.name + ': ' + formatShippingPrice(price * qty) + '**';
+  });
+  var shippingCost = shipping.cost === null
+    ? 'A confirmar'
+    : formatShippingPrice(shipping.cost);
+  var orderTotal = shipping.cost === null
+    ? 'A confirmar'
+    : formatShippingPrice(getTotal() + shipping.cost);
+  var message = 'Olá! Gostaria de finalizar a minha encomenda na Love Essences:\n\n' +
+    productLines.join('\n') +
+    '\n\n📦 ' + shipping.method + ': ' + shippingCost +
+    '\n📍 ' + getShippingDestinationLabel(shippingDestination) +
+    '\n\n**Total: ' + orderTotal + '**\n\n' +
+    'Gostaria de avançar com a encomenda. Podem indicar-me os dados para pagamento?';
 
   closeCart();
   window.open(
