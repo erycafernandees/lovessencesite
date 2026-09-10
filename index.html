@@ -1862,7 +1862,8 @@
   .channel-text strong { display: block; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.2rem; }
   .channel-text span { font-size: 0.9rem; color: var(--warm-gray); }
   .contact-form { background: var(--warm-white); border-radius: 12px; padding: 2.5rem; border: 1px solid rgba(180,104,171,0.12); }
-  .form-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; margin-bottom: 0.4rem; }
+  .form-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; margin-bottom: 2rem; }
+  .form-title:has(+ .form-subtitle:not([hidden])) { margin-bottom: 0.4rem; }
   .form-subtitle { font-size: 0.85rem; color: var(--warm-gray); margin-bottom: 2rem; font-weight: 300; }
   .form-group { margin-bottom: 1.4rem; }
   .form-group label { display: block; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-gray); margin-bottom: 0.5rem; font-weight: 500; }
@@ -10260,8 +10261,8 @@
 
   <div class="contact-body">
     <div class="contact-info">
-      <h3>Como funciona<br/>a personalização</h3>
-      <p>Não precisas de saber exatamente o que queres. Diz-nos a ocasião, quem é a pessoa, e o que queres transmitir. Nós tratamos do resto, desde o aroma à embalagem, desde a cor à mensagem.</p>
+      <h3>Tu imaginas.<br/>Nós criamos.</h3>
+      <p>Não precisas de saber exatamente o que queres. Diz-nos a ocasião, quem é a pessoa e o que queres transmitir. Nós tratamos do resto, desde o aroma à embalagem, desde a cor à mensagem.</p>
 
       <div class="contact-channels">
         <div class="channel">
@@ -10302,7 +10303,7 @@
 
     <div class="contact-form">
       <h3 class="form-title" id="contact-form-title">Conta-nos a tua ideia</h3>
-      <p class="form-subtitle" id="contact-form-subtitle">Este formulário destina-se a criações que não correspondem diretamente aos artigos da loja. Não existe pagamento no momento da submissão.</p>
+      <p class="form-subtitle" id="contact-form-subtitle" hidden></p>
 
       <!-- ✅ Mensagem de sucesso (aparece após envio) -->
       <div id="form-success" style="display:none; text-align:center; padding: 2.5rem 1rem; animation: fadeIn 0.5s ease;">
@@ -11643,9 +11644,9 @@ var I18N_EXTRA_TEXT = {
     "Conta-nos": "Tell us",
     "tudo sobre ela.": "everything about her.",
     "Cada encomenda personalizada começa aqui, com uma história.": "Every personalized order begins here, with a story.",
-    "Como funciona": "How",
-    "a personalização": "personalisation works",
-    "Não precisas de saber exatamente o que queres. Diz-nos a ocasião, quem é a pessoa, e o que queres transmitir. Nós tratamos do resto, desde o aroma à embalagem, desde a cor à mensagem.": "You do not need to know exactly what you want. Tell us the occasion, who the person is and what you want to express. We take care of the rest, from scent to packaging, from colour to message.",
+    "Tu imaginas.": "You imagine it.",
+    "Nós criamos.": "We create it.",
+    "Não precisas de saber exatamente o que queres. Diz-nos a ocasião, quem é a pessoa e o que queres transmitir. Nós tratamos do resto, desde o aroma à embalagem, desde a cor à mensagem.": "You do not need to know exactly what you want. Tell us the occasion, who the person is and what you want to express. We take care of the rest, from scent to packaging, from colour to message.",
     "Resposta em menos de 24h": "Reply in less than 24h",
     "Envio Nacional": "National Shipping",
     "3 a 5 dias úteis após confirmação": "3 to 5 business days after confirmation",
@@ -12081,9 +12082,9 @@ var I18N_EXTRA_TEXT = {
     "Conta-nos": "Cuéntanos",
     "tudo sobre ela.": "todo sobre ella.",
     "Cada encomenda personalizada começa aqui, com uma história.": "Cada pedido personalizado empieza aquí, con una historia.",
-    "Como funciona": "Cómo funciona",
-    "a personalização": "la personalización",
-    "Não precisas de saber exatamente o que queres. Diz-nos a ocasião, quem é a pessoa, e o que queres transmitir. Nós tratamos do resto, desde o aroma à embalagem, desde a cor à mensagem.": "No necesitas saber exactamente lo que quieres. Dinos la ocasión, quién es la persona y qué quieres transmitir. Nosotros nos encargamos del resto, desde el aroma hasta el embalaje, desde el color hasta el mensaje.",
+    "Tu imaginas.": "Tú imaginas.",
+    "Nós criamos.": "Nosotros creamos.",
+    "Não precisas de saber exatamente o que queres. Diz-nos a ocasião, quem é a pessoa e o que queres transmitir. Nós tratamos do resto, desde o aroma à embalagem, desde a cor à mensagem.": "No necesitas saber exactamente lo que quieres. Dinos la ocasión, quién es la persona y qué quieres transmitir. Nosotros nos encargamos del resto, desde el aroma hasta el embalaje, desde el color hasta el mensaje.",
     "Resposta em menos de 24h": "Respuesta en menos de 24h",
     "Envio Nacional": "Envío Nacional",
     "3 a 5 dias úteis após confirmação": "3 a 5 días laborables tras confirmación",
@@ -15492,7 +15493,10 @@ function resetForm() {
   btn.disabled = false;
   btn.textContent = 'Enviar Pedido →';
   if (title) title.textContent = 'Conta-nos a tua ideia';
-  if (subtitle) subtitle.textContent = 'Este formulário destina-se a criações que não correspondem diretamente aos artigos da loja. Não existe pagamento no momento da submissão.';
+  if (subtitle) {
+    subtitle.textContent = '';
+    subtitle.hidden = true;
+  }
 }
 </script>
 <!-- Checkout do catálogo temporariamente por formulário. As propostas aprovadas mantêm o fluxo Stripe. -->
@@ -16075,7 +16079,10 @@ function checkoutForm() {
     form.dataset.cartCheckout = 'true';
     form.dataset.cartSignature = signature;
     if (title) title.textContent = 'Finalizar pedido';
-    if (subtitle) subtitle.textContent = 'Confirma os teus dados e envia o pedido. Vamos validar a disponibilidade, o prazo e a forma de pagamento por contacto. Se adicionaste imagens de referência aos produtos, anexa-as novamente abaixo.';
+    if (subtitle) {
+      subtitle.textContent = 'Confirma os teus dados e envia o pedido. Vamos validar a disponibilidade, o prazo e a forma de pagamento por contacto. Se adicionaste imagens de referência aos produtos, anexa-as novamente abaixo.';
+      subtitle.hidden = false;
+    }
 
     var occasion = form.querySelector('[name="ocasiao"]');
     var project = form.querySelector('[name="tipo_projeto"]');
