@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
       if (project.status === "draft") {
         await client.from("project_requests").update({ status: "submitted" }).eq("id", project.id);
         await client.from("project_status_history").insert({ project_request_id: project.id, status: "submitted", note: "Pedido submetido pela cliente" });
-        await queueEmail("project_received", project.customer_email, { projectNumber: project.project_number });
+        if (project.customer_email) await queueEmail("project_received", project.customer_email, { projectNumber: project.project_number });
         const adminEmail = Deno.env.get("ADMIN_NOTIFICATION_EMAIL");
         if (adminEmail) await queueEmail("admin_project_received", adminEmail, { projectNumber: project.project_number });
       }
@@ -50,9 +50,12 @@ Deno.serve(async (req) => {
     const uploads = validateUploads(body.attachments, 5);
     const eventDate = body.eventDate ? new Date(`${body.eventDate}T00:00:00Z`) : null;
     if (eventDate && Number.isNaN(eventDate.getTime())) throw new ApiError(422, "invalid_date", "A data do evento não é válida.");
+    const emailValue = cleanText(body.email, 254);
+    const customerEmail = emailValue ? validEmail(emailValue) : null;
+    const customerPhone = cleanText(body.phone, 40, true);
     const token = randomToken();
     const { data: project, error } = await client.from("project_requests").insert({
-      customer_name: cleanText(body.name, 140, true), customer_email: validEmail(body.email), customer_phone: cleanText(body.phone, 40),
+      customer_name: cleanText(body.name, 140, true), customer_email: customerEmail, customer_phone: customerPhone,
       occasion, project_type: projectType, approximate_quantity: cleanText(body.approximateQuantity, 120),
       event_date: body.eventDate || null, approximate_budget: cleanText(body.approximateBudget, 120), idea: cleanText(body.idea, 4000, true),
       access_token_hash: await sha256(token), consent_at: new Date().toISOString(),
@@ -62,11 +65,10 @@ Deno.serve(async (req) => {
     if (!signedUploads.length) {
       await client.from("project_requests").update({ status: "submitted" }).eq("id", project.id);
       await client.from("project_status_history").insert({ project_request_id: project.id, status: "submitted", note: "Pedido submetido pela cliente" });
-      await queueEmail("project_received", validEmail(body.email), { projectNumber: project.project_number });
+      if (customerEmail) await queueEmail("project_received", customerEmail, { projectNumber: project.project_number });
       const adminEmail = Deno.env.get("ADMIN_NOTIFICATION_EMAIL");
       if (adminEmail) await queueEmail("admin_project_received", adminEmail, { projectNumber: project.project_number });
     }
     return json(req, { projectId: project.id, projectNumber: project.project_number, projectToken: token, uploads: signedUploads, submitted: !signedUploads.length });
   } catch (error) { return handleError(req, error); }
 });
-

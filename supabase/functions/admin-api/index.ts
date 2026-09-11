@@ -99,7 +99,7 @@ Deno.serve(async (req) => {
       await client.from("audit_log").insert({ actor_user_id: admin.userId, action: "quote.create", entity_type: "quote", entity_id: quote.id, after_data: { total_amount: subtotal - discount + shipping } });
       const siteUrl = Deno.env.get("SITE_URL") || "http://127.0.0.1:4176";
       const quoteUrl = `${siteUrl}/projeto/orcamento/?quote=${quote.id}&token=${encodeURIComponent(quoteToken)}`;
-      await queueEmail("quote_ready", project.customer_email, { projectNumber: project.project_number, quoteUrl, totalAmount: subtotal - discount + shipping });
+      if (project.customer_email) await queueEmail("quote_ready", project.customer_email, { projectNumber: project.project_number, quoteUrl, totalAmount: subtotal - discount + shipping });
       return json(req, { ok: true, quoteId: quote.id, quoteUrl });
     }
 
