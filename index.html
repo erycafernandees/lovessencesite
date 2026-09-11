@@ -8167,6 +8167,51 @@
     display: none !important;
   }
 
+  /* Página de ocasiões: reutiliza o cartão fotográfico da página inicial. */
+  .occasion-page-cards {
+    padding: 0 0 clamp(4rem, 6vw, 6.5rem);
+    background: #fff;
+  }
+
+  .occasion-page-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1rem, 1.5vw, 1.4rem);
+    width: min(1500px, 94vw);
+    margin: 0 auto;
+  }
+
+  .occasion-page-card {
+    grid-template-rows: clamp(200px, 14vw, 250px) 72px;
+    border-radius: 20px;
+    color: var(--primary);
+    text-decoration: none;
+  }
+
+  .occasion-page-card span {
+    min-height: 72px;
+    padding: .8rem 1.35rem;
+  }
+
+  @media (max-width: 980px) {
+    .occasion-page-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: min(900px, 90vw);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .occasion-page-cards {
+      padding-bottom: 4rem;
+    }
+
+    .occasion-page-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      width: min(420px, 86vw);
+    }
+  }
+
   /* A nova seleção substitui o bloco antigo de ocasiões na homepage. */
   #page-home > .home-occasion-preview {
     display: none !important;
@@ -10000,164 +10045,32 @@
     </div>
   </section>
 
-  <section class="occasions-cards-mockup px-[5vw] py-10 md:px-[8vw] md:py-14">
-    <div class="occasions-grid mx-auto grid max-w-[1440px] gap-6 md:grid-cols-2 xl:grid-cols-3">
-
-      <!-- ====== Para oferecer a alguém ====== -->
-      <article
-        class="occasion-card occasion-card--bday group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: #f1e3ef;"
-        onclick="openOccasion('aniversarios')"
-        onkeydown="handleOccasionCardKey(event, 'aniversarios')"
-        role="button"
-        tabindex="0"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para oferecer</div>
-          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">🎂</span>
-        </div>
-        <div class="p-1 pt-4">
-          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Aniversários</h3>
-          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Para celebrar quem amamos com algo tão único quanto eles.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('aniversarios')">Ver sugestões →</span>
-        </div>
-      </article>
-
-      <article
-        class="occasion-card occasion-card--romantic group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: #f1e3ef;"
-        onclick="openOccasion('presente-romantico')"
-        onkeydown="handleOccasionCardKey(event, 'presente-romantico')"
-        role="button"
-        tabindex="0"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para oferecer</div>
-          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">💝</span>
-        </div>
-        <div class="p-1 pt-4">
-          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Presente Romântico</h3>
-          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Porque às vezes as palavras não chegam. Deixa o presente falar.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('presente-romantico')">Ver sugestões →</span>
-        </div>
-      </article>
-
-      <article
-        class="occasion-card occasion-card--special group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: #f1e3ef;"
-        onclick="openOccasion('alguem-especial')"
-        onkeydown="handleOccasionCardKey(event, 'alguem-especial')"
-        role="button"
-        tabindex="0"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para oferecer</div>
-          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">🎁</span>
-        </div>
-        <div class="p-1 pt-4">
-          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Para Alguém Especial</h3>
-          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Aquele gesto inesperado que diz tudo sem precisar de motivo.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('alguem-especial')">Ver sugestões →</span>
-        </div>
-      </article>
-
-      <!-- ====== Para celebrações ====== -->
-      <article
-        class="occasion-card occasion-card--wedding group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: #f1e3ef;"
-        onclick="openOccasion('casamento')"
-        onkeydown="handleOccasionCardKey(event, 'casamento')"
-        role="button"
-        tabindex="0"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">celebração</div>
-          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">💍</span>
-        </div>
-        <div class="p-1 pt-4">
-          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Casamento</h3>
-          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Lembranças personalizadas para agradecer a presença dos convidados.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('casamento')">Ver sugestões →</span>
-        </div>
-      </article>
-
-      <article
-        class="occasion-card occasion-card--baptism group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: #f1e3ef;"
-        onclick="openOccasion('batizado')"
-        onkeydown="handleOccasionCardKey(event, 'batizado')"
-        role="button"
-        tabindex="0"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">celebração</div>
-          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">🕊️</span>
-        </div>
-        <div class="p-1 pt-4">
-          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Batizado</h3>
-          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Recordações de batizado ou batismo para adultos e crianças.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('batizado')">Ver sugestões →</span>
-        </div>
-      </article>
-
-      <article
-        class="occasion-card occasion-card--communion group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: #f1e3ef;"
-        onclick="openOccasion('comunhao')"
-        onkeydown="handleOccasionCardKey(event, 'comunhao')"
-        role="button"
-        tabindex="0"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">celebração</div>
-          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">🤍</span>
-        </div>
-        <div class="p-1 pt-4">
-          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Comunhão</h3>
-          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Lembranças personalizadas para a primeira comunhão.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('comunhao')">Ver sugestões →</span>
-        </div>
-      </article>
-
-      <article
-        class="occasion-card occasion-card--business group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: #f1e3ef;"
-        onclick="openOccasion('empresas')"
-        onkeydown="handleOccasionCardKey(event, 'empresas')"
-        role="button"
-        tabindex="0"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">celebração</div>
-          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">✨</span>
-        </div>
-        <div class="p-1 pt-4">
-          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Eventos &amp; Empresas</h3>
-          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Brindes corporativos e lembranças com curadoria, à medida da vossa marca.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('empresas')">Ver sugestões →</span>
-        </div>
-      </article>
-
-      <!-- ====== Para os mais pequeninos ====== -->
-      <article
-        class="occasion-card occasion-card--kids group relative flex min-h-[360px] cursor-pointer flex-col justify-between overflow-hidden rounded-[28px] border border-[rgba(180,104,171,0.18)] p-6 transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(102,19,94,0.18)]"
-        style="background: #f1e3ef;"
-        onclick="openOccasion('pequeninos')"
-        onkeydown="handleOccasionCardKey(event, 'pequeninos')"
-        role="button"
-        tabindex="0"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="occasion-badge rounded-full bg-white/60 px-3 py-2 text-[10px] uppercase tracking-[0.24em]" style="color: var(--deep-rose);">para crianças</div>
-          <span class="occasion-icon text-5xl transition duration-300 group-hover:scale-110">🧸</span>
-        </div>
-        <div class="p-1 pt-4">
-          <h3 class="text-[2rem] leading-none" style="font-family: var(--serif); font-weight: 400; color: #fff;">Para os Mais Pequeninos</h3>
-          <p class="mt-3 text-sm leading-7" style="color: var(--deep-rose); opacity: 0.75;">Kits criativos, doces e mimos pensados para encantar os pequenos convidados.</p>
-          <span class="occasion-link mt-5 inline-block text-[0.78rem] font-bold tracking-wide" style="color: var(--deep-rose);" onclick="event.stopPropagation(); openOccasion('pequeninos')">Ver sugestões →</span>
-        </div>
-      </article>
-
+  <section class="occasion-page-cards" aria-label="Escolher uma ocasião">
+    <div class="occasion-page-grid">
+      <a class="mobile-home-occasion-card occasion-page-card" href="/ocasioes/aniversarios/" onclick="openOccasion('aniversarios'); return false;">
+        <img src="assets/occasions/aniversarios.jpg" alt="Presentes artesanais para aniversários" loading="lazy" decoding="async"/>
+        <span>Aniversários</span>
+      </a>
+      <a class="mobile-home-occasion-card occasion-page-card" href="/ocasioes/presente-romantico/" onclick="openOccasion('presente-romantico'); return false;">
+        <img src="assets/occasions/presente-romantico.jpg" alt="Presentes românticos artesanais" loading="lazy" decoding="async"/>
+        <span>Presente Romântico</span>
+      </a>
+      <a class="mobile-home-occasion-card occasion-page-card" href="/ocasioes/alguem-especial/" onclick="openOccasion('alguem-especial'); return false;">
+        <img src="assets/occasions/alguem-especial.jpg" alt="Presentes artesanais para alguém especial" loading="lazy" decoding="async"/>
+        <span>Para Alguém Especial</span>
+      </a>
+      <a class="mobile-home-occasion-card occasion-page-card" href="/ocasioes/casamento/" onclick="openOccasion('casamento'); return false;">
+        <img src="assets/occasions/casamento.jpg" alt="Lembranças artesanais para casamentos" loading="lazy" decoding="async"/>
+        <span>Casamentos</span>
+      </a>
+      <a class="mobile-home-occasion-card occasion-page-card" href="/ocasioes/batizado/" onclick="openOccasion('batizado'); return false;">
+        <img src="assets/occasions/batizado.jpg" alt="Lembranças artesanais para batizados" loading="lazy" decoding="async"/>
+        <span>Batizados</span>
+      </a>
+      <a class="mobile-home-occasion-card occasion-page-card" href="/categorias/lembrancas-para-eventos/" onclick="openShopCategory('eventos'); return false;">
+        <img src="assets/occasions/casamentos-batizados.jpg" alt="Lembranças artesanais para outras ocasiões" loading="lazy" decoding="async"/>
+        <span>Outras Ocasiões</span>
+      </a>
     </div>
   </section>
 
@@ -10955,6 +10868,7 @@ var I18N_TEXT = {
     "Presente Romântico": "Romantic Gift",
     "Para Alguém Especial": "For Someone Special",
     "Casamentos & Batizados": "Weddings & Baptisms",
+    "Outras Ocasiões": "Other Occasions",
     "Eventos & Empresas": "Events & Companies",
     "Para os Mais Pequeninos": "For Little Ones",
     "todos os momentos": "every moment",
@@ -11167,6 +11081,7 @@ var I18N_TEXT = {
     "Presente Romântico": "Regalo Romántico",
     "Para Alguém Especial": "Para Alguien Especial",
     "Casamentos & Batizados": "Bodas y Bautizos",
+    "Outras Ocasiões": "Otras Ocasiones",
     "Eventos & Empresas": "Eventos y Empresas",
     "Para os Mais Pequeninos": "Para los Más Pequeños",
     "todos os momentos": "todos los momentos",
