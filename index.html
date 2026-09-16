@@ -15685,12 +15685,33 @@ function removeFromCart(name) {
   renderCart();
 }
 
+function removeCartLine(index) {
+  var removed = cart[index];
+  if (!removed) return;
+  if (removed.lineKey && window.LoveCommerce) window.LoveCommerce.deleteFiles(removed.lineKey).catch(function() {});
+  cart.splice(index, 1);
+  saveCart();
+  renderCart();
+}
+
 function updateQty(name, delta) {
   var item = cart.find(function(i){ return i.name === name; });
   if (!item) return;
   item.qty += delta;
   if (item.qty <= 0) {
     removeFromCart(name);
+    return;
+  }
+  saveCart();
+  renderCart();
+}
+
+function updateCartLineQty(index, delta) {
+  var item = cart[index];
+  if (!item) return;
+  item.qty = (Number(item.qty) || 0) + delta;
+  if (item.qty <= 0) {
+    removeCartLine(index);
     return;
   }
   saveCart();
@@ -15859,8 +15880,7 @@ function renderCart() {
       : formatPrice(total + shipping.cost);
   }
 
-  itemsEl.innerHTML = cart.map(function(item) {
-    var safeName = escapeJsString(item.name);
+  itemsEl.innerHTML = cart.map(function(item, index) {
     var displayName = escapeHtml(item.name);
     var displayEmoji = escapeHtml(item.emoji || '');
     var imageSrc = escapeHtml(item.image || getCartImageForName(item.name));
@@ -15877,10 +15897,10 @@ function renderCart() {
         '<div class="cart-item-price">' + formatPrice(lineTotal) + ' <span style="color:var(--warm-gray);font-weight:300;font-size:0.78rem;">(' + formatPrice(price) + ' × ' + qty + ')</span></div>' +
       '</div>' +
       '<div class="cart-item-controls">' +
-        '<button type="button" class="qty-btn" onclick="updateQty(\'' + safeName + '\',-1)" style="touch-action:manipulation;">−</button>' +
+        '<button type="button" class="qty-btn" onclick="updateCartLineQty(' + index + ',-1)" style="touch-action:manipulation;">−</button>' +
         '<span class="qty-display">' + qty + '</span>' +
-        '<button type="button" class="qty-btn" onclick="updateQty(\'' + safeName + '\',1)" style="touch-action:manipulation;">+</button>' +
-        '<button type="button" class="cart-item-remove" onclick="removeFromCart(\'' + safeName + '\')" title="Remover">✕</button>' +
+        '<button type="button" class="qty-btn" onclick="updateCartLineQty(' + index + ',1)" style="touch-action:manipulation;">+</button>' +
+        '<button type="button" class="cart-item-remove" onclick="removeCartLine(' + index + ')" title="Remover">✕</button>' +
       '</div>' +
     '</div>';
   }).join('');
