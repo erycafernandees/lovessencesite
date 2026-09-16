@@ -35,7 +35,7 @@ with variants(product_code, code, label, cents, minimum_quantity) as (values
 ('essencia_amor','essencia_amor:s','S',2500,1),('essencia_amor','essencia_amor:m','M',3500,1),('essencia_amor','essencia_amor:l','L',5000,1),
 ('pensar_em_ti','pensar_em_ti:s','S',2990,1),('pensar_em_ti','pensar_em_ti:m','M',3990,1),('pensar_em_ti','pensar_em_ti:l','L',5500,1),
 ('lembrei_me_de_ti','lembrei_me_de_ti:default','Único',1200,1),
-('mini_difusor','mini_difusor:30ml','30 ml',350,1),('mini_difusor','mini_difusor:50ml','50 ml',490,1),
+('mini_difusor','mini_difusor:30ml','30 ml',410,1),('mini_difusor','mini_difusor:50ml','50 ml',590,1),
 ('aroma_em_viagem','aroma_em_viagem:default','Único',300,1),
 ('brinde_perfeito','brinde_perfeito:porto','Vinho do Porto',400,1),('brinde_perfeito','brinde_perfeito:beirao','Licor Beirão',400,1),
 ('trouxinha_aromatica','trouxinha_aromatica:default','Único',500,1),('bem_querer','bem_querer:default','Único',400,1),
