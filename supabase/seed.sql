@@ -41,7 +41,7 @@ with variants(product_code, code, label, cents, minimum_quantity) as (values
 ('trouxinha_aromatica','trouxinha_aromatica:default','Único',500,1),('bem_querer','bem_querer:default','Único',400,1),
 ('mini_difusor_sabonete','mini_difusor_sabonete:default','Único',500,1),('sopros_alegria','sopros_alegria:default','Único',150,12),
 ('luz_serena','luz_serena:default','Único',350,10),('doce_luz','doce_luz:default','Único',350,15),
-('memoria_perfumada','memoria_perfumada:simples','Decoração simples',350,10),('memoria_perfumada','memoria_perfumada:completa','Laço + pingente + tag',400,10),('bilhete_perfumado','bilhete_perfumado:default','Único',200,12),
+('memoria_perfumada','memoria_perfumada:simples','Decoração simples',350,10),('memoria_perfumada','memoria_perfumada:completa','Laço + pingente + tag',400,10),('memoria_perfumada','memoria_perfumada:caixa_laco_exterior','Caixa + laço exterior',490,10),('bilhete_perfumado','bilhete_perfumado:default','Único',200,12),
 ('laco_memoria','laco_memoria:default','Único',490,1),('pequeno_artista','pequeno_artista:default','Único',300,1),
 ('momento_criativo','momento_criativo:default','Único',400,1),('caixinha_arte','caixinha_arte:default','Único',590,1),
 ('miminho_doce','miminho_doce:laco_marshmallows','Laço de marshmallows',100,1),('miminho_doce','miminho_doce:cone_miminhos','Cone de miminhos',200,1),('miminho_doce','miminho_doce:espetada_alegria','Espetada de alegria',200,1)
