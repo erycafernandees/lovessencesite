@@ -8877,7 +8877,7 @@
           <p class="product-desc">Peça artesanal em porcelana, delicada e atemporal. Disponível em três tamanhos, para todas as histórias.</p>
           <div class="product-footer">
             <span class="product-price">Desde 18€</span>
-            <button type="button" class="product-btn" onclick="openProduct('bloom')">Ver produto</button>
+            <button type="button" class="product-btn" onclick="openProduct('bloom')">Personalizar</button>
           </div>
         </div>
       </div>
@@ -8891,7 +8891,7 @@
           <p class="product-desc">A box presente para dizer aquilo que as palavras não conseguem. Em três tamanhos, sempre pronta a oferecer.</p>
           <div class="product-footer">
             <span class="product-price">Desde 25€</span>
-            <button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Ver produto</button>
+            <button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Personalizar</button>
           </div>
         </div>
       </div>
@@ -9548,7 +9548,7 @@
         <div class="product-info">
           <h3 class="product-name">Bloom</h3>
           <p class="product-desc">Peça artesanal em porcelana, delicada e atemporal. Disponível em três tamanhos. A peça que fala por ti.</p>
-          <div class="product-footer"><span class="product-price">Desde 18€</span><button type="button" class="product-btn" onclick="openProduct('bloom')">Ver produto</button></div>
+          <div class="product-footer"><span class="product-price">Desde 18€</span><button type="button" class="product-btn" onclick="openProduct('bloom')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
@@ -9606,7 +9606,7 @@
         <div class="product-info">
           <h3 class="product-name">Essência do Amor</h3>
           <p class="product-desc">Box presente em três tamanhos, criada para dizer aquilo que as palavras não conseguem. Composição cuidada, embalagem pronta a oferecer.</p>
-          <div class="product-footer"><span class="product-price">Desde 25€</span><button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Ver produto</button></div>
+          <div class="product-footer"><span class="product-price">Desde 25€</span><button type="button" class="product-btn" onclick="openProduct('essencia_amor')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="memorias" data-occasion="aniversarios,presente-romantico,alguem-especial">
@@ -9614,7 +9614,7 @@
         <div class="product-info">
           <h3 class="product-name">Pensar em Ti</h3>
           <p class="product-desc">A box para os dias em que queres simplesmente lembrar alguém de que existe. Três tamanhos, sempre com o mesmo cuidado.</p>
-          <div class="product-footer"><span class="product-price">Desde 29,90€</span><button type="button" class="product-btn" onclick="openProduct('pensar_em_ti')">Ver produto</button></div>
+          <div class="product-footer"><span class="product-price">Desde 29,90€</span><button type="button" class="product-btn" onclick="openProduct('pensar_em_ti')">Personalizar</button></div>
         </div>
       </div>
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="memorias" data-occasion="aniversarios,presente-romantico,alguem-especial,empresas">
@@ -11285,6 +11285,7 @@ var I18N_EXTRA_TEXT = {
     "Personalizável": "Personalizable",
     "Ver detalhes": "View details",
     "Ver produto": "View product",
+    "Personalizar": "Customise",
     "100% Natural": "100% Natural",
     "Ingredientes selecionados com cuidado para a pele e para o planeta.": "Ingredients carefully chosen for the skin and the planet.",
     "Cada peça é única. Não existe linha de produção, existe dedicação.": "Each piece is unique. There is no production line, there is dedication.",
@@ -11723,6 +11724,7 @@ var I18N_EXTRA_TEXT = {
     "Personalizável": "Personalizable",
     "Ver detalhes": "Ver detalles",
     "Ver produto": "Ver producto",
+    "Personalizar": "Personalizar",
     "100% Natural": "100% Natural",
     "Ingredientes selecionados com cuidado para a pele e para o planeta.": "Ingredientes seleccionados con cuidado para la piel y para el planeta.",
     "Cada peça é única. Não existe linha de produção, existe dedicação.": "Cada pieza es única. No existe línea de producción, existe dedicación.",
@@ -15834,8 +15836,9 @@ function renderCart() {
   }
   if (transportNote) transportNote.style.display = shippingDestination === 'mainland' ? '' : 'none';
   if (shippingEl) {
-    shippingEl.textContent = translatedText(shipping.note, currentLanguage);
-    shippingEl.classList.toggle('free-shipping', shippingDestination === 'mainland' && shipping.cost === 0);
+    var hasFreeShipping = shippingDestination === 'mainland' && shipping.cost === 0;
+    shippingEl.textContent = hasFreeShipping ? '' : translatedText(shipping.note, currentLanguage);
+    shippingEl.style.display = hasFreeShipping ? 'none' : '';
   }
   if (shippingProgress) {
     var remaining = FREE_SHIPPING_THRESHOLD - subtotal;
