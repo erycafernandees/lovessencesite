@@ -533,6 +533,62 @@ def activate_page(source: str, page: str) -> str:
     return source.replace(target, f'<div class="page active" id="page-{page}">', 1)
 
 
+def remove_legacy_testimonial_marquee(source: str) -> str:
+    """Remove the obsolete hidden testimonial marquee from generated HTML."""
+    pattern = re.compile(
+        r'\s*<!-- TESTIMONIALS -->\s*'
+        r'<section style="display:none;">.*?</section>\s*'
+        r'(?=<!-- INSTAGRAM FEED -->)',
+        re.S,
+    )
+    source, replacements = pattern.subn("\n\n  ", source, count=1)
+    if replacements != 1:
+        raise ValueError("Bloco legado de testemunhos não encontrado")
+    return source
+
+
+def page_block_span(source: str, page: str) -> tuple[int, int]:
+    """Return the exact span of a top-level .page wrapper."""
+    opening = re.search(
+        rf'<div class="page(?: active)?" id="page-{re.escape(page)}">',
+        source,
+    )
+    if not opening:
+        raise ValueError(f"Página interna não encontrada: {page}")
+
+    depth = 0
+    for token in re.finditer(r'<div\b[^>]*>|</div\s*>', source[opening.start():], re.I):
+        if token.group(0).lower().startswith("</div"):
+            depth -= 1
+            if depth == 0:
+                return opening.start(), opening.start() + token.end()
+        else:
+            depth += 1
+    raise ValueError(f"Fecho da página interna não encontrado: {page}")
+
+
+def retain_only_route_page(source: str, page: str) -> str:
+    """Keep global chrome, one route page, footer and scripts."""
+    page_openings = list(re.finditer(r'<div class="page(?: active)?" id="page-[^"]+">', source))
+    if not page_openings:
+        raise ValueError("Nenhuma página interna encontrada")
+
+    page_start, page_end = page_block_span(source, page)
+    footer_start = source.find("<footer", page_end)
+    if footer_start == -1:
+        raise ValueError("Footer não encontrado")
+
+    prefix = source[:page_openings[0].start()]
+    prefix = re.sub(
+        r'\s*<link rel="preload" as="image" href="\./assets/hero/hero-teddy-lavender-(?:soft|mobile)\.jpg"[^>]*>',
+        "",
+        prefix,
+    )
+    selected_page = source[page_start:page_end]
+    suffix = source[footer_start:]
+    return prefix.rstrip() + "\n\n" + selected_page.rstrip() + "\n\n" + suffix.lstrip()
+
+
 def prerender_route(source: str, route: Route, commercial_content: dict[str, dict]) -> str:
     source = activate_page(source, route.page)
     if route.page == "shop" and route.heading:
@@ -768,12 +824,15 @@ def build(output: Path, sync_root_seo: bool) -> None:
     source = source.replace('<meta name="viewport" content="width=device-width, initial-scale=1.0"/>', '<meta name="viewport" content="width=device-width, initial-scale=1.0"/>\n<base href="/"/>', 1)
     source = extract_inline_logo(source, output)
     source = add_product_links(source, products)
+    source = remove_legacy_testimonial_marquee(source)
     source = extract_shared_assets(source, output)
 
     for route in routes:
         rendered = replace_seo(source, route)
         rendered = prerender_route(rendered, route, commercial_content)
         rendered = enforce_single_h1(rendered, route.page)
+        if route.product:
+            rendered = retain_only_route_page(rendered, route.page)
         rendered = add_image_dimensions(rendered, output)
         destination = route_output_path(output, route)
         destination.parent.mkdir(parents=True, exist_ok=True)

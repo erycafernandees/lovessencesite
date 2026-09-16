@@ -35,11 +35,18 @@ def one(pattern: str, source: str, label: str, flags: int = 0) -> str:
 def validate(output: Path) -> None:
     source = (ROOT / "index.html").read_text(encoding="utf-8")
     products, routes = get_routes(source)
+    known_route_paths = {route.path for route in routes}
     commercial_content = load_commercial_content()
     errors: list[str] = []
     titles: dict[str, str] = {}
     descriptions: dict[str, str] = {}
     home_output = (output / "index.html").read_text(encoding="utf-8")
+    shared_script = (output / "assets" / "js" / "site.js").read_text(encoding="utf-8")
+
+    assert home_output.count('<article class="feedback-card">') == 12, "feedbacks visíveis da homepage alterados"
+    assert 'class="testi-card"' not in home_output, "carrossel legado de testemunhos ainda presente"
+    assert "if (!target)" in shared_script and "window.location.assign(getPageHistoryUrl(name, options))" in shared_script, "fallback de navegação entre rotas ausente"
+    assert "if (!isDedicatedProductDocument && options.history !== false)" in shared_script, "navegação dedicada para produtos ausente"
 
     for route in routes:
         path = route_output_path(output, route)
@@ -87,6 +94,39 @@ def validate(output: Path) -> None:
                 assert route_content["resultsHeading"] in page, "título da seleção de produtos incorreto"
 
             if route.product:
+                page_wrappers = re.findall(r'<div class="page(?: active)?" id="page-([^"]+)">', page)
+                assert page_wrappers == ["product"], f"HTML de produto contém páginas desnecessárias: {page_wrappers}"
+                assert page.count('<footer>') == 1, "footer ausente/duplicado"
+                assert page.count('id="main-nav"') == 1, "navegação principal ausente/duplicada"
+                assert page.count('id="cart-drawer"') == 1, "carrinho ausente/duplicado"
+                for forbidden_marker in (
+                    'id="page-home"',
+                    'id="page-shop"',
+                    'class="hero-premium home-hero-photo"',
+                    'class="home-occasion-preview"',
+                    'class="values-feedback-section"',
+                    'class="feedback-list"',
+                    'class="testi-marquee-wrap"',
+                    'class="instagram-feed"',
+                    'id="shop-products-grid"',
+                    'rel="preload" as="image" href="./assets/hero/',
+                ):
+                    assert forbidden_marker not in page, f"conteúdo alheio à página de produto: {forbidden_marker}"
+                for required_link in (
+                    'href="/"',
+                    'href="/loja/"',
+                    'href="/ocasioes/"',
+                    'href="/sobre-nos/"',
+                    'href="/contactos/"',
+                ):
+                    assert required_link in page, f"ligação global ausente: {required_link}"
+                internal_links = {
+                    href.split("#", 1)[0].split("?", 1)[0]
+                    for href in re.findall(r'href="([^"]+)"', page)
+                    if href.startswith("/") and not href.startswith("/assets/")
+                }
+                unknown_internal_links = sorted(internal_links - known_route_paths)
+                assert not unknown_internal_links, f"ligações internas sem rota: {unknown_internal_links}"
                 graph_types = {item.get("@type") for item in schema["@graph"]}
                 assert "Product" in graph_types, "Product schema ausente"
                 assert "BreadcrumbList" in graph_types, "BreadcrumbList ausente"

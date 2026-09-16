@@ -13247,17 +13247,19 @@ function syncActivePageHeading(name) {
 
 function showPage(name, options) {
   options = options || {};
+  const target = document.getElementById('page-' + name);
+  if (!target) {
+    window.location.assign(getPageHistoryUrl(name, options));
+    return;
+  }
   if (name !== 'product' && typeof stopProductGalleryAuto === 'function') stopProductGalleryAuto();
   if (typeof syncHeaderOffsets === 'function') syncHeaderOffsets();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const target = document.getElementById('page-' + name);
-  if (target) {
-    target.classList.add('active');
-    syncActivePageHeading(name);
-    scrollToPageTopInstant();
-    if (name === 'confirmation' && window.LoveCommerce) window.LoveCommerce.loadConfirmation();
-    if (name === 'quote' && window.LoveCommerce) window.LoveCommerce.loadQuote();
-  }
+  target.classList.add('active');
+  syncActivePageHeading(name);
+  scrollToPageTopInstant();
+  if (name === 'confirmation' && window.LoveCommerce) window.LoveCommerce.loadConfirmation();
+  if (name === 'quote' && window.LoveCommerce) window.LoveCommerce.loadQuote();
 
   // Reset de filtros ao entrar na loja "limpa" (sem vir de openOccasion).
   // openOccasion seta o flag _intentionalFilter para evitar este reset.
@@ -13978,6 +13980,12 @@ function openProduct(productId, options) {
   options = options || {};
   var p = PRODUCT_CATALOG[productId];
   if (!p) { showPage('shop'); return; }
+
+  var isDedicatedProductDocument = document.querySelectorAll('.page').length === 1 && document.getElementById('page-product');
+  if (!isDedicatedProductDocument && options.history !== false) {
+    window.location.assign('/produtos/' + getProductSlug(productId) + '/');
+    return;
+  }
 
   currentProduct = productId;
   currentSizeId = p.sizes && p.sizes.length > 0 ? (p.defaultSizeId || p.sizes[0].id) : null;
