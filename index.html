@@ -8739,10 +8739,6 @@
 
   <!-- Footer with total + checkout -->
   <div class="cart-footer" id="cart-footer" style="display:none">
-    <div class="cart-subtotal">
-      <span>Total dos produtos</span>
-      <span id="cart-total-price">0€</span>
-    </div>
     <div class="cart-discount-line" id="cart-discount-line">
       <span id="cart-discount-label"></span>
       <span id="cart-discount-value"></span>
@@ -15816,7 +15812,6 @@ function renderCart() {
   var emptyEl  = document.getElementById('cart-empty');
   var itemsEl  = document.getElementById('cart-items');
   var footerEl = document.getElementById('cart-footer');
-  var totalEl  = document.getElementById('cart-total-price');
   var shippingEl = document.getElementById('cart-shipping-note');
   var shippingDestinationEl = document.getElementById('cart-shipping-destination');
   var shippingMethodLabel = document.getElementById('cart-shipping-method-label');
@@ -15842,7 +15837,6 @@ function renderCart() {
   var discount = getCartDiscount();
   var total = getTotal();
   var shipping = getShippingQuote();
-  totalEl.textContent = formatPrice(total);
   if (discountLine && discountLabel && discountValue) {
     if (discount.amount > 0) {
       discountLine.style.display = 'flex';
