@@ -580,7 +580,7 @@ def retain_only_route_page(source: str, page: str) -> str:
 
     prefix = source[:page_openings[0].start()]
     prefix = re.sub(
-        r'\s*<link rel="preload" as="image" href="\./assets/hero/hero-teddy-lavender-(?:soft|mobile)\.jpg"[^>]*>',
+        r'\s*<link rel="preload" as="image" href="\./assets/hero/[^"<>]+"[^>]*>',
         "",
         prefix,
     )
