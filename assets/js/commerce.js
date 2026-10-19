@@ -261,6 +261,35 @@
     }
   }
 
+  // Preserve o percurso WhatsApp enquanto o Supabase/Stripe nao estiver configurado.
+  // Quando o backend estiver pronto, os itens do carrinho seguem para Checkout
+  // pela Edge Function, com precos e produtos calculados no servidor.
+  function installStripeCheckoutOnCart() {
+    if (!window.LoveCommerce || !window.LoveCommerce.configured()) return;
+    var button = document.querySelector('.cart-checkout-btn[onclick="checkoutWhatsApp()"]');
+    if (!button || button.dataset.stripeCheckoutReady === 'true') return;
+
+    button.removeAttribute('onclick');
+    button.dataset.stripeCheckoutReady = 'true';
+    button.setAttribute('aria-label', 'Finalizar compra e pagar em seguranca com Stripe');
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+      if (window.shippingDestination !== 'mainland') {
+        if (typeof window.checkoutWhatsApp === 'function') window.checkoutWhatsApp();
+        return;
+      }
+      startCatalogCheckout(button);
+    });
+
+    var checkoutPage = document.getElementById('page-checkout');
+    if (checkoutPage) {
+      var eyebrow = checkoutPage.querySelector('.section-label');
+      var explanation = checkoutPage.querySelector('.checkout-system-card > p:not(.section-label)');
+      if (eyebrow) eyebrow.textContent = '✦ Pagamento seguro';
+      if (explanation) explanation.textContent = 'O teu carrinho esta guardado. Abre-o e seleciona "Finalizar compra" para efetuares o pagamento seguro com Stripe.';
+    }
+  }
+
   window.LoveCommerce = {
     api: api,
     configured: function () { try { assertConfigured(); return true; } catch (_) { return false; } },
@@ -274,6 +303,6 @@
     approveQuote: approveQuote
   };
 
-  document.addEventListener('DOMContentLoaded', function () { loadConfirmation(); loadQuote(); });
+  document.addEventListener('DOMContentLoaded', function () { installStripeCheckoutOnCart(); loadConfirmation(); loadQuote(); });
   window.addEventListener('popstate', function () { setTimeout(function () { loadConfirmation(); loadQuote(); }, 0); });
 })();
