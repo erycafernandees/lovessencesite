@@ -274,6 +274,10 @@
     button.setAttribute('aria-label', 'Finalizar compra e pagar em seguranca com Stripe');
     button.addEventListener('click', function (event) {
       event.preventDefault();
+      if (window.shippingDestination !== 'mainland') {
+        if (typeof window.checkoutWhatsApp === 'function') window.checkoutWhatsApp();
+        return;
+      }
       startCatalogCheckout(button);
     });
 
