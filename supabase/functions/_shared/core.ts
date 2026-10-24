@@ -181,6 +181,7 @@ export async function queueEmail(template: string, recipient: string, payload: R
     body: JSON.stringify({
       from: Deno.env.get("EMAIL_FROM") || "Love Essences <encomendas@love-essences.pt>",
       to: [recipient],
+      reply_to: Deno.env.get("EMAIL_REPLY_TO") || "love-essences@outlook.com",
       subject: subjects[template] || "Love Essences",
       html: emailHtml(template, payload),
     }),
