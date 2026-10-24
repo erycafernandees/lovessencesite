@@ -1,0 +1,45 @@
+name: Validar checkout Stripe (sem publicar)
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'assets/**'
+      - 'scripts/**'
+      - 'supabase/**'
+      - '.github/workflows/stripe-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+      - name: Gerar site de teste
+        run: python3 scripts/build_site.py --output _site
+      - name: Validar rotas e SEO
+        run: python3 scripts/validate_site.py --output _site
+      - name: Validar integração do checkout
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          html = Path('_site/index.html').read_text(encoding='utf-8')
+          config = Path('_site/assets/js/commerce-config.js').read_text(encoding='utf-8')
+          commerce = Path('_site/assets/js/commerce.js').read_text(encoding='utf-8')
+          assert 'onclick="window.LoveCommerce.startCatalogCheckout(this)"' in html
+          assert 'enabled: true' in config
+          assert 'checkout-prepare' in commerce and 'checkout-session' in commerce
+          assert Path('_site/encomenda/confirmacao/index.html').exists()
+          assert Path('_site/checkout/index.html').exists()
+          print('Verificações estáticas concluídas. Pagamento real/teste ainda não executado.')
+          PY
+      - name: Guardar pré-visualização descarregável
+        uses: actions/upload-artifact@v4
+        with:
+          name: love-essences-stripe-preview
+          path: _site/
+          retention-days: 7
