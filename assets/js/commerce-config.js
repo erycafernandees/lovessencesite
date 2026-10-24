@@ -1,8 +1,7 @@
 window.LOVE_COMMERCE_CONFIG = Object.freeze({
-  enabled: false,
-  supabaseUrl: "https://YOUR_PROJECT_REF.supabase.co",
-  supabaseAnonKey: "YOUR_SUPABASE_ANON_KEY",
+  enabled: true,
+  supabaseUrl: "https://qjtblalogacenjxponpi.supabase.co",
+  supabaseAnonKey: "sb_publishable_DXwkiqTJglMl_j62eoTDew_YGvn_rDY",
   turnstileSiteKey: "",
-  environment: "development"
+  environment: "test"
 });
-
