@@ -12765,7 +12765,8 @@ function getProductIdFromSlug(slug) {
 }
 
 function getRouteStateFromLocation() {
-  var path = decodeURIComponent(window.location.pathname || '/').replace(/\/+$/, '') || '/';
+  var routeOverride = new URLSearchParams(window.location.search).get('route');
+  var path = decodeURIComponent(routeOverride || window.location.pathname || '/').replace(/\/+$/, '') || '/';
   var productMatch = path.match(/^\/produtos\/([^/]+)$/);
   if (productMatch) {
     var productId = getProductIdFromSlug(productMatch[1]);
