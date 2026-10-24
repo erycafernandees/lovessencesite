@@ -811,7 +811,15 @@ def build(output: Path, sync_root_seo: bool) -> None:
     output.mkdir(parents=True)
 
     for directory in ("assets", "dist", "admin"):
-        shutil.copytree(ROOT / directory, output / directory)
+        shutil.copytree(
+            ROOT / directory,
+            output / directory,
+            ignore=(
+                shutil.ignore_patterns("essencia-amor-video.mp4")
+                if directory == "assets"
+                else None
+            ),
+        )
     shutil.copy2(ROOT / ".nojekyll", output / ".nojekyll")
     for filename in ("_headers", "_redirects"):
         source_file = ROOT / filename
