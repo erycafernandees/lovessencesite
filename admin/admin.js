@@ -8,6 +8,15 @@ const app = document.getElementById('admin-app');
 const drawer = document.getElementById('detail-drawer');
 const backdrop = document.getElementById('drawer-backdrop');
 let currentView = 'orders';
+let searchTerm = '';
+let currentRows = [];
+function filterRows(rows) {
+  const q = searchTerm.trim().toLocaleLowerCase('pt-PT');
+  return q ? rows.filter(row => [row.order_number,row.project_number,row.customer_name,row.customer_email].some(value => String(value || '').toLocaleLowerCase('pt-PT').includes(q))) : rows;
+}
+document.getElementById('admin-search').addEventListener('input', event => { searchTerm = event.target.value; renderFilteredRows(); });
+function renderFilteredRows() { if (currentView === 'orders') renderOrderRows(currentRows); else renderProjectRows(currentRows); }
+
 let pendingFactorId = null;
 let pendingChallengeId = null;
 
@@ -105,6 +114,7 @@ async function loadView() {
 async function loadOrders() {
   const result = await adminApi('list-orders');
   const rows = result.data || [];
+  currentRows = rows;
   document.getElementById('view-title').textContent = 'Encomendas';
   const paid = rows.filter(row => ['paid','partially_refunded'].includes(row.payment_status));
   const net = paid.reduce((sum, row) => sum + Number(row.payments?.[0]?.net_amount || 0), 0);
@@ -112,6 +122,12 @@ async function loadOrders() {
     ['Total recente', result.count || rows.length], ['Pagas', paid.length], ['Em produção', rows.filter(row => row.order_status === 'production').length], ['Líquido recebido', money(net)]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
   document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Taxas</th><th>Líquido</th><th>Data</th></tr>';
+  renderOrderRows(rows);
+}
+
+function renderOrderRows(allRows) {
+  const rows = filterRows(allRows);
+  document.getElementById('results-count').textContent = `${rows.length} resultados (página atual)`;
   document.getElementById('table-body').innerHTML = rows.map(row => {
     const payment = row.payments?.[0] || {};
     return `<tr data-order="${row.id}"><td><strong>${esc(row.order_number)}</strong><br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(payment.gross_amount || row.total_amount, row.currency)}</td><td>${payment.processing_fee_amount == null ? '—' : money(payment.processing_fee_amount,row.currency)}</td><td>${payment.net_amount == null ? '—' : money(payment.net_amount,row.currency)}</td><td>${date(row.created_at)}</td></tr>`;
@@ -122,11 +138,18 @@ async function loadOrders() {
 async function loadProjects() {
   const result = await adminApi('list-projects');
   const rows = result.data || [];
+  currentRows = rows;
   document.getElementById('view-title').textContent = 'Projetos personalizados';
   document.getElementById('summary-grid').innerHTML = [
     ['Total recente', rows.length], ['Por analisar', rows.filter(row => row.status === 'submitted').length], ['Orçamentados', rows.filter(row => row.status === 'quoted').length], ['Em produção', rows.filter(row => row.status === 'production').length]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
   document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Ocasião</th><th>Tipo</th><th>Estado</th><th>Evento</th><th>Data do pedido</th></tr>';
+  renderProjectRows(rows);
+}
+
+function renderProjectRows(allRows) {
+  const rows = filterRows(allRows);
+  document.getElementById('results-count').textContent = `${rows.length} resultados (lista carregada)`;
   document.getElementById('table-body').innerHTML = rows.map(row => `<tr data-project="${row.id}"><td><strong>${esc(row.project_number)}</strong></td><td>${esc(row.customer_name)}<br>${esc(row.customer_email)}</td><td>${esc(row.occasion)}</td><td>${esc(row.project_type)}</td><td>${badge(row.status)}</td><td>${esc(row.event_date || '—')}</td><td>${date(row.created_at)}</td></tr>`).join('');
   document.querySelectorAll('[data-project]').forEach(row => row.addEventListener('click', () => openProject(row.dataset.project)));
 }
