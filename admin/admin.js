@@ -9,10 +9,20 @@ const drawer = document.getElementById('detail-drawer');
 const backdrop = document.getElementById('drawer-backdrop');
 let currentView = 'orders';
 let searchTerm = '';
+let statusFilter = '';
+const ORDER_LABELS = {draft:'Rascunho',awaiting_payment:'A aguardar pagamento',confirmed:'Confirmada',review:'Em análise',awaiting_details:'A aguardar detalhes',production:'Em produção',ready_to_ship:'Pronta para enviar',shipped:'Enviada',completed:'Concluída',cancelled:'Cancelada'};
+const PROJECT_LABELS = {draft:'Rascunho',submitted:'Recebido',in_review:'Em análise',awaiting_details:'A aguardar detalhes',quoted:'Orçamentado',approved:'Aprovado',payment_pending:'A aguardar pagamento',paid:'Pago',production:'Em produção',completed:'Concluído',declined:'Recusado',archived:'Arquivado'};
+function updateStatusOptions() {
+  const labels = currentView === 'orders' ? ORDER_LABELS : PROJECT_LABELS;
+  const select = document.getElementById('admin-status');
+  select.innerHTML = '<option value="">Todos os estados</option>' + Object.entries(labels).map(([value,label]) => `<option value="${value}">${label}</option>`).join('');
+  select.value = statusFilter;
+}
+document.getElementById('admin-status').addEventListener('change', event => { statusFilter = event.target.value; renderFilteredRows(); });
 let currentRows = [];
 function filterRows(rows) {
   const q = searchTerm.trim().toLocaleLowerCase('pt-PT');
-  return q ? rows.filter(row => [row.order_number,row.project_number,row.customer_name,row.customer_email].some(value => String(value || '').toLocaleLowerCase('pt-PT').includes(q))) : rows;
+  return rows.filter(row => (!statusFilter || (currentView === 'orders' ? row.order_status : row.status) === statusFilter) && (!q || [row.order_number,row.project_number,row.customer_name,row.customer_email].some(value => String(value || '').toLocaleLowerCase('pt-PT').includes(q))));
 }
 document.getElementById('admin-search').addEventListener('input', event => { searchTerm = event.target.value; renderFilteredRows(); });
 function renderFilteredRows() { if (currentView === 'orders') renderOrderRows(currentRows); else renderProjectRows(currentRows); }
@@ -30,7 +40,7 @@ const supabase = createClient(config.supabaseUrl || 'https://invalid.supabase.co
 function money(cents, currency = 'eur') { return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: currency.toUpperCase() }).format((Number(cents) || 0) / 100); }
 function date(value) { return value ? new Intl.DateTimeFormat('pt-PT', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '—'; }
 function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
-function badge(value) { return `<span class="badge ${esc(value)}">${esc(String(value || '').replaceAll('_', ' '))}</span>`; }
+function badge(value) { const labels = {...ORDER_LABELS,...PROJECT_LABELS}; return `<span class="badge ${esc(value)}">${esc(labels[value] || String(value || '').replaceAll('_', ' '))}</span>`; }
 
 async function adminApi(action, body = {}) {
   const { data: { session } } = await supabase.auth.getSession();
@@ -100,7 +110,7 @@ document.getElementById('logout-button').addEventListener('click', async () => {
 document.getElementById('refresh-button').addEventListener('click', loadView);
 document.querySelectorAll('.tabs button').forEach(button => button.addEventListener('click', () => {
   document.querySelectorAll('.tabs button').forEach(item => item.classList.remove('active'));
-  button.classList.add('active'); currentView = button.dataset.view; loadView();
+  button.classList.add('active'); currentView = button.dataset.view; statusFilter = ''; updateStatusOptions(); loadView();
 }));
 
 async function loadView() {
@@ -115,6 +125,7 @@ async function loadOrders() {
   const result = await adminApi('list-orders');
   const rows = result.data || [];
   currentRows = rows;
+  updateStatusOptions();
   document.getElementById('view-title').textContent = 'Encomendas';
   const paid = rows.filter(row => ['paid','partially_refunded'].includes(row.payment_status));
   const net = paid.reduce((sum, row) => sum + Number(row.payments?.[0]?.net_amount || 0), 0);
@@ -139,6 +150,7 @@ async function loadProjects() {
   const result = await adminApi('list-projects');
   const rows = result.data || [];
   currentRows = rows;
+  updateStatusOptions();
   document.getElementById('view-title').textContent = 'Projetos personalizados';
   document.getElementById('summary-grid').innerHTML = [
     ['Total recente', rows.length], ['Por analisar', rows.filter(row => row.status === 'submitted').length], ['Orçamentados', rows.filter(row => row.status === 'quoted').length], ['Em produção', rows.filter(row => row.status === 'production').length]
