@@ -111,10 +111,10 @@ document.getElementById('mfa-form').addEventListener('submit', async event => {
   const code = new FormData(event.currentTarget).get('code');
   const errorEl = document.getElementById('mfa-error');
   try {
-    const { error } = await supabase.auth.mfa.verify({ factorId: pendingFactorId, challengeId: pendingChallengeId, code });
+    const { error } = await supabase.auth.mfa.verify({ factorId: pendingFactorId, challengeId: pendingChallengeId, code: String(code).trim() });
     if (error) throw error;
     await showApp();
-  } catch (error) { errorEl.textContent = error.message; }
+  } catch (error) { errorEl.textContent = error.message === 'Invalid TOTP code entered' ? 'Código inválido. Confirma que estás a usar a entrada mais recente da aplicação autenticadora e que a hora do telemóvel está automática.' : error.message; }
 });
 
 document.getElementById('logout-button').addEventListener('click', async () => { await supabase.auth.signOut(); location.reload(); });
