@@ -56,21 +56,32 @@ async function adminApi(action, body = {}) {
 }
 
 async function ensureMfa() {
-  const { data: assurance } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  const { data: assurance, error: assuranceError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (assuranceError) throw assuranceError;
   if (assurance?.currentLevel === 'aal2') return showApp();
-  const { data: factors } = await supabase.auth.mfa.listFactors();
-  let factor = factors?.totp?.find(item => item.status === 'verified');
+  const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
+  if (factorsError) throw factorsError;
+  const existing = factors?.all?.filter(item => item.factor_type === 'totp') || [];
+  let factor = existing.find(item => item.status === 'verified');
+  const enrolment = document.getElementById('mfa-enrolment');
+  enrolment.hidden = true;
   if (!factor) {
+    // Incomplete enrolments must be explicitly replaced; a second factor
+    // with the same friendly name would otherwise fail to enrol.
+    for (const stale of existing.filter(item => item.status !== 'verified')) {
+      const { error } = await supabase.auth.mfa.unenroll({ factorId: stale.id });
+      if (error) throw new Error('Não foi possível reiniciar o MFA. Contacta o suporte.');
+    }
     const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Love Essences Admin' });
     if (error) throw error;
     factor = data;
-    document.getElementById('mfa-enrolment').hidden = false;
+    enrolment.hidden = false;
     document.getElementById('mfa-qr').src = data.totp.qr_code;
   }
-  const challenge = await supabase.auth.mfa.challenge({ factorId: factor.id });
-  if (challenge.error) throw challenge.error;
+  const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: factor.id });
+  if (challengeError) throw challengeError;
   pendingFactorId = factor.id;
-  pendingChallengeId = challenge.data.id;
+  pendingChallengeId = challenge.id;
   loginCard.hidden = true;
   mfaCard.hidden = false;
 }
