@@ -4,3 +4,6 @@
 .filters{display:flex;align-items:end;justify-content:space-between;gap:1rem;margin:0 0 1rem}.filters label{margin:0;width:min(380px,100%)}.filters input{margin-top:.35rem}.filters span{color:var(--muted);font-size:.75rem;padding-bottom:.8rem}@media(max-width:600px){.filters{align-items:stretch;flex-direction:column}.filters span{padding:0}}
 
 .filters label{flex:0 1 340px}.filters label:has(select){flex:0 1 220px}.filters select{margin-top:.35rem}@media(max-width:600px){.filters label,.filters label:has(select){flex:auto;width:100%}}
+
+/* Ensure the HTML hidden attribute overrides layout display rules. */
+[hidden]{display:none!important}
