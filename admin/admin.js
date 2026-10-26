@@ -61,7 +61,7 @@ async function ensureMfa() {
   if (assurance?.currentLevel === 'aal2') return showApp();
   const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
   if (factorsError) throw factorsError;
-  const existing = factors?.all?.filter(item => item.factor_type === 'totp') || [];
+  const existing = factors?.all?.filter(item => (item.factor_type || item.type) === 'totp') || [];
   let factor = existing.find(item => item.status === 'verified');
   const enrolment = document.getElementById('mfa-enrolment');
   enrolment.hidden = true;
@@ -72,7 +72,7 @@ async function ensureMfa() {
       const { error } = await supabase.auth.mfa.unenroll({ factorId: stale.id });
       if (error) throw new Error('Não foi possível reiniciar o MFA. Contacta o suporte.');
     }
-    const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Love Essences Admin' });
+    const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: `Love Essences Admin ${Date.now()}` });
     if (error) throw error;
     factor = data;
     enrolment.hidden = false;
