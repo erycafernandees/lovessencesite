@@ -78,10 +78,8 @@ async function ensureMfa() {
     enrolment.hidden = false;
     document.getElementById('mfa-qr').src = data.totp.qr_code;
   }
-  const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({ factorId: factor.id });
-  if (challengeError) throw challengeError;
   pendingFactorId = factor.id;
-  pendingChallengeId = challenge.id;
+  pendingChallengeId = null;
   loginCard.hidden = true;
   mfaCard.hidden = false;
 }
@@ -111,7 +109,7 @@ document.getElementById('mfa-form').addEventListener('submit', async event => {
   const code = new FormData(event.currentTarget).get('code');
   const errorEl = document.getElementById('mfa-error');
   try {
-    const { error } = await supabase.auth.mfa.verify({ factorId: pendingFactorId, challengeId: pendingChallengeId, code: String(code).trim() });
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: pendingFactorId, code: String(code).trim() });
     if (error) throw error;
     await showApp();
   } catch (error) { errorEl.textContent = error.message === 'Invalid TOTP code entered' ? 'Código inválido. Confirma que estás a usar a entrada mais recente da aplicação autenticadora e que a hora do telemóvel está automática.' : error.message; }
