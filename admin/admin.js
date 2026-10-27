@@ -85,10 +85,17 @@ async function ensureMfa() {
 }
 
 async function showApp() {
-  const { data: { user } } = await supabase.auth.getUser();
-  document.getElementById('admin-email').textContent = user?.email || '';
+  // Show the admin area immediately after MFA succeeds; profile lookup must not block it.
   authShell.hidden = true;
+  loginCard.hidden = true;
+  mfaCard.hidden = true;
   app.hidden = false;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    document.getElementById('admin-email').textContent = user?.email || '';
+  } catch (error) {
+    console.warn('Admin profile lookup failed after MFA:', error);
+  }
   await loadView();
 }
 
