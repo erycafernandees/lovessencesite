@@ -181,6 +181,7 @@ export async function queueEmail(template: string, recipient: string, payload: R
     body: JSON.stringify({
       from: Deno.env.get("EMAIL_FROM") || "Love Essences <encomendas@love-essences.pt>",
       to: [recipient],
+      reply_to: Deno.env.get("EMAIL_REPLY_TO") || "love-essences@outlook.com",
       subject: subjects[template] || "Love Essences",
       html: emailHtml(template, payload),
     }),
@@ -202,7 +203,7 @@ function emailHtml(template: string, payload: Record<string, unknown>): string {
       ? "Vamos analisar o teu pedido e entrar em contacto contigo antes de preparar qualquer orçamento ou pagamento."
       : "A tua encomenda já está confirmada. Se precisarmos de validar algum detalhe da personalização, entraremos em contacto contigo.";
   const action = isQuote && typeof payload.quoteUrl === "string" ? `<p style="margin:28px 0"><a href="${payload.quoteUrl}" style="display:inline-block;padding:13px 22px;border-radius:6px;background:#66135e;color:#fff;text-decoration:none">Consultar e aprovar proposta</a></p>` : "";
-  return `<!doctype html><html lang="pt"><body style="margin:0;background:#f8f3f7;font-family:Arial,sans-serif;color:#3f073a"><div style="max-width:620px;margin:auto;padding:36px"><div style="background:#fff;border-radius:20px;padding:36px"><p style="color:#b468ab;letter-spacing:.14em;text-transform:uppercase;font-size:12px">Love Essences</p><h1 style="font-family:Georgia,serif;font-weight:400">${title}</h1><p style="line-height:1.7">${body}</p><p style="line-height:1.7"><strong>Referência:</strong> ${number}</p>${action}<p style="color:#765c73;font-size:13px">Esta mensagem foi enviada automaticamente. Podes responder a este email se precisares de ajuda.</p></div></div></body></html>`;
+  return `<!doctype html><html lang="pt"><body style="margin:0;background:#f8f3f7;font-family:Arial,sans-serif;color:#3f073a"><div style="max-width:620px;margin:auto;padding:36px"><div style="background:#fff;border-radius:20px;padding:36px"><p style="color:#b468ab;letter-spacing:.14em;text-transform:uppercase;font-size:12px">LOVE ESSENCES | SABONETES ARTESANAIS &amp; CO.</p><h1 style="font-family:Georgia,serif;font-weight:400">${title}</h1><p style="line-height:1.7">${body}</p><p style="line-height:1.7"><strong>Referência:</strong> ${number}</p>${action}<p style="color:#765c73;font-size:13px">Esta mensagem foi enviada automaticamente. Podes responder a este email se precisares de ajuda.</p></div></div></body></html>`;
 }
 
 export async function createSignedUploads(

@@ -82,7 +82,13 @@ Deno.serve(async (req) => {
     const event = await stripe.webhooks.constructEventAsync(raw, signature, secret, undefined, Stripe.createSubtleCryptoProvider());
     const client = serviceClient();
     const { error: eventError } = await client.from("webhook_events").insert({ provider: "stripe", event_id: event.id, event_type: event.type, payload: event });
-    if (eventError?.code === "23505") return json(req, { received: true, duplicate: true });
+    if (eventError?.code === "23505") {
+      const { data: existing, error: lookupError } = await client.from("webhook_events")
+        .select("processed_at").eq("provider", "stripe").eq("event_id", event.id).single();
+      if (lookupError) throw lookupError;
+      if (existing?.processed_at) return json(req, { received: true, duplicate: true });
+      // Retry processing an event whose previous delivery failed.
+    }
     if (eventError) throw eventError;
     try {
       if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
@@ -100,7 +106,7 @@ Deno.serve(async (req) => {
       } else if (event.type === "refund.created" || event.type === "refund.updated" || event.type === "refund.failed" || event.type === "charge.refund.updated") {
         await recordRefundObject(event.data.object as Stripe.Refund);
       }
-      await client.from("webhook_events").update({ processed_at: new Date().toISOString() }).eq("provider", "stripe").eq("event_id", event.id);
+      await client.from("webhook_events").update({ processed_at: new Date().toISOString(), error: null }).eq("provider", "stripe").eq("event_id", event.id);
     } catch (processingError) {
       await client.from("webhook_events").update({ error: String(processingError) }).eq("provider", "stripe").eq("event_id", event.id);
       throw processingError;

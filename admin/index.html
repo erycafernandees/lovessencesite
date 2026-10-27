@@ -22,7 +22,7 @@
         <label>Email<input type="email" name="email" autocomplete="username" required/></label>
         <label>Palavra-passe<input type="password" name="password" autocomplete="current-password" required/></label>
         <button type="submit">Entrar</button>
-        <p class="error" id="login-error"></p>
+        <p class="error" id="login-error"></p><p class="login-help"><a href="/admin/repor-password/">Esqueceste-te da palavra-passe?</a></p>
       </form>
     </section>
     <section class="auth-card" id="mfa-card" hidden>
@@ -42,7 +42,7 @@
 
   <div class="admin-app" id="admin-app" hidden>
     <header class="admin-header">
-      <a href="/" class="brand">Love Essences <span>Gestão</span></a>
+      <a href="/" class="brand"><img src="/assets/love-essences-social-logo.png" alt="Love Essences" class="brand-logo"/><span>Gestão</span></a>
       <div><span id="admin-email"></span><button class="text-button" id="logout-button">Terminar sessão</button></div>
     </header>
     <nav class="tabs" aria-label="Área administrativa">
@@ -52,9 +52,10 @@
     <section class="workspace">
       <div class="toolbar">
         <div><p class="eyebrow" id="view-eyebrow">Operação</p><h1 id="view-title">Encomendas</h1></div>
-        <button id="refresh-button" class="secondary">Atualizar</button>
+        <button id="new-order-button" type="button">+ Nova encomenda</button><button id="refresh-button" class="secondary">Atualizar</button>
       </div>
       <div class="summary-grid" id="summary-grid"></div>
+      <div class="filters"><label for="admin-search">Pesquisar<input id="admin-search" type="search" placeholder="Referência, nome ou email" autocomplete="off"/></label><label for="admin-status">Estado<select id="admin-status"><option value="">Todos os estados</option></select></label><label>Canal<select id="admin-channel"><option value="">Todos</option><option value="website">Site</option><option value="whatsapp">WhatsApp</option><option value="instagram">Instagram</option><option value="other">Outro</option></select></label><label>Tipo<select id="admin-tests"><option value="real">Reais</option><option value="test">Testes</option><option value="all">Todos</option></select></label><span id="results-count" aria-live="polite"></span></div>
       <div class="table-card"><div class="table-scroll"><table><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div><p class="empty" id="empty-state" hidden>Não existem registos para apresentar.</p></div>
     </section>
   </div>
@@ -65,6 +66,24 @@
     <div id="drawer-content"></div>
   </aside>
 
+  <div id="manual-modal" class="manual-modal" hidden>
+    <section class="manual-panel" role="dialog" aria-modal="true" aria-label="Nova encomenda">
+      <div class="manual-top"><h2>Nova encomenda</h2><button id="manual-close" type="button" class="secondary">Fechar</button></div>
+      <form id="manual-form">
+        <label>Canal<select name="channel"><option value="whatsapp">WhatsApp</option><option value="instagram">Instagram</option><option value="other">Outro</option></select></label>
+        <label>Nome do cliente<input name="customerName" required/></label>
+        <label>Email (opcional)<input name="customerEmail" type="email"/></label>
+        <label>Telefone (opcional)<input name="customerPhone"/></label>
+        <label>Produto / descrição<input name="description" required/></label>
+        <label>Quantidade<input name="quantity" type="number" min="1" step="1" value="1" required/></label>
+        <label>Total (€)<input name="totalEuros" type="number" min="0" step="0.01" required/></label>
+        <label>Pagamento<select name="paymentStatus"><option value="unpaid">Por pagar</option><option value="paid">Pago</option></select></label>
+        <label>Notas<textarea name="notes" rows="3"></textarea></label><label>Fotografias de referência (JPG/PNG, até 10 MB cada)<input name="referencePhotos" type="file" accept="image/jpeg,image/png" multiple/></label>
+        <label class="check-label"><input name="isTest" type="checkbox"/> É um teste</label>
+        <p id="manual-error" class="error" role="alert"></p><button type="submit">Guardar encomenda</button>
+      </form>
+    </section>
+  </div>
   <script src="/assets/js/commerce-config.js"></script>
   <script type="module" src="/admin/admin.js"></script>
 </body>

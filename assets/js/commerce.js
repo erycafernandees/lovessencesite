@@ -201,9 +201,11 @@
     if (!sessionId) { if (status) status.textContent = 'Não encontrámos a referência do pagamento.'; return; }
     try {
       var result = await api('order-status', { method: 'GET', query: '?session_id=' + encodeURIComponent(sessionId) });
-      document.getElementById('confirmation-number').textContent = result.orderNumber || '';
       if (result.paid) {
-        if (status) status.textContent = 'Pagamento confirmado. A tua encomenda vai agora seguir para preparação.';
+        document.getElementById('confirmation-number').textContent = result.orderNumber || '';
+        var success = document.getElementById('confirmation-success');
+        if (success) success.hidden = false;
+        if (status) status.hidden = true;
         var pending = JSON.parse(localStorage.getItem('le_pending_checkout') || '{}');
         if (typeof window.completeCartCheckout === 'function') window.completeCartCheckout(pending.cartSignature || '');
         localStorage.removeItem('le_pending_checkout');
