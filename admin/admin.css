@@ -23,3 +23,7 @@
 #manual-form .check-label{flex-direction:row;align-items:center}
 #manual-form .check-label input{width:auto}
 @media(max-width:650px){#manual-form{grid-template-columns:1fr}.manual-panel{padding:18px}.toolbar{flex-wrap:wrap}}
+
+/* Keep both toolbar actions together on the right. */
+.toolbar #new-order-button{margin-left:auto}
+.toolbar #refresh-button{margin-left:0}
