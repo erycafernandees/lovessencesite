@@ -78,7 +78,7 @@
         <label>Quantidade<input name="quantity" type="number" min="1" step="1" value="1" required/></label>
         <label>Total (€)<input name="totalEuros" type="number" min="0" step="0.01" required/></label>
         <label>Pagamento<select name="paymentStatus"><option value="unpaid">Por pagar</option><option value="paid">Pago</option></select></label>
-        <label>Notas<textarea name="notes" rows="3"></textarea></label>
+        <label>Notas<textarea name="notes" rows="3"></textarea></label><label>Fotografias de referência (JPG/PNG, até 10 MB cada)<input name="referencePhotos" type="file" accept="image/jpeg,image/png" multiple/></label>
         <label class="check-label"><input name="isTest" type="checkbox"/> É um teste</label>
         <p id="manual-error" class="error" role="alert"></p><button type="submit">Guardar encomenda</button>
       </form>
