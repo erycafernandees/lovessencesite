@@ -138,7 +138,7 @@ document.getElementById('manual-form').addEventListener('submit', async event =>
   const error = document.getElementById('manual-error');
   const euros = String(values.get('totalEuros') || '').replace(',', '.');
   const amount = Number(euros);
-  if (!Number.isFinite(amount) || amount < 0 || !/^\\d+(?:\\.\\d{1,2})?$/.test(euros)) { error.textContent = 'Introduz um valor válido com até duas casas decimais.'; return; }
+  if (!Number.isFinite(amount) || amount < 0 || !/^\d+(?:\.\d{1,2})?$/.test(euros)) { error.textContent = 'Introduz um valor válido com até duas casas decimais.'; return; }
   button.disabled = true;
   error.textContent = '';
   try {
