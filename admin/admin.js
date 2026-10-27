@@ -234,6 +234,26 @@ function openDrawer(html) { document.getElementById('drawer-content').innerHTML 
 function closeDrawer() { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); setTimeout(() => { backdrop.hidden = true; }, 250); }
 document.getElementById('drawer-close').addEventListener('click', closeDrawer); backdrop.addEventListener('click', closeDrawer);
 
+function personalizationHtml(value) {
+  if (!value || typeof value !== 'object') return '<p class="personalization-empty">Sem personalização indicada.</p>';
+  const labels = {soap:'Sabonete',colors:'Cores',fragrance:'Fragrância',customText:'Texto personalizado',color:'Cor',scent:'Fragrância',message:'Mensagem',size:'Tamanho',name:'Nome',notes:'Observações'};
+  const rows = [];
+  function walk(obj, prefix = '') {
+    for (const [key, val] of Object.entries(obj)) {
+      if (val == null || val === '' || val === '||' || val === '[]') continue;
+      const label = (labels[key] || key.replace(/([a-z])([A-Z])/g,'$1 $2')).trim();
+      const fullLabel = prefix ? prefix + ' · ' + label : label;
+      if (typeof val === 'object' && !Array.isArray(val)) walk(val,fullLabel);
+      else {
+        const display = Array.isArray(val) ? val.filter(Boolean).join(', ') : String(val).split('|').map(v=>v.trim()).filter(Boolean).join(', ');
+        if (display) rows.push('<div class="personalization-field"><span>'+esc(fullLabel)+'</span><strong>'+esc(display)+'</strong></div>');
+      }
+    }
+  }
+  walk(value);
+  return rows.length ? '<div class="personalization-grid">'+rows.join('')+'</div>' : '<p class="personalization-empty">Sem personalização indicada.</p>';
+}
+
 async function openOrder(id) {
   openDrawer('<p>A carregar…</p>');
   try {
@@ -243,7 +263,7 @@ async function openOrder(id) {
       <div class="detail-section"><div class="detail-grid"><p><strong>Cliente</strong>${esc(order.customer_name || '—')}</p><p><strong>Email</strong>${esc(order.customer_email || '—')}</p><p><strong>Telefone</strong>${esc(order.customer_phone || '—')}</p><p><strong>Total</strong>${money(order.total_amount,order.currency)}</p></div></div>
       <div class="detail-section"><h3>Estado</h3><form class="status-form" id="order-status-form"><select name="status">${['confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'].map(status => `<option value="${status}" ${status===order.order_status?'selected':''}>${status.replaceAll('_',' ')}</option>`).join('')}</select><button>Guardar</button></form></div>
       <div class="detail-section"><h3>Pagamento Stripe</h3><div class="detail-grid"><p><strong>Payment Intent</strong>${esc(payment.provider_payment_id || '—')}</p><p><strong>Charge</strong>${esc(payment.provider_charge_id || '—')}</p><p><strong>Bruto</strong>${money(payment.gross_amount,order.currency)}</p><p><strong>Taxas</strong>${payment.processing_fee_amount==null?'—':money(payment.processing_fee_amount,order.currency)}</p><p><strong>Líquido</strong>${payment.net_amount==null?'—':money(payment.net_amount,order.currency)}</p><p><strong>Reembolsos</strong>${money(payment.refunded_amount,order.currency)}</p></div></div>
-      <div class="detail-section"><h3>Artigos e personalização</h3>${order.order_items.map(item => `<div class="line-item"><strong>${esc(item.quantity)} × ${esc(item.name)}</strong><p>${money(item.line_amount,order.currency)}</p><pre>${esc(JSON.stringify(item.personalization,null,2))}</pre></div>`).join('')}</div>
+      <div class="detail-section"><h3>Artigos e personalização</h3>${order.order_items.map(item => `<div class="line-item"><strong>${esc(item.quantity)} × ${esc(item.name)}</strong><p>${money(item.line_amount,order.currency)}</p>${personalizationHtml(item.personalization)}</div>`).join('')}</div>
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(order.attachments)}</div>`);
     document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadOrders(); });
     bindFiles();
