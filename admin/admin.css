@@ -27,3 +27,6 @@
 /* Keep both toolbar actions together on the right. */
 .toolbar #new-order-button{margin-left:auto}
 .toolbar #refresh-button{margin-left:0}
+
+/* Human-readable order personalization details */
+.personalization-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.personalization-field{padding:13px 15px;border:1px solid var(--line);background:var(--paper);border-radius:10px;min-width:0}.personalization-field span{display:block;font-size:.7rem;color:var(--muted);margin-bottom:6px}.personalization-field strong{display:block;font-size:.86rem;color:var(--ink);font-weight:600;overflow-wrap:anywhere}.personalization-empty{font-size:.77rem;color:var(--muted);font-style:italic}@media(max-width:520px){.personalization-grid{grid-template-columns:1fr}}
