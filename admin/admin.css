@@ -7,3 +7,5 @@
 
 /* Ensure the HTML hidden attribute overrides layout display rules. */
 [hidden]{display:none!important}
+
+.brand{display:inline-flex;align-items:center;gap:.9rem}.brand-logo{display:block;width:auto;height:40px;max-width:min(260px,48vw);object-fit:contain}.brand span{margin-left:0;padding-left:.85rem;border-left:1px solid var(--line);white-space:nowrap}@media(max-width:600px){.brand-logo{height:30px;max-width:42vw}.brand{gap:.4rem}.brand span{padding-left:.45rem}}
