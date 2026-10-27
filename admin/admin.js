@@ -194,7 +194,7 @@ async function loadOrders() {
   const paid = visibleRows.filter(row => ['paid','partially_refunded'].includes(row.payment_status));
   const net = paid.reduce((sum, row) => sum + Number(row.payments?.[0]?.net_amount || 0), 0);
   document.getElementById('summary-grid').innerHTML = [
-    ['Total visível', visibleRows.length], ['Pagas', paid.length], ['Em produção', visibleRows.filter(row => row.order_status === 'production').length], ['Líquido recebido', money(net)]
+    ['Novas', visibleRows.filter(row => !row.admin_seen_at).length], ['Pagas', paid.length], ['Em produção', visibleRows.filter(row => row.order_status === 'production').length], ['Líquido recebido', money(net)]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
   document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Canal</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Taxas</th><th>Líquido</th><th>Data</th></tr>';
   renderOrderRows(rows);
@@ -205,7 +205,7 @@ function renderOrderRows(allRows) {
   document.getElementById('results-count').textContent = `${rows.length} resultados (página atual)`;
   document.getElementById('table-body').innerHTML = rows.map(row => {
     const payment = row.payments?.[0] || {};
-    return `<tr data-order="${row.id}"><td><strong>${esc(row.order_number)}</strong><br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(payment.gross_amount || row.total_amount, row.currency)}</td><td>${payment.processing_fee_amount == null ? '—' : money(payment.processing_fee_amount,row.currency)}</td><td>${payment.net_amount == null ? '—' : money(payment.net_amount,row.currency)}</td><td>${date(row.created_at)}</td></tr>`;
+    return `<tr data-order="${row.id}"><td><strong>${esc(row.order_number)}</strong>${!row.admin_seen_at ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(payment.gross_amount || row.total_amount, row.currency)}</td><td>${payment.processing_fee_amount == null ? '—' : money(payment.processing_fee_amount,row.currency)}</td><td>${payment.net_amount == null ? '—' : money(payment.net_amount,row.currency)}</td><td>${date(row.created_at)}</td></tr>`;
   }).join('');
   document.querySelectorAll('[data-order]').forEach(row => row.addEventListener('click', () => openOrder(row.dataset.order)));
 }
@@ -217,7 +217,7 @@ async function loadProjects() {
   updateStatusOptions();
   document.getElementById('view-title').textContent = 'Projetos personalizados';
   document.getElementById('summary-grid').innerHTML = [
-    ['Total recente', rows.length], ['Por analisar', rows.filter(row => row.status === 'submitted').length], ['Orçamentados', rows.filter(row => row.status === 'quoted').length], ['Em produção', rows.filter(row => row.status === 'production').length]
+    ['Novos', rows.filter(row => !row.admin_seen_at).length], ['Por analisar', rows.filter(row => row.status === 'submitted').length], ['Orçamentados', rows.filter(row => row.status === 'quoted').length], ['Em produção', rows.filter(row => row.status === 'production').length]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
   document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Ocasião</th><th>Tipo</th><th>Estado</th><th>Evento</th><th>Data do pedido</th></tr>';
   renderProjectRows(rows);
@@ -226,7 +226,7 @@ async function loadProjects() {
 function renderProjectRows(allRows) {
   const rows = filterRows(allRows);
   document.getElementById('results-count').textContent = `${rows.length} resultados (lista carregada)`;
-  document.getElementById('table-body').innerHTML = rows.map(row => `<tr data-project="${row.id}"><td><strong>${esc(row.project_number)}</strong></td><td>${esc(row.customer_name)}<br>${esc(row.customer_email)}</td><td>${esc(row.occasion)}</td><td>${esc(row.project_type)}</td><td>${badge(row.status)}</td><td>${esc(row.event_date || '—')}</td><td>${date(row.created_at)}</td></tr>`).join('');
+  document.getElementById('table-body').innerHTML = rows.map(row => `<tr data-project="${row.id}"><td><strong>${esc(row.project_number)}</strong>${!row.admin_seen_at ? ' <span class="new-tag">Novo</span>' : ''}</td><td>${esc(row.customer_name)}<br>${esc(row.customer_email)}</td><td>${esc(row.occasion)}</td><td>${esc(row.project_type)}</td><td>${badge(row.status)}</td><td>${esc(row.event_date || '—')}</td><td>${date(row.created_at)}</td></tr>`).join('');
   document.querySelectorAll('[data-project]').forEach(row => row.addEventListener('click', () => openProject(row.dataset.project)));
 }
 
@@ -254,6 +254,16 @@ function personalizationHtml(value) {
   return rows.length ? '<div class="personalization-grid">'+rows.join('')+'</div>' : '<p class="personalization-empty">Sem personalização indicada.</p>';
 }
 
+async function markSeen(kind,id) {
+  const row = currentRows.find(row => row.id === id);
+  if (!row || row.admin_seen_at) return;
+  try {
+    await adminApi('mark-seen',{kind,id});
+    row.admin_seen_at = new Date().toISOString();
+    if (currentView === (kind === 'order' ? 'orders' : 'projects')) await loadView();
+  } catch (error) { console.warn('Não foi possível marcar como visto:',error); }
+}
+
 async function openOrder(id) {
   openDrawer('<p>A carregar…</p>');
   try {
@@ -267,6 +277,7 @@ async function openOrder(id) {
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(order.attachments)}</div>`);
     document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadOrders(); });
     bindFiles();
+    await markSeen('order',id);
 
   } catch (error) { openDrawer(`<p class="error">${esc(error.message)}</p>`); }
 }
@@ -285,6 +296,7 @@ async function openProject(id) {
     document.getElementById('add-quote-line').addEventListener('click', () => document.getElementById('quote-lines').insertAdjacentHTML('beforeend','<div class="quote-row"><input name="description" placeholder="Descrição" required/><input name="quantity" type="number" min="1" value="1" required/><input name="unit" type="number" min="0" step="0.01" placeholder="€/un" required/></div>'));
     document.getElementById('quote-form').addEventListener('submit', async event => { event.preventDefault(); const rows=[...event.currentTarget.querySelectorAll('.quote-row')]; const items=rows.map(row=>({description:row.querySelector('[name=description]').value,quantity:Number(row.querySelector('[name=quantity]').value),unitAmount:Math.round(Number(row.querySelector('[name=unit]').value)*100)})); const created=await adminApi('create-quote',{projectId:id,items}); if(navigator.clipboard&&created.quoteUrl) await navigator.clipboard.writeText(created.quoteUrl).catch(()=>{}); alert('Orçamento criado e enviado por email.'+(created.quoteUrl?' A ligação de aprovação foi copiada.':'')); await openProject(id); await loadProjects(); });
     bindFiles();
+    await markSeen('project',id);
   } catch (error) { openDrawer(`<p class="error">${esc(error.message)}</p>`); }
 }
 
