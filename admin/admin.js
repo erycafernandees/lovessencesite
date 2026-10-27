@@ -10,6 +10,8 @@ const backdrop = document.getElementById('drawer-backdrop');
 let currentView = 'orders';
 let searchTerm = '';
 let statusFilter = '';
+let channelFilter = '';
+let testFilter = 'real';
 const ORDER_LABELS = {draft:'Rascunho',awaiting_payment:'A aguardar pagamento',confirmed:'Confirmada',review:'Em análise',awaiting_details:'A aguardar detalhes',production:'Em produção',ready_to_ship:'Pronta para enviar',shipped:'Enviada',completed:'Concluída',cancelled:'Cancelada'};
 const PROJECT_LABELS = {draft:'Rascunho',submitted:'Recebido',in_review:'Em análise',awaiting_details:'A aguardar detalhes',quoted:'Orçamentado',approved:'Aprovado',payment_pending:'A aguardar pagamento',paid:'Pago',production:'Em produção',completed:'Concluído',declined:'Recusado',archived:'Arquivado'};
 function updateStatusOptions() {
@@ -19,10 +21,12 @@ function updateStatusOptions() {
   select.value = statusFilter;
 }
 document.getElementById('admin-status').addEventListener('change', event => { statusFilter = event.target.value; renderFilteredRows(); });
+document.getElementById('admin-channel').addEventListener('change', event => { channelFilter = event.target.value; renderFilteredRows(); });
+document.getElementById('admin-tests').addEventListener('change', event => { testFilter = event.target.value; loadView(); });
 let currentRows = [];
 function filterRows(rows) {
   const q = searchTerm.trim().toLocaleLowerCase('pt-PT');
-  return rows.filter(row => (!statusFilter || (currentView === 'orders' ? row.order_status : row.status) === statusFilter) && (!q || [row.order_number,row.project_number,row.customer_name,row.customer_email].some(value => String(value || '').toLocaleLowerCase('pt-PT').includes(q))));
+  return rows.filter(row => (currentView !== 'orders' || ((testFilter === 'all' || Boolean(row.is_test) === (testFilter === 'test')) && (!channelFilter || row.sales_channel === channelFilter))) && (!statusFilter || (currentView === 'orders' ? row.order_status : row.status) === statusFilter) && (!q || [row.order_number,row.project_number,row.customer_name,row.customer_email].some(value => String(value || '').toLocaleLowerCase('pt-PT').includes(q))));
 }
 document.getElementById('admin-search').addEventListener('input', event => { searchTerm = event.target.value; renderFilteredRows(); });
 function renderFilteredRows() { if (currentView === 'orders') renderOrderRows(currentRows); else renderProjectRows(currentRows); }
@@ -122,6 +126,41 @@ document.getElementById('mfa-form').addEventListener('submit', async event => {
   } catch (error) { errorEl.textContent = error.message === 'Invalid TOTP code entered' ? 'Código inválido. Confirma que estás a usar a entrada mais recente da aplicação autenticadora e que a hora do telemóvel está automática.' : error.message; }
 });
 
+
+const manualModal = document.getElementById('manual-modal');
+document.getElementById('new-order-button').addEventListener('click', () => { manualModal.hidden = false; document.getElementById('manual-error').textContent = ''; });
+document.getElementById('manual-close').addEventListener('click', () => { manualModal.hidden = true; });
+document.getElementById('manual-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const values = new FormData(form);
+  const button = form.querySelector('button[type=submit]');
+  const error = document.getElementById('manual-error');
+  const euros = String(values.get('totalEuros') || '').replace(',', '.');
+  const amount = Number(euros);
+  if (!Number.isFinite(amount) || amount < 0 || !/^\\d+(?:\\.\\d{1,2})?$/.test(euros)) { error.textContent = 'Introduz um valor válido com até duas casas decimais.'; return; }
+  button.disabled = true;
+  error.textContent = '';
+  try {
+    await adminApi('create-manual-order', {
+      channel: values.get('channel'), customerName: values.get('customerName'),
+      customerEmail: values.get('customerEmail'), customerPhone: values.get('customerPhone'),
+      description: values.get('description'), quantity: Number(values.get('quantity')),
+      totalAmount: Math.round(amount * 100), paymentStatus: values.get('paymentStatus'),
+      notes: values.get('notes'), isTest: values.has('isTest')
+    });
+    form.reset();
+    manualModal.hidden = true;
+    currentView = 'orders';
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.view === 'orders'));
+    testFilter = 'real'; document.getElementById('admin-tests').value = 'real';
+    channelFilter = ''; document.getElementById('admin-channel').value = '';
+    statusFilter = '';
+    await loadView();
+  } catch (e) { error.textContent = e.message; }
+  finally { button.disabled = false; }
+});
+
 document.getElementById('logout-button').addEventListener('click', async () => { await supabase.auth.signOut(); location.reload(); });
 document.getElementById('refresh-button').addEventListener('click', loadView);
 document.querySelectorAll('.tabs button').forEach(button => button.addEventListener('click', () => {
@@ -143,12 +182,13 @@ async function loadOrders() {
   currentRows = rows;
   updateStatusOptions();
   document.getElementById('view-title').textContent = 'Encomendas';
-  const paid = rows.filter(row => ['paid','partially_refunded'].includes(row.payment_status));
+  const visibleRows = rows.filter(row => (testFilter === 'all' || Boolean(row.is_test) === (testFilter === 'test')) && (!channelFilter || row.sales_channel === channelFilter));
+  const paid = visibleRows.filter(row => ['paid','partially_refunded'].includes(row.payment_status));
   const net = paid.reduce((sum, row) => sum + Number(row.payments?.[0]?.net_amount || 0), 0);
   document.getElementById('summary-grid').innerHTML = [
-    ['Total recente', result.count || rows.length], ['Pagas', paid.length], ['Em produção', rows.filter(row => row.order_status === 'production').length], ['Líquido recebido', money(net)]
+    ['Total visível', visibleRows.length], ['Pagas', paid.length], ['Em produção', visibleRows.filter(row => row.order_status === 'production').length], ['Líquido recebido', money(net)]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
-  document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Taxas</th><th>Líquido</th><th>Data</th></tr>';
+  document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Canal</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Taxas</th><th>Líquido</th><th>Data</th></tr>';
   renderOrderRows(rows);
 }
 
@@ -157,7 +197,7 @@ function renderOrderRows(allRows) {
   document.getElementById('results-count').textContent = `${rows.length} resultados (página atual)`;
   document.getElementById('table-body').innerHTML = rows.map(row => {
     const payment = row.payments?.[0] || {};
-    return `<tr data-order="${row.id}"><td><strong>${esc(row.order_number)}</strong><br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(payment.gross_amount || row.total_amount, row.currency)}</td><td>${payment.processing_fee_amount == null ? '—' : money(payment.processing_fee_amount,row.currency)}</td><td>${payment.net_amount == null ? '—' : money(payment.net_amount,row.currency)}</td><td>${date(row.created_at)}</td></tr>`;
+    return `<tr data-order="${row.id}"><td><strong>${esc(row.order_number)}</strong><br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(payment.gross_amount || row.total_amount, row.currency)}</td><td>${payment.processing_fee_amount == null ? '—' : money(payment.processing_fee_amount,row.currency)}</td><td>${payment.net_amount == null ? '—' : money(payment.net_amount,row.currency)}</td><td>${date(row.created_at)}</td></tr>`;
   }).join('');
   document.querySelectorAll('[data-order]').forEach(row => row.addEventListener('click', () => openOrder(row.dataset.order)));
 }
