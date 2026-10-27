@@ -142,13 +142,21 @@ document.getElementById('manual-form').addEventListener('submit', async event =>
   button.disabled = true;
   error.textContent = '';
   try {
-    await adminApi('create-manual-order', {
+    const photos = [...(form.querySelector('[name=referencePhotos]').files || [])];
+    if (photos.length > 10 || photos.some(file => !['image/jpeg','image/png'].includes(file.type) || file.size > 10485760)) throw new Error('Escolhe até 10 fotografias JPG/PNG, com um máximo de 10 MB cada.');
+    const created = await adminApi('create-manual-order', {
       channel: values.get('channel'), customerName: values.get('customerName'),
       customerEmail: values.get('customerEmail'), customerPhone: values.get('customerPhone'),
       description: values.get('description'), quantity: Number(values.get('quantity')),
       totalAmount: Math.round(amount * 100), paymentStatus: values.get('paymentStatus'),
       notes: values.get('notes'), isTest: values.has('isTest')
     });
+    for (const file of photos) {
+      const prepared = await adminApi('prepare-order-photo',{orderId:created.orderId,fileName:file.name,mimeType:file.type,sizeBytes:file.size});
+      const { error: uploadError } = await supabase.storage.from('private-references').uploadToSignedUrl(prepared.path,prepared.token,file,{contentType:file.type});
+      if (uploadError) throw uploadError;
+      await adminApi('finish-order-photo',{attachmentId:prepared.attachmentId});
+    }
     form.reset();
     manualModal.hidden = true;
     currentView = 'orders';
@@ -236,9 +244,16 @@ async function openOrder(id) {
       <div class="detail-section"><h3>Estado</h3><form class="status-form" id="order-status-form"><select name="status">${['confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'].map(status => `<option value="${status}" ${status===order.order_status?'selected':''}>${status.replaceAll('_',' ')}</option>`).join('')}</select><button>Guardar</button></form></div>
       <div class="detail-section"><h3>Pagamento Stripe</h3><div class="detail-grid"><p><strong>Payment Intent</strong>${esc(payment.provider_payment_id || '—')}</p><p><strong>Charge</strong>${esc(payment.provider_charge_id || '—')}</p><p><strong>Bruto</strong>${money(payment.gross_amount,order.currency)}</p><p><strong>Taxas</strong>${payment.processing_fee_amount==null?'—':money(payment.processing_fee_amount,order.currency)}</p><p><strong>Líquido</strong>${payment.net_amount==null?'—':money(payment.net_amount,order.currency)}</p><p><strong>Reembolsos</strong>${money(payment.refunded_amount,order.currency)}</p></div></div>
       <div class="detail-section"><h3>Artigos e personalização</h3>${order.order_items.map(item => `<div class="line-item"><strong>${esc(item.quantity)} × ${esc(item.name)}</strong><p>${money(item.line_amount,order.currency)}</p><pre>${esc(JSON.stringify(item.personalization,null,2))}</pre></div>`).join('')}</div>
-      <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(order.attachments)}</div>`);
+      <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(order.attachments)}<form id="order-photo-form"><label>Adicionar referências (JPG/PNG, até 10 MB)<input type="file" name="photos" accept="image/jpeg,image/png" multiple required/></label><button type="submit">Anexar fotografias</button><p id="order-photo-error" class="error"></p></form></div>`);
     document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadOrders(); });
     bindFiles();
+    document.getElementById('order-photo-form').addEventListener('submit',async event => {
+      event.preventDefault(); const form=event.currentTarget;const files=[...form.querySelector('[name=photos]').files];const error=document.getElementById('order-photo-error');
+      try { if(files.length>10 || files.some(file=>!['image/jpeg','image/png'].includes(file.type)||file.size>10485760)) throw new Error('Até 10 imagens JPG/PNG de 10 MB cada.');
+        for(const file of files){const prepared=await adminApi('prepare-order-photo',{orderId:id,fileName:file.name,mimeType:file.type,sizeBytes:file.size});const {error:uploadError}=await supabase.storage.from('private-references').uploadToSignedUrl(prepared.path,prepared.token,file,{contentType:file.type});if(uploadError)throw uploadError;await adminApi('finish-order-photo',{attachmentId:prepared.attachmentId});}
+        await openOrder(id);
+      } catch(e){error.textContent=e.message;}
+    });
   } catch (error) { openDrawer(`<p class="error">${esc(error.message)}</p>`); }
 }
 
