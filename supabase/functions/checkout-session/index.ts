@@ -60,8 +60,10 @@ Deno.serve(async (req) => {
       submit_type: "pay",
     }, { idempotencyKey: `checkout-session-${order.id}` });
 
-    await client.from("orders").update({ stripe_checkout_session_id: session.id, order_status: "awaiting_payment" }).eq("id", order.id);
-    await client.from("payments").insert({ order_id: order.id, provider: "stripe", status: "unpaid", provider_checkout_id: session.id, currency: order.currency });
+    const { error: orderUpdateError } = await client.from("orders").update({ stripe_checkout_session_id: session.id, order_status: "awaiting_payment" }).eq("id", order.id);
+    if (orderUpdateError) throw orderUpdateError;
+    const { error: paymentInsertError } = await client.from("payments").insert({ order_id: order.id, provider: "stripe", status: "unpaid", provider_checkout_id: session.id, currency: order.currency });
+    if (paymentInsertError) throw paymentInsertError;
     return json(req, { checkoutUrl: session.url, sessionId: session.id });
   } catch (error) { return handleError(req, error); }
 });
