@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
       if (existing?.processed_at) return json(req, { received: true, duplicate: true });
       // Retry processing an event whose previous delivery failed.
     }
-    if (eventError) throw eventError;
+    if (eventError && eventError.code !== "23505") throw eventError;
     try {
       if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
         const session = event.data.object as Stripe.Checkout.Session;
