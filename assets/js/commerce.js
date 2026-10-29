@@ -109,15 +109,25 @@
   async function uploadSigned(file, target) {
     var fullPath = ['private-references'].concat(target.path.split('/')).map(encodeURIComponent).join('/');
     var url = String(config.supabaseUrl).replace(/\/$/, '') + '/storage/v1/object/upload/sign/' + fullPath + '?token=' + encodeURIComponent(target.token);
-    var uploadBody = new FormData();
-    uploadBody.append('cacheControl', '3600');
-    uploadBody.append('', file);
+    if (!file || !file.size) throw new Error('O ficheiro selecionado está vazio. Seleciona novamente a fotografia.');
+    var bytes = await file.arrayBuffer();
+    if (!bytes.byteLength) throw new Error('Não foi possível ler a fotografia. Seleciona-a novamente.');
     var response = await fetch(url, {
       method: 'PUT',
-      headers: { 'apikey': config.supabaseAnonKey, 'Authorization': 'Bearer ' + config.supabaseAnonKey, 'x-upsert': 'false' },
-      body: uploadBody
+      headers: {
+        'apikey': config.supabaseAnonKey,
+        'Authorization': 'Bearer ' + config.supabaseAnonKey,
+        'Content-Type': file.type || 'application/octet-stream',
+        'cache-control': 'max-age=3600',
+        'x-upsert': 'false'
+      },
+      body: bytes
     });
-    if (!response.ok) throw new Error('Não foi possível enviar o ficheiro ' + file.name + '.');
+    if (!response.ok) {
+      var detail = await response.json().catch(function () { return {}; });
+      console.error('Love Essences upload error', response.status, detail.code || detail.error || '');
+      throw new Error('Não foi possível enviar o ficheiro ' + file.name + '. Tenta novamente.');
+    }
   }
 
   function inferProductCode(name) {
