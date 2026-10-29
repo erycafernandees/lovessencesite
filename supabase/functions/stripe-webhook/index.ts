@@ -9,7 +9,7 @@ async function recordPaidSession(session: Stripe.Checkout.Session): Promise<void
   if (beforeError || !before) throw beforeError || new Error("Order not found");
   if (before.stripe_checkout_session_id !== session.id) throw new Error("Checkout session does not match order");
   if (session.payment_status !== "paid") throw new Error("Checkout session is not paid");
-  if (session.currency !== before.currency || session.amount_total !== before.total_amount) throw new Error("Checkout amount or currency mismatch");
+  if (session.currency !== before.currency || session.amount_total == null || session.amount_total < 0 || session.amount_total > before.total_amount) throw new Error("Checkout amount or currency mismatch");
   const customer = session.customer_details;
   const shipping = session.collected_information?.shipping_details;
   const update = {
