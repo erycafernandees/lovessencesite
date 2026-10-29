@@ -18,13 +18,15 @@ Deno.serve(async (req) => {
     if (downloadError || !blob) throw new ApiError(422, "upload_missing", "O ficheiro ainda não foi carregado.");
     if (blob.size !== Number(attachment.size_bytes) || blob.size > 10 * 1024 * 1024) {
       await client.storage.from(PRIVATE_BUCKET).remove([attachment.object_path]);
-      await client.from("attachments").update({ status: "rejected", rejection_reason: "size_mismatch" }).eq("id", attachment.id);
+      const { error: rejectError } = await client.from("attachments").update({ status: "rejected", rejection_reason: "size_mismatch" }).eq("id", attachment.id);
+      if (rejectError) throw rejectError;
       throw new ApiError(422, "invalid_file_size", "O tamanho do ficheiro não corresponde ao declarado.");
     }
     const bytes = new Uint8Array(await blob.arrayBuffer());
     if (!hasValidMagic(bytes, attachment.mime_type)) {
       await client.storage.from(PRIVATE_BUCKET).remove([attachment.object_path]);
-      await client.from("attachments").update({ status: "rejected", rejection_reason: "content_mismatch" }).eq("id", attachment.id);
+      const { error: rejectError } = await client.from("attachments").update({ status: "rejected", rejection_reason: "content_mismatch" }).eq("id", attachment.id);
+      if (rejectError) throw rejectError;
       throw new ApiError(422, "invalid_file_content", "O conteúdo do ficheiro não corresponde a JPG, PNG ou PDF.");
     }
     const { error: verifyError } = await client.from("attachments").update({ status: "verified", sha256: await sha256(bytes), verified_at: new Date().toISOString() }).eq("id", attachment.id);
