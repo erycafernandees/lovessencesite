@@ -7,6 +7,9 @@ async function recordPaidSession(session: Stripe.Checkout.Session): Promise<void
   if (!orderId) throw new Error("Stripe session has no order_id metadata");
   const { data: before, error: beforeError } = await client.from("orders").select("*").eq("id", orderId).single();
   if (beforeError || !before) throw beforeError || new Error("Order not found");
+  if (before.stripe_checkout_session_id !== session.id) throw new Error("Checkout session does not match order");
+  if (session.payment_status !== "paid") throw new Error("Checkout session is not paid");
+  if (session.currency !== before.currency || session.amount_total == null || session.amount_total < 0 || session.amount_total > before.total_amount) throw new Error("Checkout amount or currency mismatch");
   const customer = session.customer_details;
   const shipping = session.collected_information?.shipping_details;
   const update = {
@@ -19,7 +22,8 @@ async function recordPaidSession(session: Stripe.Checkout.Session): Promise<void
     discount_amount: (before.subtotal_amount + before.shipping_amount) - (session.amount_total ?? before.total_amount),
     paid_at: new Date().toISOString(),
   };
-  await client.from("orders").update(update).eq("id", orderId);
+  const { error: orderUpdateError } = await client.from("orders").update(update).eq("id", orderId);
+  if (orderUpdateError) throw orderUpdateError;
 
   let charge: Stripe.Charge | null = null;
   let balance: Stripe.BalanceTransaction | null = null;
@@ -29,7 +33,7 @@ async function recordPaidSession(session: Stripe.Checkout.Session): Promise<void
     charge = typeof intent.latest_charge === "object" ? intent.latest_charge : null;
     balance = charge && typeof charge.balance_transaction === "object" ? charge.balance_transaction : null;
   }
-  await client.from("payments").upsert({
+  const { error: paymentError } = await client.from("payments").upsert({
     order_id: orderId, provider: "stripe", status: "paid", provider_checkout_id: session.id,
     provider_payment_id: paymentIntentId, provider_charge_id: charge?.id || null,
     provider_balance_transaction_id: balance?.id || null, currency: session.currency || before.currency,
@@ -38,7 +42,11 @@ async function recordPaidSession(session: Stripe.Checkout.Session): Promise<void
     payment_method_type: charge?.payment_method_details?.type || null,
     provider_data: { payment_status: session.payment_status, checkout_status: session.status },
   }, { onConflict: "provider,provider_checkout_id" });
-  await client.from("order_status_history").insert({ order_id: orderId, order_status: update.order_status, payment_status: "paid", note: "Pagamento confirmado pela Stripe" });
+  if (paymentError) throw paymentError;
+  if (before.payment_status !== "paid") {
+    const { error: historyError } = await client.from("order_status_history").insert({ order_id: orderId, order_status: update.order_status, payment_status: "paid", note: "Pagamento confirmado pela Stripe" });
+    if (historyError) throw historyError;
+  }
   if (before.payment_status !== "paid") {
     if (update.customer_email) await queueEmail("order_paid", update.customer_email, { orderNumber: before.order_number });
     const adminEmail = Deno.env.get("ADMIN_NOTIFICATION_EMAIL");
@@ -93,14 +101,23 @@ Deno.serve(async (req) => {
     try {
       if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
         const session = event.data.object as Stripe.Checkout.Session;
-        if (session.payment_status === "paid" || event.type.endsWith("async_payment_succeeded")) await recordPaidSession(session);
-        else if (session.metadata?.order_id) await client.from("orders").update({ payment_status: "processing" }).eq("id", session.metadata.order_id);
+        if (session.payment_status === "paid") await recordPaidSession(session);
+        else if (session.metadata?.order_id) {
+          const { error } = await client.from("orders").update({ payment_status: "processing" }).eq("id", session.metadata.order_id).eq("stripe_checkout_session_id", session.id).in("payment_status", ["unpaid", "processing"]);
+          if (error) throw error;
+        }
       } else if (event.type === "checkout.session.async_payment_failed") {
         const session = event.data.object as Stripe.Checkout.Session;
-        if (session.metadata?.order_id) await client.from("orders").update({ payment_status: "failed" }).eq("id", session.metadata.order_id);
+        if (session.metadata?.order_id) {
+          const { error } = await client.from("orders").update({ payment_status: "failed" }).eq("id", session.metadata.order_id).eq("stripe_checkout_session_id", session.id).in("payment_status", ["unpaid", "processing", "failed"]);
+          if (error) throw error;
+        }
       } else if (event.type === "payment_intent.payment_failed") {
         const intent = event.data.object as Stripe.PaymentIntent;
-        if (intent.metadata?.order_id) await client.from("orders").update({ payment_status: "failed" }).eq("id", intent.metadata.order_id);
+        if (intent.metadata?.order_id) {
+          const { error } = await client.from("orders").update({ payment_status: "failed" }).eq("id", intent.metadata.order_id).eq("stripe_payment_intent_id", intent.id).in("payment_status", ["unpaid", "processing", "failed"]);
+          if (error) throw error;
+        }
       } else if (event.type === "charge.refunded") {
         await recordRefund(event.data.object as Stripe.Charge);
       } else if (event.type === "refund.created" || event.type === "refund.updated" || event.type === "refund.failed" || event.type === "charge.refund.updated") {

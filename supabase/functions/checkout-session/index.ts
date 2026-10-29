@@ -10,9 +10,10 @@ Deno.serve(async (req) => {
       .select("*,order_items(*),attachments(id,status)").eq("id", body.orderId || "").single();
     if (error || !order) throw new ApiError(404, "order_not_found", "A encomenda não foi encontrada.");
     await verifyAccessToken(order.access_token_hash, order.access_token_expires_at, body.orderToken);
-    if (order.payment_status === "paid") throw new ApiError(409, "already_paid", "Esta encomenda já está paga.");
+    if (["paid", "refunded", "partially_refunded"].includes(order.payment_status)) throw new ApiError(409, "already_paid", "Esta encomenda já está paga.");
     if (order.stripe_checkout_session_id) {
       const existing = await stripeClient().checkout.sessions.retrieve(order.stripe_checkout_session_id);
+      if (existing.payment_status === "paid" || existing.status === "complete") throw new ApiError(409, "payment_processing", "O pagamento já foi concluído ou está a ser confirmado.");
       if (existing.status === "open" && existing.url) return json(req, { checkoutUrl: existing.url, sessionId: existing.id });
     }
     if ((order.attachments || []).some((file: { status: string }) => file.status !== "verified")) throw new ApiError(422, "unverified_files", "Confirma o envio de todos os ficheiros antes de pagar.");
@@ -58,11 +59,11 @@ Deno.serve(async (req) => {
       metadata: { order_id: order.id, order_number: order.order_number, source: order.source },
       payment_intent_data: { metadata: { order_id: order.id, order_number: order.order_number } },
       submit_type: "pay",
-    }, { idempotencyKey: `checkout-session-${order.id}` });
+    }, { idempotencyKey: `checkout-session-${order.id}-${order.stripe_checkout_session_id || "initial"}` });
 
     const { error: orderUpdateError } = await client.from("orders").update({ stripe_checkout_session_id: session.id, order_status: "awaiting_payment" }).eq("id", order.id);
     if (orderUpdateError) throw orderUpdateError;
-    const { error: paymentInsertError } = await client.from("payments").insert({ order_id: order.id, provider: "stripe", status: "unpaid", provider_checkout_id: session.id, currency: order.currency });
+    const { error: paymentInsertError } = await client.from("payments").upsert({ order_id: order.id, provider: "stripe", status: "unpaid", provider_checkout_id: session.id, currency: order.currency }, { onConflict: "provider,provider_checkout_id" });
     if (paymentInsertError) throw paymentInsertError;
     return json(req, { checkoutUrl: session.url, sessionId: session.id });
   } catch (error) { return handleError(req, error); }
