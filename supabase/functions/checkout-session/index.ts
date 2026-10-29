@@ -10,7 +10,7 @@ Deno.serve(async (req) => {
       .select("*,order_items(*),attachments(id,status)").eq("id", body.orderId || "").single();
     if (error || !order) throw new ApiError(404, "order_not_found", "A encomenda não foi encontrada.");
     await verifyAccessToken(order.access_token_hash, order.access_token_expires_at, body.orderToken);
-    if (order.payment_status === "paid") throw new ApiError(409, "already_paid", "Esta encomenda já está paga.");
+    if (order.payment_status === "paid" || order.payment_status === "refunded" || order.payment_status === "partially_refunded") throw new ApiError(409, "already_paid", "Esta encomenda já está paga.");
     if (order.stripe_checkout_session_id) {
       const existing = await stripeClient().checkout.sessions.retrieve(order.stripe_checkout_session_id);
       if (existing.status === "open" && existing.url) return json(req, { checkoutUrl: existing.url, sessionId: existing.id });
@@ -63,7 +63,12 @@ Deno.serve(async (req) => {
     const { error: orderUpdateError } = await client.from("orders").update({ stripe_checkout_session_id: session.id, order_status: "awaiting_payment" }).eq("id", order.id);
     if (orderUpdateError) throw orderUpdateError;
     const { error: paymentInsertError } = await client.from("payments").insert({ order_id: order.id, provider: "stripe", status: "unpaid", provider_checkout_id: session.id, currency: order.currency });
-    if (paymentInsertError) throw paymentInsertError;
+    if (paymentInsertError) {
+      // The Stripe session already exists: retries must reconcile rather than create a second payment.
+      const { data: recorded, error: lookupError } = await client.from("payments")
+        .select("id").eq("provider", "stripe").eq("provider_checkout_id", session.id).maybeSingle();
+      if (lookupError || !recorded) throw paymentInsertError;
+    }
     return json(req, { checkoutUrl: session.url, sessionId: session.id });
   } catch (error) { return handleError(req, error); }
 });
