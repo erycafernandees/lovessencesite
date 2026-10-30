@@ -5820,6 +5820,19 @@
     background: #fff;
     transform: none !important;
   }
+
+/* Tipografia e campos consistentes no carrinho */
+.cart-drawer { font-family: var(--sans); }
+.cart-drawer .cart-title { font-family: var(--sans); font-size: 1.35rem; font-weight: 500; letter-spacing: -0.02em; }
+.cart-drawer .cart-order-total { font-family: var(--sans); font-size: 0.95rem; font-weight: 500; align-items: center; }
+.cart-drawer .cart-order-total span:last-child { font-size: 1.05rem; font-weight: 600; }
+.cart-drawer .cart-shipping-method { font-family: var(--sans); font-size: 0.82rem; }
+.cart-drawer .cart-promo-field { margin: 0.85rem 0 0.9rem; }
+.cart-drawer .cart-promo-field label { display: block; margin-bottom: 0.45rem; font: 600 0.72rem var(--sans); letter-spacing: 0.065em; text-transform: uppercase; color: var(--warm-gray); }
+.cart-drawer .cart-promo-field input { box-sizing: border-box; width: 100%; min-height: 44px; padding: 0.7rem 0.8rem; border: 1px solid rgba(180,104,171,0.24); border-radius: 6px; background: #fff; color: var(--dark); font: 0.85rem var(--sans); }
+.cart-drawer .cart-promo-field input:focus-visible { outline: 2px solid var(--deep-rose); outline-offset: 1px; }
+.cart-drawer .cart-checkout-btn { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.075em; }
+.cart-drawer .cart-clear-btn { font-family: var(--sans); font-size: 0.78rem; }
 </style>
 </head>
 <body>
@@ -8772,7 +8785,7 @@
       <span>Total da encomenda</span>
       <span id="cart-order-total-price">0€</span>
     </div>
-    <label for="le-promo-code" style="display:block;margin:12px 0 5px">Código promocional</label><input id="le-promo-code" type="text" autocomplete="off" placeholder="Introduzir código" style="width:100%;padding:12px;border:1px solid #d8cbd5;border-radius:8px;margin-bottom:12px" />
+    <div class="cart-promo-field"><label for="le-promo-code">Código promocional</label><input id="le-promo-code" type="text" autocomplete="off" placeholder="Introduzir código" /></div>
     <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="closeCart();showPage('shop')">Continuar a comprar</button>
       <button type="button" class="cart-checkout-btn" onclick="window.LoveCommerce.startCatalogCheckout(this)">Finalizar compra</button>
     <button type="button" class="cart-clear-btn" onclick="clearCart()">Esvaziar carrinho</button>
