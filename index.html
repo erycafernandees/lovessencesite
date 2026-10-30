@@ -5833,6 +5833,20 @@
 .cart-drawer .cart-promo-field input:focus-visible { outline: 2px solid var(--deep-rose); outline-offset: 1px; }
 .cart-drawer .cart-checkout-btn { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.075em; }
 .cart-drawer .cart-clear-btn { font-family: var(--sans); font-size: 0.78rem; }
+
+/* Carrinho compacto: produtos em primeiro plano */
+.cart-drawer .cart-footer { padding-top: 0.65rem; }
+.cart-drawer .cart-shipping-settings { gap: 0.35rem; margin: 0.35rem 0 0.45rem; padding: 0.5rem 0.65rem; }
+.cart-drawer .cart-shipping-settings select { min-height: 36px; padding-top: 0.4rem; padding-bottom: 0.4rem; font-size: 0.76rem; }
+.cart-drawer .cart-shipping-settings label { font-size: 0.65rem; }
+.cart-drawer .cart-shipping-method { font-size: 0.76rem; line-height: 1.3; }
+.cart-drawer .cart-transport-note { font-size: 0.67rem; line-height: 1.3; margin: 0; }
+.cart-drawer .cart-shipping-note { font-size: 0.64rem; line-height: 1.3; margin: 0.25rem 0 0.35rem; }
+.cart-drawer .cart-promo-field { margin: 0.4rem 0 0.5rem; }
+.cart-drawer .cart-promo-field label { font-size: 0.66rem; margin-bottom: 0.3rem; }
+.cart-drawer .cart-promo-field input { min-height: 38px; padding: 0.5rem 0.65rem; font-size: 0.78rem; }
+.cart-drawer .cart-order-total { margin: 0.45rem 0 0.65rem; padding-top: 0.55rem; }
+.cart-drawer .cart-checkout-btn { padding: 0.78rem; }
 </style>
 </head>
 <body>
@@ -8781,11 +8795,11 @@
     </div>
     <p class="cart-shipping-progress" id="cart-shipping-progress"></p>
     <p class="cart-shipping-note" id="cart-shipping-note">Portes aplicados uma única vez · Embalagem de oferta incluída</p>
+    <div class="cart-promo-field"><label for="le-promo-code">Código promocional</label><input id="le-promo-code" type="text" autocomplete="off" placeholder="Introduzir código" /></div>
     <div class="cart-order-total">
       <span>Total da encomenda</span>
       <span id="cart-order-total-price">0€</span>
     </div>
-    <div class="cart-promo-field"><label for="le-promo-code">Código promocional</label><input id="le-promo-code" type="text" autocomplete="off" placeholder="Introduzir código" /></div>
     <button type="button" class="cart-checkout-btn cart-checkout-alt" onclick="closeCart();showPage('shop')">Continuar a comprar</button>
       <button type="button" class="cart-checkout-btn" onclick="window.LoveCommerce.startCatalogCheckout(this)">Finalizar compra</button>
     <button type="button" class="cart-clear-btn" onclick="clearCart()">Esvaziar carrinho</button>
