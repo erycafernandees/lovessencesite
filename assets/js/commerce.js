@@ -174,7 +174,9 @@
         await uploadSigned(flatFiles[fileIndex], prepared.uploads[fileIndex]);
         await api('attachment-confirm', { body: { attachmentId: prepared.uploads[fileIndex].attachmentId, ownerToken: prepared.orderToken } });
       }
-      var session = await api('checkout-session', { body: { orderId: prepared.orderId, orderToken: prepared.orderToken } });
+      var promoField = document.getElementById('le-promo-code');
+      var promoCode = promoField ? String(promoField.value || '').trim().toUpperCase() : '';
+      var session = await api('checkout-session', { body: { orderId: prepared.orderId, orderToken: prepared.orderToken, promoCode: promoCode } });
       localStorage.setItem('le_pending_checkout', JSON.stringify({ orderNumber: prepared.orderNumber, cartSignature: typeof window.getCartSignature === 'function' ? window.getCartSignature() : '' }));
       window.location.assign(session.checkoutUrl);
     } catch (error) {
