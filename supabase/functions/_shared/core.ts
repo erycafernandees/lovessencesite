@@ -34,7 +34,7 @@ export function corsHeaders(req: Request): Record<string, string> {
 }
 
 export function json(req: Request, body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
+  return new Response(status === 204 || status === 205 || status === 304 ? null : JSON.stringify(body), {
     status,
     headers: { ...corsHeaders(req), "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
   });
