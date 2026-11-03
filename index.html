@@ -15374,7 +15374,16 @@ async function handleSubmit(e) {
     if (window.LoveAnalytics) LoveAnalytics.track('generate_lead', { lead_type: isCartCheckout ? 'catalog_form' : 'custom_project' });
   } catch (error) {
     if (window.LoveAnalytics) LoveAnalytics.trackCheckoutError(isCartCheckout ? 'catalog_form' : 'custom_project', 'submit_error');
-    errMsg.textContent = error.message || 'Ocorreu um erro. Por favor, tenta novamente.';
+    errMsg.textContent = (error instanceof TypeError || /failed to fetch|networkerror/i.test(String(error && error.message || '')))
+      ? 'Não foi possível comunicar com o serviço de pedidos. Podes tentar novamente ou enviar-nos a tua ideia diretamente por email.'
+      : (error.message || 'Não foi possível concluir o pedido. Tenta novamente.');
+    errMsg.appendChild(document.createTextNode(' Contacta-nos: '));
+    var emailLink = document.createElement('a');
+    emailLink.href = 'mailto:love-essences@outlook.com?subject=' + encodeURIComponent('Pedido de orçamento Love Essences');
+    emailLink.textContent = 'love-essences@outlook.com';
+    emailLink.style.textDecoration = 'underline';
+    errMsg.appendChild(emailLink);
+    errMsg.setAttribute('role', 'alert');
     errMsg.style.display = 'block';
     btn.disabled = false;
     btn.textContent = isCartCheckout ? 'Finalizar pedido →' : 'Enviar Pedido →';
