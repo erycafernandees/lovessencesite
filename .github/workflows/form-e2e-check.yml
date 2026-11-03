@@ -18,6 +18,7 @@ jobs:
       - name: Testar pedidos sem email, com e sem PNG
         shell: bash
         run: |
+          python3 - <<'PY'
           import json, pathlib, re, struct, urllib.error, urllib.parse, urllib.request, zlib, binascii
           
           config = pathlib.Path("assets/js/commerce-config.js").read_text()
@@ -79,3 +80,4 @@ jobs:
           assert completed["projectNumber"] == with_file["projectNumber"]
           print("Com anexo PNG: upload, validacao e finalizacao confirmados " + completed["projectNumber"])
           
+          PY
