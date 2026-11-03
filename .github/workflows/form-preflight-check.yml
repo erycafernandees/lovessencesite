@@ -1,6 +1,8 @@
-name: Verificar envio de pedidos Love Essences
+name: Monitorizar site Love Essences
 
 on:
+  schedule:
+    - cron: "17 * * * *"
   push:
     branches: [main]
     paths:
@@ -12,33 +14,94 @@ on:
 
 permissions:
   contents: read
+  issues: write
+
+concurrency:
+  group: love-essences-site-monitor
+  cancel-in-progress: false
 
 jobs:
-  test-public-forms:
+  monitor:
+    name: Verificar site, formularios e pagamentos
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
-      - name: Validar preflight CORS do formulario e anexos
+      - name: Verificar paginas e formulario
         shell: bash
         run: |
           set -euo pipefail
-          for endpoint in project-submit attachment-confirm checkout-prepare; do
-            headers=$(mktemp)
-            status=$(curl --silent --show-error --max-time 20 --retry 2 --retry-delay 2 \
-              -D "$headers" -o /dev/null -w "%{http_code}" -X OPTIONS \
-              "https://qjtblalogacenjxponpi.supabase.co/functions/v1/$endpoint" \
-              -H "Origin: https://love-essences.pt" \
-              -H "Access-Control-Request-Method: POST" \
-              -H "Access-Control-Request-Headers: apikey,authorization,content-type")
-            if [ "$status" != "204" ]; then
-              echo "::error::$endpoint returned HTTP $status (expected 204)"
-              cat "$headers"
+          for page in / /contactos/ /checkout/; do
+            output=$(mktemp)
+            curl --fail --silent --show-error --location --max-time 30 \
+              --retry 2 --retry-all-errors --retry-delay 3 \
+              --output "$output" "https://love-essences.pt$page"
+            if [ "$page" = "/contactos/" ] && ! grep -q 'id="contact-form"' "$output"; then
+              echo "::error::Formulario nao encontrado na pagina de contactos"
               exit 1
             fi
-            if ! grep -qiE '^access-control-allow-origin:[[:space:]]*https://love-essences\.pt[[:space:]]*$' "$headers"; then
-              echo "::error::$endpoint did not allow the public site origin"
-              cat "$headers"
-              exit 1
-            fi
-            echo "$endpoint: HTTP 204 e origem autorizada"
+            rm -f "$output"
+            echo "Pagina OK: $page"
           done
+          curl --fail --silent --show-error --location --max-time 30 \
+            --retry 2 --retry-all-errors --retry-delay 3 \
+            --output /tmp/love-commerce.js \
+            https://love-essences.pt/assets/js/commerce.js
+          grep -q 'submitProject' /tmp/love-commerce.js || { echo "::error::O script do formulario nao carregou corretamente"; exit 1; }
+
+      - name: Verificar API de pedidos, anexos e checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          for endpoint in project-submit attachment-confirm checkout-prepare checkout-session quote-checkout quote-details order-status; do
+            for origin in https://love-essences.pt https://www.love-essences.pt; do
+              headers=$(mktemp)
+              status=$(curl --silent --show-error --max-time 25 --retry 2 \
+                --retry-all-errors --retry-delay 3 \
+                -D "$headers" -o /dev/null -w "%{http_code}" -X OPTIONS \
+                "https://qjtblalogacenjxponpi.supabase.co/functions/v1/$endpoint" \
+                -H "Origin: $origin" \
+                -H "Access-Control-Request-Method: POST" \
+                -H "Access-Control-Request-Headers: apikey,authorization,content-type")
+              if [ "$status" != "204" ] || ! grep -qiF "access-control-allow-origin: $origin" "$headers"; then
+                echo "::error::$endpoint falhou no teste HTTP 204 e CORS para $origin (HTTP $status)"
+                cat "$headers"
+                exit 1
+              fi
+              rm -f "$headers"
+            done
+            echo "API OK: $endpoint"
+          done
+
+      - name: Abrir alerta de erro
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TITLE="Love Essences: erro detetado na monitorizacao automatica"
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -n 1)
+          URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          if [ -z "$existing" ]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" \
+              --assignee "$GITHUB_REPOSITORY_OWNER" \
+              --body "Falhou uma verificacao do site, formulario, anexos ou checkout. Consulta o teste: $URL. O monitor nao cria encomendas nem efetua pagamentos."
+          else
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" \
+              --body "Falha detetada novamente: $URL"
+          fi
+
+      - name: Fechar alerta quando o site recuperar
+        if: success()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TITLE="Love Essences: erro detetado na monitorizacao automatica"
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -n 1)
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" \
+              --body "Site recuperado. As verificacoes passaram novamente. Detalhes: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            gh issue close "$existing" --repo "$GITHUB_REPOSITORY" --reason completed
+          fi
