@@ -1,0 +1,84 @@
+name: Auditoria automatica Love Essences
+
+on:
+  schedule:
+    - cron: "23 8 * * *"
+      timezone: "Europe/Lisbon"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/commerce-audit.yml"
+      - "supabase/functions/commerce-audit/**"
+      - "supabase/functions/_shared/core.ts"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+
+concurrency:
+  group: love-essences-commerce-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Comparar pagamentos, encomendas, webhooks e emails
+        shell: bash
+        run: |
+          set -euo pipefail
+          audience="love-essences-commerce-audit"
+          oidc_json=$(curl --fail --silent --show-error --max-time 30 \
+            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$audience")
+          token=$(printf '%s' "$oidc_json" | jq -er '.value')
+          response=$(mktemp)
+          status=$(curl --silent --show-error --max-time 75 \
+            --retry 2 --retry-all-errors --retry-delay 3 \
+            -o "$response" -w "%{http_code}" -X POST \
+            "https://qjtblalogacenjxponpi.supabase.co/functions/v1/commerce-audit" \
+            -H "Authorization: Bearer $token" -H "Content-Type: application/json" \
+            --data '{}')
+          if [ "$status" != "200" ]; then
+            echo "::error::Auditoria comercial falhou (HTTP $status). Verificar no Supabase e Stripe."
+            exit 1
+          fi
+          if ! jq -e '.healthy == true' "$response" >/dev/null; then
+            echo "::error::Auditoria comercial nao confirmou o estado de saude."
+            exit 1
+          fi
+          echo "Auditoria comercial concluida sem inconsistencias detetadas"
+
+      - name: Criar alerta reservado em caso de falha
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          title="Love Essences: auditoria comercial requer verificacao"
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --limit 100 \
+            --json number,title --jq '.[] | select(.title == "Love Essences: auditoria comercial requer verificacao") | .number' | head -n 1)
+          if [ -z "$existing" ]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" \
+              --assignee "$GITHUB_REPOSITORY_OWNER" \
+              --body "A auditoria detetou um problema tecnico ou uma inconsistencia. Consultar Stripe e Supabase. Nao sao publicados dados de clientes ou valores. Verificacao: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          fi
+
+      - name: Encerrar alerta apos recuperacao
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --limit 100 \
+            --json number,title --jq '.[] | select(.title == "Love Essences: auditoria comercial requer verificacao") | .number' | head -n 1)
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" \
+              --body "Auditoria recuperada. Nova verificacao concluida sem problemas: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            gh issue close "$existing" --repo "$GITHUB_REPOSITORY" --reason completed
+          fi
