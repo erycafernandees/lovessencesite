@@ -1,0 +1,81 @@
+name: Teste real unico dos formularios Love Essences
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/form-e2e-check.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-form-submissions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Testar pedidos sem email, com e sem PNG
+        shell: bash
+        run: |
+          import json, pathlib, re, struct, urllib.error, urllib.parse, urllib.request, zlib, binascii
+          
+          config = pathlib.Path("assets/js/commerce-config.js").read_text()
+          host = re.search(r'supabaseUrl:\s*"([^"]+)"', config).group(1)
+          public_key = re.search(r'supabaseAnonKey:\s*"([^"]+)"', config).group(1)
+          headers = {"Content-Type": "application/json", "apikey": public_key,
+                     "Authorization": "Bearer " + public_key, "Origin": "https://love-essences.pt"}
+          
+          def request_json(slug, payload):
+              req = urllib.request.Request(host + "/functions/v1/" + slug,
+                                           json.dumps(payload).encode(), headers=headers, method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      return json.loads(response.read())
+              except urllib.error.HTTPError as e:
+                  raise RuntimeError(slug + " returned HTTP " + str(e.code) + ": " + e.read().decode()[:300])
+          
+          def png_chunk(tag, payload):
+              return struct.pack(">I", len(payload)) + tag + payload + struct.pack(">I", binascii.crc32(tag + payload) & 0xffffffff)
+          
+          png = (b"\x89PNG\r\n\x1a\n" +
+                 png_chunk(b"IHDR", struct.pack(">IIBBBBB", 1, 1, 8, 2, 0, 0, 0)) +
+                 png_chunk(b"IDAT", zlib.compress(b"\x00\xff\x00\x00")) +
+                 png_chunk(b"IEND", b""))
+          
+          def base_payload(name, file_list):
+              return {"action": "prepare", "name": name, "email": "", "phone": "000000000",
+                      "occasion": "Outra", "projectType": "Lembranças", "approximateQuantity": "1",
+                      "idea": "Teste tecnico automatico Love Essences - nao e uma encomenda",
+                      "privacyAccepted": True, "attachments": file_list}
+          
+          without_file = request_json("project-submit", base_payload("TESTE TECNICO SEM ANEXO", []))
+          assert without_file["submitted"] is True and without_file["projectNumber"]
+          print("Sem anexo: pedido recebido " + without_file["projectNumber"])
+          
+          with_file = request_json("project-submit", base_payload(
+              "TESTE TECNICO COM ANEXO",
+              [{"name": "teste-1x1.png", "type": "image/png", "size": len(png)}]))
+          assert with_file.get("submitted") is False and len(with_file["uploads"]) == 1
+          target = with_file["uploads"][0]
+          path = "/".join(urllib.parse.quote(x, safe="") for x in target["path"].split("/"))
+          upload_url = (host + "/storage/v1/object/upload/sign/private-references/" + path
+                        + "?token=" + urllib.parse.quote(target["token"], safe=""))
+          upload_request = urllib.request.Request(
+              upload_url, png, method="PUT",
+              headers={"apikey": public_key, "Authorization": "Bearer " + public_key,
+                       "Content-Type": "image/png", "x-upsert": "false"})
+          try:
+              with urllib.request.urlopen(upload_request, timeout=30) as res:
+                  assert res.status in (200, 201)
+          except urllib.error.HTTPError as e:
+              raise RuntimeError("signed PNG upload failed: HTTP " + str(e.code) + " " + e.read().decode()[:300])
+          request_json("attachment-confirm", {"attachmentId": target["attachmentId"],
+                                               "ownerToken": with_file["projectToken"]})
+          completed = request_json("project-submit", {"action": "finalize",
+                                                      "projectId": with_file["projectId"],
+                                                      "projectToken": with_file["projectToken"]})
+          assert completed.get("ok") is True
+          assert completed["projectNumber"] == with_file["projectNumber"]
+          print("Com anexo PNG: upload, validacao e finalizacao confirmados " + completed["projectNumber"])
+          
