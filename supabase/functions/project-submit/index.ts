@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     await enforceRateLimit(req, "project_submit", 6, 60);
     await verifyTurnstile(body.turnstileToken, req);
     if (!body.privacyAccepted) throw new ApiError(422, "privacy_required", "É necessário aceitar a Política de Privacidade.");
-    const allowedOccasions = ["Casamento","Batizado","Aniversário","Comunhão","Baby Shower","Empresa","Outro"];
+    const allowedOccasions = ["Casamento","Batizado","Aniversário","Comunhão","Baby Shower","Empresa","Outra","Outro"];
     const allowedTypes = ["Lembranças","Presentes","Sabonetes","Velas","Difusores","Papelaria/embalagem","Conjunto personalizado","Outro"];
     const occasion = cleanText(body.occasion, 80, true)!;
     const projectType = cleanText(body.projectType, 100, true)!;
