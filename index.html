@@ -67,6 +67,7 @@
 <link rel="stylesheet" href="./assets/css/commerce.css"/>
 <script src="./assets/js/analytics-config.js"></script>
 <script defer src="./assets/js/analytics.js"></script>
+<script defer src="./assets/js/site-error-monitor.js?v=20261103"></script>
 <script src="./assets/js/commercial-content.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15374,6 +15375,7 @@ async function handleSubmit(e) {
     if (window.LoveAnalytics) LoveAnalytics.track('generate_lead', { lead_type: isCartCheckout ? 'catalog_form' : 'custom_project' });
   } catch (error) {
     if (window.LoveAnalytics) LoveAnalytics.trackCheckoutError(isCartCheckout ? 'catalog_form' : 'custom_project', 'submit_error');
+    if (window.LoveSiteMonitor) window.LoveSiteMonitor.report('form_submit', isCartCheckout ? 'cart' : 'contact');
     errMsg.textContent = (error instanceof TypeError || /failed to fetch|networkerror/i.test(String(error && error.message || '')))
       ? 'Não foi possível comunicar com o serviço de pedidos. Podes tentar novamente ou enviar-nos a tua ideia diretamente por email.'
       : (error.message || 'Não foi possível concluir o pedido. Tenta novamente.');
