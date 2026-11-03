@@ -16,8 +16,12 @@ export class ApiError extends Error {
 }
 
 function allowedOrigins(): string[] {
-  return (Deno.env.get("ALLOWED_ORIGINS") || "http://127.0.0.1:4176,http://localhost:4176")
-    .split(",").map((value) => value.trim()).filter(Boolean);
+  const origins = [
+    "https://love-essences.pt", "https://www.love-essences.pt",
+    "http://127.0.0.1:4176", "http://localhost:4176",
+    ...(Deno.env.get("ALLOWED_ORIGINS") || "").split(","),
+  ];
+  return [...new Set(origins.map((value) => value.trim()).filter(Boolean))];
 }
 
 export function corsHeaders(req: Request): Record<string, string> {
