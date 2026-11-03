@@ -1,0 +1,44 @@
+name: Verificar envio de pedidos Love Essences
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/form-preflight-check.yml"
+      - "supabase/functions/**"
+      - "assets/js/commerce.js"
+      - "index.html"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-public-forms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validar preflight CORS do formulario e anexos
+        shell: bash
+        run: |
+          set -euo pipefail
+          for endpoint in project-submit attachment-confirm checkout-prepare; do
+            headers=$(mktemp)
+            status=$(curl --silent --show-error --max-time 20 --retry 2 --retry-delay 2 \
+              -D "$headers" -o /dev/null -w "%{http_code}" -X OPTIONS \
+              "https://qjtblalogacenjxponpi.supabase.co/functions/v1/$endpoint" \
+              -H "Origin: https://love-essences.pt" \
+              -H "Access-Control-Request-Method: POST" \
+              -H "Access-Control-Request-Headers: apikey,authorization,content-type")
+            if [ "$status" != "204" ]; then
+              echo "::error::$endpoint returned HTTP $status (expected 204)"
+              cat "$headers"
+              exit 1
+            fi
+            if ! grep -qiE '^access-control-allow-origin:[[:space:]]*https://love-essences\.pt[[:space:]]*$' "$headers"; then
+              echo "::error::$endpoint did not allow the public site origin"
+              cat "$headers"
+              exit 1
+            fi
+            echo "$endpoint: HTTP 204 e origem autorizada"
+          done
