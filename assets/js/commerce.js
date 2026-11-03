@@ -220,6 +220,16 @@
         var success = document.getElementById('confirmation-success');
         if (success) success.hidden = false;
         if (status) status.hidden = true;
+        // Only emit a GA4 purchase after the backend confirms payment.
+        // The analytics module handles consent and transaction deduplication.
+        if (window.LoveAnalytics && typeof window.LoveAnalytics.trackPurchase === 'function' && result.items && result.items.length) {
+          window.LoveAnalytics.trackPurchase({
+            transactionId: result.orderNumber,
+            value: Math.max(0, (Number(result.totalAmount || 0) - Number(result.shippingAmount || 0)) / 100),
+            shipping: Number(result.shippingAmount || 0) / 100,
+            items: result.items
+          });
+        }
         var pending = JSON.parse(localStorage.getItem('le_pending_checkout') || '{}');
         if (typeof window.completeCartCheckout === 'function') window.completeCartCheckout(pending.cartSignature || '');
         localStorage.removeItem('le_pending_checkout');
