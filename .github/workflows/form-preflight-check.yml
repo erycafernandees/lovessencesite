@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for endpoint in project-submit attachment-confirm checkout-prepare checkout-session quote-checkout quote-details order-status; do
+          for endpoint in project-submit attachment-confirm checkout-prepare checkout-session quote-checkout quote-details order-status client-error-report; do
             for origin in https://love-essences.pt https://www.love-essences.pt; do
               headers=$(mktemp)
               status=$(curl --silent --show-error --max-time 25 --retry 2 \
@@ -70,6 +70,32 @@ jobs:
               rm -f "$headers"
             done
             echo "API OK: $endpoint"
+          done
+
+      - name: Simular pedidos invalidos sem criar encomendas
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --max-time 25 \
+            --output /tmp/le-commerce-config.js \
+            https://love-essences.pt/assets/js/commerce-config.js
+          key=$(sed -n 's/.*supabaseAnonKey: "\([^"]*\)".*/\1/p' /tmp/le-commerce-config.js | head -n 1)
+          if [ -z "$key" ]; then
+            echo "::error::Chave publica nao encontrada no ficheiro de configuracao"
+            exit 1
+          fi
+          for endpoint in project-submit checkout-prepare attachment-confirm; do
+            status=$(curl --silent --show-error --max-time 25 --retry 2 \
+              -o /dev/null -w "%{http_code}" -X POST \
+              "https://qjtblalogacenjxponpi.supabase.co/functions/v1/$endpoint" \
+              -H "Origin: https://love-essences.pt" \
+              -H "Content-Type: application/json" \
+              -H "apikey: $key" -H "Authorization: Bearer $key" \
+              --data '{}')
+            case "$status" in
+              400|404|415|422) echo "Validacao sem mutacoes OK: $endpoint (HTTP $status)" ;;
+              *) echo "::error::$endpoint devolveu HTTP $status para pedido invalido"; exit 1 ;;
+            esac
           done
 
       - name: Abrir alerta de erro
