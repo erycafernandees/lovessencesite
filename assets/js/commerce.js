@@ -125,6 +125,7 @@
     });
     if (!response.ok) {
       var detail = await response.json().catch(function () { return {}; });
+      if (window.LoveSiteMonitor) window.LoveSiteMonitor.report('upload', 'other');
       console.error('Love Essences upload error', response.status, detail.code || detail.error || '');
       throw new Error('Não foi possível enviar o ficheiro ' + file.name + '. Tenta novamente.');
     }
@@ -183,6 +184,7 @@
       alert(error.message || 'Não foi possível iniciar o pagamento.');
       if (button) { button.disabled = false; button.textContent = 'Finalizar compra'; }
       if (window.LoveAnalytics) window.LoveAnalytics.trackCheckoutError('stripe_checkout', 'prepare_error');
+      if (window.LoveSiteMonitor) window.LoveSiteMonitor.report('checkout', 'checkout');
     }
   }
 
