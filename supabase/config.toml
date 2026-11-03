@@ -51,3 +51,9 @@ verify_jwt = false
 
 [functions.admin-api]
 verify_jwt = true
+
+[functions.client-error-report]
+verify_jwt = false # Endpoint validates origin, categories and rate-limits
+
+[functions.commerce-audit]
+verify_jwt = false # Verifies signed GitHub OIDC JWT internally
