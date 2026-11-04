@@ -196,7 +196,7 @@ async function loadOrders() {
   document.getElementById('summary-grid').innerHTML = [
     ['Novas', visibleRows.filter(row => !row.admin_seen_at).length], ['Pagas', paid.length], ['Em produção', visibleRows.filter(row => row.order_status === 'production').length], ['Líquido recebido', money(net)]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
-  document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Canal</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Taxas</th><th>Líquido</th><th>Data</th></tr>';
+  document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Canal</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Taxas</th><th>Líquido</th><th>Data</th><th>Ações</th></tr>';
   renderOrderRows(rows);
 }
 
@@ -205,9 +205,18 @@ function renderOrderRows(allRows) {
   document.getElementById('results-count').textContent = `${rows.length} resultados (página atual)`;
   document.getElementById('table-body').innerHTML = rows.map(row => {
     const payment = row.payments?.[0] || {};
-    return `<tr data-order="${row.id}"><td><strong>${esc(row.order_number)}</strong>${!row.admin_seen_at ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(payment.gross_amount || row.total_amount, row.currency)}</td><td>${payment.processing_fee_amount == null ? '—' : money(payment.processing_fee_amount,row.currency)}</td><td>${payment.net_amount == null ? '—' : money(payment.net_amount,row.currency)}</td><td>${date(row.created_at)}</td></tr>`;
+    return `<tr data-order="${row.id}"><td><strong>${esc(row.order_number)}</strong>${!row.admin_seen_at ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(payment.gross_amount || row.total_amount, row.currency)}</td><td>${payment.processing_fee_amount == null ? '—' : money(payment.processing_fee_amount,row.currency)}</td><td>${payment.net_amount == null ? '—' : money(payment.net_amount,row.currency)}</td><td>${date(row.created_at)}</td><td>${!['paid','processing','partially_refunded','refunded'].includes(row.payment_status) && !row.paid_at ? `<button type="button" class="delete-order-button" data-delete-order="${esc(row.id)}" data-order-number="${esc(row.order_number)}" aria-label="Eliminar encomenda ${esc(row.order_number)}">Eliminar</button>` : '—'}</td></tr>`;
   }).join('');
   document.querySelectorAll('[data-order]').forEach(row => row.addEventListener('click', () => openOrder(row.dataset.order)));
+  document.querySelectorAll('[data-delete-order]').forEach(button => button.addEventListener('click', async event => {
+    event.stopPropagation();
+    const id = button.dataset.deleteOrder;
+    const reference = button.dataset.orderNumber;
+    if (!window.confirm(`Eliminar definitivamente a encomenda ${reference}? Esta ação não pode ser anulada. Só é possível eliminar encomendas sem pagamentos reais.`)) return;
+    button.disabled = true;
+    try { await adminApi('delete-order', { id }); await loadOrders(); }
+    catch (error) { window.alert(error.message || 'Não foi possível eliminar esta encomenda.'); button.disabled = false; }
+  }));
 }
 
 async function loadProjects() {
