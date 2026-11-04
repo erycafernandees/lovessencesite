@@ -41,6 +41,29 @@ Deno.serve(async (req) => {
       return json(req, { ok: true });
     }
 
+    if (action === "delete-order") {
+      if (admin.role !== "owner") throw new ApiError(403, "forbidden", "Apenas a proprietária pode eliminar encomendas.");
+      const id = cleanText(body.id, 80, true)!;
+      const { data: order, error: orderError } = await client.from("orders")
+        .select("id,order_number,order_status,payment_status,paid_at,customer_name,total_amount,payments(id,status,provider_payment_id,provider_charge_id,refunded_amount)")
+        .eq("id", id).single();
+      if (orderError || !order) throw new ApiError(404, "order_not_found", "A encomenda não foi encontrada.");
+      const payments = order.payments || [];
+      const blocked = !["unpaid","failed","cancelled"].includes(order.payment_status) || Boolean(order.paid_at)
+        || payments.some((payment) => !["unpaid","failed","cancelled"].includes(payment.status)
+          || Boolean(payment.provider_charge_id) || Number(payment.refunded_amount || 0) > 0);
+      if (blocked) throw new ApiError(409, "paid_order_protected", "Esta encomenda tem informação de pagamento que deve ser preservada e não pode ser eliminada.");
+      const { error: auditError } = await client.from("audit_log").insert({
+        actor_user_id: admin.userId, action: "order.delete", entity_type: "order", entity_id: id,
+        before_data: { order_number: order.order_number, order_status: order.order_status, payment_status: order.payment_status, customer_name: order.customer_name, total_amount: order.total_amount },
+        after_data: { deleted: true }
+      });
+      if (auditError) throw auditError;
+      const { error: deleteError } = await client.from("orders").delete().eq("id", id).in("payment_status", ["unpaid","failed","cancelled"]).is("paid_at", null).select("id").single();
+      if (deleteError) throw deleteError;
+      return json(req, { ok: true });
+    }
+
     if (action === "list-projects") {
       const { data, error } = await client.from("project_requests").select("id,project_number,status,customer_name,customer_email,occasion,project_type,event_date,created_at,quotes(id,status,total_amount,currency,valid_until)").order("created_at", { ascending: false }).limit(100);
       if (error) throw error;
