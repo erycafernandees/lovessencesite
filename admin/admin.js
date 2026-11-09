@@ -42,6 +42,19 @@ if (!config.enabled || !config.supabaseUrl || !config.supabaseAnonKey) {
 const supabase = createClient(config.supabaseUrl || 'https://invalid.supabase.co', config.supabaseAnonKey || 'invalid', { auth: { persistSession: true, autoRefreshToken: true } });
 
 function money(cents, currency = 'eur') { return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: currency.toUpperCase() }).format((Number(cents) || 0) / 100); }
+// Encomendas manuais não têm registo Stripe: quando estão pagas e não há taxas,
+// o líquido recebido corresponde ao total da encomenda. Nunca assumir que
+// um pagamento Stripe sem dados de taxas tem o mesmo líquido que o bruto.
+function paymentAmounts(order) {
+  const payment = order.payments?.[0] || {};
+  const manualPaid = order.payment_provider === 'manual' && order.payment_status === 'paid';
+  return {
+    payment,
+    grossAmount: payment.gross_amount ?? order.total_amount,
+    feeAmount: payment.processing_fee_amount ?? (manualPaid ? 0 : null),
+    netAmount: payment.net_amount ?? (manualPaid ? order.total_amount : null)
+  };
+}
 function date(value) { return value ? new Intl.DateTimeFormat('pt-PT', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '—'; }
 function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
 function badge(value) { const labels = {...ORDER_LABELS,...PROJECT_LABELS}; return `<span class="badge ${esc(value)}">${esc(labels[value] || String(value || '').replaceAll('_', ' '))}</span>`; }
@@ -192,7 +205,7 @@ async function loadOrders() {
   document.getElementById('view-title').textContent = 'Encomendas';
   const visibleRows = rows.filter(row => (testFilter === 'all' || Boolean(row.is_test) === (testFilter === 'test')) && (!channelFilter || row.sales_channel === channelFilter));
   const paid = visibleRows.filter(row => ['paid','partially_refunded'].includes(row.payment_status));
-  const net = paid.reduce((sum, row) => sum + Number(row.payments?.[0]?.net_amount || 0), 0);
+  const net = paid.reduce((sum, row) => sum + Number(paymentAmounts(row).netAmount ?? 0), 0);
   document.getElementById('summary-grid').innerHTML = [
     ['Novas', visibleRows.filter(row => !row.admin_seen_at).length], ['Pagas', paid.length], ['Em produção', visibleRows.filter(row => row.order_status === 'production').length], ['Líquido recebido', money(net)]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
@@ -204,8 +217,8 @@ function renderOrderRows(allRows) {
   const rows = filterRows(allRows);
   document.getElementById('results-count').textContent = `${rows.length} resultados (página atual)`;
   document.getElementById('table-body').innerHTML = rows.map(row => {
-    const payment = row.payments?.[0] || {};
-    return `<tr data-order="${row.id}"><td><strong>${esc(row.order_number)}</strong>${!row.admin_seen_at ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(payment.gross_amount || row.total_amount, row.currency)}</td><td>${payment.processing_fee_amount == null ? '—' : money(payment.processing_fee_amount,row.currency)}</td><td>${payment.net_amount == null ? '—' : money(payment.net_amount,row.currency)}</td><td>${date(row.created_at)}</td><td>${!['paid','processing','partially_refunded','refunded'].includes(row.payment_status) && !row.paid_at ? `<button type="button" class="delete-order-button" data-delete-order="${esc(row.id)}" data-order-number="${esc(row.order_number)}" aria-label="Eliminar encomenda ${esc(row.order_number)}">Eliminar</button>` : '—'}</td></tr>`;
+    const { payment, grossAmount, feeAmount, netAmount } = paymentAmounts(row);
+    return `<tr data-order="${row.id}"><td><strong>${esc(row.order_number)}</strong>${!row.admin_seen_at ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(grossAmount, row.currency)}</td><td>${feeAmount == null ? '—' : money(feeAmount,row.currency)}</td><td>${netAmount == null ? '—' : money(netAmount,row.currency)}</td><td>${date(row.created_at)}</td><td>${!['paid','processing','partially_refunded','refunded'].includes(row.payment_status) && !row.paid_at ? `<button type="button" class="delete-order-button" data-delete-order="${esc(row.id)}" data-order-number="${esc(row.order_number)}" aria-label="Eliminar encomenda ${esc(row.order_number)}">Eliminar</button>` : '—'}</td></tr>`;
   }).join('');
   document.querySelectorAll('[data-order]').forEach(row => row.addEventListener('click', () => openOrder(row.dataset.order)));
   document.querySelectorAll('[data-delete-order]').forEach(button => button.addEventListener('click', async event => {
@@ -277,11 +290,11 @@ async function openOrder(id) {
   openDrawer('<p>A carregar…</p>');
   try {
     const order = await adminApi('get-order', { id });
-    const payment = order.payments?.[0] || {};
+    const { payment, grossAmount, feeAmount, netAmount } = paymentAmounts(order);
     openDrawer(`<p class="eyebrow">Encomenda</p><h2>${esc(order.order_number)}</h2>
       <div class="detail-section"><div class="detail-grid"><p><strong>Cliente</strong>${esc(order.customer_name || '—')}</p><p><strong>Email</strong>${esc(order.customer_email || '—')}</p><p><strong>Telefone</strong>${esc(order.customer_phone || '—')}</p><p><strong>Total</strong>${money(order.total_amount,order.currency)}</p></div></div>
       <div class="detail-section"><h3>Estado</h3><form class="status-form" id="order-status-form"><select name="status">${['confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'].map(status => `<option value="${status}" ${status===order.order_status?'selected':''}>${status.replaceAll('_',' ')}</option>`).join('')}</select><button>Guardar</button></form></div>
-      <div class="detail-section"><h3>Pagamento Stripe</h3><div class="detail-grid"><p><strong>Payment Intent</strong>${esc(payment.provider_payment_id || '—')}</p><p><strong>Charge</strong>${esc(payment.provider_charge_id || '—')}</p><p><strong>Bruto</strong>${money(payment.gross_amount,order.currency)}</p><p><strong>Taxas</strong>${payment.processing_fee_amount==null?'—':money(payment.processing_fee_amount,order.currency)}</p><p><strong>Líquido</strong>${payment.net_amount==null?'—':money(payment.net_amount,order.currency)}</p><p><strong>Reembolsos</strong>${money(payment.refunded_amount,order.currency)}</p></div></div>
+      <div class="detail-section"><h3>Pagamento ${order.payment_provider === 'manual' ? 'manual' : 'Stripe'}</h3><div class="detail-grid">${order.payment_provider === 'manual' ? '' : `<p><strong>Payment Intent</strong>${esc(payment.provider_payment_id || '—')}</p><p><strong>Charge</strong>${esc(payment.provider_charge_id || '—')}</p>`}<p><strong>Bruto</strong>${money(grossAmount,order.currency)}</p><p><strong>Taxas</strong>${feeAmount==null?'—':money(feeAmount,order.currency)}</p><p><strong>Líquido</strong>${netAmount==null?'—':money(netAmount,order.currency)}</p><p><strong>Reembolsos</strong>${money(payment.refunded_amount,order.currency)}</p></div></div>
       <div class="detail-section"><h3>Artigos e personalização</h3>${order.order_items.map(item => `<div class="line-item"><strong>${esc(item.quantity)} × ${esc(item.name)}</strong><p>${money(item.line_amount,order.currency)}</p>${personalizationHtml(item.personalization)}</div>`).join('')}</div>
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(order.attachments)}</div>`);
     document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadOrders(); });
