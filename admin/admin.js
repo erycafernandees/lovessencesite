@@ -57,6 +57,7 @@ function paymentAmounts(order) {
   };
 }
 function isNewOrder(order) { return !order.admin_seen_at && order.order_status !== 'completed'; }
+function isNewProject(project) { return !project.admin_seen_at && project.status !== 'completed'; }
 function date(value) { return value ? new Intl.DateTimeFormat('pt-PT', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '—'; }
 function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
 function badge(value) { const labels = {...ORDER_LABELS,...PROJECT_LABELS}; return `<span class="badge ${esc(value)}">${esc(labels[value] || String(value || '').replaceAll('_', ' '))}</span>`; }
@@ -308,7 +309,7 @@ async function loadProjects() {
   updateStatusOptions();
   document.getElementById('view-title').textContent = 'Projetos personalizados';
   document.getElementById('summary-grid').innerHTML = [
-    ['Novos', rows.filter(row => !row.admin_seen_at).length], ['Por analisar', rows.filter(row => row.status === 'submitted').length], ['Orçamentados', rows.filter(row => row.status === 'quoted').length], ['Em produção', rows.filter(row => row.status === 'production').length]
+    ['Novos', rows.filter(isNewProject).length], ['Por analisar', rows.filter(row => row.status === 'submitted').length], ['Orçamentados', rows.filter(row => row.status === 'quoted').length], ['Em produção', rows.filter(row => row.status === 'production').length]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
   document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Ocasião</th><th>Tipo</th><th>Estado</th><th>Evento</th><th>Data do pedido</th></tr>';
   renderProjectRows(rows);
@@ -317,7 +318,7 @@ async function loadProjects() {
 function renderProjectRows(allRows) {
   const rows = filterRows(allRows);
   document.getElementById('results-count').textContent = `${rows.length} resultados (lista carregada)`;
-  document.getElementById('table-body').innerHTML = rows.map(row => `<tr data-project="${row.id}"><td><strong>${esc(row.project_number)}</strong>${!row.admin_seen_at ? ' <span class="new-tag">Novo</span>' : ''}</td><td>${esc(row.customer_name)}<br>${esc(row.customer_email)}</td><td>${esc(row.occasion)}</td><td>${esc(row.project_type)}</td><td>${badge(row.status)}</td><td>${esc(row.event_date || '—')}</td><td>${date(row.created_at)}</td></tr>`).join('');
+  document.getElementById('table-body').innerHTML = rows.map(row => `<tr data-project="${row.id}"><td><strong>${esc(row.project_number)}</strong>${isNewProject(row) ? ' <span class="new-tag">Novo</span>' : ''}</td><td>${esc(row.customer_name)}<br>${esc(row.customer_email)}</td><td>${esc(row.occasion)}</td><td>${esc(row.project_type)}</td><td>${badge(row.status)}</td><td>${esc(row.event_date || '—')}</td><td>${date(row.created_at)}</td></tr>`).join('');
   document.querySelectorAll('[data-project]').forEach(row => row.addEventListener('click', () => openProject(row.dataset.project)));
 }
 
