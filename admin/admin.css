@@ -35,3 +35,14 @@
 
 /* Clearly scoped destructive action for unpaid administrative records. */
 .delete-order-button{padding:.4rem .65rem;font-size:.7rem;background:#fff;color:#a12635;border:1px solid #e7c4cb;border-radius:7px;white-space:nowrap}.delete-order-button:hover{background:#fff0f2}.delete-order-button:disabled{opacity:.5;cursor:wait}
+
+/* Limpeza em lote de encomendas de teste. */
+.test-bulk-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.7rem 1rem;margin:0 0 1rem;padding:.85rem 1rem;border:1px solid var(--line);background:#fff;border-radius:12px}
+.test-bulk-actions .test-select-all{display:flex;align-items:center;gap:.55rem;margin:0;width:auto;cursor:pointer}
+.test-bulk-actions #selected-test-count{font-size:.75rem;color:var(--muted)}
+.test-bulk-actions small{flex-basis:100%;font-size:.69rem;color:var(--muted)}
+.test-bulk-actions .delete-order-button{min-height:36px}
+.test-bulk-actions input[type=checkbox],.test-selection-cell input[type=checkbox]{width:17px;height:17px;padding:0;margin:0;accent-color:var(--deep);cursor:pointer}
+.test-selection-cell{width:60px;text-align:center}
+.test-bulk-actions button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:650px){.test-bulk-actions{align-items:stretch}.test-bulk-actions .delete-order-button{flex:1 1 auto}}
