@@ -207,10 +207,10 @@ async function deleteTestOrdersInBulk(ids = null) {
       return;
     }
     const skipped = preview.skippedCount
-      ? '\\n' + preview.skippedCount + ' encomenda(s) serão preservadas por terem pagamentos associados ou estarem protegidas.'
+      ? '\n' + preview.skippedCount + ' encomenda(s) serão preservadas por terem pagamentos associados ou estarem protegidas.'
       : '';
     if (!window.confirm('Eliminar definitivamente ' + preview.eligibleCount +
-      ' encomenda(s) de teste?\\nEsta ação não pode ser anulada.' + skipped)) return;
+      ' encomenda(s) de teste?\nEsta ação não pode ser anulada.' + skipped)) return;
     const result = await adminApi('bulk-delete-test-orders', {
       ids: preview.eligibleIds, confirmation: 'ELIMINAR_TESTES'
     });
