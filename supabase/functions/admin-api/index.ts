@@ -33,9 +33,13 @@ Deno.serve(async (req) => {
     if (action === "update-order") {
       if (!ORDER_STATES.includes(String(body.orderStatus))) throw new ApiError(422, "invalid_status", "O estado da encomenda não é válido.");
       const id = cleanText(body.id, 80, true)!;
-      const { data: before, error: beforeError } = await client.from("orders").select("order_status").eq("id", id).single();
+      const { data: before, error: beforeError } = await client.from("orders").select("order_status,admin_seen_at").eq("id", id).single();
       if (beforeError || !before) throw new ApiError(404, "order_not_found", "A encomenda não foi encontrada.");
-      await client.from("orders").update({ order_status: body.orderStatus }).eq("id", id);
+      const statusUpdate = body.orderStatus === "completed"
+        ? { order_status: body.orderStatus, admin_seen_at: before.admin_seen_at || new Date().toISOString() }
+        : { order_status: body.orderStatus };
+      const { error: updateError } = await client.from("orders").update(statusUpdate).eq("id", id);
+      if (updateError) throw updateError;
       await client.from("order_status_history").insert({ order_id: id, order_status: body.orderStatus, note: cleanText(body.note, 500), actor_user_id: admin.userId });
       await client.from("audit_log").insert({ actor_user_id: admin.userId, action: "order.status.update", entity_type: "order", entity_id: id, before_data: before, after_data: { order_status: body.orderStatus } });
       return json(req, { ok: true });
@@ -71,8 +75,8 @@ Deno.serve(async (req) => {
         throw new ApiError(422, "confirmation_required", "É necessário confirmar a eliminação dos testes.");
       }
 
-      const selected = body.ids;
-      if (selected !== undefined && (!Array.isArray(selected) || selected.length < 1 || selected.length > 500
+      const selected = Array.isArray(body.ids) ? body.ids : null;
+      if (body.ids !== undefined && (!selected || selected.length < 1 || selected.length > 500
         || selected.some((id) => typeof id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
         || new Set(selected).size !== selected.length)) {
         throw new ApiError(422, "invalid_test_selection", "Seleciona entre 1 e 500 encomendas de teste válidas.");
