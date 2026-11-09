@@ -136,6 +136,77 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (action === "bulk-delete-draft-orders") {
+      if (admin.role !== "owner") throw new ApiError(403, "forbidden", "Apenas a proprietária pode eliminar encomendas.");
+      const preview = body.preview === true;
+      if (!preview && body.confirmation !== "ELIMINAR_RASCUNHOS") {
+        throw new ApiError(422, "confirmation_required", "Confirma a eliminação dos rascunhos.");
+      }
+
+      const selected = Array.isArray(body.ids) ? body.ids : null;
+      if (body.ids !== undefined && (!selected || selected.length < 1 || selected.length > 500
+        || selected.some((id) => typeof id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
+        || new Set(selected).size !== selected.length)) {
+        throw new ApiError(422, "invalid_selection", "Seleciona entre 1 e 500 encomendas válidas.");
+      }
+
+      // A lista enviada pelo browser não constitui autorização. Revalidar no servidor.
+      let query = client.from("orders")
+        .select("id,order_number,is_test,order_status,payment_status,paid_at,stripe_payment_intent_id,stripe_checkout_session_id,customer_name,total_amount,payments(id,status,provider_payment_id,provider_charge_id,refunded_amount)")
+        .eq("is_test", false).eq("order_status", "draft").eq("payment_status", "unpaid")
+        .order("created_at", { ascending: false });
+      query = selected ? query.in("id", selected) : query.limit(501);
+      const { data: orders, error: ordersError } = await query;
+      if (ordersError) throw ordersError;
+      if (!selected && (orders || []).length > 500) throw new ApiError(422, "too_many_drafts", "Existem mais de 500 rascunhos. Faz a limpeza por seleção.");
+      if (selected && orders?.length !== selected.length) {
+        throw new ApiError(409, "selection_changed", "Uma das encomendas já não é um rascunho por pagar. Atualiza a lista.");
+      }
+
+      const neutralPayments = new Set(["unpaid", "failed", "cancelled"]);
+      const prelim = (orders || []).filter((order) => !order.paid_at
+        && !order.stripe_payment_intent_id && !order.stripe_checkout_session_id
+        && (order.payments || []).every((payment) => neutralPayments.has(payment.status)
+          && !payment.provider_payment_id && !payment.provider_charge_id
+          && Number(payment.refunded_amount || 0) === 0));
+      let linkedCodes = new Set<string>();
+      if (prelim.length) {
+        const { data: codes, error: codesError } = await client.from("one_time_checkout_codes")
+          .select("order_id").in("order_id", prelim.map((order) => order.id));
+        if (codesError) throw codesError;
+        linkedCodes = new Set((codes || []).map((code) => code.order_id));
+      }
+      const eligible = prelim.filter((order) => !linkedCodes.has(order.id));
+      const skippedCount = (orders || []).length - eligible.length;
+
+      if (preview) return json(req, {
+        eligibleIds: eligible.map((order) => order.id), eligibleCount: eligible.length,
+        skippedCount, totalCount: (orders || []).length,
+      });
+      if (!selected) throw new ApiError(422, "selection_required", "Primeiro confirma os rascunhos a eliminar.");
+      if (!eligible.length) return json(req, { deletedCount: 0, skippedCount });
+
+      const { error: auditError } = await client.from("audit_log").insert(eligible.map((order) => ({
+        actor_user_id: admin.userId, action: "order.draft.bulk_delete", entity_type: "order", entity_id: order.id,
+        before_data: { order_number: order.order_number, customer_name: order.customer_name,
+          order_status: order.order_status, payment_status: order.payment_status,
+          total_amount: order.total_amount, is_test: false },
+        after_data: { deleted: true, method: "bulk" },
+      })));
+      if (auditError) throw auditError;
+
+      const { data: deleted, error: deleteError } = await client.from("orders").delete()
+        .in("id", eligible.map((order) => order.id))
+        .eq("is_test", false).eq("order_status", "draft").eq("payment_status", "unpaid")
+        .is("paid_at", null).is("stripe_payment_intent_id", null)
+        .is("stripe_checkout_session_id", null).select("id");
+      if (deleteError) throw deleteError;
+      return json(req, {
+        deletedCount: deleted?.length || 0,
+        skippedCount: (orders || []).length - (deleted?.length || 0),
+      });
+    }
+
     if (action === "mark-seen") {
       const id = cleanText(body.id, 80, true)!;
       if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
