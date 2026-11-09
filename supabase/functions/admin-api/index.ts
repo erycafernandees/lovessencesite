@@ -136,8 +136,25 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (action === "mark-seen") {
+      const id = cleanText(body.id, 80, true)!;
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
+        throw new ApiError(422, "invalid_id", "A referência indicada não é válida.");
+      }
+      const kind = body.kind;
+      if (kind !== "order" && kind !== "project") {
+        throw new ApiError(422, "invalid_kind", "O tipo de registo não é válido.");
+      }
+      const table = kind === "order" ? "orders" : "project_requests";
+      const { data, error } = await client.from(table)
+        .update({ admin_seen_at: new Date().toISOString() })
+        .eq("id", id).is("admin_seen_at", null).select("id");
+      if (error) throw error;
+      return json(req, { ok: true, updated: (data || []).length > 0 });
+    }
+
     if (action === "list-projects") {
-      const { data, error } = await client.from("project_requests").select("id,project_number,status,customer_name,customer_email,occasion,project_type,event_date,created_at,quotes(id,status,total_amount,currency,valid_until)").order("created_at", { ascending: false }).limit(100);
+      const { data, error } = await client.from("project_requests").select("id,project_number,status,admin_seen_at,customer_name,customer_email,occasion,project_type,event_date,created_at,quotes(id,status,total_amount,currency,valid_until)").order("created_at", { ascending: false }).limit(100);
       if (error) throw error;
       return json(req, { data });
     }
@@ -152,9 +169,13 @@ Deno.serve(async (req) => {
     if (action === "update-project") {
       if (!PROJECT_STATES.includes(String(body.status))) throw new ApiError(422, "invalid_status", "O estado do projeto não é válido.");
       const id = cleanText(body.id, 80, true)!;
-      const { data: before, error: beforeError } = await client.from("project_requests").select("status").eq("id", id).single();
+      const { data: before, error: beforeError } = await client.from("project_requests").select("status,admin_seen_at").eq("id", id).single();
       if (beforeError || !before) throw new ApiError(404, "project_not_found", "O projeto não foi encontrado.");
-      await client.from("project_requests").update({ status: body.status }).eq("id", id);
+      const projectUpdate = body.status === "completed"
+        ? { status: body.status, admin_seen_at: before.admin_seen_at || new Date().toISOString() }
+        : { status: body.status };
+      const { error: updateError } = await client.from("project_requests").update(projectUpdate).eq("id", id);
+      if (updateError) throw updateError;
       await client.from("project_status_history").insert({ project_request_id: id, status: body.status, note: cleanText(body.note, 500), actor_user_id: admin.userId });
       await client.from("audit_log").insert({ actor_user_id: admin.userId, action: "project.status.update", entity_type: "project_request", entity_id: id, before_data: before, after_data: { status: body.status } });
       return json(req, { ok: true });
