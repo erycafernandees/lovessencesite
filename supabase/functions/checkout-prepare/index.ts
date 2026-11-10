@@ -102,7 +102,12 @@ Deno.serve(async (req) => {
 
     const rows = normalized.map(({ line_key: _lineKey, ...row }) => ({ ...row, order_id: order.id }));
     const { data: items, error: itemsError } = await client.from("order_items").insert(rows).select("id,product_code,variant_code");
-    if (itemsError) throw itemsError;
+    if (itemsError || !items || items.length !== normalized.length) {
+      // Prevent incomplete draft orders from remaining after a failed item insert.
+      const { error: cleanupError } = await client.from("orders").delete().eq("id", order.id).eq("order_status", "draft");
+      if (cleanupError) console.error("Checkout cleanup failed", cleanupError);
+      throw itemsError || new Error("Order items could not be persisted completely");
+    }
     const itemIdsByKey: Record<string, string> = {};
     normalized.forEach((line, index) => { itemIdsByKey[String(line.line_key)] = items![index].id; });
     const uploads = await createSignedUploads(allUploads, { orderId: order.id, itemIdsByKey });
