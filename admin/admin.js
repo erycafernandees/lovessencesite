@@ -297,6 +297,9 @@ function updateBulkTestActions() {
   document.getElementById('selected-test-count').textContent = selectedTestOrders.size + ' selecionada(s)';
   document.getElementById('bulk-delete-selected').disabled = selectedTestOrders.size === 0;
 }
+document.getElementById('cleanup-tools').addEventListener('toggle', () => {
+  if (currentView === 'orders') renderOrderRows(currentRows);
+});
 document.querySelectorAll('.tabs button').forEach(button => button.addEventListener('click', () => {
   document.querySelectorAll('.tabs button').forEach(item => item.classList.remove('active'));
   button.classList.add('active'); currentView = button.dataset.view; statusFilter = ''; updateStatusOptions(); loadView();
@@ -324,21 +327,27 @@ async function loadOrders() {
   document.getElementById('summary-grid').innerHTML = [
     ['Novas', visibleRows.filter(isNewOrder).length], ['Pagas', paid.length], ['Em produção', visibleRows.filter(row => row.order_status === 'production').length], ['Líquido recebido', money(net)]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
-  document.getElementById('table-head').innerHTML = '<tr>' + (testFilter === 'test' || testFilter === 'real' ? '<th>Seleção</th>' : '') + '<th>Referência</th><th>Canal</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Taxas</th><th>Líquido</th><th>Data</th><th>Ações</th></tr>';
+  document.getElementById('cleanup-tools').hidden = false;
   renderOrderRows(rows);
 }
 
 function renderOrderRows(allRows) {
+  const showCleanup = document.getElementById('cleanup-tools').open;
+  const showSelection = showCleanup && (testFilter === 'test' || testFilter === 'real');
+  document.getElementById('table-head').innerHTML = '<tr>' +
+    (showSelection ? '<th>Seleção</th>' : '') +
+    '<th>Referência</th><th>Canal</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Taxas</th><th>Líquido</th><th>Data</th>' +
+    (showCleanup ? '<th>Ações</th>' : '') + '</tr>';
   const rows = filterRows(allRows);
   document.getElementById('results-count').textContent = `${rows.length} resultados (página atual)`;
   document.getElementById('table-body').innerHTML = rows.map(row => {
     const { payment, grossAmount, feeAmount, netAmount } = paymentAmounts(row);
-    const selector = testFilter === 'test'
+    const selector = !showSelection ? '' : testFilter === 'test'
       ? `<td class="test-selection-cell"><input type="checkbox" data-select-test="${esc(row.id)}" aria-label="Selecionar encomenda ${esc(row.order_number)}" ${selectedTestOrders.has(row.id) ? 'checked' : ''}></td>`
       : testFilter === 'real'
         ? `<td class="test-selection-cell">${isDeletableDraft(row) ? `<input type="checkbox" data-select-draft="${esc(row.id)}" aria-label="Selecionar rascunho ${esc(row.order_number)}" ${selectedDraftOrders.has(row.id) ? 'checked' : ''}>` : ''}</td>`
         : '';
-    return `<tr data-order="${row.id}">${selector}<td><strong>${esc(row.order_number)}</strong>${isNewOrder(row) ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(grossAmount, row.currency)}</td><td>${feeAmount == null ? '—' : money(feeAmount,row.currency)}</td><td>${netAmount == null ? '—' : money(netAmount,row.currency)}</td><td>${date(row.created_at)}</td><td>${!['paid','processing','partially_refunded','refunded'].includes(row.payment_status) && !row.paid_at ? `<button type="button" class="delete-order-button" data-delete-order="${esc(row.id)}" data-order-number="${esc(row.order_number)}" aria-label="Eliminar encomenda ${esc(row.order_number)}">Eliminar</button>` : '—'}</td></tr>`;
+    return `<tr data-order="${row.id}">${selector}<td><strong>${esc(row.order_number)}</strong>${isNewOrder(row) ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(grossAmount, row.currency)}</td><td>${feeAmount == null ? '—' : money(feeAmount,row.currency)}</td><td>${netAmount == null ? '—' : money(netAmount,row.currency)}</td><td>${date(row.created_at)}</td>${showCleanup ? `<td>${!['paid','processing','partially_refunded','refunded'].includes(row.payment_status) && !row.paid_at ? `<button type="button" class="delete-order-button" data-delete-order="${esc(row.id)}" data-order-number="${esc(row.order_number)}" aria-label="Eliminar encomenda ${esc(row.order_number)}">Eliminar</button>` : '—'}</td>` : ''}</tr>`;
   }).join('');
   document.querySelectorAll('[data-order]').forEach(row => row.addEventListener('click', () => openOrder(row.dataset.order)));
   document.querySelectorAll('[data-delete-order]').forEach(button => button.addEventListener('click', async event => {
@@ -371,6 +380,8 @@ function renderOrderRows(allRows) {
 }
 
 async function loadProjects() {
+  document.getElementById('cleanup-tools').open = false;
+  document.getElementById('cleanup-tools').hidden = true;
   selectedTestOrders.clear();
   selectedDraftOrders.clear();
   document.getElementById('test-bulk-actions').hidden = true;
