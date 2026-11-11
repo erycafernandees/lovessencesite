@@ -56,6 +56,8 @@
       </div>
       <div class="summary-grid" id="summary-grid"></div>
       <div class="filters"><label for="admin-search">Pesquisar<input id="admin-search" type="search" placeholder="Referência, nome ou email" autocomplete="off"/></label><label for="admin-status">Estado<select id="admin-status"><option value="">Todos os estados</option></select></label><label>Canal<select id="admin-channel"><option value="">Todos</option><option value="website">Site</option><option value="whatsapp">WhatsApp</option><option value="instagram">Instagram</option><option value="other">Outro</option></select></label><label>Tipo<select id="admin-tests"><option value="real">Reais</option><option value="test">Testes</option><option value="all">Todos</option></select></label><span id="results-count" aria-live="polite"></span></div>
+      <details class="cleanup-disclosure" id="cleanup-tools">
+        <summary>Opções avançadas</summary>
       <div class="test-bulk-actions" id="test-bulk-actions" hidden>
         <label class="test-select-all"><input id="select-test-page" type="checkbox" aria-label="Selecionar todos os testes desta página"/> Selecionar página</label>
         <span id="selected-test-count" aria-live="polite">0 selecionadas</span>
@@ -70,6 +72,7 @@
         <button type="button" id="bulk-delete-all-drafts" class="delete-order-button">Eliminar todos os rascunhos por pagar</button>
         <small>São eliminados apenas rascunhos sem pagamentos, sessões de checkout ou códigos associados. As restantes encomendas ficam protegidas.</small>
       </div>
+      </details>
       <div class="table-card"><div class="table-scroll"><table><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div><p class="empty" id="empty-state" hidden>Não existem registos para apresentar.</p></div>
     </section>
   </div>
