@@ -521,8 +521,116 @@ async function openProject(id) {
   } catch (error) { openDrawer(`<p class="error">${esc(error.message)}</p>`); }
 }
 
-function filesHtml(files) { return (files||[]).map(file => `<button class="file-button" data-file="${file.id}" ${file.status!=='verified'?'disabled':''}>${esc(file.original_name)} · ${esc(file.status)}</button>`).join('') || '<p>Nenhum ficheiro.</p>'; }
-function bindFiles() { document.querySelectorAll('[data-file]').forEach(button => button.addEventListener('click', async () => { const result=await adminApi('signed-file',{id:button.dataset.file}); window.open(result.url,'_blank','noopener'); })); }
+let privatePreviewRequest = 0;
+
+function filesHtml(files) {
+  if (!files?.length) return '<p>Nenhum ficheiro.</p>';
+  return `<div class="private-file-gallery">${files.map(file => {
+    const name = String(file.original_name || 'Ficheiro');
+    const mime = String(file.mime_type || file.content_type || '').toLowerCase();
+    const isImage = /^image\/(jpeg|png|gif|webp|avif|bmp)$/.test(mime) || /\.(jpe?g|png|gif|webp|avif|bmp)$/i.test(name);
+    const verified = file.status === 'verified';
+    return `<button type="button" class="private-file-card" data-file="${esc(file.id)}" data-image="${isImage ? 'true' : 'false'}" data-filename="${esc(name)}" aria-label="${esc((isImage ? 'Ver imagem: ' : 'Abrir ficheiro: ') + name)}" ${verified ? '' : 'disabled'}>
+      <span class="private-file-preview" aria-hidden="true">${isImage && verified ? 'A carregar imagem…' : 'Ficheiro'}</span>
+      <span class="private-file-name">${esc(name)}</span>
+      ${verified ? '' : `<span class="private-file-status">${esc(file.status || 'Pendente')}</span>`}
+    </button>`;
+  }).join('')}</div>`;
+}
+
+async function signedPreviewUrl(button) {
+  const expiresAt = Number(button.dataset.previewExpires || 0);
+  if (button.dataset.previewUrl && expiresAt - Date.now() > 15000) return button.dataset.previewUrl;
+  const response = await adminApi('signed-file', { id: button.dataset.file });
+  if (!response.url || !String(response.url).startsWith('https://')) throw new Error('Não foi possível abrir a imagem.');
+  if (button.isConnected) {
+    button.dataset.previewUrl = response.url;
+    button.dataset.previewExpires = String(Date.now() + Math.min(Number(response.expiresIn) || 300, 300) * 1000);
+  }
+  return response.url;
+}
+
+function getPrivateImageViewer() {
+  let viewer = document.getElementById('private-image-viewer');
+  if (viewer) return viewer;
+  viewer = document.createElement('dialog');
+  viewer.id = 'private-image-viewer';
+  viewer.className = 'private-image-viewer';
+  viewer.setAttribute('aria-label', 'Pré-visualização de imagem privada');
+  viewer.innerHTML = `<div class="private-image-panel">
+    <div class="private-image-header"><strong class="private-image-title"></strong><button type="button" class="private-image-close" aria-label="Fechar pré-visualização">×</button></div>
+    <p class="private-image-feedback" role="status"></p>
+    <img class="private-image-full" alt="" hidden/>
+  </div>`;
+  document.body.appendChild(viewer);
+  viewer.querySelector('.private-image-close').addEventListener('click', () => viewer.close());
+  viewer.addEventListener('click', event => { if (event.target === viewer) viewer.close(); });
+  viewer.addEventListener('close', () => {
+    privatePreviewRequest++;
+    viewer.querySelector('.private-image-full').removeAttribute('src');
+  });
+  return viewer;
+}
+
+async function openPrivateImage(button) {
+  const viewer = getPrivateImageViewer();
+  const request = ++privatePreviewRequest;
+  const image = viewer.querySelector('.private-image-full');
+  const feedback = viewer.querySelector('.private-image-feedback');
+  viewer.querySelector('.private-image-title').textContent = button.dataset.filename || 'Imagem';
+  image.hidden = true;
+  image.removeAttribute('src');
+  feedback.textContent = 'A carregar imagem…';
+  if (!viewer.open) viewer.showModal();
+  try {
+    const url = await signedPreviewUrl(button);
+    if (!viewer.open || request !== privatePreviewRequest) return;
+    image.onload = () => {
+      if (request === privatePreviewRequest) feedback.textContent = '';
+    };
+    image.onerror = () => {
+      if (request === privatePreviewRequest) {
+        image.hidden = true;
+        feedback.textContent = 'Não foi possível apresentar a imagem. Tenta novamente.';
+      }
+    };
+    image.src = url;
+    image.hidden = false;
+  } catch (error) {
+    if (request === privatePreviewRequest) feedback.textContent = error.message || 'Não foi possível carregar a imagem.';
+  }
+}
+
+function bindFiles() {
+  document.querySelectorAll('#drawer-content .private-file-card').forEach(button => {
+    if (button.dataset.image === 'true' && !button.disabled) {
+      const preview = button.querySelector('.private-file-preview');
+      signedPreviewUrl(button).then(url => {
+        if (!button.isConnected) return;
+        const image = document.createElement('img');
+        image.alt = '';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        image.onerror = () => {
+          if (button.isConnected) preview.textContent = 'Pré-visualização indisponível';
+        };
+        preview.replaceChildren(image);
+        image.src = url;
+      }).catch(() => {
+        if (button.isConnected) preview.textContent = 'Pré-visualização indisponível';
+      });
+    }
+    button.addEventListener('click', async () => {
+      if (button.dataset.image === 'true') return openPrivateImage(button);
+      try {
+        const result = await adminApi('signed-file', { id: button.dataset.file });
+        window.open(result.url, '_blank', 'noopener');
+      } catch (error) {
+        window.alert(error.message || 'Não foi possível abrir o ficheiro.');
+      }
+    });
+  });
+}
 
 const { data: { session } } = await supabase.auth.getSession();
 if (session) { try { await ensureMfa(); } catch (error) { document.getElementById('login-error').textContent = error.message; } }
