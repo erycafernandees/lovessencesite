@@ -437,9 +437,55 @@ async function openOrder(id) {
       <div class="detail-section"><div class="detail-grid"><p><strong>Cliente</strong>${esc(order.customer_name || '—')}</p><p><strong>Email</strong>${esc(order.customer_email || '—')}</p><p><strong>Telefone</strong>${esc(order.customer_phone || '—')}</p><p><strong>Total</strong>${money(order.total_amount,order.currency)}</p></div></div>
       <div class="detail-section"><h3>Estado</h3><form class="status-form" id="order-status-form"><select name="status">${['confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'].map(status => `<option value="${status}" ${status===order.order_status?'selected':''}>${status.replaceAll('_',' ')}</option>`).join('')}</select><button>Guardar</button></form></div>
       <div class="detail-section"><h3>Pagamento ${order.payment_provider === 'manual' ? 'manual' : 'Stripe'}</h3><div class="detail-grid">${order.payment_provider === 'manual' ? '' : `<p><strong>Payment Intent</strong>${esc(payment.provider_payment_id || '—')}</p><p><strong>Charge</strong>${esc(payment.provider_charge_id || '—')}</p>`}<p><strong>Bruto</strong>${money(grossAmount,order.currency)}</p><p><strong>Taxas</strong>${feeAmount==null?'—':money(feeAmount,order.currency)}</p><p><strong>Líquido</strong>${netAmount==null?'—':money(netAmount,order.currency)}</p><p><strong>Reembolsos</strong>${money(payment.refunded_amount,order.currency)}</p></div></div>
+      ${order.payment_provider === 'manual' ? `<div class="detail-section"><h3>Editar encomenda</h3>
+        <form id="order-edit-form" class="order-edit-form">
+          <label>Nome do cliente<input name="customerName" value="${esc(order.customer_name || '')}" required maxlength="160"></label>
+          <label>Email<input type="email" name="customerEmail" value="${esc(order.customer_email || '')}"></label>
+          <label>Telefone<input name="customerPhone" value="${esc(order.customer_phone || '')}"></label>
+          <label>Canal<select name="channel">${[['instagram','Instagram'],['whatsapp','WhatsApp'],['other','Outro']].map(([v,l])=>`<option value="${v}" ${order.sales_channel===v?'selected':''}>${l}</option>`).join('')}</select></label>
+          <label>Produto / descrição<input name="description" value="${esc(order.order_items?.[0]?.name || '')}" required maxlength="240"></label>
+          <label>Quantidade<input type="number" name="quantity" min="1" step="1" max="10000" value="${Number(order.order_items?.[0]?.quantity || 1)}" required></label>
+          <label>Total (€)<input type="number" name="totalEuros" min="0" step="0.01" value="${(Number(order.total_amount)/100).toFixed(2)}" ${order.payment_status==='paid'?'readonly':''} required></label>
+          <label>Notas<textarea name="notes" rows="3">${esc(order.notes || '')}</textarea></label>
+          <p><strong>Pagamento</strong> ${order.payment_status==='paid'?'Pago':'Por pagar'}</p>
+          ${order.payment_status==='unpaid' ? `<label class="check-label"><input type="checkbox" name="markPaid" id="order-mark-paid"> Marcar como pago</label>
+            <label id="order-payment-method-label" hidden>Método de pagamento<select name="paymentMethod"><option value="mbway">MB WAY</option><option value="transferencia">Transferência bancária</option><option value="numerario">Numerário</option><option value="outro">Outro</option></select></label>` : ''}
+          <p id="order-edit-error" class="error" role="alert"></p>
+          <button type="submit">Guardar alterações</button>
+        </form></div>` : ''}
       <div class="detail-section"><h3>Artigos e personalização</h3>${order.order_items.map(item => `<div class="line-item"><strong>${esc(item.quantity)} × ${esc(item.name)}</strong><p>${money(item.line_amount,order.currency)}</p>${personalizationHtml(item.personalization)}</div>`).join('')}</div>
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(order.attachments)}</div>`);
     document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadOrders(); });
+    if (order.payment_provider === 'manual') {
+      const form = document.getElementById('order-edit-form');
+      const markPaid = document.getElementById('order-mark-paid');
+      const methodLabel = document.getElementById('order-payment-method-label');
+      markPaid?.addEventListener('change', () => { methodLabel.hidden = !markPaid.checked; });
+      form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const button = form.querySelector('button[type="submit"]');
+        const error = document.getElementById('order-edit-error');
+        const values = new FormData(form);
+        error.textContent = '';
+        button.disabled = true;
+        try {
+          await adminApi('edit-manual-order', {
+            id, customerName: values.get('customerName'),
+            customerEmail: values.get('customerEmail'), customerPhone: values.get('customerPhone'),
+            channel: values.get('channel'), description: values.get('description'),
+            quantity: Number(values.get('quantity')),
+            totalAmount: Math.round(Number(values.get('totalEuros')) * 100),
+            notes: values.get('notes'), markPaid: values.has('markPaid'),
+            paymentMethod: values.get('paymentMethod') || null
+          });
+          await loadOrders();
+          await openOrder(id);
+        } catch (cause) {
+          error.textContent = cause.message || 'Não foi possível guardar as alterações.';
+          button.disabled = false;
+        }
+      });
+    }
     bindFiles();
     await markSeen('order',id);
 
