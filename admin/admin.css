@@ -46,3 +46,15 @@
 .test-selection-cell{width:60px;text-align:center}
 .test-bulk-actions button:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:650px){.test-bulk-actions{align-items:stretch}.test-bulk-actions .delete-order-button{flex:1 1 auto}}
+
+
+/* Edição de encomendas manuais no painel lateral */
+.order-edit-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.order-edit-form label{display:flex;flex-direction:column;gap:6px;font-size:.8rem;min-width:0}
+.order-edit-form input,.order-edit-form select,.order-edit-form textarea{box-sizing:border-box;width:100%;border:1px solid #e6d7e3;border-radius:9px;padding:10px;font:inherit;background:#fff;color:var(--ink)}
+.order-edit-form input[readonly]{background:var(--paper);cursor:not-allowed}
+.order-edit-form label:has(textarea),.order-edit-form .check-label,.order-edit-form p,.order-edit-form button{grid-column:1/-1}
+.order-edit-form .check-label{flex-direction:row;align-items:center;cursor:pointer}
+.order-edit-form .check-label input{width:auto;accent-color:var(--deep)}
+.order-edit-form button:disabled{opacity:.6;cursor:wait}
+@media(max-width:650px){.order-edit-form{grid-template-columns:1fr}}
