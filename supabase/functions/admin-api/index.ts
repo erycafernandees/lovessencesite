@@ -401,6 +401,79 @@ Deno.serve(async (req) => {
       return json(req, { ok: true, orderId: order.id, orderNumber: order.order_number });
     }
 
+    // Edição reservada às encomendas manuais; pagamentos Stripe nunca são alterados.
+    if (action === "edit-manual-order") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para editar encomendas.");
+      const id = cleanText(body.id, 80, true)!;
+      const { data: before, error: beforeError } = await client.from("orders")
+        .select("id,payment_provider,payment_status,paid_at,order_status,total_amount,customer_name,customer_email,customer_phone,sales_channel,notes")
+        .eq("id", id).single();
+      if (beforeError || !before) throw new ApiError(404, "order_not_found", "A encomenda não foi encontrada.");
+      if (before.payment_provider !== "manual") throw new ApiError(403, "stripe_order", "Só é possível editar encomendas manuais neste formulário.");
+      const customerName = cleanText(body.customerName, 160, true)!;
+      const customerEmail = cleanText(body.customerEmail, 254);
+      if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) throw new ApiError(422, "invalid_email", "O email indicado não é válido.");
+      const customerPhone = cleanText(body.customerPhone, 50);
+      const notes = cleanText(body.notes, 3000);
+      const channel = cleanText(body.channel, 20, true)!;
+      if (!["instagram", "whatsapp", "other"].includes(channel)) throw new ApiError(422, "invalid_channel", "Canal inválido.");
+      const description = cleanText(body.description, 240, true)!;
+      const quantity = Number(body.quantity);
+      const totalAmount = Number(body.totalAmount);
+      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000) throw new ApiError(422, "invalid_quantity", "Quantidade inválida.");
+      if (!Number.isSafeInteger(totalAmount) || totalAmount < 0 || totalAmount > 100000000) throw new ApiError(422, "invalid_total", "Total inválido.");
+      const markPaid = body.markPaid === true;
+      const alreadyPaid = before.payment_status === "paid";
+      if (!alreadyPaid && before.payment_status !== "unpaid") throw new ApiError(409, "payment_locked", "Este pagamento não pode ser alterado manualmente.");
+      if (alreadyPaid && Number(before.total_amount) !== totalAmount) throw new ApiError(409, "paid_total_locked", "Não é possível alterar o valor de uma encomenda já paga.");
+      const { data: items, error: itemsError } = await client.from("order_items").select("id").eq("order_id", id);
+      if (itemsError) throw itemsError;
+      if (!items || items.length !== 1) throw new ApiError(409, "items_locked", "Esta encomenda não tem um único artigo manual editável.");
+      const { data: existingPayments, error: paymentsError } = await client.from("payments").select("id,provider,status").eq("order_id", id);
+      if (paymentsError) throw paymentsError;
+      if (!alreadyPaid && existingPayments?.length) throw new ApiError(409, "payment_locked", "Já existe um registo de pagamento associado. A edição do pagamento foi bloqueada.");
+      const paidNow = markPaid && !alreadyPaid;
+      const paidAt = paidNow ? new Date().toISOString() : before.paid_at;
+      const patch = {
+        customer_name: customerName,
+        customer_email: customerEmail?.toLowerCase() || null,
+        customer_phone: customerPhone,
+        sales_channel: channel,
+        notes,
+        subtotal_amount: totalAmount,
+        total_amount: totalAmount,
+        ...(paidNow ? { payment_status: "paid", paid_at: paidAt, order_status: before.order_status === "draft" || before.order_status === "awaiting_payment" ? "confirmed" : before.order_status } : {}),
+      };
+      const { error: updateError } = await client.from("orders").update(patch).eq("id", id);
+      if (updateError) throw updateError;
+      const { error: itemError } = await client.from("order_items").update({
+        name: description, quantity, unit_amount: Math.round(totalAmount / quantity),
+        line_amount: totalAmount,
+        product_snapshot: { manual: true, priceType: "negotiated_total", description, quantity },
+      }).eq("id", items[0].id);
+      if (itemError) throw itemError;
+      if (paidNow) {
+        const { error: paymentError } = await client.from("payments").insert({
+          order_id: id, provider: "manual", status: "paid", currency: "eur",
+          gross_amount: totalAmount, processing_fee_amount: 0, net_amount: totalAmount,
+          refunded_amount: 0, payment_method_type: "manual",
+          provider_data: { salesChannel: channel, recordedByAdmin: true, method: cleanText(body.paymentMethod, 80) || "outro" },
+        });
+        if (paymentError) throw paymentError;
+        await client.from("order_status_history").insert({
+          order_id: id, order_status: patch.order_status || before.order_status,
+          payment_status: "paid", note: "Pagamento manual confirmado no painel",
+          actor_user_id: admin.userId,
+        });
+      }
+      await client.from("audit_log").insert({
+        actor_user_id: admin.userId, action: "order.manual.edit", entity_type: "order",
+        entity_id: id, before_data: before,
+        after_data: { ...patch, description, quantity, payment_method: paidNow ? cleanText(body.paymentMethod, 80) || "outro" : null },
+      });
+      return json(req, { ok: true, paymentStatus: paidNow || alreadyPaid ? "paid" : "unpaid" });
+    }
+
     if (action === "prepare-order-photo") {
       if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para adicionar fotografias.");
       const orderId = cleanText(body.orderId, 80, true)!;
