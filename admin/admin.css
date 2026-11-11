@@ -58,3 +58,13 @@
 .order-edit-form .check-label input{width:auto;accent-color:var(--deep)}
 .order-edit-form button:disabled{opacity:.6;cursor:wait}
 @media(max-width:650px){.order-edit-form{grid-template-columns:1fr}}
+
+/* Operações destrutivas ficam recolhidas por defeito, fora da tabela normal. */
+.cleanup-disclosure{margin:-.25rem 0 .75rem;text-align:right}
+.cleanup-disclosure>summary{display:inline-flex;align-items:center;gap:.4rem;list-style:none;cursor:pointer;font-size:.73rem;font-weight:600;color:var(--muted);padding:.35rem .15rem}
+.cleanup-disclosure>summary::-webkit-details-marker{display:none}
+.cleanup-disclosure>summary::after{content:'⌄';display:inline-block;font-size:1rem;line-height:1;transition:transform .2s}
+.cleanup-disclosure[open]>summary::after{transform:rotate(180deg)}
+.cleanup-disclosure>summary:hover,.cleanup-disclosure>summary:focus-visible{color:var(--ink)}
+.cleanup-disclosure[open]>summary{margin-bottom:.6rem}
+.cleanup-disclosure .test-bulk-actions{text-align:left}
