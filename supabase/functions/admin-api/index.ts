@@ -1,4 +1,4 @@
-import { ApiError, cleanText, handleError, json, PRIVATE_BUCKET, queueEmail, randomToken, readJson, requireAdmin, serviceClient, sha256 } from "../_shared/core.ts";
+import { ApiError, cleanText, createSignedUploads, handleError, hasValidMagic, json, PRIVATE_BUCKET, queueEmail, randomToken, readJson, requireAdmin, serviceClient, sha256, validateUploads } from "../_shared/core.ts";
 
 const ORDER_STATES = ["draft","awaiting_payment","confirmed","review","awaiting_details","production","ready_to_ship","shipped","completed","cancelled"];
 const PROJECT_STATES = ["draft","submitted","in_review","awaiting_details","quoted","approved","payment_pending","paid","production","completed","declined","archived"];
@@ -288,6 +288,184 @@ Deno.serve(async (req) => {
       const quoteUrl = `${siteUrl}/projeto/orcamento/?quote=${quote.id}&token=${encodeURIComponent(quoteToken)}`;
       if (project.customer_email) await queueEmail("quote_ready", project.customer_email, { projectNumber: project.project_number, quoteUrl, totalAmount: subtotal - discount + shipping });
       return json(req, { ok: true, quoteId: quote.id, quoteUrl });
+    }
+
+
+    // Encomendas registadas pela equipa (Instagram, WhatsApp ou outro canal).
+    // Não cria pagamentos Stripe; um pagamento marcado como pago é manual.
+    if (action === "create-manual-order") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para criar encomendas.");
+      const channel = cleanText(body.channel, 20, true)!;
+      if (!["whatsapp", "instagram", "other"].includes(channel)) {
+        throw new ApiError(422, "invalid_channel", "Seleciona um canal válido.");
+      }
+      const customerName = cleanText(body.customerName, 160, true)!;
+      const customerEmail = cleanText(body.customerEmail, 254);
+      if (customerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+        throw new ApiError(422, "invalid_email", "O email indicado não é válido.");
+      }
+      const customerPhone = cleanText(body.customerPhone, 50);
+      const description = cleanText(body.description, 240, true)!;
+      const notes = cleanText(body.notes, 3000);
+      const quantity = Number(body.quantity);
+      const totalAmount = Number(body.totalAmount);
+      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000) {
+        throw new ApiError(422, "invalid_quantity", "Indica uma quantidade válida.");
+      }
+      if (!Number.isSafeInteger(totalAmount) || totalAmount < 0 || totalAmount > 100000000) {
+        throw new ApiError(422, "invalid_total", "O total da encomenda não é válido.");
+      }
+      if (body.paymentStatus !== "paid" && body.paymentStatus !== "unpaid") {
+        throw new ApiError(422, "invalid_payment_status", "Seleciona um estado de pagamento válido.");
+      }
+      if (body.isTest !== undefined && typeof body.isTest !== "boolean") {
+        throw new ApiError(422, "invalid_test", "O tipo de encomenda não é válido.");
+      }
+      const paid = body.paymentStatus === "paid";
+      const now = new Date().toISOString();
+      const token = randomToken();
+      const { data: order, error: orderError } = await client.from("orders").insert({
+        source: "catalog",
+        order_status: paid ? "confirmed" : "draft",
+        payment_status: paid ? "paid" : "unpaid",
+        payment_provider: "manual",
+        sales_channel: channel,
+        customer_name: customerName,
+        customer_email: customerEmail?.toLowerCase() || null,
+        customer_phone: customerPhone,
+        subtotal_amount: totalAmount,
+        discount_amount: 0,
+        shipping_amount: 0,
+        total_amount: totalAmount,
+        notes,
+        is_test: body.isTest === true,
+        paid_at: paid ? now : null,
+        access_token_hash: await sha256(token),
+      }).select("id,order_number,total_amount").single();
+      if (orderError || !order) throw orderError || new Error("Could not create manual order");
+
+      // O valor introduzido no painel é o total acordado para a quantidade
+      // completa. Nem sempre há um preço unitário exato em cêntimos.
+      const { error: itemError } = await client.from("order_items").insert({
+        order_id: order.id,
+        product_code: "MANUAL",
+        variant_code: "PERSONALIZADO",
+        name: description,
+        quantity,
+        unit_amount: Math.round(totalAmount / quantity),
+        line_amount: totalAmount,
+        personalization: {},
+        product_snapshot: { manual: true, priceType: "negotiated_total", description, quantity },
+      });
+      if (itemError) throw itemError;
+
+      if (paid) {
+        const { error: paymentError } = await client.from("payments").insert({
+          order_id: order.id,
+          provider: "manual",
+          status: "paid",
+          currency: "eur",
+          gross_amount: totalAmount,
+          processing_fee_amount: 0,
+          net_amount: totalAmount,
+          refunded_amount: 0,
+          payment_method_type: "manual",
+          provider_data: { salesChannel: channel, recordedByAdmin: true },
+        });
+        if (paymentError) throw paymentError;
+      }
+
+      const { error: historyError } = await client.from("order_status_history").insert({
+        order_id: order.id,
+        order_status: paid ? "confirmed" : "draft",
+        payment_status: paid ? "paid" : "unpaid",
+        note: "Encomenda registada manualmente",
+        actor_user_id: admin.userId,
+      });
+      if (historyError) throw historyError;
+      const { error: auditError } = await client.from("audit_log").insert({
+        actor_user_id: admin.userId,
+        action: "order.manual.create",
+        entity_type: "order",
+        entity_id: order.id,
+        after_data: {
+          order_number: order.order_number,
+          sales_channel: channel,
+          quantity,
+          total_amount: totalAmount,
+          payment_status: paid ? "paid" : "unpaid",
+          is_test: body.isTest === true,
+        },
+      });
+      if (auditError) throw auditError;
+      return json(req, { ok: true, orderId: order.id, orderNumber: order.order_number });
+    }
+
+    if (action === "prepare-order-photo") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para adicionar fotografias.");
+      const orderId = cleanText(body.orderId, 80, true)!;
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderId)) {
+        throw new ApiError(422, "invalid_id", "A referência da encomenda não é válida.");
+      }
+      const { data: order, error: orderError } = await client.from("orders")
+        .select("id,payment_provider").eq("id", orderId).single();
+      if (orderError || !order || order.payment_provider !== "manual") {
+        throw new ApiError(404, "order_not_found", "A encomenda manual não foi encontrada.");
+      }
+      const { count, error: countError } = await client.from("attachments")
+        .select("id", { count: "exact", head: true }).eq("order_id", orderId);
+      if (countError) throw countError;
+      if ((count || 0) >= 10) throw new ApiError(422, "too_many_files", "Podes anexar até 10 fotografias por encomenda.");
+      const descriptors = validateUploads([{
+        name: body.fileName, type: body.mimeType, size: body.sizeBytes,
+      }], 1);
+      if (!["image/png", "image/jpeg"].includes(descriptors[0].type)) {
+        throw new ApiError(422, "invalid_file_type", "Escolhe uma fotografia JPG ou PNG.");
+      }
+      const prepared = await createSignedUploads(descriptors, { orderId });
+      return json(req, prepared[0]);
+    }
+
+    if (action === "finish-order-photo") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para confirmar fotografias.");
+      const attachmentId = cleanText(body.attachmentId, 80, true)!;
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(attachmentId)) {
+        throw new ApiError(422, "invalid_id", "O anexo indicado não é válido.");
+      }
+      const { data: attachment, error: attachmentError } = await client.from("attachments")
+        .select("id,order_id,object_path,mime_type,size_bytes,status").eq("id", attachmentId).single();
+      if (attachmentError || !attachment?.order_id) {
+        throw new ApiError(404, "attachment_not_found", "O anexo não foi encontrado.");
+      }
+      const { data: order, error: orderError } = await client.from("orders")
+        .select("id,payment_provider").eq("id", attachment.order_id).single();
+      if (orderError || !order || order.payment_provider !== "manual") {
+        throw new ApiError(404, "order_not_found", "A encomenda manual não foi encontrada.");
+      }
+      if (attachment.status === "verified") return json(req, { ok: true });
+      if (attachment.status !== "pending_upload" && attachment.status !== "uploaded") {
+        throw new ApiError(422, "invalid_attachment", "O anexo não pode ser confirmado.");
+      }
+      const { data: blob, error: downloadError } = await client.storage.from(PRIVATE_BUCKET)
+        .download(attachment.object_path);
+      if (downloadError || !blob) throw new ApiError(422, "upload_missing", "A fotografia ainda não foi carregada.");
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      const valid = bytes.length === Number(attachment.size_bytes)
+        && bytes.length <= 10 * 1024 * 1024
+        && ["image/jpeg", "image/png"].includes(attachment.mime_type)
+        && hasValidMagic(bytes, attachment.mime_type);
+      if (!valid) {
+        await client.storage.from(PRIVATE_BUCKET).remove([attachment.object_path]);
+        await client.from("attachments").update({
+          status: "rejected", rejection_reason: "content_mismatch",
+        }).eq("id", attachment.id);
+        throw new ApiError(422, "invalid_file_content", "A fotografia não corresponde ao ficheiro indicado.");
+      }
+      const { error: updateError } = await client.from("attachments").update({
+        status: "verified", sha256: await sha256(bytes), verified_at: new Date().toISOString(),
+      }).eq("id", attachment.id);
+      if (updateError) throw updateError;
+      return json(req, { ok: true });
     }
 
     if (action === "signed-file") {
