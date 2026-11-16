@@ -225,7 +225,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "list-projects") {
-      const { data, error } = await client.from("project_requests").select("id,project_number,status,admin_seen_at,customer_name,customer_email,occasion,project_type,event_date,created_at,quotes(id,status,total_amount,currency,valid_until),project_status_history(status)").order("created_at", { ascending: false }).limit(100);
+      const { data, error } = await client.from("project_requests").select("id,project_number,status,admin_seen_at,customer_name,customer_email,occasion,project_type,event_date,created_at,quotes(id,version,status,total_amount,currency,valid_until,created_at),project_status_history(status)").order("created_at", { ascending: false }).limit(100);
       if (error) throw error;
       return json(req, { data });
     }
