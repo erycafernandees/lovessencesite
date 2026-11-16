@@ -126,7 +126,7 @@ function deliverySummary(record) {
     return `<span class="badge delivery-ctt">CTT</span>${record.delivery_tracking_code ? `<small class="delivery-row-detail">${esc(record.delivery_tracking_code)}</small>` : ''}`;
   }
   if (record.delivery_method === 'hand_delivery') {
-    return `<span class="badge delivery-hand">Em mãos</span>${record.delivery_meeting_place ? `<small class="delivery-row-detail">${esc(record.delivery_meeting_place)}</small>` : ''}`;
+    return '<span class="badge delivery-hand">Em mãos</span>';
   }
   return '—';
 }
