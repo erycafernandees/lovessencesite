@@ -116,8 +116,8 @@
 .quote-history-entry .delete-order-button{font-size:.72rem;padding:.55rem .65rem}
 @media(max-width:480px){.quote-history-entry button{flex:1 1 auto}}
 
-/* Indicadores dos projetos sempre numa linha. Em ecrãs pequenos, deslizam na horizontal. */
-.summary-grid.projects-summary{grid-template-columns:repeat(7,minmax(175px,1fr));overflow-x:auto;padding-bottom:.45rem;scrollbar-width:thin}
+/* Projetos personalizados: mesmos quatro cartões e breakpoints das encomendas diretas. */
+.summary-grid.projects-summary{grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible;padding-bottom:0}
 .summary-grid.projects-summary .summary-card{min-width:0}
 .summary-grid.projects-summary .summary-card strong{white-space:nowrap}
 
@@ -147,3 +147,9 @@
 .order-payment-form .error{margin:0}
 .order-payment-form>button{justify-self:start}
 @media(max-width:520px){.order-payment-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* A apresentação dos projetos usa a mesma grelha que a das encomendas diretas. */
+@media(max-width:800px){.summary-grid.projects-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.project-row-subtitle{display:block;margin-top:.25rem;font-size:.64rem;color:var(--muted);line-height:1.4}
+.badge.no_quote{background:#ECE8EC;color:#706470}
+.legacy-payment-note{padding:.7rem .8rem;margin:.75rem 0!important;border-radius:8px;background:#FFF8DE;color:#865E12!important;line-height:1.5}
