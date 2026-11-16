@@ -15,6 +15,7 @@ let testFilter = 'real';
 const selectedTestOrders = new Set();
 const selectedDraftOrders = new Set();
 const ORDER_LABELS = {draft:'Rascunho',awaiting_payment:'A aguardar pagamento',confirmed:'Confirmada',review:'Em análise',awaiting_details:'A aguardar detalhes',production:'Em produção',ready_to_ship:'Pronta para enviar',shipped:'Enviada',completed:'Concluída',cancelled:'Cancelada'};
+const QUOTE_LABELS = {draft:'Rascunho',sent:'Enviado',approved:'Aprovado',paid:'Pago',expired:'Expirado',cancelled:'Cancelado'};
 const PROJECT_LABELS = {draft:'Rascunho',submitted:'Recebido',in_review:'Em análise',awaiting_details:'A aguardar detalhes',quoted:'Orçamentado',approved:'Aprovado',payment_pending:'A aguardar pagamento',paid:'Pago',production:'Em produção',completed:'Concluído',declined:'Recusado',archived:'Arquivado'};
 function updateStatusOptions() {
   const labels = currentView === 'orders' ? ORDER_LABELS : PROJECT_LABELS;
@@ -64,7 +65,7 @@ function isDeletableDraft(order) {
 function isNewProject(project) { return !project.admin_seen_at && project.status !== 'completed'; }
 function date(value) { return value ? new Intl.DateTimeFormat('pt-PT', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '—'; }
 function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
-function badge(value) { const labels = {...ORDER_LABELS,...PROJECT_LABELS}; return `<span class="badge ${esc(value)}">${esc(labels[value] || String(value || '').replaceAll('_', ' '))}</span>`; }
+function badge(value) { const labels = {...ORDER_LABELS,...PROJECT_LABELS,...QUOTE_LABELS}; return `<span class="badge ${esc(value)}">${esc(labels[value] || String(value || '').replaceAll('_', ' '))}</span>`; }
 
 async function adminApi(action, body = {}) {
   const { data: { session } } = await supabase.auth.getSession();
