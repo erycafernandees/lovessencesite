@@ -666,9 +666,53 @@ async function openProject(id) {
   openDrawer('<p>A carregar…</p>');
   try {
     const project = await adminApi('get-project', { id });
+    const quote = lastProjectQuote(project);
+    const total = quote ? Number(quote.total_amount || 0) : 0;
+    const received = Math.min(total, Math.max(0, Number(project.payment_received_amount || 0)));
+    const stage = projectPaymentStage(project);
+    const paymentSelection = stage === 'half_paid' ? 'half'
+      : stage === 'partially_paid' ? 'custom' : stage === 'paid' ? 'paid' : 'unpaid';
+    const linkedCheckout = (project.quotes || []).some(item => Boolean(item.order_id));
+    const projectPaymentEditor = quote && total > 0 && !linkedCheckout
+      ? `<form id="project-payment-form" class="order-payment-form">
+          <label>Estado do pagamento
+            <select name="paymentStage" id="project-payment-stage">
+              ${[['unpaid','Por pagar'],['half','50% pago'],['custom','Pagamento parcial (outro valor)'],['paid','Pago (100%)']].map(([value,label]) =>
+                `<option value="${value}" ${paymentSelection === value ? 'selected' : ''}>${label}</option>`).join('')}
+            </select>
+          </label>
+          <label id="project-payment-custom-field" hidden>Montante recebido acumulado (€)
+            <input name="receivedEuros" type="number" min="0.01" step="0.01" max="${(total/100).toFixed(2)}" value="${(received/100).toFixed(2)}">
+          </label>
+          <div id="project-payment-preview" class="order-payment-preview" aria-live="polite"></div>
+          <p class="order-payment-hint">Regista o total recebido até hoje, incluindo qualquer sinal de 50%.</p>
+          <p id="project-payment-error" class="error" role="alert"></p>
+          <button type="submit">Guardar pagamento</button>
+        </form>`
+      : `<p class="order-payment-hint">${linkedCheckout ? 'Pagamento associado a uma encomenda de checkout. Consulta essa encomenda para o atualizar.' : 'Guarda primeiro um orçamento com valor para registares o pagamento.'}</p>`;
     openDrawer(`<p class="eyebrow">Projeto personalizado</p><h2>${esc(project.project_number)}</h2>
       <div class="detail-section"><div class="detail-grid"><p><strong>Cliente</strong>${esc(project.customer_name)}</p><p><strong>Email</strong>${esc(project.customer_email)}</p><p><strong>Telefone</strong>${esc(project.customer_phone||'—')}</p><p><strong>Data do evento</strong>${esc(project.event_date||'—')}</p><p><strong>Ocasião</strong>${esc(project.occasion)}</p><p><strong>Tipo</strong>${esc(project.project_type)}</p><p><strong>Quantidade</strong>${esc(project.approximate_quantity||'—')}</p><p><strong>Orçamento indicado</strong>${esc(project.approximate_budget||'—')}</p></div><h3 style="margin-top:1rem">Ideia</h3><p>${esc(project.idea)}</p></div>
-      <div class="detail-section"><h3>Estado</h3><form class="status-form" id="project-status-form"><select name="status">${['submitted','in_review','awaiting_details','quoted','approved','payment_pending','paid','production','completed','declined','archived'].map(status => `<option value="${status}" ${status===project.status?'selected':''}>${status.replaceAll('_',' ')}</option>`).join('')}</select><button>Guardar</button></form></div>
+      <div class="detail-section">
+        <h3>Estado da encomenda</h3>
+        <p class="order-current-status">${badge(project.fulfillment_status)}</p>
+        <form class="status-form" id="project-fulfillment-form">
+          <select name="status">${PROJECT_FULFILLMENT_STATES.map(status =>
+            `<option value="${status}" ${status===project.fulfillment_status ? 'selected' : ''}>${ORDER_LABELS[status]}</option>`).join('')}</select>
+          <button>Guardar estado</button>
+        </form>
+      </div>
+      <div class="detail-section">
+        <h3>Estado do pagamento</h3>
+        <p class="order-current-status">${projectPaymentBadge(project)}</p>
+        <div class="detail-grid order-payment-summary">
+          <p><strong>Valor orçamentado</strong>${quote ? money(total,quote.currency) : '—'}</p>
+          <p><strong>Valor recebido</strong>${quote ? money(received,quote.currency) : '—'}</p>
+          <p><strong>Por receber</strong>${quote ? money(Math.max(0,total-received),quote.currency) : '—'}</p>
+        </div>
+        ${project.payment_needs_confirmation && received > 0
+          ? '<p class="legacy-payment-note">O valor recebido foi importado do antigo estado “Pago” e do orçamento. Confirma-o no formulário para retirar este aviso.</p>' : ''}
+        ${projectPaymentEditor}
+      </div>
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(project.attachments)}</div>
       <div class="detail-section" id="project-quote-section"><h3>Orçamento e notas</h3>
       <div class="project-quote-subsection"><h4>Notas internas do projeto</h4><p class="internal-notes-help">Regista aqui as confirmações, preferências e detalhes de entrega combinados com o cliente. Estas notas não são enviadas ao cliente.</p><form id="project-notes-form" class="project-notes-form"><label for="project-admin-notes">Notas do projeto</label><textarea id="project-admin-notes" name="notes" rows="6" maxlength="4000" placeholder="Ex.: Produtos, cores, fragrância, entrega e detalhes acordados">${esc(project.admin_notes || '')}</textarea><div class="project-notes-actions"><button type="submit">Guardar notas</button><span id="project-notes-feedback" role="status" aria-live="polite"></span></div></form></div>
@@ -693,7 +737,66 @@ async function openProject(id) {
       catch (error) { feedback.textContent = error.message || 'Não foi possível guardar as notas.'; }
       finally { button.disabled = false; }
     });
-    document.getElementById('project-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-project',{id,status:new FormData(event.currentTarget).get('status')}); await openProject(id); await loadProjects(); });
+    document.getElementById('project-fulfillment-form').addEventListener('submit', async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"],button');
+      button.disabled = true;
+      try {
+        await adminApi('set-project-fulfillment', { id, fulfillmentStatus: new FormData(form).get('status') });
+        await loadProjects();
+        await openProject(id);
+      } catch (error) { window.alert(error.message || 'Não foi possível guardar o estado da encomenda.'); button.disabled = false; }
+    });
+    const paymentForm = document.getElementById('project-payment-form');
+    if (paymentForm) {
+      const select = document.getElementById('project-payment-stage');
+      const customField = document.getElementById('project-payment-custom-field');
+      const input = paymentForm.elements.receivedEuros;
+      const preview = document.getElementById('project-payment-preview');
+      const errorElement = document.getElementById('project-payment-error');
+      const proposed = () => {
+        if (select.value === 'unpaid') return 0;
+        if (select.value === 'half') return Math.round(total / 2);
+        if (select.value === 'paid') return total;
+        const euros = Number(input.value);
+        return input.value && Number.isFinite(euros) ? Math.round(euros * 100) : NaN;
+      };
+      const update = () => {
+        customField.hidden = select.value !== 'custom';
+        const amount = proposed();
+        const valid = Number.isSafeInteger(amount) && amount >= 0 && amount <= total &&
+          (select.value !== 'custom' || (amount > 0 && amount < total));
+        preview.dataset.invalid = String(!valid);
+        preview.textContent = valid
+          ? 'Recebido: ' + money(amount) + ' · Em falta: ' + money(total - amount)
+          : 'Indica um montante entre 0 € e o valor orçamentado.';
+        return valid;
+      };
+      select.addEventListener('change', update);
+      input.addEventListener('input', update);
+      update();
+      paymentForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        errorElement.textContent = '';
+        if (!update()) { errorElement.textContent = 'Montante recebido inválido.'; return; }
+        const amount = proposed();
+        let confirmReduction = false;
+        if (amount < received) {
+          if (!window.confirm('Confirmas que queres reduzir o valor já registado como recebido?')) return;
+          confirmReduction = true;
+        }
+        if (select.value === 'paid' && received !== total &&
+          !window.confirm('Confirmas que recebeste a totalidade deste orçamento?')) return;
+        const button = paymentForm.querySelector('button[type="submit"]');
+        button.disabled = true;
+        try {
+          await adminApi('set-project-payment', { id, receivedAmount: amount, confirmReduction });
+          await loadProjects();
+          await openProject(id);
+        } catch (cause) { errorElement.textContent = cause.message || 'Não foi possível guardar o pagamento.'; button.disabled = false; }
+      });
+    }
     document.getElementById('add-quote-line').addEventListener('click', () => document.getElementById('quote-lines').insertAdjacentHTML('beforeend','<div class="quote-row"><input name="description" placeholder="Descrição" required/><input name="quantity" type="number" min="1" value="1" required/><input name="unit" type="number" min="0" step="0.01" placeholder="€/un" required/></div>'));
     document.getElementById('quote-form').addEventListener('submit', async event => {
       event.preventDefault();
