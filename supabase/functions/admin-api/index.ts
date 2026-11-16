@@ -312,6 +312,30 @@ Deno.serve(async (req) => {
     }
 
 
+    if (action === "delete-draft-quote") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para eliminar orçamentos.");
+      const id = cleanText(body.id, 80, true)!;
+      const { data: quote, error: quoteError } = await client.from("quotes")
+        .select("id,project_request_id,version,status,total_amount,order_id,access_token_hash")
+        .eq("id", id).single();
+      if (quoteError || !quote) throw new ApiError(404, "quote_not_found", "O orçamento não foi encontrado.");
+      if (quote.status !== "draft" || quote.order_id || quote.access_token_hash) {
+        throw new ApiError(409, "quote_protected", "Só podes eliminar rascunhos nunca enviados e sem encomendas associadas.");
+      }
+      const { data: deleted, error: deleteError } = await client.from("quotes").delete()
+        .eq("id", id).eq("status", "draft").is("order_id", null).is("access_token_hash", null)
+        .select("id").maybeSingle();
+      if (deleteError) throw deleteError;
+      if (!deleted) throw new ApiError(409, "quote_changed", "O orçamento foi alterado. Atualiza a página e confirma novamente.");
+      const { error: auditError } = await client.from("audit_log").insert({
+        actor_user_id: admin.userId, action: "quote.draft.delete", entity_type: "quote", entity_id: id,
+        before_data: { project_request_id: quote.project_request_id, version: quote.version, total_amount: quote.total_amount, status: "draft" },
+        after_data: { deleted: true },
+      });
+      if (auditError) console.error("Could not audit quote draft deletion", auditError);
+      return json(req, { ok: true });
+    }
+
     if (action === "send-quote") {
       if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para enviar orçamentos.");
       const id = cleanText(body.id, 80, true)!;
