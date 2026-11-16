@@ -123,3 +123,14 @@
 
 
 .summary-card-note{display:block;margin-top:.45rem;font-size:.64rem;line-height:1.35;color:var(--muted)}
+
+/* Paleta aprovada: estados das encomendas e pagamentos. */
+.badge.confirmed{background:#F1E3EF;color:#66135E}
+.badge.review,.badge.in_review{background:#E9E7FF;color:#5247A0}
+.badge.awaiting_details{background:#ECE8EC;color:#706470}
+.badge.production{background:#FFF0B8;color:#926100}
+.badge.ready_to_ship{background:#E5EEFF;color:#315AA0}
+.badge.shipped{background:#D9F3EF;color:#126C67}
+.badge.completed,.badge.paid{background:#DDF3E3;color:#247240}
+.badge.cancelled,.badge.unpaid,.badge.failed,.badge.declined{background:#FCE2E6;color:#A72138}
+.badge.half_paid,.badge.partially_paid,.badge.deposit_paid{background:#FFF0B8;color:#926100}
