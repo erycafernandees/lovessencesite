@@ -495,6 +495,67 @@ Deno.serve(async (req) => {
       return json(req, { ok: true, orderId: order.id, orderNumber: order.order_number });
     }
 
+    // Pagamentos manuais parciais: registo acumulado, independente da produção.
+    if (action === "set-manual-payment") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para alterar pagamentos.");
+      const id = cleanText(body.id, 80, true)!;
+      const received = Number(body.receivedAmount);
+      const fullyPaid = body.fullyPaid === true;
+      const method = cleanText(body.paymentMethod, 80) || "outro";
+      if (!Number.isSafeInteger(received) || received < 0 || received > 100000000) throw new ApiError(422, "invalid_amount", "Indica um valor recebido válido.");
+      if (!["mbway","transferencia","numerario","outro"].includes(method)) throw new ApiError(422, "invalid_method", "Método de pagamento inválido.");
+      const { data: before, error: readError } = await client.from("orders")
+        .select("id,order_status,payment_provider,payment_status,paid_at,total_amount,manual_received_amount,sales_channel")
+        .eq("id", id).single();
+      if (readError || !before) throw new ApiError(404, "order_not_found", "A encomenda não foi encontrada.");
+      if (before.payment_provider !== "manual") throw new ApiError(403, "stripe_locked", "Os pagamentos Stripe não podem ser alterados aqui.");
+      const total = Number(before.total_amount);
+      const previous = Number(before.manual_received_amount || 0);
+      if (received > total) throw new ApiError(422, "amount_exceeds_total", "O recebido não pode superar o total do pedido.");
+      if (before.payment_status === "paid") {
+        if (fullyPaid && received === total) return json(req, { ok: true, receivedAmount: received, paymentStatus: "paid" });
+        throw new ApiError(409, "already_paid", "Este pedido já está totalmente pago.");
+      }
+      if (before.payment_status !== "unpaid") throw new ApiError(409, "payment_locked", "O pagamento está bloqueado.");
+      if (fullyPaid && received !== total) throw new ApiError(422, "amount_mismatch", "O valor total deve estar recebido para marcar como pago.");
+      if (!fullyPaid && received === total && total > 0) throw new ApiError(422, "stage_mismatch", "Seleciona Pago quando o valor estiver totalmente recebido.");
+      if (received < previous && body.confirmReduction !== true) throw new ApiError(409, "confirm_correction", "Confirma a redução do valor recebido.");
+      const { data: priorPayments, error: priorError } = await client.from("payments").select("id").eq("order_id", id);
+      if (priorError) throw priorError;
+      if (priorPayments?.length) throw new ApiError(409, "payment_exists", "Já existe um pagamento processado nesta encomenda.");
+      if (received === previous && !fullyPaid) return json(req, { ok: true, receivedAmount: received, paymentStatus: "unpaid" });
+      const patch = { manual_received_amount: received,
+        ...(fullyPaid ? { payment_status: "paid", paid_at: new Date().toISOString(),
+          order_status: ["draft","awaiting_payment"].includes(before.order_status) ? "confirmed" : before.order_status } : {}) };
+      const { data: updated, error: updateError } = await client.from("orders").update(patch)
+        .eq("id", id).eq("payment_status", "unpaid").eq("manual_received_amount", previous).select("id").maybeSingle();
+      if (updateError) throw updateError;
+      if (!updated) throw new ApiError(409, "payment_changed", "O pagamento foi alterado entretanto. Atualiza o painel.");
+      if (fullyPaid) {
+        const { error: paymentError } = await client.from("payments").insert({
+          order_id: id, provider: "manual", status: "paid", currency: "eur", gross_amount: total,
+          processing_fee_amount: 0, net_amount: total, refunded_amount: 0, payment_method_type: "manual",
+          provider_data: { recordedByAdmin: true, method, receivedBeforeSettlement: previous, salesChannel: before.sales_channel },
+        });
+        if (paymentError) {
+          await client.from("orders").update({ manual_received_amount: previous, payment_status: "unpaid",
+            paid_at: null, order_status: before.order_status }).eq("id", id).eq("manual_received_amount", received);
+          throw paymentError;
+        }
+      }
+      await client.from("order_status_history").insert({
+        order_id: id, order_status: patch.order_status || before.order_status, payment_status: fullyPaid ? "paid" : "unpaid",
+        note: fullyPaid ? "Pagamento manual integral confirmado" : "Montante recebido atualizado: " + (received / 100).toFixed(2) + " EUR",
+        actor_user_id: admin.userId,
+      });
+      await client.from("audit_log").insert({
+        actor_user_id: admin.userId, action: "order.manual.payment_update", entity_type: "order", entity_id: id,
+        before_data: { payment_status: before.payment_status, manual_received_amount: previous },
+        after_data: { payment_status: fullyPaid ? "paid" : "unpaid", manual_received_amount: received, method },
+      });
+      return json(req, { ok: true, paymentStatus: fullyPaid ? "paid" : "unpaid", receivedAmount: received });
+    }
+
     // Edição reservada às encomendas manuais; pagamentos Stripe nunca são alterados.
     if (action === "edit-manual-order") {
       if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para editar encomendas.");
