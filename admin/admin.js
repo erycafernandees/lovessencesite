@@ -15,6 +15,7 @@ let testFilter = 'real';
 const selectedTestOrders = new Set();
 const selectedDraftOrders = new Set();
 const ORDER_LABELS = {draft:'Rascunho',awaiting_payment:'A aguardar pagamento',confirmed:'Confirmada',review:'Em análise',awaiting_details:'A aguardar detalhes',production:'Em produção',ready_to_ship:'Pronta para enviar',shipped:'Enviada',completed:'Concluída',cancelled:'Cancelada'};
+const QUOTE_LABELS = {draft:'Rascunho',sent:'Enviado',approved:'Aprovado',paid:'Pago',expired:'Expirado',cancelled:'Cancelado'};
 const PROJECT_LABELS = {draft:'Rascunho',submitted:'Recebido',in_review:'Em análise',awaiting_details:'A aguardar detalhes',quoted:'Orçamentado',approved:'Aprovado',payment_pending:'A aguardar pagamento',paid:'Pago',production:'Em produção',completed:'Concluído',declined:'Recusado',archived:'Arquivado'};
 function updateStatusOptions() {
   const labels = currentView === 'orders' ? ORDER_LABELS : PROJECT_LABELS;
@@ -64,7 +65,7 @@ function isDeletableDraft(order) {
 function isNewProject(project) { return !project.admin_seen_at && project.status !== 'completed'; }
 function date(value) { return value ? new Intl.DateTimeFormat('pt-PT', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '—'; }
 function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
-function badge(value) { const labels = {...ORDER_LABELS,...PROJECT_LABELS}; return `<span class="badge ${esc(value)}">${esc(labels[value] || String(value || '').replaceAll('_', ' '))}</span>`; }
+function badge(value) { const labels = {...ORDER_LABELS,...PROJECT_LABELS,...QUOTE_LABELS}; return `<span class="badge ${esc(value)}">${esc(labels[value] || String(value || '').replaceAll('_', ' '))}</span>`; }
 
 async function adminApi(action, body = {}) {
   const { data: { session } } = await supabase.auth.getSession();
@@ -511,11 +512,59 @@ async function openProject(id) {
       <div class="detail-section"><div class="detail-grid"><p><strong>Cliente</strong>${esc(project.customer_name)}</p><p><strong>Email</strong>${esc(project.customer_email)}</p><p><strong>Telefone</strong>${esc(project.customer_phone||'—')}</p><p><strong>Data do evento</strong>${esc(project.event_date||'—')}</p><p><strong>Ocasião</strong>${esc(project.occasion)}</p><p><strong>Tipo</strong>${esc(project.project_type)}</p><p><strong>Quantidade</strong>${esc(project.approximate_quantity||'—')}</p><p><strong>Orçamento indicado</strong>${esc(project.approximate_budget||'—')}</p></div><h3 style="margin-top:1rem">Ideia</h3><p>${esc(project.idea)}</p></div>
       <div class="detail-section"><h3>Estado</h3><form class="status-form" id="project-status-form"><select name="status">${['submitted','in_review','awaiting_details','quoted','approved','payment_pending','paid','production','completed','declined','archived'].map(status => `<option value="${status}" ${status===project.status?'selected':''}>${status.replaceAll('_',' ')}</option>`).join('')}</select><button>Guardar</button></form></div>
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(project.attachments)}</div>
-      <div class="detail-section"><h3>Novo orçamento</h3><form id="quote-form"><div id="quote-lines"><div class="quote-row"><input name="description" placeholder="Descrição" required/><input name="quantity" type="number" min="1" value="1" required/><input name="unit" type="number" min="0" step="0.01" placeholder="€/un" required/></div></div><div class="quote-actions"><button type="button" class="secondary" id="add-quote-line">+ Linha</button><button type="submit">Criar e marcar como enviado</button></div></form></div>
-      <div class="detail-section"><h3>Orçamentos anteriores</h3>${(project.quotes||[]).map(q=>`<p><strong>v${q.version}</strong> · ${badge(q.status)} · ${money(q.total_amount,q.currency)} · válido até ${esc(q.valid_until||'—')}</p>`).join('')||'<p>Nenhum.</p>'}</div>`);
+      <div class="detail-section"><h3>Novo orçamento</h3><p class="quote-note">Podes guardar o orçamento sem o enviar ao cliente.</p><form id="quote-form"><div id="quote-lines"><div class="quote-row"><input name="description" placeholder="Descrição" required/><input name="quantity" type="number" min="1" value="1" required/><input name="unit" type="number" min="0" step="0.01" placeholder="€/un" required/></div></div><div class="quote-actions"><button type="button" class="secondary" id="add-quote-line">+ Linha</button><button type="submit">Guardar rascunho</button></div></form></div>
+      <div class="detail-section"><h3>Orçamentos anteriores</h3>${(project.quotes||[]).map(q=>`<div class="quote-history-entry"><p><strong>v${q.version}</strong> · ${badge(q.status)} · ${money(q.total_amount,q.currency)} · válido até ${esc(q.valid_until||'—')}</p>${q.status==='draft'?`<button type="button" class="secondary" data-send-quote="${esc(q.id)}">Enviar orçamento</button>`:''}</div>`).join('')||'<p>Nenhum.</p>'}</div>`);
     document.getElementById('project-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-project',{id,status:new FormData(event.currentTarget).get('status')}); await openProject(id); await loadProjects(); });
     document.getElementById('add-quote-line').addEventListener('click', () => document.getElementById('quote-lines').insertAdjacentHTML('beforeend','<div class="quote-row"><input name="description" placeholder="Descrição" required/><input name="quantity" type="number" min="1" value="1" required/><input name="unit" type="number" min="0" step="0.01" placeholder="€/un" required/></div>'));
-    document.getElementById('quote-form').addEventListener('submit', async event => { event.preventDefault(); const rows=[...event.currentTarget.querySelectorAll('.quote-row')]; const items=rows.map(row=>({description:row.querySelector('[name=description]').value,quantity:Number(row.querySelector('[name=quantity]').value),unitAmount:Math.round(Number(row.querySelector('[name=unit]').value)*100)})); const created=await adminApi('create-quote',{projectId:id,items}); if(navigator.clipboard&&created.quoteUrl) await navigator.clipboard.writeText(created.quoteUrl).catch(()=>{}); alert('Orçamento criado e enviado por email.'+(created.quoteUrl?' A ligação de aprovação foi copiada.':'')); await openProject(id); await loadProjects(); });
+    document.getElementById('quote-form').addEventListener('submit', async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const submit = form.querySelector('button[type="submit"]');
+      submit.disabled = true;
+      const rows = [...form.querySelectorAll('.quote-row')];
+      const items = rows.map(row => ({
+        description: row.querySelector('[name=description]').value,
+        quantity: Number(row.querySelector('[name=quantity]').value),
+        unitAmount: Math.round(Number(row.querySelector('[name=unit]').value) * 100)
+      }));
+      try {
+        await adminApi('create-quote', { projectId: id, items });
+        alert('Orçamento guardado como rascunho. Não foi enviado ao cliente.');
+        await openProject(id);
+        await loadProjects();
+      } catch (error) {
+        alert(error.message || 'Não foi possível guardar o orçamento.');
+        submit.disabled = false;
+      }
+    });
+    document.querySelectorAll('[data-send-quote]').forEach(button => button.addEventListener('click', async () => {
+      const recipient = project.customer_email;
+      const message = recipient
+        ? 'Enviar este orçamento para ' + recipient + '?'
+        : 'Gerar uma ligação para partilhar este orçamento com o cliente? Não existe email associado ao pedido.';
+      if (!window.confirm(message)) return;
+      button.disabled = true;
+      try {
+        const result = await adminApi('send-quote', { id: button.dataset.sendQuote });
+        let copied = false;
+        if (result.quoteUrl && navigator.clipboard) {
+          copied = await navigator.clipboard.writeText(result.quoteUrl).then(() => true).catch(() => false);
+        }
+        if (result.emailQueued) {
+          alert('Orçamento enviado para processamento por email.' + (copied ? ' A ligação também foi copiada.' : ''));
+        } else if (result.emailError) {
+          alert('O orçamento ficou disponível, mas não foi possível enviar o email: ' + result.emailError);
+        } else {
+          alert('Orçamento marcado como enviado.' + (copied ? ' A ligação para partilhar foi copiada.' : ''));
+        }
+        if (result.quoteUrl && !copied) window.prompt('Copia esta ligação para partilhar com o cliente:', result.quoteUrl);
+        await openProject(id);
+        await loadProjects();
+      } catch (error) {
+        alert(error.message || 'Não foi possível enviar o orçamento.');
+        button.disabled = false;
+      }
+    }));
     bindFiles();
     await markSeen('project',id);
   } catch (error) { openDrawer(`<p class="error">${esc(error.message)}</p>`); }

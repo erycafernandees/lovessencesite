@@ -89,3 +89,10 @@
 .private-image-full{display:block;max-width:100%;max-height:75dvh;width:auto;height:auto;object-fit:contain;border-radius:8px}
 @media(max-width:420px){.private-file-gallery{gap:.5rem}.private-file-card{padding:.4rem}.private-image-panel{padding:.65rem}.private-image-full{max-height:78dvh}}
 
+
+/* Guardar rascunhos e enviar orçamentos são ações distintas. */
+.quote-note{margin:.2rem 0 .8rem;color:var(--muted);font-size:.76rem;line-height:1.5}
+.quote-history-entry{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.65rem;padding:.75rem 0;border-top:1px solid var(--line)}
+.quote-history-entry:first-of-type{border-top:0}
+.quote-history-entry .secondary{padding:.55rem .7rem;font-size:.75rem}
+.quote-history-entry button:disabled,#quote-form button:disabled{opacity:.55;cursor:wait}
