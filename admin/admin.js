@@ -81,7 +81,7 @@ function orderPaymentBadge(order) {
   if (order.payment_provider === 'manual' && order.payment_status === 'unpaid') {
     const received = Number(order.manual_received_amount || 0);
     const total = Number(order.total_amount || 0);
-    if (received > 0 && received < total) return badge(received * 2 === total ? 'half_paid' : 'partially_paid');
+    if (received > 0 && received < total) return badge(Math.abs(received * 2 - total) <= 1 ? 'half_paid' : 'partially_paid');
   }
   return badge(order.payment_status);
 }
@@ -492,10 +492,41 @@ async function openOrder(id) {
   try {
     const order = await adminApi('get-order', { id });
     const { payment, grossAmount, feeAmount, netAmount } = paymentAmounts(order);
+    const receivedAmount = orderReceivedAmount(order);
+    const totalAmount = Number(order.total_amount || 0);
+    const paymentStage = order.payment_status === 'paid' ? 'paid' : receivedAmount === 0 ? 'unpaid'
+      : Math.abs(receivedAmount * 2 - totalAmount) <= 1 ? 'half' : 'custom';
+    const paymentEditor = order.payment_provider === 'manual' && order.payment_status === 'unpaid'
+      ? `<form id="order-payment-form" class="order-payment-form">
+          <label>Estado do pagamento
+            <select name="paymentStage" id="order-payment-stage">
+              ${[['unpaid','Por pagar'],['half','50% pago'],['custom','Pagamento parcial (outro valor)'],['paid','Pago (100%)']].map(([value,label]) => `<option value="${value}" ${paymentStage===value?'selected':''}>${label}</option>`).join('')}
+            </select>
+          </label>
+          <label id="order-payment-custom-field" hidden>Montante recebido acumulado (€)
+            <input name="receivedEuros" type="number" min="0.01" max="${(totalAmount/100).toFixed(2)}" step="0.01" value="${(receivedAmount/100).toFixed(2)}">
+          </label>
+          <label>Método de pagamento
+            <select name="paymentMethod"><option value="mbway">MB WAY</option><option value="transferencia">Transferência bancária</option><option value="numerario">Numerário</option><option value="outro">Outro</option></select>
+          </label>
+          <div id="order-payment-preview" class="order-payment-preview" aria-live="polite"></div>
+          <p class="order-payment-hint">O montante corresponde ao total recebido até agora, não apenas ao último pagamento.</p>
+          <p id="order-payment-error" class="error" role="alert"></p>
+          <button type="submit">Guardar pagamento</button>
+        </form>` : '';
     openDrawer(`<p class="eyebrow">Encomenda</p><h2>${esc(order.order_number)}</h2>
       <div class="detail-section"><div class="detail-grid"><p><strong>Cliente</strong>${esc(order.customer_name || '—')}</p><p><strong>Email</strong>${esc(order.customer_email || '—')}</p><p><strong>Telefone</strong>${esc(order.customer_phone || '—')}</p><p><strong>Total</strong>${money(order.total_amount,order.currency)}</p></div></div>
       <div class="detail-section"><h3>Estado da encomenda</h3><p class="order-current-status">${badge(order.order_status)}</p><form class="status-form" id="order-status-form"><select name="status">${['confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'].map(status => `<option value="${status}" ${status===order.order_status?'selected':''}>${ORDER_LABELS[status]}</option>`).join('')}</select><button>Guardar estado</button></form></div>
-      <div class="detail-section"><h3>Pagamento ${order.payment_provider === 'manual' ? 'manual' : 'Stripe'}</h3><div class="detail-grid">${order.payment_provider === 'manual' ? '' : `<p><strong>Payment Intent</strong>${esc(payment.provider_payment_id || '—')}</p><p><strong>Charge</strong>${esc(payment.provider_charge_id || '—')}</p>`}<p><strong>Bruto</strong>${money(grossAmount,order.currency)}</p><p><strong>Taxas</strong>${feeAmount==null?'—':money(feeAmount,order.currency)}</p><p><strong>Líquido</strong>${netAmount==null?'—':money(netAmount,order.currency)}</p><p><strong>Reembolsos</strong>${money(payment.refunded_amount,order.currency)}</p></div></div>
+      <div class="detail-section"><h3>Estado do pagamento</h3>
+        <p class="order-current-status">${orderPaymentBadge(order)}</p>
+        <div class="detail-grid order-payment-summary">
+          <p><strong>Total do pedido</strong>${money(totalAmount,order.currency)}</p>
+          <p><strong>Recebido</strong>${money(receivedAmount,order.currency)}</p>
+          <p><strong>Por receber</strong>${money(Math.max(0,totalAmount-receivedAmount),order.currency)}</p>
+        </div>
+        ${paymentEditor}
+      </div>
+      <div class="detail-section"><h3>Detalhes financeiros — ${order.payment_provider === 'manual' ? 'manual' : 'Stripe'}</h3><div class="detail-grid">${order.payment_provider === 'manual' ? '' : `<p><strong>Payment Intent</strong>${esc(payment.provider_payment_id || '—')}</p><p><strong>Charge</strong>${esc(payment.provider_charge_id || '—')}</p>`}<p><strong>Bruto</strong>${money(grossAmount,order.currency)}</p><p><strong>Taxas</strong>${feeAmount==null?'—':money(feeAmount,order.currency)}</p><p><strong>Líquido recebido</strong>${netAmount==null?'—':money(netAmount,order.currency)}</p><p><strong>Reembolsos</strong>${money(payment.refunded_amount,order.currency)}</p></div></div>
       ${order.payment_provider === 'manual' ? `<div class="detail-section"><h3>Editar encomenda</h3>
         <form id="order-edit-form" class="order-edit-form">
           <label>Nome do cliente<input name="customerName" value="${esc(order.customer_name || '')}" required maxlength="160"></label>
