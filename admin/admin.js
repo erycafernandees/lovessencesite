@@ -543,6 +543,62 @@ async function openOrder(id) {
       <div class="detail-section"><h3>Artigos e personalização</h3>${order.order_items.map(item => `<div class="line-item"><strong>${esc(item.quantity)} × ${esc(item.name)}</strong><p>${money(item.line_amount,order.currency)}</p>${personalizationHtml(item.personalization)}</div>`).join('')}</div>
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(order.attachments)}</div>`);
     document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadOrders(); });
+    const paymentForm = document.getElementById('order-payment-form');
+    if (paymentForm) {
+      const stageSelect = document.getElementById('order-payment-stage');
+      const customField = document.getElementById('order-payment-custom-field');
+      const receivedInput = paymentForm.elements.receivedEuros;
+      const preview = document.getElementById('order-payment-preview');
+      const paymentError = document.getElementById('order-payment-error');
+      const calculatePayment = () => {
+        const stage = stageSelect.value;
+        if (stage === 'unpaid') return 0;
+        if (stage === 'half') return Math.round(totalAmount / 2);
+        if (stage === 'paid') return totalAmount;
+        const euros = Number(receivedInput.value);
+        return Number.isFinite(euros) ? Math.round(euros * 100) : NaN;
+      };
+      const updatePaymentPreview = () => {
+        customField.hidden = stageSelect.value !== 'custom';
+        const amount = calculatePayment();
+        const valid = Number.isSafeInteger(amount) && amount >= 0 && amount <= totalAmount &&
+          (stageSelect.value !== 'custom' || (amount > 0 && amount < totalAmount));
+        preview.textContent = valid
+          ? 'Recebido: ' + money(amount,order.currency) + ' · Em falta: ' + money(totalAmount-amount,order.currency)
+          : 'Indica um valor recebido entre 0 € e o total da encomenda.';
+        preview.dataset.invalid = String(!valid);
+        return valid;
+      };
+      stageSelect.addEventListener('change', updatePaymentPreview);
+      receivedInput.addEventListener('input', updatePaymentPreview);
+      updatePaymentPreview();
+      paymentForm.addEventListener('submit', async event => {
+        event.preventDefault();
+        paymentError.textContent = '';
+        if (!updatePaymentPreview()) { paymentError.textContent = 'O valor recebido não é válido.'; return; }
+        const amount = calculatePayment();
+        let confirmReduction = false;
+        if (amount < receivedAmount) {
+          if (!window.confirm('Estás a reduzir o valor registado como recebido. Confirma que se trata de uma correção.')) return;
+          confirmReduction = true;
+        }
+        const fullyPaid = stageSelect.value === 'paid';
+        if (fullyPaid && !window.confirm('Confirmas que recebeste o valor total desta encomenda?')) return;
+        const button = paymentForm.querySelector('button[type="submit"]');
+        button.disabled = true;
+        try {
+          await adminApi('set-manual-payment', {
+            id, receivedAmount: amount, fullyPaid, confirmReduction,
+            paymentMethod: paymentForm.elements.paymentMethod.value
+          });
+          await loadOrders();
+          await openOrder(id);
+        } catch (error) {
+          paymentError.textContent = error.message || 'Não foi possível guardar o pagamento.';
+          button.disabled = false;
+        }
+      });
+    }
     if (order.payment_provider === 'manual') {
       const form = document.getElementById('order-edit-form');
       form.addEventListener('submit', async event => {
