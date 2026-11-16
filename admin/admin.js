@@ -73,11 +73,24 @@ function lastProjectQuote(project, paidOnly = false) {
     .sort((a, b) => Number(b.version || 0) - Number(a.version || 0) ||
       Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0))[0] || null;
 }
+function projectReceivedAmount(project) {
+  const linkedOrders = [...(project.orders || [])].sort((a,b) =>
+    Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0));
+  const paidOrder = linkedOrders.find(order =>
+    ['paid','partially_refunded','refunded'].includes(order.payment_status));
+  if (paidOrder) {
+    if (paidOrder.payment_status === 'refunded') return 0;
+    const refunded = (paidOrder.payments || []).reduce((sum,payment) =>
+      sum + Number(payment.refunded_amount || 0), 0);
+    return Math.max(0, Number(paidOrder.total_amount || 0) - refunded);
+  }
+  return Number(project.payment_received_amount || 0);
+}
 function projectPaymentStage(project) {
   const quote = lastProjectQuote(project);
   if (!quote) return 'no_quote';
   const total = Number(quote.total_amount || 0);
-  const received = Number(project.payment_received_amount || 0);
+  const received = projectReceivedAmount(project);
   if (total === 0) return 'no_quote';
   if (received >= total) return 'paid';
   if (received === 0) return 'unpaid';
@@ -443,7 +456,7 @@ async function loadProjects() {
   })).filter(item => item.quote);
   const totals = valued.reduce((sum, {project,quote}) => {
     const total = Number(quote.total_amount || 0);
-    const received = Math.min(total, Math.max(0, Number(project.payment_received_amount || 0)));
+    const received = Math.min(total, Math.max(0, projectReceivedAmount(project)));
     sum.quoted += total;
     sum.outstanding += total - received;
     if (received > 0 && received < total) sum.partial += received;
@@ -468,7 +481,7 @@ function renderProjectRows(allRows) {
   document.getElementById('table-body').innerHTML = rows.map(row => {
     const quote = lastProjectQuote(row);
     const gross = quote ? Number(quote.total_amount || 0) : 0;
-    const received = Math.min(gross, Math.max(0, Number(row.payment_received_amount || 0)));
+    const received = Math.min(gross, Math.max(0, projectReceivedAmount(row)));
     return `<tr data-project="${row.id}">
       <td><strong>${esc(row.project_number)}</strong>${isNewProject(row) ? ' <span class="new-tag">Novo</span>' : ''}<small class="project-row-subtitle">${esc(row.project_type)}</small></td>
       <td>${esc(row.customer_name)}<br>${esc(row.customer_email||'')}</td>
@@ -668,11 +681,11 @@ async function openProject(id) {
     const project = await adminApi('get-project', { id });
     const quote = lastProjectQuote(project);
     const total = quote ? Number(quote.total_amount || 0) : 0;
-    const received = Math.min(total, Math.max(0, Number(project.payment_received_amount || 0)));
+    const received = Math.min(total, Math.max(0, projectReceivedAmount(project)));
     const stage = projectPaymentStage(project);
     const paymentSelection = stage === 'half_paid' ? 'half'
       : stage === 'partially_paid' ? 'custom' : stage === 'paid' ? 'paid' : 'unpaid';
-    const linkedCheckout = (project.quotes || []).some(item => Boolean(item.order_id));
+    const linkedCheckout = (project.quotes || []).some(item => Boolean(item.order_id)) || Boolean(project.orders?.length);
     const projectPaymentEditor = quote && total > 0 && !linkedCheckout
       ? `<form id="project-payment-form" class="order-payment-form">
           <label>Estado do pagamento
