@@ -285,7 +285,7 @@ Deno.serve(async (req) => {
       if (!Number.isSafeInteger(receivedAmount) || receivedAmount < 0 || receivedAmount > 100000000)
         throw new ApiError(422, "invalid_payment", "Introduz o valor recebido em euros.");
       const { data: previous, error: readError } = await client.from("project_requests")
-        .select("id,payment_received_amount,payment_needs_confirmation").eq("id", id).single();
+        .select("id,status,payment_received_amount,payment_needs_confirmation").eq("id", id).single();
       if (readError || !previous) throw new ApiError(404, "project_not_found", "Projeto não encontrado.");
       const { data: quotes, error: quotesError } = await client.from("quotes")
         .select("id,version,status,total_amount,order_id").eq("project_request_id", id)
@@ -303,8 +303,13 @@ Deno.serve(async (req) => {
       if (linkedError) throw linkedError;
       if ((linkedOrders || []).length || (quotes || []).some(q => Boolean(q.order_id)))
         throw new ApiError(409, "linked_checkout", "Este projeto já tem um pagamento associado a uma encomenda. Consulta o registo dessa encomenda.");
+      // Manter o estado histórico de orçamento/pagamento consistente com o novo registo.
+      // Este campo não controla a produção, que agora é independente.
+      const legacyStatus = receivedAmount === totalAmount && totalAmount > 0 ? "paid"
+        : ["paid","payment_pending"].includes(previous.status) ? "payment_pending" : previous.status;
       const { data: updated, error: updateError } = await client.from("project_requests")
-        .update({ payment_received_amount: receivedAmount, payment_needs_confirmation: false })
+        .update({ payment_received_amount: receivedAmount, payment_needs_confirmation: false,
+          status: legacyStatus })
         .eq("id", id).eq("payment_received_amount", previous.payment_received_amount)
         .select("id").maybeSingle();
       if (updateError) throw updateError;
@@ -313,9 +318,9 @@ Deno.serve(async (req) => {
         actor_user_id: admin.userId, action: "project.payment.update",
         entity_type: "project_request", entity_id: id,
         before_data: { payment_received_amount: previous.payment_received_amount,
-          payment_needs_confirmation: previous.payment_needs_confirmation },
+          payment_needs_confirmation: previous.payment_needs_confirmation, legacy_status: previous.status },
         after_data: { payment_received_amount: receivedAmount, payment_needs_confirmation: false,
-          quote_id: latest.id, quote_total_amount: totalAmount }
+          quote_id: latest.id, quote_total_amount: totalAmount, legacy_status: legacyStatus }
       });
       return json(req, { ok: true, receivedAmount });
     }
