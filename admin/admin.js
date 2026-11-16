@@ -63,6 +63,14 @@ function isDeletableDraft(order) {
   return !order.is_test && order.order_status === 'draft' && order.payment_status === 'unpaid' && !order.paid_at;
 }
 function isNewProject(project) { return !project.admin_seen_at && project.status !== 'completed'; }
+function lastProjectQuote(project, paidOnly = false) {
+  return [...(project.quotes || [])]
+    .filter(quote => !['expired','cancelled'].includes(quote.status) &&
+      (!paidOnly || quote.status === 'paid') &&
+      Number.isFinite(Number(quote.total_amount)) && Number(quote.total_amount) >= 0)
+    .sort((a, b) => Number(b.version || 0) - Number(a.version || 0) ||
+      Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0))[0] || null;
+}
 function date(value) { return value ? new Intl.DateTimeFormat('pt-PT', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '—'; }
 function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
 function badge(value) { const labels = {...ORDER_LABELS,...PROJECT_LABELS,...QUOTE_LABELS}; return `<span class="badge ${esc(value)}">${esc(labels[value] || String(value || '').replaceAll('_', ' '))}</span>`; }
@@ -394,36 +402,39 @@ async function loadProjects() {
   currentRows = rows;
   updateStatusOptions();
   document.getElementById('view-title').textContent = 'Projetos personalizados';
-  // O valor dos projetos pagos é calculado a partir do último orçamento guardado
-  // de cada projeto já assinalado como pago. Não há ainda um montante recebido
-  // independente no registo dos projetos; a indicação no painel explicita a origem.
+  // Orçamentos e pagamentos são indicadores distintos: o total pago é
+  // estimado a partir do orçamento dos projetos assinalados como pagos,
+  // não de uma coluna independente de recebimentos.
   const paidProjects = rows.filter(row => row.status === 'paid' ||
     (row.quotes || []).some(quote => quote.status === 'paid') ||
     (row.project_status_history || []).some(history => history.status === 'paid'));
-  const lastQuote = project => [...(project.quotes || [])]
-    .filter(quote => Number.isFinite(Number(quote.total_amount)) && Number(quote.total_amount) >= 0)
-    .sort((a, b) => Number(b.version || 0) - Number(a.version || 0))[0];
-  const paidWithQuote = paidProjects.filter(project => lastQuote(project));
-  const paidAmount = paidWithQuote.reduce((sum, project) => sum + Number(lastQuote(project).total_amount), 0);
+  const quotedProjects = rows.filter(row => lastProjectQuote(row));
+  const quotedAmount = quotedProjects.reduce((sum, project) =>
+    sum + Number(lastProjectQuote(project).total_amount), 0);
+  const paidWithQuote = paidProjects.filter(project =>
+    lastProjectQuote(project, true) || lastProjectQuote(project));
+  const paidAmount = paidWithQuote.reduce((sum, project) =>
+    sum + Number((lastProjectQuote(project, true) || lastProjectQuote(project)).total_amount), 0);
   const paymentNote = paidWithQuote.length === paidProjects.length
-    ? 'Com base no último orçamento guardado de cada projeto pago.'
-    : 'Com base nos orçamentos guardados. Há projetos pagos sem valor associado.';
+    ? 'Estimado pelos orçamentos dos projetos assinalados como pagos.'
+    : 'Estimado pelos orçamentos. Existem projetos pagos sem valor associado.';
   document.getElementById('summary-grid').innerHTML = [
     ['Novos', rows.filter(isNewProject).length],
     ['Por analisar', rows.filter(row => row.status === 'submitted').length],
-    ['Orçamentados', rows.filter(row => row.status === 'quoted' || (row.quotes || []).length > 0).length],
+    ['Orçamentados', rows.filter(row => row.status === 'quoted' || lastProjectQuote(row)).length],
     ['Pagos', paidProjects.length],
     ['Em produção', rows.filter(row => row.status === 'production').length],
+    ['Valor orçamentado', money(quotedAmount), 'Total dos últimos orçamentos guardados, incluindo rascunhos.'],
     ['Valor pago', money(paidAmount), paymentNote]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong>${item[2] ? `<small class="summary-card-note" title="${esc(item[2])}">${esc(item[2])}</small>` : ''}</div>`).join('');
-  document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Ocasião</th><th>Tipo</th><th>Estado</th><th>Evento</th><th>Data do pedido</th></tr>';
+  document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Ocasião</th><th>Tipo</th><th>Estado</th><th>Valor</th><th>Evento</th><th>Data do pedido</th></tr>';
   renderProjectRows(rows);
 }
 
 function renderProjectRows(allRows) {
   const rows = filterRows(allRows);
   document.getElementById('results-count').textContent = `${rows.length} resultados (lista carregada)`;
-  document.getElementById('table-body').innerHTML = rows.map(row => `<tr data-project="${row.id}"><td><strong>${esc(row.project_number)}</strong>${isNewProject(row) ? ' <span class="new-tag">Novo</span>' : ''}</td><td>${esc(row.customer_name)}<br>${esc(row.customer_email)}</td><td>${esc(row.occasion)}</td><td>${esc(row.project_type)}</td><td>${badge(row.status)}</td><td>${esc(row.event_date || '—')}</td><td>${date(row.created_at)}</td></tr>`).join('');
+  document.getElementById('table-body').innerHTML = rows.map(row => `<tr data-project="${row.id}"><td><strong>${esc(row.project_number)}</strong>${isNewProject(row) ? ' <span class="new-tag">Novo</span>' : ''}</td><td>${esc(row.customer_name)}<br>${esc(row.customer_email)}</td><td>${esc(row.occasion)}</td><td>${esc(row.project_type)}</td><td>${badge(row.status)}</td><td>${lastProjectQuote(row) ? money(lastProjectQuote(row).total_amount) : '—'}</td><td>${esc(row.event_date || '—')}</td><td>${date(row.created_at)}</td></tr>`).join('');
   document.querySelectorAll('[data-project]').forEach(row => row.addEventListener('click', () => openProject(row.dataset.project)));
 }
 
