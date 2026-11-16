@@ -51,16 +51,17 @@ function money(cents, currency = 'eur') { return new Intl.NumberFormat('pt-PT', 
 function paymentAmounts(order) {
   const payment = order.payments?.[0] || {};
   const manualPaid = order.payment_provider === 'manual' && order.payment_status === 'paid';
+  const manualPartial = order.payment_provider === 'manual' && order.payment_status === 'unpaid' && Number(order.manual_received_amount || 0) > 0;
   return {
     payment,
     grossAmount: payment.gross_amount ?? order.total_amount,
-    feeAmount: payment.processing_fee_amount ?? (manualPaid ? 0 : null),
-    netAmount: payment.net_amount ?? (manualPaid ? order.total_amount : null)
+    feeAmount: payment.processing_fee_amount ?? (manualPaid || manualPartial ? 0 : null),
+    netAmount: payment.net_amount ?? (manualPaid ? order.total_amount : manualPartial ? order.manual_received_amount : null)
   };
 }
 function isNewOrder(order) { return !order.admin_seen_at && order.order_status !== 'completed'; }
 function isDeletableDraft(order) {
-  return !order.is_test && order.order_status === 'draft' && order.payment_status === 'unpaid' && !order.paid_at;
+  return !order.is_test && order.order_status === 'draft' && order.payment_status === 'unpaid' && !order.paid_at && !Number(order.manual_received_amount || 0);
 }
 function isNewProject(project) { return !project.admin_seen_at && project.status !== 'completed'; }
 function lastProjectQuote(project, paidOnly = false) {
@@ -70,6 +71,19 @@ function lastProjectQuote(project, paidOnly = false) {
       Number.isFinite(Number(quote.total_amount)) && Number(quote.total_amount) >= 0)
     .sort((a, b) => Number(b.version || 0) - Number(a.version || 0) ||
       Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0))[0] || null;
+}
+function orderReceivedAmount(order) {
+  return order.payment_provider === 'manual'
+    ? (order.payment_status === 'paid' ? Number(order.total_amount || 0) : Number(order.manual_received_amount || 0))
+    : (order.payment_status === 'paid' ? Number(order.payments?.[0]?.gross_amount ?? order.total_amount) : 0);
+}
+function orderPaymentBadge(order) {
+  if (order.payment_provider === 'manual' && order.payment_status === 'unpaid') {
+    const received = Number(order.manual_received_amount || 0);
+    const total = Number(order.total_amount || 0);
+    if (received > 0 && received < total) return badge(received * 2 === total ? 'half_paid' : 'partially_paid');
+  }
+  return badge(order.payment_status);
 }
 function date(value) { return value ? new Intl.DateTimeFormat('pt-PT', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(value)) : '—'; }
 function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
@@ -333,7 +347,8 @@ async function loadOrders() {
   document.getElementById('view-title').textContent = 'Encomendas';
   const visibleRows = rows.filter(row => (testFilter === 'all' || Boolean(row.is_test) === (testFilter === 'test')) && (!channelFilter || row.sales_channel === channelFilter));
   const paid = visibleRows.filter(row => ['paid','partially_refunded'].includes(row.payment_status));
-  const net = paid.reduce((sum, row) => sum + Number(paymentAmounts(row).netAmount ?? 0), 0);
+  const partial = visibleRows.filter(row => row.payment_provider === 'manual' && row.payment_status === 'unpaid' && Number(row.manual_received_amount || 0) > 0);
+  const net = [...paid, ...partial].reduce((sum, row) => sum + Number(paymentAmounts(row).netAmount ?? 0), 0);
   document.getElementById('summary-grid').innerHTML = [
     ['Novas', visibleRows.filter(isNewOrder).length], ['Pagas', paid.length], ['Em produção', visibleRows.filter(row => row.order_status === 'production').length], ['Líquido recebido', money(net)]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
@@ -357,7 +372,7 @@ function renderOrderRows(allRows) {
       : testFilter === 'real'
         ? `<td class="test-selection-cell">${isDeletableDraft(row) ? `<input type="checkbox" data-select-draft="${esc(row.id)}" aria-label="Selecionar rascunho ${esc(row.order_number)}" ${selectedDraftOrders.has(row.id) ? 'checked' : ''}>` : ''}</td>`
         : '';
-    return `<tr data-order="${row.id}">${selector}<td><strong>${esc(row.order_number)}</strong>${isNewOrder(row) ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${badge(row.payment_status)}</td><td>${money(grossAmount, row.currency)}</td><td>${feeAmount == null ? '—' : money(feeAmount,row.currency)}</td><td>${netAmount == null ? '—' : money(netAmount,row.currency)}</td><td>${date(row.created_at)}</td>${showCleanup ? `<td>${!['paid','processing','partially_refunded','refunded'].includes(row.payment_status) && !row.paid_at ? `<button type="button" class="delete-order-button" data-delete-order="${esc(row.id)}" data-order-number="${esc(row.order_number)}" aria-label="Eliminar encomenda ${esc(row.order_number)}">Eliminar</button>` : '—'}</td>` : ''}</tr>`;
+    return `<tr data-order="${row.id}">${selector}<td><strong>${esc(row.order_number)}</strong>${isNewOrder(row) ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${orderPaymentBadge(row)}</td><td>${money(grossAmount, row.currency)}</td><td>${feeAmount == null ? '—' : money(feeAmount,row.currency)}</td><td>${netAmount == null ? '—' : money(netAmount,row.currency)}</td><td>${date(row.created_at)}</td>${showCleanup ? `<td>${!['paid','processing','partially_refunded','refunded'].includes(row.payment_status) && !row.paid_at && !Number(row.manual_received_amount || 0) ? `<button type="button" class="delete-order-button" data-delete-order="${esc(row.id)}" data-order-number="${esc(row.order_number)}" aria-label="Eliminar encomenda ${esc(row.order_number)}">Eliminar</button>` : '—'}</td>` : ''}</tr>`;
   }).join('');
   document.querySelectorAll('[data-order]').forEach(row => row.addEventListener('click', () => openOrder(row.dataset.order)));
   document.querySelectorAll('[data-delete-order]').forEach(button => button.addEventListener('click', async event => {
@@ -479,7 +494,7 @@ async function openOrder(id) {
     const { payment, grossAmount, feeAmount, netAmount } = paymentAmounts(order);
     openDrawer(`<p class="eyebrow">Encomenda</p><h2>${esc(order.order_number)}</h2>
       <div class="detail-section"><div class="detail-grid"><p><strong>Cliente</strong>${esc(order.customer_name || '—')}</p><p><strong>Email</strong>${esc(order.customer_email || '—')}</p><p><strong>Telefone</strong>${esc(order.customer_phone || '—')}</p><p><strong>Total</strong>${money(order.total_amount,order.currency)}</p></div></div>
-      <div class="detail-section"><h3>Estado</h3><form class="status-form" id="order-status-form"><select name="status">${['confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'].map(status => `<option value="${status}" ${status===order.order_status?'selected':''}>${status.replaceAll('_',' ')}</option>`).join('')}</select><button>Guardar</button></form></div>
+      <div class="detail-section"><h3>Estado da encomenda</h3><p class="order-current-status">${badge(order.order_status)}</p><form class="status-form" id="order-status-form"><select name="status">${['confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'].map(status => `<option value="${status}" ${status===order.order_status?'selected':''}>${ORDER_LABELS[status]}</option>`).join('')}</select><button>Guardar estado</button></form></div>
       <div class="detail-section"><h3>Pagamento ${order.payment_provider === 'manual' ? 'manual' : 'Stripe'}</h3><div class="detail-grid">${order.payment_provider === 'manual' ? '' : `<p><strong>Payment Intent</strong>${esc(payment.provider_payment_id || '—')}</p><p><strong>Charge</strong>${esc(payment.provider_charge_id || '—')}</p>`}<p><strong>Bruto</strong>${money(grossAmount,order.currency)}</p><p><strong>Taxas</strong>${feeAmount==null?'—':money(feeAmount,order.currency)}</p><p><strong>Líquido</strong>${netAmount==null?'—':money(netAmount,order.currency)}</p><p><strong>Reembolsos</strong>${money(payment.refunded_amount,order.currency)}</p></div></div>
       ${order.payment_provider === 'manual' ? `<div class="detail-section"><h3>Editar encomenda</h3>
         <form id="order-edit-form" class="order-edit-form">
