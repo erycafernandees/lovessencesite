@@ -344,7 +344,7 @@ Deno.serve(async (req) => {
       if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para criar orçamentos.");
       if (!Array.isArray(body.items) || !body.items.length || body.items.length > 30) throw new ApiError(422, "invalid_quote", "Adiciona pelo menos uma linha ao orçamento.");
       const projectId = cleanText(body.projectId, 80, true)!;
-      const { data: project, error: projectError } = await client.from("project_requests").select("id,project_number,customer_email").eq("id", projectId).single();
+      const { data: project, error: projectError } = await client.from("project_requests").select("id,project_number,customer_email,payment_received_amount").eq("id", projectId).single();
       if (projectError || !project) throw new ApiError(404, "project_not_found", "O projeto não foi encontrado.");
       const { data: versions } = await client.from("quotes").select("version").eq("project_request_id", projectId).order("version", { ascending: false }).limit(1);
       const normalizedItems = body.items.map((raw) => {
@@ -358,6 +358,8 @@ Deno.serve(async (req) => {
       const discount = Math.max(0, Number(body.discountAmount) || 0);
       const shipping = Math.max(0, Number(body.shippingAmount) || 0);
       if (![discount, shipping].every(Number.isInteger) || discount > subtotal) throw new ApiError(422, "invalid_totals", "Os totais do orçamento não são válidos.");
+      if (Number(project.payment_received_amount || 0) > subtotal - discount + shipping)
+        throw new ApiError(409, "quote_below_received", "O novo orçamento não pode ser inferior ao valor já recebido. Corrige primeiro o pagamento.");
       // Guardar não publica o orçamento nem envia mensagens.
       const { data: quote, error: quoteError } = await client.from("quotes").insert({
         project_request_id: projectId, version: Number(versions?.[0]?.version || 0) + 1, status: "draft",
@@ -388,6 +390,20 @@ Deno.serve(async (req) => {
       if (quoteError || !quote) throw new ApiError(404, "quote_not_found", "O orçamento não foi encontrado.");
       if (quote.status !== "draft" || quote.order_id || quote.access_token_hash) {
         throw new ApiError(409, "quote_protected", "Só podes eliminar rascunhos nunca enviados e sem encomendas associadas.");
+      }
+      // Não eliminar o último orçamento com valores já recebidos.
+      const { data: projectPayment, error: projectPaymentError } = await client.from("project_requests")
+        .select("payment_received_amount").eq("id", quote.project_request_id).single();
+      if (projectPaymentError) throw projectPaymentError;
+      const received = Number(projectPayment?.payment_received_amount || 0);
+      if (received > 0) {
+        const { data: alternatives, error: alternativesError } = await client.from("quotes")
+          .select("total_amount,status,version").eq("project_request_id", quote.project_request_id)
+          .neq("id", id).order("version", { ascending: false });
+        if (alternativesError) throw alternativesError;
+        const latestRemaining = (alternatives || []).find(item => !["expired","cancelled"].includes(item.status));
+        if (!latestRemaining || Number(latestRemaining.total_amount) < received)
+          throw new ApiError(409, "quote_has_receipt", "Mantém um orçamento que cubra o valor recebido antes de eliminar este rascunho.");
       }
       const { data: deleted, error: deleteError } = await client.from("quotes").delete()
         .eq("id", id).eq("status", "draft").is("order_id", null).is("access_token_hash", null)
