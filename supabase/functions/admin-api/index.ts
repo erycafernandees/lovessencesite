@@ -253,6 +253,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "create-quote") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para criar orçamentos.");
       if (!Array.isArray(body.items) || !body.items.length || body.items.length > 30) throw new ApiError(422, "invalid_quote", "Adiciona pelo menos uma linha ao orçamento.");
       const projectId = cleanText(body.projectId, 80, true)!;
       const { data: project, error: projectError } = await client.from("project_requests").select("id,project_number,customer_email").eq("id", projectId).single();
@@ -269,27 +270,74 @@ Deno.serve(async (req) => {
       const discount = Math.max(0, Number(body.discountAmount) || 0);
       const shipping = Math.max(0, Number(body.shippingAmount) || 0);
       if (![discount, shipping].every(Number.isInteger) || discount > subtotal) throw new ApiError(422, "invalid_totals", "Os totais do orçamento não são válidos.");
-      const quoteToken = randomToken();
-      const accessExpiresAt = body.validUntil
-        ? new Date(`${body.validUntil}T23:59:59Z`).toISOString()
-        : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+      // Guardar não publica o orçamento nem envia mensagens.
       const { data: quote, error: quoteError } = await client.from("quotes").insert({
-        project_request_id: projectId, version: Number(versions?.[0]?.version || 0) + 1, status: "sent",
+        project_request_id: projectId, version: Number(versions?.[0]?.version || 0) + 1, status: "draft",
         subtotal_amount: subtotal, discount_amount: discount, shipping_amount: shipping, total_amount: subtotal - discount + shipping,
         notes: cleanText(body.notes, 2000), valid_until: body.validUntil || null,
-        access_token_hash: await sha256(quoteToken), access_token_expires_at: accessExpiresAt,
       }).select("id").single();
       if (quoteError || !quote) throw quoteError || new Error("Could not create quote");
-      await client.from("quote_items").insert(normalizedItems.map((item) => ({ ...item, quote_id: quote.id })));
-      await client.from("project_requests").update({ status: "quoted" }).eq("id", projectId);
-      await client.from("project_status_history").insert({ project_request_id: projectId, status: "quoted", note: "Orçamento criado", actor_user_id: admin.userId });
-      await client.from("audit_log").insert({ actor_user_id: admin.userId, action: "quote.create", entity_type: "quote", entity_id: quote.id, after_data: { total_amount: subtotal - discount + shipping } });
-      const siteUrl = Deno.env.get("SITE_URL") || "http://127.0.0.1:4176";
-      const quoteUrl = `${siteUrl}/projeto/orcamento/?quote=${quote.id}&token=${encodeURIComponent(quoteToken)}`;
-      if (project.customer_email) await queueEmail("quote_ready", project.customer_email, { projectNumber: project.project_number, quoteUrl, totalAmount: subtotal - discount + shipping });
-      return json(req, { ok: true, quoteId: quote.id, quoteUrl });
+      const { error: itemsError } = await client.from("quote_items")
+        .insert(normalizedItems.map((item) => ({ ...item, quote_id: quote.id })));
+      if (itemsError) {
+        await client.from("quotes").delete().eq("id", quote.id);
+        throw itemsError;
+      }
+      await client.from("audit_log").insert({
+        actor_user_id: admin.userId, action: "quote.draft.create", entity_type: "quote",
+        entity_id: quote.id, after_data: { status: "draft", total_amount: subtotal - discount + shipping },
+      });
+      return json(req, { ok: true, quoteId: quote.id, status: "draft" });
     }
 
+
+    if (action === "send-quote") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para enviar orçamentos.");
+      const id = cleanText(body.id, 80, true)!;
+      const { data: quote, error: quoteError } = await client.from("quotes")
+        .select("id,project_request_id,status,valid_until,total_amount,project_requests(project_number,customer_email)")
+        .eq("id", id).single();
+      if (quoteError || !quote) throw new ApiError(404, "quote_not_found", "O orçamento não foi encontrado.");
+      if (quote.status !== "draft") throw new ApiError(409, "quote_not_draft", "Este orçamento já não é um rascunho e não pode ser enviado novamente.");
+      if (quote.valid_until && new Date(`${quote.valid_until}T23:59:59Z`).getTime() < Date.now()) {
+        throw new ApiError(410, "quote_expired", "A validade do orçamento já terminou.");
+      }
+      const token = randomToken();
+      const expiresAt = quote.valid_until
+        ? new Date(`${quote.valid_until}T23:59:59Z`).toISOString()
+        : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+      // Só o envio explícito torna a proposta acessível ao cliente.
+      const { data: sent, error: sendError } = await client.from("quotes")
+        .update({ status: "sent", access_token_hash: await sha256(token), access_token_expires_at: expiresAt })
+        .eq("id", id).eq("status", "draft").select("id").maybeSingle();
+      if (sendError) throw sendError;
+      if (!sent) throw new ApiError(409, "quote_already_sent", "O orçamento foi alterado. Atualiza a página antes de tentar novamente.");
+      await client.from("project_requests").update({ status: "quoted" }).eq("id", quote.project_request_id);
+      await client.from("project_status_history").insert({
+        project_request_id: quote.project_request_id, status: "quoted",
+        note: "Orçamento enviado", actor_user_id: admin.userId,
+      });
+      await client.from("audit_log").insert({
+        actor_user_id: admin.userId, action: "quote.send", entity_type: "quote", entity_id: id,
+        after_data: { status: "sent", total_amount: quote.total_amount },
+      });
+      const siteUrl = Deno.env.get("SITE_URL") || "http://127.0.0.1:4176";
+      const quoteUrl = `${siteUrl}/projeto/orcamento/?quote=${id}&token=${encodeURIComponent(token)}`;
+      const project = quote.project_requests as { project_number: string; customer_email: string | null } | null;
+      let emailQueued = false;
+      let emailError: string | null = null;
+      if (project?.customer_email) {
+        try {
+          await queueEmail("quote_ready", project.customer_email, {
+            projectNumber: project.project_number, quoteUrl, totalAmount: quote.total_amount,
+          });
+          emailQueued = true;
+        } catch (error) {
+          emailError = error instanceof Error ? error.message : "O envio do email falhou.";
+        }
+      }
+      return json(req, { ok: true, quoteUrl, emailQueued, emailError });
+    }
 
     // Encomendas registadas pela equipa (Instagram, WhatsApp ou outro canal).
     // Não cria pagamentos Stripe; um pagamento marcado como pago é manual.
