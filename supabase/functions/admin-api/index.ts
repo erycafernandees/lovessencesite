@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
     if (action === "list-orders") {
       const page = Math.max(1, Number(url.searchParams.get("page") || body.page || 1));
       const status = cleanText(url.searchParams.get("status") || body.status, 40);
-      let query = client.from("orders").select("id,order_number,source,order_status,payment_status,payment_provider,total_amount,currency,customer_name,customer_email,created_at,paid_at,sales_channel,is_test,admin_seen_at,payments(gross_amount,processing_fee_amount,net_amount,refunded_amount,provider_payment_id)", { count: "exact" })
+      let query = client.from("orders").select("id,order_number,source,order_status,payment_status,payment_provider,manual_received_amount,total_amount,currency,customer_name,customer_email,created_at,paid_at,sales_channel,is_test,admin_seen_at,payments(gross_amount,processing_fee_amount,net_amount,refunded_amount,provider_payment_id)", { count: "exact" })
         .order("created_at", { ascending: false }).range((page - 1) * 25, page * 25 - 1);
       if (status) query = query.eq("order_status", status);
       const { data, count, error } = await query;
@@ -49,11 +49,11 @@ Deno.serve(async (req) => {
       if (admin.role !== "owner") throw new ApiError(403, "forbidden", "Apenas a proprietária pode eliminar encomendas.");
       const id = cleanText(body.id, 80, true)!;
       const { data: order, error: orderError } = await client.from("orders")
-        .select("id,order_number,order_status,payment_status,paid_at,customer_name,total_amount,payments(id,status,provider_payment_id,provider_charge_id,refunded_amount)")
+        .select("id,order_number,order_status,payment_status,paid_at,customer_name,total_amount,manual_received_amount,payments(id,status,provider_payment_id,provider_charge_id,refunded_amount)")
         .eq("id", id).single();
       if (orderError || !order) throw new ApiError(404, "order_not_found", "A encomenda não foi encontrada.");
       const payments = order.payments || [];
-      const blocked = !["unpaid","failed","cancelled"].includes(order.payment_status) || Boolean(order.paid_at)
+      const blocked = !["unpaid","failed","cancelled"].includes(order.payment_status) || Boolean(order.paid_at) || Number(order.manual_received_amount || 0) > 0
         || payments.some((payment) => !["unpaid","failed","cancelled"].includes(payment.status)
           || Boolean(payment.provider_charge_id) || Number(payment.refunded_amount || 0) > 0);
       if (blocked) throw new ApiError(409, "paid_order_protected", "Esta encomenda tem informação de pagamento que deve ser preservada e não pode ser eliminada.");
@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
         after_data: { deleted: true }
       });
       if (auditError) throw auditError;
-      const { error: deleteError } = await client.from("orders").delete().eq("id", id).in("payment_status", ["unpaid","failed","cancelled"]).is("paid_at", null).select("id").single();
+      const { error: deleteError } = await client.from("orders").delete().eq("id", id).in("payment_status", ["unpaid","failed","cancelled"]).is("paid_at", null).eq("manual_received_amount", 0).select("id").single();
       if (deleteError) throw deleteError;
       return json(req, { ok: true });
     }
@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
       }
       // Nunca confiar no filtro do browser para autorizar eliminações.
       let query = client.from("orders")
-        .select("id,order_number,is_test,payment_status,paid_at,stripe_payment_intent_id,stripe_checkout_session_id,customer_name,total_amount,payments(id,status,provider_payment_id,provider_charge_id,refunded_amount)")
+        .select("id,order_number,is_test,payment_status,paid_at,stripe_payment_intent_id,stripe_checkout_session_id,customer_name,total_amount,manual_received_amount,payments(id,status,provider_payment_id,provider_charge_id,refunded_amount)")
         .eq("is_test", true).order("created_at", { ascending: false });
       query = selected ? query.in("id", selected) : query.limit(501);
       const { data: orders, error: ordersError } = await query;
@@ -93,7 +93,7 @@ Deno.serve(async (req) => {
 
       const allowedStates = new Set(["unpaid", "failed", "cancelled"]);
       const eligible = (orders || []).filter((order) => allowedStates.has(order.payment_status)
-        && !order.paid_at && !order.stripe_payment_intent_id && !order.stripe_checkout_session_id
+        && !order.paid_at && Number(order.manual_received_amount || 0) === 0 && !order.stripe_payment_intent_id && !order.stripe_checkout_session_id
         && (order.payments || []).every((payment) => allowedStates.has(payment.status)
           && !payment.provider_payment_id && !payment.provider_charge_id
           && Number(payment.refunded_amount || 0) === 0));
@@ -127,7 +127,7 @@ Deno.serve(async (req) => {
       const { data: deleted, error: deleteError } = await client.from("orders").delete()
         .in("id", safeOrders.map((order) => order.id)).eq("is_test", true)
         .in("payment_status", ["unpaid", "failed", "cancelled"])
-        .is("paid_at", null).is("stripe_payment_intent_id", null).is("stripe_checkout_session_id", null)
+        .is("paid_at", null).eq("manual_received_amount", 0).is("stripe_payment_intent_id", null).is("stripe_checkout_session_id", null)
         .select("id");
       if (deleteError) throw deleteError;
       return json(req, {
@@ -152,7 +152,7 @@ Deno.serve(async (req) => {
 
       // A lista enviada pelo browser não constitui autorização. Revalidar no servidor.
       let query = client.from("orders")
-        .select("id,order_number,is_test,order_status,payment_status,paid_at,stripe_payment_intent_id,stripe_checkout_session_id,customer_name,total_amount,payments(id,status,provider_payment_id,provider_charge_id,refunded_amount)")
+        .select("id,order_number,is_test,order_status,payment_status,paid_at,stripe_payment_intent_id,stripe_checkout_session_id,customer_name,total_amount,manual_received_amount,payments(id,status,provider_payment_id,provider_charge_id,refunded_amount)")
         .eq("is_test", false).eq("order_status", "draft").eq("payment_status", "unpaid")
         .order("created_at", { ascending: false });
       query = selected ? query.in("id", selected) : query.limit(501);
@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
       }
 
       const neutralPayments = new Set(["unpaid", "failed", "cancelled"]);
-      const prelim = (orders || []).filter((order) => !order.paid_at
+      const prelim = (orders || []).filter((order) => !order.paid_at && Number(order.manual_received_amount || 0) === 0
         && !order.stripe_payment_intent_id && !order.stripe_checkout_session_id
         && (order.payments || []).every((payment) => neutralPayments.has(payment.status)
           && !payment.provider_payment_id && !payment.provider_charge_id
@@ -198,7 +198,7 @@ Deno.serve(async (req) => {
       const { data: deleted, error: deleteError } = await client.from("orders").delete()
         .in("id", eligible.map((order) => order.id))
         .eq("is_test", false).eq("order_status", "draft").eq("payment_status", "unpaid")
-        .is("paid_at", null).is("stripe_payment_intent_id", null)
+        .is("paid_at", null).eq("manual_received_amount", 0).is("stripe_payment_intent_id", null)
         .is("stripe_checkout_session_id", null).select("id");
       if (deleteError) throw deleteError;
       return json(req, {
@@ -433,6 +433,7 @@ Deno.serve(async (req) => {
         notes,
         is_test: body.isTest === true,
         paid_at: paid ? now : null,
+        manual_received_amount: paid ? totalAmount : 0,
         access_token_hash: await sha256(token),
       }).select("id,order_number,total_amount").single();
       if (orderError || !order) throw orderError || new Error("Could not create manual order");
@@ -499,7 +500,7 @@ Deno.serve(async (req) => {
       if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para editar encomendas.");
       const id = cleanText(body.id, 80, true)!;
       const { data: before, error: beforeError } = await client.from("orders")
-        .select("id,payment_provider,payment_status,paid_at,order_status,total_amount,customer_name,customer_email,customer_phone,sales_channel,notes")
+        .select("id,payment_provider,payment_status,paid_at,order_status,total_amount,manual_received_amount,customer_name,customer_email,customer_phone,sales_channel,notes")
         .eq("id", id).single();
       if (beforeError || !before) throw new ApiError(404, "order_not_found", "A encomenda não foi encontrada.");
       if (before.payment_provider !== "manual") throw new ApiError(403, "stripe_order", "Só é possível editar encomendas manuais neste formulário.");
@@ -519,6 +520,7 @@ Deno.serve(async (req) => {
       const alreadyPaid = before.payment_status === "paid";
       if (!alreadyPaid && before.payment_status !== "unpaid") throw new ApiError(409, "payment_locked", "Este pagamento não pode ser alterado manualmente.");
       if (alreadyPaid && Number(before.total_amount) !== totalAmount) throw new ApiError(409, "paid_total_locked", "Não é possível alterar o valor de uma encomenda já paga.");
+      if (totalAmount < Number(before.manual_received_amount || 0)) throw new ApiError(409, "partial_total_locked", "O total não pode ser inferior ao valor já recebido.");
       const { data: items, error: itemsError } = await client.from("order_items").select("id").eq("order_id", id);
       if (itemsError) throw itemsError;
       if (!items || items.length !== 1) throw new ApiError(409, "items_locked", "Esta encomenda não tem um único artigo manual editável.");
@@ -535,7 +537,7 @@ Deno.serve(async (req) => {
         notes,
         subtotal_amount: totalAmount,
         total_amount: totalAmount,
-        ...(paidNow ? { payment_status: "paid", paid_at: paidAt, order_status: before.order_status === "draft" || before.order_status === "awaiting_payment" ? "confirmed" : before.order_status } : {}),
+        ...(paidNow ? { payment_status: "paid", paid_at: paidAt, manual_received_amount: totalAmount, order_status: before.order_status === "draft" || before.order_status === "awaiting_payment" ? "confirmed" : before.order_status } : {}),
       };
       const { error: updateError } = await client.from("orders").update(patch).eq("id", id);
       if (updateError) throw updateError;
