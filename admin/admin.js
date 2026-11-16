@@ -315,6 +315,7 @@ async function loadView() {
 }
 
 async function loadOrders() {
+  document.getElementById('summary-grid').classList.remove('projects-summary');
   const result = await adminApi('list-orders');
   const rows = result.data || [];
   selectedTestOrders.clear();
@@ -387,13 +388,18 @@ async function loadProjects() {
   selectedDraftOrders.clear();
   document.getElementById('test-bulk-actions').hidden = true;
   document.getElementById('draft-bulk-actions').hidden = true;
+  document.getElementById('summary-grid').classList.add('projects-summary');
   const result = await adminApi('list-projects');
   const rows = result.data || [];
   currentRows = rows;
   updateStatusOptions();
   document.getElementById('view-title').textContent = 'Projetos personalizados';
   document.getElementById('summary-grid').innerHTML = [
-    ['Novos', rows.filter(isNewProject).length], ['Por analisar', rows.filter(row => row.status === 'submitted').length], ['Orçamentados', rows.filter(row => row.status === 'quoted').length], ['Em produção', rows.filter(row => row.status === 'production').length]
+    ['Novos', rows.filter(isNewProject).length],
+    ['Por analisar', rows.filter(row => row.status === 'submitted').length],
+    ['Orçamentados', rows.filter(row => row.status === 'quoted' || (row.quotes || []).length > 0).length],
+    ['Pagos', rows.filter(row => row.status === 'paid' || (row.quotes || []).some(quote => quote.status === 'paid') || (row.project_status_history || []).some(history => history.status === 'paid')).length],
+    ['Em produção', rows.filter(row => row.status === 'production').length]
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
   document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Ocasião</th><th>Tipo</th><th>Estado</th><th>Evento</th><th>Data do pedido</th></tr>';
   renderProjectRows(rows);
