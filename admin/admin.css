@@ -153,3 +153,18 @@
 .project-row-subtitle{display:block;margin-top:.25rem;font-size:.64rem;color:var(--muted);line-height:1.4}
 .badge.no_quote{background:#ECE8EC;color:#706470}
 .legacy-payment-note{padding:.7rem .8rem;margin:.75rem 0!important;border-radius:8px;background:#FFF8DE;color:#865E12!important;line-height:1.5}
+
+
+/* Dados privados de entrega nas encomendas diretas e personalizadas. */
+.delivery-section .order-current-status{min-height:0;margin:.4rem 0 .6rem!important}
+.delivery-method-fields{display:grid;gap:.8rem;padding:.8rem;border:1px solid var(--line);background:#fbf8fb;border-radius:10px}
+.delivery-method-fields[hidden],#delivery-notes-label[hidden]{display:none!important}
+.delivery-method-fields label{margin:0}
+.delivery-method-fields small{display:block;color:var(--muted);font-size:.72rem;line-height:1.5}
+.delivery-tracking-link{font-size:.77rem;color:var(--deep);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.delivery-copy-button{justify-self:start;font-size:.74rem}
+.delivery-row-detail{display:block;color:var(--muted);font-size:.65rem;margin-top:.3rem;max-width:170px;overflow-wrap:anywhere}
+.badge.delivery-ctt{background:#EEE2F4;color:#71377C}
+.badge.delivery-hand{background:#D9F3EF;color:#126C67}
+.delivery-section .order-payment-form{margin-top:0;padding-top:.2rem;border-top:0}
+.delivery-section .order-payment-form>button{justify-self:start}
