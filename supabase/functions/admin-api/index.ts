@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
     if (action === "list-orders") {
       const page = Math.max(1, Number(url.searchParams.get("page") || body.page || 1));
       const status = cleanText(url.searchParams.get("status") || body.status, 40);
-      let query = client.from("orders").select("id,order_number,source,order_status,payment_status,payment_provider,manual_received_amount,total_amount,currency,customer_name,customer_email,created_at,paid_at,sales_channel,is_test,admin_seen_at,payments(gross_amount,processing_fee_amount,net_amount,refunded_amount,provider_payment_id)", { count: "exact" })
+      let query = client.from("orders").select("id,order_number,source,order_status,payment_status,payment_provider,manual_received_amount,total_amount,currency,customer_name,customer_email,delivery_method,delivery_tracking_code,delivery_meeting_place,delivery_meeting_at,created_at,paid_at,sales_channel,is_test,admin_seen_at,payments(gross_amount,processing_fee_amount,net_amount,refunded_amount,provider_payment_id)", { count: "exact" })
         .is("project_request_id", null)
         .order("created_at", { ascending: false }).range((page - 1) * 25, page * 25 - 1);
       if (status) query = query.eq("order_status", status);
@@ -29,6 +29,54 @@ Deno.serve(async (req) => {
       const { data, error } = await client.from("orders").select("*,order_items(*),attachments(*),payments(*,refunds(*)),order_status_history(*)").eq("id", id).single();
       if (error || !data) throw new ApiError(404, "order_not_found", "A encomenda não foi encontrada.");
       return json(req, data);
+    }
+
+    // Opção de entrega privada, independente de pagamento e fase de execução.
+    if (action === "set-delivery") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para editar entregas.");
+      const kind = String(body.kind || "");
+      if (kind !== "order" && kind !== "project") throw new ApiError(422, "invalid_delivery_kind", "Tipo de encomenda inválido.");
+      const id = cleanText(body.id, 80, true)!;
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
+        throw new ApiError(422, "invalid_delivery_id", "Identificador inválido.");
+      const rawMethod = body.deliveryMethod == null ? "" : String(body.deliveryMethod);
+      if (!["","ctt","hand_delivery"].includes(rawMethod)) throw new ApiError(422, "invalid_delivery_method", "Seleciona CTT ou entrega em mãos.");
+      const method = rawMethod || null;
+      const tracking = method === "ctt" ? String(body.trackingCode || "").trim().replace(/\\s+/g,"").toUpperCase() : "";
+      if (tracking.length > 60 || (tracking && !/^[A-Z0-9-]+$/.test(tracking)))
+        throw new ApiError(422, "invalid_tracking", "O código CTT deve conter apenas letras, números ou hífen.");
+      const place = method === "hand_delivery" ? cleanText(body.meetingPlace, 250) : null;
+      const notes = method ? cleanText(body.deliveryNotes, 1000) : null;
+      let meetingAt: string | null = null;
+      if (method === "hand_delivery" && body.meetingAt) {
+        const rawAt = String(body.meetingAt);
+        const timestamp = Date.parse(rawAt);
+        if (!/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}/.test(rawAt) || !Number.isFinite(timestamp))
+          throw new ApiError(422, "invalid_delivery_date", "A data da entrega não é válida.");
+        meetingAt = new Date(timestamp).toISOString();
+      }
+      const table = kind === "order" ? "orders" : "project_requests";
+      const { data: before, error: fetchError } = await client.from(table)
+        .select("id,delivery_method,delivery_tracking_code,delivery_meeting_place,delivery_meeting_at,delivery_notes")
+        .eq("id", id).single();
+      if (fetchError || !before) throw new ApiError(404, "delivery_not_found", "Encomenda não encontrada.");
+      const patch = {
+        delivery_method: method,
+        delivery_tracking_code: method === "ctt" ? tracking || null : null,
+        delivery_meeting_place: method === "hand_delivery" ? place || null : null,
+        delivery_meeting_at: meetingAt,
+        delivery_notes: notes || null,
+      };
+      const { data: updated, error: saveError } = await client.from(table).update(patch)
+        .eq("id", id).select("id").single();
+      if (saveError || !updated) throw saveError || new ApiError(409, "delivery_save_failed", "Não foi possível guardar a entrega.");
+      await client.from("audit_log").insert({
+        actor_user_id: admin.userId,
+        action: kind === "order" ? "order.delivery.update" : "project.delivery.update",
+        entity_type: kind === "order" ? "order" : "project_request", entity_id: id,
+        before_data: before, after_data: patch,
+      });
+      return json(req, { ok: true, delivery: patch });
     }
 
     if (action === "update-order") {
@@ -226,7 +274,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "list-projects") {
-      const { data, error } = await client.from("project_requests").select("id,project_number,status,fulfillment_status,payment_received_amount,payment_needs_confirmation,admin_seen_at,customer_name,customer_email,occasion,project_type,event_date,created_at,quotes(id,version,status,total_amount,currency,valid_until,created_at),orders(id,payment_status,payment_provider,total_amount,manual_received_amount,created_at,payments(gross_amount,refunded_amount)),project_status_history(status)").order("created_at", { ascending: false }).limit(100);
+      const { data, error } = await client.from("project_requests").select("id,project_number,status,fulfillment_status,payment_received_amount,payment_needs_confirmation,admin_seen_at,customer_name,customer_email,delivery_method,delivery_tracking_code,delivery_meeting_place,delivery_meeting_at,occasion,project_type,event_date,created_at,quotes(id,version,status,total_amount,currency,valid_until,created_at),orders(id,payment_status,payment_provider,total_amount,manual_received_amount,created_at,payments(gross_amount,refunded_amount)),project_status_history(status)").order("created_at", { ascending: false }).limit(100);
       if (error) throw error;
       return json(req, { data });
     }
