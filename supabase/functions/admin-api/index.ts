@@ -525,8 +525,7 @@ Deno.serve(async (req) => {
       if (priorPayments?.length) throw new ApiError(409, "payment_exists", "Já existe um pagamento processado nesta encomenda.");
       if (received === previous && !fullyPaid) return json(req, { ok: true, receivedAmount: received, paymentStatus: "unpaid" });
       const patch = { manual_received_amount: received,
-        ...(fullyPaid ? { payment_status: "paid", paid_at: new Date().toISOString(),
-          order_status: ["draft","awaiting_payment"].includes(before.order_status) ? "confirmed" : before.order_status } : {}) };
+        ...(fullyPaid ? { payment_status: "paid", paid_at: new Date().toISOString() } : {}) };
       const { data: updated, error: updateError } = await client.from("orders").update(patch)
         .eq("id", id).eq("payment_status", "unpaid").eq("manual_received_amount", previous).select("id").maybeSingle();
       if (updateError) throw updateError;
@@ -539,7 +538,7 @@ Deno.serve(async (req) => {
         });
         if (paymentError) {
           await client.from("orders").update({ manual_received_amount: previous, payment_status: "unpaid",
-            paid_at: null, order_status: before.order_status }).eq("id", id).eq("manual_received_amount", received);
+            paid_at: null }).eq("id", id).eq("manual_received_amount", received);
           throw paymentError;
         }
       }
