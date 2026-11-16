@@ -120,6 +120,129 @@ function date(value) { return value ? new Intl.DateTimeFormat('pt-PT', { dateSty
 function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
 function badge(value) { const labels = {...ORDER_LABELS,...PROJECT_LABELS,...QUOTE_LABELS,unpaid:'Por pagar',partially_paid:'Pagamento parcial',half_paid:'50% pago',deposit_paid:'Sinal recebido'}; return `<span class="badge ${esc(value)}">${esc(labels[value] || String(value || '').replaceAll('_', ' '))}</span>`; }
 
+const CTT_TRACKING_PAGE = 'https://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx';
+function deliverySummary(record) {
+  if (record.delivery_method === 'ctt') {
+    return `<span class="badge delivery-ctt">CTT</span>${record.delivery_tracking_code ? `<small class="delivery-row-detail">${esc(record.delivery_tracking_code)}</small>` : ''}`;
+  }
+  if (record.delivery_method === 'hand_delivery') {
+    return `<span class="badge delivery-hand">Em mãos</span>${record.delivery_meeting_place ? `<small class="delivery-row-detail">${esc(record.delivery_meeting_place)}</small>` : ''}`;
+  }
+  return '—';
+}
+function localDeliveryDateInput(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (!Number.isFinite(d.getTime())) return '';
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function deliveryFormHtml(record) {
+  const method = record.delivery_method || '';
+  const tracking = String(record.delivery_tracking_code || '');
+  return `<div class="detail-section delivery-section">
+    <h3>Entrega</h3>
+    <p class="order-current-status">${deliverySummary(record)}</p>
+    <form id="admin-delivery-form" class="order-payment-form">
+      <label>Modalidade de entrega
+        <select name="deliveryMethod">
+          <option value="" ${!method ? 'selected' : ''}>Por definir</option>
+          <option value="ctt" ${method === 'ctt' ? 'selected' : ''}>Envio pelos CTT</option>
+          <option value="hand_delivery" ${method === 'hand_delivery' ? 'selected' : ''}>Entrega em mãos</option>
+        </select>
+      </label>
+      <div class="delivery-method-fields" id="delivery-ctt-fields" ${method === 'ctt' ? '' : 'hidden'}>
+        <label>Código de rastreio dos CTT
+          <input type="text" name="trackingCode" maxlength="60" autocomplete="off"
+            placeholder="Ex.: RR123456789PT" value="${esc(tracking)}">
+        </label>
+        ${tracking ? `<button class="secondary delivery-copy-button" type="button" id="delivery-copy-code">Copiar código</button>` : ''}
+        <a class="delivery-tracking-link" href="${CTT_TRACKING_PAGE}" target="_blank" rel="noopener noreferrer">Abrir o rastreio oficial dos CTT</a>
+        <small>Consulta o estado do envio introduzindo o código no site dos CTT.</small>
+      </div>
+      <div class="delivery-method-fields" id="delivery-hand-fields" ${method === 'hand_delivery' ? '' : 'hidden'}>
+        <label>Local combinado
+          <input name="meetingPlace" type="text" maxlength="250" placeholder="Ex.: Cascais, junto à estação"
+            value="${esc(record.delivery_meeting_place || '')}">
+        </label>
+        <label>Data e hora combinadas
+          <input name="meetingAt" type="datetime-local" value="${esc(localDeliveryDateInput(record.delivery_meeting_at))}">
+        </label>
+      </div>
+      <label id="delivery-notes-label" ${method ? '' : 'hidden'}>Notas da entrega (internas)
+        <textarea name="deliveryNotes" rows="2" maxlength="1000" placeholder="Ex.: Contactar antes de sair">${esc(record.delivery_notes || '')}</textarea>
+      </label>
+      <p class="order-payment-hint">Estas informações são guardadas apenas no painel administrativo. Guardar não envia emails nem altera o estado da encomenda.</p>
+      <p id="delivery-form-error" class="error" role="alert"></p>
+      <button type="submit">Guardar entrega</button>
+    </form>
+  </div>`;
+}
+function bindDeliveryForm(record,kind,id) {
+  const form = document.getElementById('admin-delivery-form');
+  if (!form) return;
+  const select = form.elements.deliveryMethod;
+  const cttFields = document.getElementById('delivery-ctt-fields');
+  const handFields = document.getElementById('delivery-hand-fields');
+  const noteLabel = document.getElementById('delivery-notes-label');
+  const errorElement = document.getElementById('delivery-form-error');
+  const updateFields = () => {
+    cttFields.hidden = select.value !== 'ctt';
+    handFields.hidden = select.value !== 'hand_delivery';
+    noteLabel.hidden = !select.value;
+  };
+  select.addEventListener('change',updateFields);
+  updateFields();
+  const copyButton = document.getElementById('delivery-copy-code');
+  copyButton?.addEventListener('click',async () => {
+    const input = form.elements.trackingCode;
+    const code = input.value.trim();
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      copyButton.textContent = 'Copiado!';
+    } catch (error) {
+      input.focus();
+      input.select();
+      window.alert('Seleciona o código e copia-o com Cmd + C.');
+    }
+  });
+  form.addEventListener('submit',async event => {
+    event.preventDefault();
+    errorElement.textContent = '';
+    const button = form.querySelector('button[type="submit"]');
+    const method = select.value;
+    let meetingAt = null;
+    if (method === 'hand_delivery' && form.elements.meetingAt.value) {
+      const d = new Date(form.elements.meetingAt.value);
+      if (!Number.isFinite(d.getTime())) {
+        errorElement.textContent = 'A data e hora não são válidas.';
+        return;
+      }
+      meetingAt = d.toISOString();
+    }
+    button.disabled = true;
+    try {
+      await adminApi('set-delivery',{
+        kind,id,deliveryMethod:method,
+        trackingCode: method === 'ctt' ? form.elements.trackingCode.value : '',
+        meetingPlace: method === 'hand_delivery' ? form.elements.meetingPlace.value : '',
+        meetingAt,
+        deliveryNotes:method ? form.elements.deliveryNotes.value : ''
+      });
+      if(kind === 'order') {
+        await loadOrders();
+        await openOrder(id);
+      } else {
+        await loadProjects();
+        await openProject(id);
+      }
+    } catch(error) {
+      errorElement.textContent = error.message || 'Não foi possível guardar a entrega.';
+      button.disabled = false;
+    }
+  });
+}
 async function adminApi(action, body = {}) {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error('A sessão terminou.');
@@ -361,10 +484,10 @@ document.querySelectorAll('.tabs button').forEach(button => button.addEventListe
 
 async function loadView() {
   const body = document.getElementById('table-body');
-  body.innerHTML = '<tr><td colspan="8">A carregar…</td></tr>';
+  body.innerHTML = '<tr><td colspan="10">A carregar…</td></tr>';
   try {
     if (currentView === 'orders') await loadOrders(); else await loadProjects();
-  } catch (error) { body.innerHTML = `<tr><td colspan="8" class="error">${esc(error.message)}</td></tr>`; }
+  } catch (error) { body.innerHTML = `<tr><td colspan="10" class="error">${esc(error.message)}</td></tr>`; }
 }
 
 async function loadOrders() {
@@ -392,7 +515,7 @@ function renderOrderRows(allRows) {
   const showSelection = showCleanup && (testFilter === 'test' || testFilter === 'real');
   document.getElementById('table-head').innerHTML = '<tr>' +
     (showSelection ? '<th>Seleção</th>' : '') +
-    '<th>Referência</th><th>Canal</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Taxas</th><th>Líquido</th><th>Data</th>' +
+    '<th>Referência</th><th>Canal</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Taxas</th><th>Líquido</th><th>Entrega</th><th>Data</th>' +
     (showCleanup ? '<th>Ações</th>' : '') + '</tr>';
   const rows = filterRows(allRows);
   document.getElementById('results-count').textContent = `${rows.length} resultados (página atual)`;
@@ -403,7 +526,7 @@ function renderOrderRows(allRows) {
       : testFilter === 'real'
         ? `<td class="test-selection-cell">${isDeletableDraft(row) ? `<input type="checkbox" data-select-draft="${esc(row.id)}" aria-label="Selecionar rascunho ${esc(row.order_number)}" ${selectedDraftOrders.has(row.id) ? 'checked' : ''}>` : ''}</td>`
         : '';
-    return `<tr data-order="${row.id}">${selector}<td><strong>${esc(row.order_number)}</strong>${isNewOrder(row) ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${orderPaymentBadge(row)}</td><td>${money(grossAmount, row.currency)}</td><td>${feeAmount == null ? '—' : money(feeAmount,row.currency)}</td><td>${netAmount == null ? '—' : money(netAmount,row.currency)}</td><td>${date(row.created_at)}</td>${showCleanup ? `<td>${!['paid','processing','partially_refunded','refunded'].includes(row.payment_status) && !row.paid_at && !Number(row.manual_received_amount || 0) ? `<button type="button" class="delete-order-button" data-delete-order="${esc(row.id)}" data-order-number="${esc(row.order_number)}" aria-label="Eliminar encomenda ${esc(row.order_number)}">Eliminar</button>` : '—'}</td>` : ''}</tr>`;
+    return `<tr data-order="${row.id}">${selector}<td><strong>${esc(row.order_number)}</strong>${isNewOrder(row) ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${orderPaymentBadge(row)}</td><td>${money(grossAmount, row.currency)}</td><td>${feeAmount == null ? '—' : money(feeAmount,row.currency)}</td><td>${netAmount == null ? '—' : money(netAmount,row.currency)}</td><td>${deliverySummary(row)}</td><td>${date(row.created_at)}</td>${showCleanup ? `<td>${!['paid','processing','partially_refunded','refunded'].includes(row.payment_status) && !row.paid_at && !Number(row.manual_received_amount || 0) ? `<button type="button" class="delete-order-button" data-delete-order="${esc(row.id)}" data-order-number="${esc(row.order_number)}" aria-label="Eliminar encomenda ${esc(row.order_number)}">Eliminar</button>` : '—'}</td>` : ''}</tr>`;
   }).join('');
   document.querySelectorAll('[data-order]').forEach(row => row.addEventListener('click', () => openOrder(row.dataset.order)));
   document.querySelectorAll('[data-delete-order]').forEach(button => button.addEventListener('click', async event => {
@@ -471,7 +594,7 @@ async function loadProjects() {
     ['Recebido a 100%', money(totals.fullyPaid), legacyNote],
     ['Por receber', money(totals.outstanding), 'Montante ainda em falta']
   ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong>${item[2] ? `<small class="summary-card-note">${esc(item[2])}</small>` : ''}</div>`).join('');
-  document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Recebido</th><th>Por receber</th><th>Evento</th><th>Data</th></tr>';
+  document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Recebido</th><th>Por receber</th><th>Entrega</th><th>Evento</th><th>Data</th></tr>';
   renderProjectRows(rows);
 }
 
@@ -490,6 +613,7 @@ function renderProjectRows(allRows) {
       <td>${quote ? money(gross) : '—'}</td>
       <td>${quote ? money(received) : '—'}</td>
       <td>${quote ? money(Math.max(0,gross-received)) : '—'}</td>
+      <td>${deliverySummary(row)}</td>
       <td>${esc(row.event_date || '—')}</td>
       <td>${date(row.created_at)}</td>
     </tr>`;
