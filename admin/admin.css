@@ -105,3 +105,13 @@
 .project-notes-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.8rem}
 .project-notes-actions span{font-size:.75rem;color:var(--deep)}
 .project-notes-actions button:disabled{opacity:.55;cursor:wait}
+
+/* Orçamento e notas na mesma secção, com tipos de notas explícitos */
+.project-quote-subsection{padding:.95rem 0;border-top:1px solid var(--line)}
+.project-quote-subsection:first-of-type{border-top:0;padding-top:.15rem}
+.project-quote-subsection h4{margin:0 0 .55rem;font-size:.8rem;font-weight:700;color:var(--ink)}
+.quote-client-notes-label{margin:.9rem 0 .4rem;font-size:.73rem}
+#quote-client-notes{resize:vertical;min-height:75px;font-size:.8rem;line-height:1.5}
+.quote-history-entry{gap:.5rem;flex-wrap:wrap}
+.quote-history-entry .delete-order-button{font-size:.72rem;padding:.55rem .65rem}
+@media(max-width:480px){.quote-history-entry button{flex:1 1 auto}}
