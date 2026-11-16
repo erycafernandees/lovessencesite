@@ -694,6 +694,7 @@ async function openOrder(id) {
         </div>
         ${paymentEditor}
       </div>
+      ${deliveryFormHtml(order)}
       <div class="detail-section"><h3>Detalhes financeiros — ${order.payment_provider === 'manual' ? 'manual' : 'Stripe'}</h3><div class="detail-grid">${order.payment_provider === 'manual' ? '' : `<p><strong>Payment Intent</strong>${esc(payment.provider_payment_id || '—')}</p><p><strong>Charge</strong>${esc(payment.provider_charge_id || '—')}</p>`}<p><strong>Bruto</strong>${money(grossAmount,order.currency)}</p><p><strong>Taxas</strong>${feeAmount==null?'—':money(feeAmount,order.currency)}</p><p><strong>Líquido recebido</strong>${netAmount==null?'—':money(netAmount,order.currency)}</p><p><strong>Reembolsos</strong>${money(payment.refunded_amount,order.currency)}</p></div></div>
       ${order.payment_provider === 'manual' ? `<div class="detail-section"><h3>Editar encomenda</h3>
         <form id="order-edit-form" class="order-edit-form">
@@ -711,6 +712,7 @@ async function openOrder(id) {
       <div class="detail-section"><h3>Artigos e personalização</h3>${order.order_items.map(item => `<div class="line-item"><strong>${esc(item.quantity)} × ${esc(item.name)}</strong><p>${money(item.line_amount,order.currency)}</p>${personalizationHtml(item.personalization)}</div>`).join('')}</div>
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(order.attachments)}</div>`);
     document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadOrders(); });
+    bindDeliveryForm(order,'order',id);
     const paymentForm = document.getElementById('order-payment-form');
     if (paymentForm) {
       const stageSelect = document.getElementById('order-payment-stage');
@@ -850,12 +852,14 @@ async function openProject(id) {
           ? '<p class="legacy-payment-note">O valor recebido foi importado do antigo estado “Pago” e do orçamento. Confirma-o no formulário para retirar este aviso.</p>' : ''}
         ${projectPaymentEditor}
       </div>
+      ${deliveryFormHtml(project)}
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(project.attachments)}</div>
       <div class="detail-section" id="project-quote-section"><h3>Orçamento e notas</h3>
       <div class="project-quote-subsection"><h4>Notas internas do projeto</h4><p class="internal-notes-help">Regista aqui as confirmações, preferências e detalhes de entrega combinados com o cliente. Estas notas não são enviadas ao cliente.</p><form id="project-notes-form" class="project-notes-form"><label for="project-admin-notes">Notas do projeto</label><textarea id="project-admin-notes" name="notes" rows="6" maxlength="4000" placeholder="Ex.: Produtos, cores, fragrância, entrega e detalhes acordados">${esc(project.admin_notes || '')}</textarea><div class="project-notes-actions"><button type="submit">Guardar notas</button><span id="project-notes-feedback" role="status" aria-live="polite"></span></div></form></div>
       <div class="project-quote-subsection"><h4>Novo orçamento</h4><p class="quote-note">Guardar o rascunho guarda também as notas internas sem enviar emails.</p><form id="quote-form"><div id="quote-lines"><div class="quote-row"><input name="description" placeholder="Descrição" required/><input name="quantity" type="number" min="1" value="1" required/><input name="unit" type="number" min="0" step="0.01" placeholder="€/un" required/></div></div><label class="quote-client-notes-label" for="quote-client-notes">Observações para a cliente (opcional)</label><textarea id="quote-client-notes" name="quoteNotes" rows="3" maxlength="2000" placeholder="Estas observações só ficam visíveis quando enviares o orçamento."></textarea><div class="quote-actions"><button type="button" class="secondary" id="add-quote-line">+ Linha</button><button type="submit">Guardar rascunho</button></div></form></div>
       <div class="project-quote-subsection"><h4>Orçamentos guardados</h4>${(project.quotes||[]).map(q=>`<div class="quote-history-entry"><p><strong>v${q.version}</strong> · ${badge(q.status)} · ${money(q.total_amount,q.currency)} · válido até ${esc(q.valid_until||'—')}</p>${q.status==='draft'?`<button type="button" class="secondary" data-send-quote="${esc(q.id)}">Enviar orçamento</button><button type="button" class="delete-order-button" data-delete-draft-quote="${esc(q.id)}" data-quote-version="${esc(q.version)}">Eliminar</button>`:''}</div>`).join('')||'<p>Nenhum orçamento guardado.</p>'}</div>
       </div>`);
+    bindDeliveryForm(project,'project',id);
     async function saveProjectNotes() {
       const notes = document.getElementById('project-admin-notes').value.trim();
       if (notes !== (project.admin_notes || '').trim()) {
