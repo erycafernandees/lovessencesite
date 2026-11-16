@@ -394,13 +394,28 @@ async function loadProjects() {
   currentRows = rows;
   updateStatusOptions();
   document.getElementById('view-title').textContent = 'Projetos personalizados';
+  // O valor dos projetos pagos é calculado a partir do último orçamento guardado
+  // de cada projeto já assinalado como pago. Não há ainda um montante recebido
+  // independente no registo dos projetos; a indicação no painel explicita a origem.
+  const paidProjects = rows.filter(row => row.status === 'paid' ||
+    (row.quotes || []).some(quote => quote.status === 'paid') ||
+    (row.project_status_history || []).some(history => history.status === 'paid'));
+  const lastQuote = project => [...(project.quotes || [])]
+    .filter(quote => Number.isFinite(Number(quote.total_amount)) && Number(quote.total_amount) >= 0)
+    .sort((a, b) => Number(b.version || 0) - Number(a.version || 0))[0];
+  const paidWithQuote = paidProjects.filter(project => lastQuote(project));
+  const paidAmount = paidWithQuote.reduce((sum, project) => sum + Number(lastQuote(project).total_amount), 0);
+  const paymentNote = paidWithQuote.length === paidProjects.length
+    ? 'Com base no último orçamento guardado de cada projeto pago.'
+    : 'Com base nos orçamentos guardados. Há projetos pagos sem valor associado.';
   document.getElementById('summary-grid').innerHTML = [
     ['Novos', rows.filter(isNewProject).length],
     ['Por analisar', rows.filter(row => row.status === 'submitted').length],
     ['Orçamentados', rows.filter(row => row.status === 'quoted' || (row.quotes || []).length > 0).length],
-    ['Pagos', rows.filter(row => row.status === 'paid' || (row.quotes || []).some(quote => quote.status === 'paid') || (row.project_status_history || []).some(history => history.status === 'paid')).length],
-    ['Em produção', rows.filter(row => row.status === 'production').length]
-  ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong></div>`).join('');
+    ['Pagos', paidProjects.length],
+    ['Em produção', rows.filter(row => row.status === 'production').length],
+    ['Valor pago', money(paidAmount), paymentNote]
+  ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong>${item[2] ? `<small class="summary-card-note" title="${esc(item[2])}">${esc(item[2])}</small>` : ''}</div>`).join('');
   document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Ocasião</th><th>Tipo</th><th>Estado</th><th>Evento</th><th>Data do pedido</th></tr>';
   renderProjectRows(rows);
 }
