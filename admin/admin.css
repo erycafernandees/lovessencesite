@@ -115,3 +115,7 @@
 .quote-history-entry{gap:.5rem;flex-wrap:wrap}
 .quote-history-entry .delete-order-button{font-size:.72rem;padding:.55rem .65rem}
 @media(max-width:480px){.quote-history-entry button{flex:1 1 auto}}
+
+/* Os projetos personalizados mostram cinco indicadores, sem alterar a grelha das encomendas. */
+.summary-grid.projects-summary{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:1050px){.summary-grid.projects-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
