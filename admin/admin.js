@@ -424,9 +424,9 @@ async function loadProjects() {
     ['Orçamentados', rows.filter(row => row.status === 'quoted' || lastProjectQuote(row)).length],
     ['Pagos', paidProjects.length],
     ['Em produção', rows.filter(row => row.status === 'production').length],
-    ['Valor orçamentado', money(quotedAmount), 'Total dos últimos orçamentos guardados, incluindo rascunhos.'],
-    ['Valor pago', money(paidAmount), paymentNote]
-  ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong>${item[2] ? `<small class="summary-card-note" title="${esc(item[2])}">${esc(item[2])}</small>` : ''}</div>`).join('');
+    ['Valor orçamentado', money(quotedAmount), 'Inclui rascunhos', 'Soma dos últimos orçamentos guardados em cada projeto.'],
+    ['Valor pago', money(paidAmount), 'Estimado', paymentNote]
+  ].map(item => `<div class="summary-card"${item[3] ? ` title="${esc(item[3])}"` : ''}><span>${item[0]}</span><strong>${item[1]}</strong>${item[2] ? `<small class="summary-card-note">${esc(item[2])}</small>` : ''}</div>`).join('');
   document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Ocasião</th><th>Tipo</th><th>Estado</th><th>Valor</th><th>Evento</th><th>Data do pedido</th></tr>';
   renderProjectRows(rows);
 }
