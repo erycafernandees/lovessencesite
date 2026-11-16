@@ -16,6 +16,7 @@ Deno.serve(async (req) => {
       const page = Math.max(1, Number(url.searchParams.get("page") || body.page || 1));
       const status = cleanText(url.searchParams.get("status") || body.status, 40);
       let query = client.from("orders").select("id,order_number,source,order_status,payment_status,payment_provider,manual_received_amount,total_amount,currency,customer_name,customer_email,created_at,paid_at,sales_channel,is_test,admin_seen_at,payments(gross_amount,processing_fee_amount,net_amount,refunded_amount,provider_payment_id)", { count: "exact" })
+        .is("project_request_id", null)
         .order("created_at", { ascending: false }).range((page - 1) * 25, page * 25 - 1);
       if (status) query = query.eq("order_status", status);
       const { data, count, error } = await query;
@@ -225,14 +226,14 @@ Deno.serve(async (req) => {
     }
 
     if (action === "list-projects") {
-      const { data, error } = await client.from("project_requests").select("id,project_number,status,fulfillment_status,payment_received_amount,payment_needs_confirmation,admin_seen_at,customer_name,customer_email,occasion,project_type,event_date,created_at,quotes(id,version,status,total_amount,currency,valid_until,created_at),project_status_history(status)").order("created_at", { ascending: false }).limit(100);
+      const { data, error } = await client.from("project_requests").select("id,project_number,status,fulfillment_status,payment_received_amount,payment_needs_confirmation,admin_seen_at,customer_name,customer_email,occasion,project_type,event_date,created_at,quotes(id,version,status,total_amount,currency,valid_until,created_at),orders(id,payment_status,payment_provider,total_amount,manual_received_amount,created_at,payments(gross_amount,refunded_amount)),project_status_history(status)").order("created_at", { ascending: false }).limit(100);
       if (error) throw error;
       return json(req, { data });
     }
 
     if (action === "get-project") {
       const id = cleanText(body.id || url.searchParams.get("id"), 80, true)!;
-      const { data, error } = await client.from("project_requests").select("*,attachments(*),quotes(*,quote_items(*)),project_status_history(*)").eq("id", id).single();
+      const { data, error } = await client.from("project_requests").select("*,attachments(*),quotes(*,quote_items(*)),orders(id,payment_status,payment_provider,total_amount,manual_received_amount,created_at,payments(gross_amount,refunded_amount)),project_status_history(*)").eq("id", id).single();
       if (error || !data) throw new ApiError(404, "project_not_found", "O projeto não foi encontrado.");
       return json(req, data);
     }
