@@ -510,10 +510,27 @@ async function openProject(id) {
     const project = await adminApi('get-project', { id });
     openDrawer(`<p class="eyebrow">Projeto personalizado</p><h2>${esc(project.project_number)}</h2>
       <div class="detail-section"><div class="detail-grid"><p><strong>Cliente</strong>${esc(project.customer_name)}</p><p><strong>Email</strong>${esc(project.customer_email)}</p><p><strong>Telefone</strong>${esc(project.customer_phone||'—')}</p><p><strong>Data do evento</strong>${esc(project.event_date||'—')}</p><p><strong>Ocasião</strong>${esc(project.occasion)}</p><p><strong>Tipo</strong>${esc(project.project_type)}</p><p><strong>Quantidade</strong>${esc(project.approximate_quantity||'—')}</p><p><strong>Orçamento indicado</strong>${esc(project.approximate_budget||'—')}</p></div><h3 style="margin-top:1rem">Ideia</h3><p>${esc(project.idea)}</p></div>
+      <div class="detail-section"><h3>Notas internas</h3><p class="internal-notes-help">Regista aqui as confirmações, preferências e detalhes de entrega combinados com o cliente. Estas notas não são enviadas ao cliente.</p><form id="project-notes-form" class="project-notes-form"><label for="project-admin-notes">Notas do projeto</label><textarea id="project-admin-notes" name="notes" rows="6" maxlength="4000" placeholder="Ex.: Produtos, cores, fragrância, entrega e detalhes acordados">${esc(project.admin_notes || '')}</textarea><div class="project-notes-actions"><button type="submit">Guardar notas</button><span id="project-notes-feedback" role="status" aria-live="polite"></span></div></form></div>
       <div class="detail-section"><h3>Estado</h3><form class="status-form" id="project-status-form"><select name="status">${['submitted','in_review','awaiting_details','quoted','approved','payment_pending','paid','production','completed','declined','archived'].map(status => `<option value="${status}" ${status===project.status?'selected':''}>${status.replaceAll('_',' ')}</option>`).join('')}</select><button>Guardar</button></form></div>
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(project.attachments)}</div>
       <div class="detail-section"><h3>Novo orçamento</h3><p class="quote-note">Podes guardar o orçamento sem o enviar ao cliente.</p><form id="quote-form"><div id="quote-lines"><div class="quote-row"><input name="description" placeholder="Descrição" required/><input name="quantity" type="number" min="1" value="1" required/><input name="unit" type="number" min="0" step="0.01" placeholder="€/un" required/></div></div><div class="quote-actions"><button type="button" class="secondary" id="add-quote-line">+ Linha</button><button type="submit">Guardar rascunho</button></div></form></div>
       <div class="detail-section"><h3>Orçamentos anteriores</h3>${(project.quotes||[]).map(q=>`<div class="quote-history-entry"><p><strong>v${q.version}</strong> · ${badge(q.status)} · ${money(q.total_amount,q.currency)} · válido até ${esc(q.valid_until||'—')}</p>${q.status==='draft'?`<button type="button" class="secondary" data-send-quote="${esc(q.id)}">Enviar orçamento</button>`:''}</div>`).join('')||'<p>Nenhum.</p>'}</div>`);
+    document.getElementById('project-notes-form').addEventListener('submit', async event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const button = form.querySelector('button[type="submit"]');
+      const feedback = document.getElementById('project-notes-feedback');
+      feedback.textContent = '';
+      button.disabled = true;
+      try {
+        await adminApi('update-project-notes', { id, notes: form.elements.notes.value });
+        feedback.textContent = 'Notas guardadas.';
+      } catch (error) {
+        feedback.textContent = error.message || 'Não foi possível guardar as notas.';
+      } finally {
+        button.disabled = false;
+      }
+    });
     document.getElementById('project-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-project',{id,status:new FormData(event.currentTarget).get('status')}); await openProject(id); await loadProjects(); });
     document.getElementById('add-quote-line').addEventListener('click', () => document.getElementById('quote-lines').insertAdjacentHTML('beforeend','<div class="quote-row"><input name="description" placeholder="Descrição" required/><input name="quantity" type="number" min="1" value="1" required/><input name="unit" type="number" min="0" step="0.01" placeholder="€/un" required/></div>'));
     document.getElementById('quote-form').addEventListener('submit', async event => {

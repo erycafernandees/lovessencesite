@@ -252,6 +252,27 @@ Deno.serve(async (req) => {
       return json(req, { ok: true });
     }
 
+    if (action === "update-project-notes") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para alterar notas.");
+      const id = cleanText(body.id, 80, true)!;
+      if (typeof body.notes !== "string") throw new ApiError(422, "invalid_notes", "As notas devem ser texto.");
+      const notes = body.notes.trim().replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, "");
+      if (notes.length > 4000) throw new ApiError(422, "notes_too_long", "As notas não podem ultrapassar 4000 caracteres.");
+      const { data: existing, error: beforeError } = await client.from("project_requests")
+        .select("admin_notes").eq("id", id).single();
+      if (beforeError || !existing) throw new ApiError(404, "project_not_found", "O projeto não foi encontrado.");
+      const { error: updateError } = await client.from("project_requests")
+        .update({ admin_notes: notes || null }).eq("id", id);
+      if (updateError) throw updateError;
+      await client.from("audit_log").insert({
+        actor_user_id: admin.userId, action: "project.internal_notes.update",
+        entity_type: "project_request", entity_id: id,
+        before_data: { admin_notes: existing.admin_notes },
+        after_data: { admin_notes: notes || null },
+      });
+      return json(req, { ok: true });
+    }
+
     if (action === "create-quote") {
       if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para criar orçamentos.");
       if (!Array.isArray(body.items) || !body.items.length || body.items.length > 30) throw new ApiError(422, "invalid_quote", "Adiciona pelo menos uma linha ao orçamento.");

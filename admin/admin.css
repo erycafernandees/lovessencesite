@@ -96,3 +96,12 @@
 .quote-history-entry:first-of-type{border-top:0}
 .quote-history-entry .secondary{padding:.55rem .7rem;font-size:.75rem}
 .quote-history-entry button:disabled,#quote-form button:disabled{opacity:.55;cursor:wait}
+
+/* Registo privado dos detalhes confirmados em cada pedido personalizado. */
+.internal-notes-help{margin:.1rem 0 .8rem!important;font-size:.76rem;line-height:1.55;color:var(--muted)}
+.project-notes-form{display:grid;gap:.5rem}
+.project-notes-form label{margin:0;font-size:.72rem;color:var(--muted)}
+.project-notes-form textarea{min-height:135px;resize:vertical;line-height:1.55;font-size:.82rem}
+.project-notes-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.8rem}
+.project-notes-actions span{font-size:.75rem;color:var(--deep)}
+.project-notes-actions button:disabled{opacity:.55;cursor:wait}
