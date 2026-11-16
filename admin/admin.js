@@ -16,9 +16,10 @@ const selectedTestOrders = new Set();
 const selectedDraftOrders = new Set();
 const ORDER_LABELS = {draft:'Rascunho',awaiting_payment:'A aguardar pagamento',confirmed:'Confirmada',review:'Em análise',awaiting_details:'A aguardar detalhes',production:'Em produção',ready_to_ship:'Pronta para enviar',shipped:'Enviada',completed:'Concluída',cancelled:'Cancelada'};
 const QUOTE_LABELS = {draft:'Rascunho',sent:'Enviado',approved:'Aprovado',paid:'Pago',expired:'Expirado',cancelled:'Cancelado'};
+const PROJECT_FULFILLMENT_STATES = ['confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'];
 const PROJECT_LABELS = {draft:'Rascunho',submitted:'Recebido',in_review:'Em análise',awaiting_details:'A aguardar detalhes',quoted:'Orçamentado',approved:'Aprovado',payment_pending:'A aguardar pagamento',paid:'Pago',production:'Em produção',completed:'Concluído',declined:'Recusado',archived:'Arquivado'};
 function updateStatusOptions() {
-  const labels = currentView === 'orders' ? ORDER_LABELS : PROJECT_LABELS;
+  const labels = currentView === 'orders' ? ORDER_LABELS : Object.fromEntries(PROJECT_FULFILLMENT_STATES.map(value => [value, ORDER_LABELS[value]]));
   const select = document.getElementById('admin-status');
   select.innerHTML = '<option value="">Todos os estados</option>' + Object.entries(labels).map(([value,label]) => `<option value="${value}">${label}</option>`).join('');
   select.value = statusFilter;
@@ -29,7 +30,7 @@ document.getElementById('admin-tests').addEventListener('change', event => { tes
 let currentRows = [];
 function filterRows(rows) {
   const q = searchTerm.trim().toLocaleLowerCase('pt-PT');
-  return rows.filter(row => (currentView !== 'orders' || ((testFilter === 'all' || Boolean(row.is_test) === (testFilter === 'test')) && (!channelFilter || row.sales_channel === channelFilter))) && (!statusFilter || (currentView === 'orders' ? row.order_status : row.status) === statusFilter) && (!q || [row.order_number,row.project_number,row.customer_name,row.customer_email].some(value => String(value || '').toLocaleLowerCase('pt-PT').includes(q))));
+  return rows.filter(row => (currentView !== 'orders' || ((testFilter === 'all' || Boolean(row.is_test) === (testFilter === 'test')) && (!channelFilter || row.sales_channel === channelFilter))) && (!statusFilter || (currentView === 'orders' ? row.order_status : row.fulfillment_status) === statusFilter) && (!q || [row.order_number,row.project_number,row.customer_name,row.customer_email].some(value => String(value || '').toLocaleLowerCase('pt-PT').includes(q))));
 }
 document.getElementById('admin-search').addEventListener('input', event => { searchTerm = event.target.value; renderFilteredRows(); });
 function renderFilteredRows() { if (currentView === 'orders') renderOrderRows(currentRows); else renderProjectRows(currentRows); }
@@ -63,7 +64,7 @@ function isNewOrder(order) { return !order.admin_seen_at && order.order_status !
 function isDeletableDraft(order) {
   return !order.is_test && order.order_status === 'draft' && order.payment_status === 'unpaid' && !order.paid_at && !Number(order.manual_received_amount || 0);
 }
-function isNewProject(project) { return !project.admin_seen_at && project.status !== 'completed'; }
+function isNewProject(project) { return !project.admin_seen_at && project.fulfillment_status !== 'completed'; }
 function lastProjectQuote(project, paidOnly = false) {
   return [...(project.quotes || [])]
     .filter(quote => !['expired','cancelled'].includes(quote.status) &&
@@ -71,6 +72,23 @@ function lastProjectQuote(project, paidOnly = false) {
       Number.isFinite(Number(quote.total_amount)) && Number(quote.total_amount) >= 0)
     .sort((a, b) => Number(b.version || 0) - Number(a.version || 0) ||
       Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0))[0] || null;
+}
+function projectPaymentStage(project) {
+  const quote = lastProjectQuote(project);
+  if (!quote) return 'no_quote';
+  const total = Number(quote.total_amount || 0);
+  const received = Number(project.payment_received_amount || 0);
+  if (total === 0) return 'no_quote';
+  if (received >= total) return 'paid';
+  if (received === 0) return 'unpaid';
+  if (Math.abs(received * 2 - total) <= 1) return 'half_paid';
+  return 'partially_paid';
+}
+function projectPaymentBadge(project) {
+  const stage = projectPaymentStage(project);
+  return stage === 'no_quote'
+    ? '<span class="badge no_quote">Sem orçamento</span>'
+    : badge(stage);
 }
 function orderReceivedAmount(order) {
   return order.payment_provider === 'manual'
@@ -417,39 +435,52 @@ async function loadProjects() {
   currentRows = rows;
   updateStatusOptions();
   document.getElementById('view-title').textContent = 'Projetos personalizados';
-  // Orçamentos e pagamentos são indicadores distintos: o total pago é
-  // estimado a partir do orçamento dos projetos assinalados como pagos,
-  // não de uma coluna independente de recebimentos.
-  const paidProjects = rows.filter(row => row.status === 'paid' ||
-    (row.quotes || []).some(quote => quote.status === 'paid') ||
-    (row.project_status_history || []).some(history => history.status === 'paid'));
-  const quotedProjects = rows.filter(row => lastProjectQuote(row));
-  const quotedAmount = quotedProjects.reduce((sum, project) =>
-    sum + Number(lastProjectQuote(project).total_amount), 0);
-  const paidWithQuote = paidProjects.filter(project =>
-    lastProjectQuote(project, true) || lastProjectQuote(project));
-  const paidAmount = paidWithQuote.reduce((sum, project) =>
-    sum + Number((lastProjectQuote(project, true) || lastProjectQuote(project)).total_amount), 0);
-  const paymentNote = paidWithQuote.length === paidProjects.length
-    ? 'Estimado pelos orçamentos dos projetos assinalados como pagos.'
-    : 'Estimado pelos orçamentos. Existem projetos pagos sem valor associado.';
+  // Mesmos quatro cartões que as encomendas diretas, mas todos com valores em euros.
+  // Um orçamento por projeto: a versão mais recente. Não somar versões repetidas.
+  const valued = rows.map(project => ({
+    project,
+    quote: lastProjectQuote(project)
+  })).filter(item => item.quote);
+  const totals = valued.reduce((sum, {project,quote}) => {
+    const total = Number(quote.total_amount || 0);
+    const received = Math.min(total, Math.max(0, Number(project.payment_received_amount || 0)));
+    sum.quoted += total;
+    sum.outstanding += total - received;
+    if (received > 0 && received < total) sum.partial += received;
+    if (total > 0 && received >= total) sum.fullyPaid += received;
+    if (project.payment_needs_confirmation && received > 0) sum.legacy += 1;
+    return sum;
+  }, { quoted:0,partial:0,fullyPaid:0,outstanding:0,legacy:0 });
+  const legacyNote = totals.legacy ? `${totals.legacy} valor(es) histórico(s) por confirmar` : '';
   document.getElementById('summary-grid').innerHTML = [
-    ['Novos', rows.filter(isNewProject).length],
-    ['Por analisar', rows.filter(row => row.status === 'submitted').length],
-    ['Orçamentados', rows.filter(row => row.status === 'quoted' || lastProjectQuote(row)).length],
-    ['Pagos', paidProjects.length],
-    ['Em produção', rows.filter(row => row.status === 'production').length],
-    ['Valor orçamentado', money(quotedAmount), 'Inclui rascunhos', 'Soma dos últimos orçamentos guardados em cada projeto.'],
-    ['Valor pago', money(paidAmount), 'Estimado', paymentNote]
-  ].map(item => `<div class="summary-card"${item[3] ? ` title="${esc(item[3])}"` : ''}><span>${item[0]}</span><strong>${item[1]}</strong>${item[2] ? `<small class="summary-card-note">${esc(item[2])}</small>` : ''}</div>`).join('');
-  document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Ocasião</th><th>Tipo</th><th>Estado</th><th>Valor</th><th>Evento</th><th>Data do pedido</th></tr>';
+    ['Valor orçamentado', money(totals.quoted), 'Último orçamento de cada projeto'],
+    ['Recebido parcialmente', money(totals.partial), 'Sinais e pagamentos parciais'],
+    ['Recebido a 100%', money(totals.fullyPaid), legacyNote],
+    ['Por receber', money(totals.outstanding), 'Montante ainda em falta']
+  ].map(item => `<div class="summary-card"><span>${item[0]}</span><strong>${item[1]}</strong>${item[2] ? `<small class="summary-card-note">${esc(item[2])}</small>` : ''}</div>`).join('');
+  document.getElementById('table-head').innerHTML = '<tr><th>Referência</th><th>Cliente</th><th>Encomenda</th><th>Pagamento</th><th>Bruto</th><th>Recebido</th><th>Por receber</th><th>Evento</th><th>Data</th></tr>';
   renderProjectRows(rows);
 }
 
 function renderProjectRows(allRows) {
   const rows = filterRows(allRows);
   document.getElementById('results-count').textContent = `${rows.length} resultados (lista carregada)`;
-  document.getElementById('table-body').innerHTML = rows.map(row => `<tr data-project="${row.id}"><td><strong>${esc(row.project_number)}</strong>${isNewProject(row) ? ' <span class="new-tag">Novo</span>' : ''}</td><td>${esc(row.customer_name)}<br>${esc(row.customer_email)}</td><td>${esc(row.occasion)}</td><td>${esc(row.project_type)}</td><td>${badge(row.status)}</td><td>${lastProjectQuote(row) ? money(lastProjectQuote(row).total_amount) : '—'}</td><td>${esc(row.event_date || '—')}</td><td>${date(row.created_at)}</td></tr>`).join('');
+  document.getElementById('table-body').innerHTML = rows.map(row => {
+    const quote = lastProjectQuote(row);
+    const gross = quote ? Number(quote.total_amount || 0) : 0;
+    const received = Math.min(gross, Math.max(0, Number(row.payment_received_amount || 0)));
+    return `<tr data-project="${row.id}">
+      <td><strong>${esc(row.project_number)}</strong>${isNewProject(row) ? ' <span class="new-tag">Novo</span>' : ''}<small class="project-row-subtitle">${esc(row.project_type)}</small></td>
+      <td>${esc(row.customer_name)}<br>${esc(row.customer_email||'')}</td>
+      <td>${badge(row.fulfillment_status)}</td>
+      <td>${projectPaymentBadge(row)}${row.payment_needs_confirmation && received > 0 ? '<small class="project-row-subtitle">Valor anterior por confirmar</small>' : ''}</td>
+      <td>${quote ? money(gross) : '—'}</td>
+      <td>${quote ? money(received) : '—'}</td>
+      <td>${quote ? money(Math.max(0,gross-received)) : '—'}</td>
+      <td>${esc(row.event_date || '—')}</td>
+      <td>${date(row.created_at)}</td>
+    </tr>`;
+  }).join('');
   document.querySelectorAll('[data-project]').forEach(row => row.addEventListener('click', () => openProject(row.dataset.project)));
 }
 
