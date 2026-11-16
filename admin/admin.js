@@ -506,9 +506,6 @@ async function openOrder(id) {
           <label>Quantidade<input type="number" name="quantity" min="1" step="1" max="10000" value="${Number(order.order_items?.[0]?.quantity || 1)}" required></label>
           <label>Total (€)<input type="number" name="totalEuros" min="0" step="0.01" value="${(Number(order.total_amount)/100).toFixed(2)}" ${order.payment_status==='paid'?'readonly':''} required></label>
           <label>Notas<textarea name="notes" rows="3">${esc(order.notes || '')}</textarea></label>
-          <p><strong>Pagamento</strong> ${order.payment_status==='paid'?'Pago':'Por pagar'}</p>
-          ${order.payment_status==='unpaid' ? `<label class="check-label"><input type="checkbox" name="markPaid" id="order-mark-paid"> Marcar como pago</label>
-            <label id="order-payment-method-label" hidden>Método de pagamento<select name="paymentMethod"><option value="mbway">MB WAY</option><option value="transferencia">Transferência bancária</option><option value="numerario">Numerário</option><option value="outro">Outro</option></select></label>` : ''}
           <p id="order-edit-error" class="error" role="alert"></p>
           <button type="submit">Guardar alterações</button>
         </form></div>` : ''}
@@ -517,9 +514,6 @@ async function openOrder(id) {
     document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadOrders(); });
     if (order.payment_provider === 'manual') {
       const form = document.getElementById('order-edit-form');
-      const markPaid = document.getElementById('order-mark-paid');
-      const methodLabel = document.getElementById('order-payment-method-label');
-      markPaid?.addEventListener('change', () => { methodLabel.hidden = !markPaid.checked; });
       form.addEventListener('submit', async event => {
         event.preventDefault();
         const button = form.querySelector('button[type="submit"]');
@@ -534,8 +528,7 @@ async function openOrder(id) {
             channel: values.get('channel'), description: values.get('description'),
             quantity: Number(values.get('quantity')),
             totalAmount: Math.round(Number(values.get('totalEuros')) * 100),
-            notes: values.get('notes'), markPaid: values.has('markPaid'),
-            paymentMethod: values.get('paymentMethod') || null
+            notes: values.get('notes'), markPaid: false
           });
           await loadOrders();
           await openOrder(id);
