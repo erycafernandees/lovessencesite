@@ -199,6 +199,10 @@ export async function queueEmail(template: string, recipient: string, payload: R
   await client.from("notification_outbox").update(update).eq("id", queued.id);
 }
 
+function escapeText(value: unknown): string {
+  return String(value || "Indisponível").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+}
+
 function emailHtml(template: string, payload: Record<string, unknown>): string {
   const number = String(payload.orderNumber || payload.projectNumber || "");
   const isQuote = template === "quote_ready";
@@ -214,7 +218,7 @@ function emailHtml(template: string, payload: Record<string, unknown>): string {
     : template.includes("project")
       ? "Vamos analisar o teu pedido e entrar em contacto contigo antes de preparar qualquer orçamento ou pagamento."
       : "A tua encomenda já está confirmada. Se precisarmos de validar algum detalhe da personalização, entraremos em contacto contigo.";
-  const reference = isCommerceAudit ? "" : isSiteError ? `<p style="line-height:1.7"><strong>Área afetada:</strong> ${String(payload.category || "desconhecida").replaceAll("<", "").replaceAll(">", "")}</p>` : `<p style="line-height:1.7"><strong>Referência:</strong> ${number}</p>`;
+  const reference = isCommerceAudit ? "" : isSiteError ? `<p style="line-height:1.7"><strong>Tipo:</strong> ${escapeText(payload.category)}<br><strong>Área:</strong> ${escapeText(payload.area)}<br><strong>Página:</strong> ${escapeText(payload.page_path)}<br><strong>Mensagem:</strong> ${escapeText(payload.error_message)}<br><strong>Origem:</strong> ${escapeText(payload.script_location)}</p>` : `<p style="line-height:1.7"><strong>Referência:</strong> ${number}</p>`;
   const action = isQuote && typeof payload.quoteUrl === "string" ? `<p style="margin:28px 0"><a href="${payload.quoteUrl}" style="display:inline-block;padding:13px 22px;border-radius:6px;background:#66135e;color:#fff;text-decoration:none">Consultar e aprovar proposta</a></p>` : "";
   return `<!doctype html><html lang="pt"><body style="margin:0;background:#f8f3f7;font-family:Arial,sans-serif;color:#3f073a"><div style="max-width:620px;margin:auto;padding:36px"><div style="background:#fff;border-radius:20px;padding:36px"><p style="color:#b468ab;letter-spacing:.14em;text-transform:uppercase;font-size:12px">LOVE ESSENCES | SABONETES ARTESANAIS &amp; CO.</p><h1 style="font-family:Georgia,serif;font-weight:400">${title}</h1><p style="line-height:1.7">${body}</p>${reference}${action}<p style="color:#765c73;font-size:13px">Esta mensagem foi enviada automaticamente. Podes responder a este email se precisares de ajuda.</p></div></div></body></html>`;
 }

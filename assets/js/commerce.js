@@ -31,7 +31,11 @@
       body: options.body === undefined ? undefined : JSON.stringify(options.body)
     });
     var data = await response.json().catch(function () { return {}; });
-    if (!response.ok) throw new Error(data.message || 'Não foi possível concluir a operação.');
+    if (!response.ok) {
+      var failure = new Error(data.message || 'Não foi possível concluir a operação.');
+      failure.diagnostic = name + ' HTTP ' + response.status;
+      throw failure;
+    }
     return data;
   }
 
@@ -125,7 +129,7 @@
     });
     if (!response.ok) {
       var detail = await response.json().catch(function () { return {}; });
-      if (window.LoveSiteMonitor) window.LoveSiteMonitor.report('upload', 'other');
+      if (window.LoveSiteMonitor) window.LoveSiteMonitor.report('upload', 'other', 'HTTP ' + response.status);
       console.error('Love Essences upload error', response.status, detail.code || detail.error || '');
       throw new Error('Não foi possível enviar o ficheiro ' + file.name + '. Tenta novamente.');
     }
@@ -184,7 +188,7 @@
       alert(error.message || 'Não foi possível iniciar o pagamento.');
       if (button) { button.disabled = false; button.textContent = 'Finalizar compra'; }
       if (window.LoveAnalytics) window.LoveAnalytics.trackCheckoutError('stripe_checkout', 'prepare_error');
-      if (window.LoveSiteMonitor) window.LoveSiteMonitor.report('checkout', 'checkout');
+      if (window.LoveSiteMonitor) window.LoveSiteMonitor.report('checkout', 'checkout', error && error.diagnostic || String(error));
     }
   }
 

@@ -9,7 +9,7 @@
   } catch (error) {}
 
   var state = {
-    consent: null,
+    consent: getConsent(),
     gaLoaded: false,
     clarityLoaded: false,
     lastPageKey: '',

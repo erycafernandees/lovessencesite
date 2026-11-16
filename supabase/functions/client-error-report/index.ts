@@ -1,10 +1,12 @@
 import { ApiError, enforceRateLimit, handleError, json, queueEmail, readJson, serviceClient } from "../_shared/core.ts";
 
+import { publicPage, technicalMessage, scriptLocation } from "../_shared/site-diagnostics.mjs";
+
 const ALLOWED_ORIGINS = new Set(["https://love-essences.pt", "https://www.love-essences.pt"]);
 const CATEGORIES = new Set(["form_submit", "checkout", "upload", "script_error", "promise_rejection"]);
 const AREAS = new Set(["contact", "cart", "checkout", "shop", "other"]);
 
-// Only report functional areas, never names, emails, URLs, IPs, messages, stacks or order data.
+// Filter again at the trust boundary. Older clients can omit all detail fields.
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return json(req, {}, 204);
   if (req.method !== "POST") return json(req, { error: "method_not_allowed" }, 405);
@@ -12,7 +14,7 @@ Deno.serve(async (req: Request) => {
   try {
     const origin = req.headers.get("origin") || "";
     if (!ALLOWED_ORIGINS.has(origin)) throw new ApiError(403, "invalid_origin", "Origem não autorizada.");
-    const body = await readJson<{ category?: unknown; area?: unknown }>(req);
+    const body = await readJson<{ category?: unknown; area?: unknown; page?: unknown; message?: unknown; location?: unknown }>(req);
     if (typeof body?.category !== "string" || !CATEGORIES.has(body.category) ||
         typeof body?.area !== "string" || !AREAS.has(body.area)) {
       throw new ApiError(422, "invalid_event", "Evento de monitorização inválido.");
@@ -20,8 +22,9 @@ Deno.serve(async (req: Request) => {
 
     await enforceRateLimit(req, "client_error_report", 6, 60);
     const client = serviceClient();
+    const details = { page_path: publicPage(body.page), error_message: technicalMessage(body.message), script_location: scriptLocation(body.location) };
     const { error: writeError } = await client.from("site_error_events")
-      .insert({ category: body.category, area: body.area });
+      .insert({ category: body.category, area: body.area, ...details });
     if (writeError) throw writeError;
 
     const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -38,7 +41,7 @@ Deno.serve(async (req: Request) => {
       if (!lockError) {
         const adminEmail = Deno.env.get("ADMIN_NOTIFICATION_EMAIL");
         if (adminEmail) {
-          try { await queueEmail("site_error_alert", adminEmail, { category: body.category }); }
+          try { await queueEmail("site_error_alert", adminEmail, { category: body.category, area: body.area, ...details }); }
           catch (error) { console.error("Site error alert could not be sent", error); }
         }
       } else if (lockError.code !== "23505") {

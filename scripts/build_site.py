@@ -826,6 +826,7 @@ def build(output: Path, sync_root_seo: bool) -> None:
         if source_file.exists():
             shutil.copy2(source_file, output / filename)
 
+    shutil.copy2(ROOT / "supabase/functions/_shared/site-diagnostics.mjs", output / "assets/js/site-diagnostics.mjs")
     source = (ROOT / "index.html").read_text(encoding="utf-8")
     products, routes = get_routes(source)
     commercial_content = load_commercial_content()
