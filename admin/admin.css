@@ -134,3 +134,16 @@
 .badge.completed,.badge.paid{background:#DDF3E3;color:#247240}
 .badge.cancelled,.badge.unpaid,.badge.failed,.badge.declined{background:#FCE2E6;color:#A72138}
 .badge.half_paid,.badge.partially_paid,.badge.deposit_paid{background:#FFF0B8;color:#926100}
+
+/* Estados de encomenda e pagamento editados separadamente no detalhe. */
+.order-current-status{margin:0 0 .9rem!important}
+.order-payment-summary{grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;padding:.35rem 0 .5rem}
+.order-payment-form{margin-top:.9rem;padding-top:.9rem;border-top:1px solid var(--line);display:grid;gap:.75rem}
+.order-payment-form label{margin:0;display:grid;gap:.4rem;font-size:.74rem}
+.order-payment-form select,.order-payment-form input{margin:0}
+.order-payment-preview{border-radius:10px;background:#fbf8fb;border:1px solid var(--line);padding:.85rem;color:var(--deep);font-size:.77rem;font-weight:600}
+.order-payment-preview[data-invalid="true"]{background:#fff4f4;color:#a72138}
+.order-payment-hint{color:var(--muted);font-size:.72rem!important;line-height:1.5}
+.order-payment-form .error{margin:0}
+.order-payment-form>button{justify-self:start}
+@media(max-width:520px){.order-payment-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
