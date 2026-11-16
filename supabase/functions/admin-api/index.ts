@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
       const rawMethod = body.deliveryMethod == null ? "" : String(body.deliveryMethod);
       if (!["","ctt","hand_delivery"].includes(rawMethod)) throw new ApiError(422, "invalid_delivery_method", "Seleciona CTT ou entrega em mãos.");
       const method = rawMethod || null;
-      const tracking = method === "ctt" ? String(body.trackingCode || "").trim().replace(/\\s+/g,"").toUpperCase() : "";
+      const tracking = method === "ctt" ? String(body.trackingCode || "").trim().replace(/\s+/g,"").toUpperCase() : "";
       if (tracking.length > 60 || (tracking && !/^[A-Z0-9-]+$/.test(tracking)))
         throw new ApiError(422, "invalid_tracking", "O código CTT deve conter apenas letras, números ou hífen.");
       const place = method === "hand_delivery" ? cleanText(body.meetingPlace, 250) : null;
@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
       if (method === "hand_delivery" && body.meetingAt) {
         const rawAt = String(body.meetingAt);
         const timestamp = Date.parse(rawAt);
-        if (!/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}/.test(rawAt) || !Number.isFinite(timestamp))
+        if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(rawAt) || !Number.isFinite(timestamp))
           throw new ApiError(422, "invalid_delivery_date", "A data da entrega não é válida.");
         meetingAt = new Date(timestamp).toISOString();
       }
