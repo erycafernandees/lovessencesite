@@ -362,7 +362,7 @@ async function loadOrders() {
   selectedDraftOrders.clear();
   currentRows = rows;
   updateStatusOptions();
-  document.getElementById('view-title').textContent = 'Encomendas';
+  document.getElementById('view-title').textContent = 'Encomendas diretas';
   const visibleRows = rows.filter(row => (testFilter === 'all' || Boolean(row.is_test) === (testFilter === 'test')) && (!channelFilter || row.sales_channel === channelFilter));
   const paid = visibleRows.filter(row => ['paid','partially_refunded'].includes(row.payment_status));
   const partial = visibleRows.filter(row => row.payment_provider === 'manual' && row.payment_status === 'unpaid' && Number(row.manual_received_amount || 0) > 0);
@@ -434,7 +434,7 @@ async function loadProjects() {
   const rows = result.data || [];
   currentRows = rows;
   updateStatusOptions();
-  document.getElementById('view-title').textContent = 'Projetos personalizados';
+  document.getElementById('view-title').textContent = 'Encomendas personalizadas';
   // Mesmos quatro cartões que as encomendas diretas, mas todos com valores em euros.
   // Um orçamento por projeto: a versão mais recente. Não somar versões repetidas.
   const valued = rows.map(project => ({
