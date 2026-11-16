@@ -225,7 +225,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "list-projects") {
-      const { data, error } = await client.from("project_requests").select("id,project_number,status,admin_seen_at,customer_name,customer_email,occasion,project_type,event_date,created_at,quotes(id,version,status,total_amount,currency,valid_until,created_at),project_status_history(status)").order("created_at", { ascending: false }).limit(100);
+      const { data, error } = await client.from("project_requests").select("id,project_number,status,fulfillment_status,payment_received_amount,payment_needs_confirmation,admin_seen_at,customer_name,customer_email,occasion,project_type,event_date,created_at,quotes(id,version,status,total_amount,currency,valid_until,created_at),project_status_history(status)").order("created_at", { ascending: false }).limit(100);
       if (error) throw error;
       return json(req, { data });
     }
@@ -250,6 +250,73 @@ Deno.serve(async (req) => {
       await client.from("project_status_history").insert({ project_request_id: id, status: body.status, note: cleanText(body.note, 500), actor_user_id: admin.userId });
       await client.from("audit_log").insert({ actor_user_id: admin.userId, action: "project.status.update", entity_type: "project_request", entity_id: id, before_data: before, after_data: { status: body.status } });
       return json(req, { ok: true });
+    }
+
+    // A fase de execução é independente do estado do orçamento e do pagamento.
+    if (action === "set-project-fulfillment") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para alterar encomendas.");
+      const id = cleanText(body.id, 80, true)!;
+      const next = String(body.fulfillmentStatus || "");
+      const allowed = ["confirmed","review","awaiting_details","production","ready_to_ship","shipped","completed","cancelled"];
+      if (!allowed.includes(next)) throw new ApiError(422, "invalid_fulfillment", "Seleciona um estado de encomenda válido.");
+      const { data: previous, error: beforeError } = await client.from("project_requests")
+        .select("fulfillment_status,admin_seen_at").eq("id", id).single();
+      if (beforeError || !previous) throw new ApiError(404, "project_not_found", "Projeto não encontrado.");
+      const { data: updated, error: updateError } = await client.from("project_requests")
+        .update({ fulfillment_status: next,
+          ...(next === "completed" ? { admin_seen_at: previous.admin_seen_at || new Date().toISOString() } : {}) })
+        .eq("id", id).eq("fulfillment_status", previous.fulfillment_status).select("id").maybeSingle();
+      if (updateError) throw updateError;
+      if (!updated) throw new ApiError(409, "project_changed", "O projeto mudou entretanto. Atualiza a página.");
+      await client.from("audit_log").insert({
+        actor_user_id: admin.userId, action: "project.fulfillment.update",
+        entity_type: "project_request", entity_id: id,
+        before_data: { fulfillment_status: previous.fulfillment_status }, after_data: { fulfillment_status: next }
+      });
+      return json(req, { ok: true, fulfillmentStatus: next });
+    }
+
+    // Montante efetivamente registado como recebido: 0, sinal, parcial ou integral.
+    if (action === "set-project-payment") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para atualizar pagamentos.");
+      const id = cleanText(body.id, 80, true)!;
+      const receivedAmount = Number(body.receivedAmount);
+      if (!Number.isSafeInteger(receivedAmount) || receivedAmount < 0 || receivedAmount > 100000000)
+        throw new ApiError(422, "invalid_payment", "Introduz o valor recebido em euros.");
+      const { data: previous, error: readError } = await client.from("project_requests")
+        .select("id,payment_received_amount,payment_needs_confirmation").eq("id", id).single();
+      if (readError || !previous) throw new ApiError(404, "project_not_found", "Projeto não encontrado.");
+      const { data: quotes, error: quotesError } = await client.from("quotes")
+        .select("id,version,status,total_amount,order_id").eq("project_request_id", id)
+        .order("version", { ascending: false }).limit(30);
+      if (quotesError) throw quotesError;
+      const latest = (quotes || []).find(q => !["cancelled","expired"].includes(q.status));
+      if (!latest) throw new ApiError(409, "no_quote", "Guarda primeiro um orçamento com valor.");
+      const totalAmount = Number(latest.total_amount);
+      if (receivedAmount > totalAmount) throw new ApiError(422, "amount_too_high", "O valor recebido não pode ultrapassar o orçamento.");
+      if (receivedAmount < Number(previous.payment_received_amount || 0) && body.confirmReduction !== true)
+        throw new ApiError(409, "confirm_correction", "Confirma a correção de um montante recebido mais baixo.");
+      // Não substituir movimentos confirmados automaticamente por pagamentos manuais.
+      const { data: linkedOrders, error: linkedError } = await client.from("orders")
+        .select("id").eq("project_request_id", id).limit(1);
+      if (linkedError) throw linkedError;
+      if ((linkedOrders || []).length || (quotes || []).some(q => Boolean(q.order_id)))
+        throw new ApiError(409, "linked_checkout", "Este projeto já tem um pagamento associado a uma encomenda. Consulta o registo dessa encomenda.");
+      const { data: updated, error: updateError } = await client.from("project_requests")
+        .update({ payment_received_amount: receivedAmount, payment_needs_confirmation: false })
+        .eq("id", id).eq("payment_received_amount", previous.payment_received_amount)
+        .select("id").maybeSingle();
+      if (updateError) throw updateError;
+      if (!updated) throw new ApiError(409, "project_changed", "O pagamento mudou entretanto. Atualiza a página.");
+      await client.from("audit_log").insert({
+        actor_user_id: admin.userId, action: "project.payment.update",
+        entity_type: "project_request", entity_id: id,
+        before_data: { payment_received_amount: previous.payment_received_amount,
+          payment_needs_confirmation: previous.payment_needs_confirmation },
+        after_data: { payment_received_amount: receivedAmount, payment_needs_confirmation: false,
+          quote_id: latest.id, quote_total_amount: totalAmount }
+      });
+      return json(req, { ok: true, receivedAmount });
     }
 
     if (action === "update-project-notes") {
