@@ -13889,8 +13889,7 @@ var PRODUCT_CATALOG = {
     quote: 'Uma criação artesanal para oferecer nesta época.',
     natalFragrancePending: true,
     natalCandleOptions: true,
-    quoteOnly: true,
-    ctaLabel: 'Pedir informações',
+    ctaLabel: 'Adicionar ao Carrinho',
   },
   natal_bloom: {
     category: 'Natal',
@@ -15338,6 +15337,7 @@ function getCurrentProductSelection() {
     if (size) {
       price = size.price;
       itemName += ' (' + size.label + ')';
+      if (p.category === 'Natal') eventDetails.push('Opção: ' + size.label);
       if (size.image) image = size.image;
     }
   } else if (typeof p.basePrice === 'number') {
@@ -15480,6 +15480,11 @@ function updateProductPrice() {
       ? formatPrice(selection.price) + (p.priceSuffix || '')
       : p.priceLabel || (formatPrice(selection.price) + (p.priceSuffix || ''));
   document.getElementById('pd-price-from').style.display = 'none';
+  var scentSection = document.getElementById('pd-natal-note-section');
+  if (scentSection && p.natalCandleOptions) {
+    var candle = document.getElementById('pd-natal-candle');
+    scentSection.style.display = candle && candle.value !== 'none' ? '' : 'none';
+  }
   var cta = document.getElementById('pd-cta');
   if (cta) cta.textContent = selection.quoteOnly ? 'Pedir informações' : (p.ctaLabel || 'Adicionar ao Carrinho');
 }
@@ -15581,7 +15586,7 @@ function openProductQuoteRequest(selection) {
     var descricao = document.querySelector('#contact-form textarea[name="ideia"]');
     var quantidade = document.querySelector('#form-quantidade input');
     var ocasiao = document.getElementById('form-ocasiao');
-    if (ocasiao) {
+    if (ocasiao && PRODUCT_CATALOG[currentProduct] && PRODUCT_CATALOG[currentProduct].category === 'Lembranças para Eventos') {
       ocasiao.value = 'Casamento ou Batizado';
       toggleEventoCelebracao();
     }
@@ -15746,7 +15751,8 @@ function applyShopFilters() {
     var typeProducts = LOVE_PRODUCT_TYPE_FILTERS[currentCategory];
     var isNatalExclusive = card.dataset.natalOnly === 'true';
     var categoryMatch = isNatalExclusive
-      ? currentCategory === 'natal'
+      ? (currentCategory === 'natal' || (currentCategory === 'todos' &&
+          document.documentElement.classList.contains('christmas-season-on')))
       : (currentCategory === 'todos' || cardCategory === currentCategory ||
          (typeProducts && typeProducts.indexOf(productId) !== -1));
 
