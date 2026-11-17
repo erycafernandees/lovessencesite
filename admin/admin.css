@@ -208,3 +208,7 @@
 .unified-edit-feedback:empty{display:none}
 .unified-edit-bar button:disabled{opacity:.55;cursor:wait}
 @media(max-width:600px){.unified-edit-bar{padding:.8rem 1rem}.unified-edit-bar button{flex:1}.detail-drawer{padding-bottom:5rem}}
+
+/* Em modo de consulta ficam apenas os dados e ações que não são edições. */
+.detail-drawer:not(.is-editing) .internal-notes-help,
+.detail-drawer:not(.is-editing) [data-delete-draft-quote]{display:none!important}
