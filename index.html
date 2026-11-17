@@ -14910,10 +14910,11 @@ function renderProductEventOptions(p) {
   }
 }
 
+var SIGNATURE_FRAGRANCES = ['Doce Encanto', 'Explosão Floral'];
 var SOAP_FLOWER_FRAGRANCES = [
-  'Pure Cotton',
-  'Explosão Floral',
   'Doce Encanto',
+  'Explosão Floral',
+  'Pure Cotton',
   'Marselha',
   'Pétalas de Rosa com Pêssego',
   'Morango com Champanhe',
@@ -15318,7 +15319,7 @@ function renderNatalProductOptions(p) {
   var note = document.getElementById('pd-natal-note');
   if (noteSection) noteSection.style.display = p.natalFragrancePending ? '' : 'none';
   if (note && p.natalFragrancePending) note.textContent =
-    'Fragrâncias de Natal: Eucalipto com Menta · Home Sweet Home · Rosa Champanhe · Vanilla Frappuccino · Cashmere · Holiday Spice · Canela e Laranja. Confirma connosco a fragrância pretendida antes da encomenda.';
+    'Fragrâncias de Natal: Eucalipto com Menta · Home Sweet Home · Rosa Champanhe · Vanilla Frappuccino · Cashmere · Holiday Spice · Canela e Laranja · Caramelo com Framboesa e Baunilha. Confirma connosco a fragrância pretendida antes da encomenda.';
 }
 
 function getCurrentProductSelection() {
