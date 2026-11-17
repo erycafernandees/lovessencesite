@@ -201,13 +201,13 @@
 .delivery-readonly-details a{color:var(--deep);text-decoration:underline;text-underline-offset:2px}
 .delivery-code{font-weight:600;user-select:text}
 #drawer-content{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;margin:0 -2rem;padding:0 2rem 1.5rem;overscroll-behavior:contain}
-.unified-edit-bar{position:relative;z-index:1;flex:0 0 auto;margin:0 -2rem -2rem;background:#fff;border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(63,7,58,.06);padding:1rem 2rem;display:flex;align-items:center;justify-content:flex-end;gap:.6rem;flex-wrap:wrap}
+.unified-edit-bar{position:static;display:flex;align-items:center;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;margin:1.5rem 0 .25rem;padding:0;background:transparent;border:0;box-shadow:none}
 .unified-edit-bar button{min-width:112px;font-size:.81rem}
 .unified-edit-bar button[hidden]{display:none!important}
 .unified-edit-feedback{flex:1 1 100%;margin:0!important;color:var(--deep)!important;font-size:.76rem!important}
 .unified-edit-feedback:empty{display:none}
 .unified-edit-bar button:disabled{opacity:.55;cursor:wait}
-@media(max-width:600px){.unified-edit-bar{padding:.8rem 1rem}.unified-edit-bar button{flex:1}.detail-drawer{padding-bottom:2rem}}
+@media(max-width:600px){.unified-edit-bar{padding:0}.unified-edit-bar button{flex:1}.detail-drawer{padding-bottom:2rem}}
 
 /* Em modo de consulta ficam apenas os dados e ações que não são edições. */
 .detail-drawer:not(.is-editing) .internal-notes-help,
