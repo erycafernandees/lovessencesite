@@ -151,6 +151,21 @@ function deliveryAddressHtml(record) {
     ? `<p><strong>Destinatário</strong> ${esc(shipping.name)}</p>` : '';
   return `<div class="delivery-address"><strong>Morada de entrega</strong>${recipient}<p>${lines.map(esc).join('<br>')}</p></div>`;
 }
+function deliveryReadOnlyDetails(record) {
+  const parts = [];
+  if (record.delivery_method === 'ctt' && record.delivery_tracking_code) {
+    parts.push('<p><strong>Código CTT</strong> <span class="delivery-code">' + esc(record.delivery_tracking_code) + '</span> · <a href="' + CTT_TRACKING_PAGE + '" target="_blank" rel="noopener noreferrer">Ver rastreio</a></p>');
+  }
+  if (record.delivery_method === 'hand_delivery') {
+    if (record.delivery_meeting_place) parts.push('<p><strong>Local combinado</strong> ' + esc(record.delivery_meeting_place) + '</p>');
+    if (record.delivery_meeting_at) {
+      const d = new Date(record.delivery_meeting_at);
+      if (Number.isFinite(d.getTime())) parts.push('<p><strong>Data combinada</strong> ' + esc(d.toLocaleString('pt-PT', {dateStyle:'medium',timeStyle:'short'})) + '</p>');
+    }
+  }
+  if (record.delivery_notes) parts.push('<p><strong>Notas da entrega</strong> ' + esc(record.delivery_notes) + '</p>');
+  return parts.length ? '<div class="delivery-readonly-details">' + parts.join('') + '</div>' : '';
+}
 function deliveryFormHtml(record) {
   const method = record.delivery_method || '';
   const tracking = String(record.delivery_tracking_code || '');
@@ -158,6 +173,7 @@ function deliveryFormHtml(record) {
     <h3>Entrega</h3>
     <p class="order-current-status">${deliverySummary(record)}</p>
     ${deliveryAddressHtml(record)}
+    ${deliveryReadOnlyDetails(record)}
     <form id="admin-delivery-form" class="order-payment-form">
       <label>Modalidade de entrega
         <select name="deliveryMethod">
@@ -636,7 +652,7 @@ function renderProjectRows(allRows) {
   document.querySelectorAll('[data-project]').forEach(row => row.addEventListener('click', () => openProject(row.dataset.project)));
 }
 
-function openDrawer(html) { document.getElementById('drawer-content').innerHTML = html; backdrop.hidden = false; drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
+function openDrawer(html) { drawer.classList.remove('is-editing'); if (unifiedEditorController) unifiedEditorController.abort(); document.getElementById('drawer-content').innerHTML = html; backdrop.hidden = false; drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
 function closeDrawer() { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); setTimeout(() => { backdrop.hidden = true; }, 250); }
 document.getElementById('drawer-close').addEventListener('click', closeDrawer); backdrop.addEventListener('click', closeDrawer);
 
@@ -668,6 +684,211 @@ async function markSeen(kind,id) {
     row.admin_seen_at = new Date().toISOString();
     if (currentView === (kind === 'order' ? 'orders' : 'projects')) await loadView();
   } catch (error) { console.warn('Não foi possível marcar como visto:',error); }
+}
+
+let unifiedEditorController = null;
+function unifiedDeliveryTask(record, kind, id) {
+  const form = document.getElementById('admin-delivery-form');
+  if (!form) return null;
+  const method = form.elements.deliveryMethod.value;
+  const trackingCode = method === 'ctt' ? form.elements.trackingCode.value.trim() : '';
+  const meetingPlace = method === 'hand_delivery' ? form.elements.meetingPlace.value.trim() : '';
+  const deliveryNotes = method ? form.elements.deliveryNotes.value.trim() : '';
+  let meetingAt = null;
+  if (method === 'hand_delivery' && form.elements.meetingAt.value) {
+    const parsed = new Date(form.elements.meetingAt.value);
+    if (!Number.isFinite(parsed.getTime())) throw new Error('A data da entrega não é válida.');
+    meetingAt = parsed.toISOString();
+  }
+  const oldMeetingAt = record.delivery_method === 'hand_delivery' && record.delivery_meeting_at
+    ? new Date(record.delivery_meeting_at).toISOString() : null;
+  const changed = method !== (record.delivery_method || '')
+    || trackingCode !== (record.delivery_method === 'ctt' ? String(record.delivery_tracking_code || '').trim() : '')
+    || meetingPlace !== (record.delivery_method === 'hand_delivery' ? String(record.delivery_meeting_place || '').trim() : '')
+    || meetingAt !== oldMeetingAt
+    || deliveryNotes !== String(record.delivery_notes || '').trim();
+  return changed ? { label: 'Entrega', action: 'set-delivery', body: { kind, id, deliveryMethod: method, trackingCode, meetingPlace, meetingAt, deliveryNotes } } : null;
+}
+
+function unifiedPaymentChoice(form, total) {
+  const stage = form.elements.paymentStage.value;
+  const custom = form.elements.receivedEuros;
+  const amount = stage === 'unpaid' ? 0 : stage === 'half' ? Math.round(total / 2)
+    : stage === 'paid' ? total : Math.round(Number(custom.value) * 100);
+  if (!Number.isSafeInteger(amount) || amount < 0 || amount > total
+    || (stage === 'custom' && (!custom.value || amount <= 0 || amount >= total))) {
+    throw new Error('O valor recebido é inválido. Confirma o estado do pagamento.');
+  }
+  return {amount, fullyPaid: stage === 'paid'};
+}
+
+function unifiedOrderTasks(record, id) {
+  const tasks = [];
+  const manual = document.getElementById('order-edit-form');
+  const total = Number(record.total_amount || 0);
+  let editedTotal = total;
+  if (manual) {
+    if (!manual.reportValidity()) throw new Error('Revê os dados da encomenda antes de guardar.');
+    const fd = new FormData(manual);
+    editedTotal = Math.round(Number(fd.get('totalEuros')) * 100);
+    if (!Number.isSafeInteger(editedTotal) || editedTotal < 0) throw new Error('O total da encomenda não é válido.');
+    const customerName = String(fd.get('customerName') || '').trim();
+    const customerEmail = String(fd.get('customerEmail') || '').trim();
+    const customerPhone = String(fd.get('customerPhone') || '').trim();
+    const channel = String(fd.get('channel') || '');
+    const description = String(fd.get('description') || '').trim();
+    const quantity = Number(fd.get('quantity'));
+    const notes = String(fd.get('notes') || '').trim();
+    const changed = customerName !== String(record.customer_name || '').trim()
+      || customerEmail.toLowerCase() !== String(record.customer_email || '').trim().toLowerCase()
+      || customerPhone !== String(record.customer_phone || '').trim()
+      || channel !== String(record.sales_channel || '')
+      || description !== String(record.order_items?.[0]?.name || '').trim()
+      || quantity !== Number(record.order_items?.[0]?.quantity || 1)
+      || editedTotal !== total || notes !== String(record.notes || '').trim();
+    if (changed) tasks.push({label:'Dados da encomenda',action:'edit-manual-order',body:{
+      id, customerName, customerEmail, customerPhone, channel, description, quantity, totalAmount:editedTotal, notes, markPaid:false
+    }});
+  }
+  const delivery = unifiedDeliveryTask(record,'order',id);
+  if (delivery) tasks.push(delivery);
+  const status = document.querySelector('#order-status-form select[name=status]')?.value || '';
+  if (status && status !== record.order_status) tasks.push({label:'Estado',action:'update-order',body:{id,orderStatus:status}});
+  const payment = document.getElementById('order-payment-form');
+  if (payment) {
+    const choice = unifiedPaymentChoice(payment,editedTotal);
+    const previous = Number(record.manual_received_amount || 0);
+    if (choice.amount < previous && !window.confirm('Estás a reduzir o valor anteriormente recebido. Confirmas que é uma correção?')) return null;
+    const changed = choice.amount !== previous || choice.fullyPaid;
+    if (changed) {
+      if (choice.fullyPaid && !window.confirm('Confirmas que já recebeste o valor total desta encomenda?')) return null;
+      tasks.push({label:'Pagamento',action:'set-manual-payment',body:{
+        id, receivedAmount:choice.amount, fullyPaid:choice.fullyPaid,
+        confirmReduction:choice.amount<previous, paymentMethod:payment.elements.paymentMethod.value
+      }});
+    }
+  }
+  return tasks;
+}
+
+function unifiedProjectTasks(record, id) {
+  const tasks = [];
+  const notes = document.getElementById('project-admin-notes')?.value.trim() || '';
+  if (notes !== String(record.admin_notes || '').trim()) tasks.push({label:'Notas internas',action:'update-project-notes',body:{id,notes}});
+  const delivery = unifiedDeliveryTask(record,'project',id);
+  if (delivery) tasks.push(delivery);
+  const status = document.querySelector('#project-fulfillment-form select[name=status]')?.value || '';
+  if (status && status !== String(record.fulfillment_status || '')) tasks.push({label:'Estado',action:'set-project-fulfillment',body:{id,fulfillmentStatus:status}});
+  const quoteForm = document.getElementById('quote-form');
+  let hasNewQuote = false;
+  if (quoteForm) {
+    const rows = [...quoteForm.querySelectorAll('.quote-row')];
+    hasNewQuote = rows.length > 1 || rows.some(row => String(row.querySelector('[name=description]').value || '').trim() || String(row.querySelector('[name=unit]').value || '').trim()) || Boolean(quoteForm.elements.quoteNotes.value.trim());
+    if (hasNewQuote) {
+      if (!quoteForm.reportValidity()) throw new Error('Preenche a descrição, quantidade e preço de cada linha do novo orçamento.');
+      const items = rows.map(row => ({
+        description:row.querySelector('[name=description]').value.trim(),
+        quantity:Number(row.querySelector('[name=quantity]').value),
+        unitAmount:Math.round(Number(row.querySelector('[name=unit]').value)*100)
+      }));
+      if (items.some(item=>!item.description || !Number.isSafeInteger(item.quantity) || item.quantity < 1 || !Number.isSafeInteger(item.unitAmount) || item.unitAmount < 0)) throw new Error('Revê os valores do novo orçamento.');
+      tasks.push({label:'Novo orçamento (rascunho)',action:'create-quote',body:{
+        projectId:id,items,notes:quoteForm.elements.quoteNotes.value
+      }});
+    }
+  }
+  const paymentForm = document.getElementById('project-payment-form');
+  if (paymentForm) {
+    const quote = lastProjectQuote(record);
+    const total = Number(quote?.total_amount || 0);
+    const choice = unifiedPaymentChoice(paymentForm,total);
+    const previous = projectReceivedAmount(record);
+    const changed = choice.amount !== previous || Boolean(record.payment_needs_confirmation);
+    if (changed && hasNewQuote) throw new Error('Guarda primeiro o novo orçamento e depois atualiza o pagamento, para os valores não se misturarem.');
+    if (changed) {
+      if (choice.amount < previous && !window.confirm('Confirmas a redução do valor registado como recebido?')) return null;
+      if (choice.fullyPaid && previous !== total && !window.confirm('Confirmas que recebeste o pagamento integral deste orçamento?')) return null;
+      tasks.push({label:'Pagamento',action:'set-project-payment',body:{
+        id,receivedAmount:choice.amount,confirmReduction:choice.amount<previous
+      }});
+    }
+  }
+  return tasks;
+}
+
+function setupUnifiedDetailEditor(kind, record, id) {
+  const root = document.getElementById('drawer-content');
+  const editor = document.getElementById(kind === 'order' ? 'order-edit-form' : 'quote-form');
+  if (editor) editor.closest(kind === 'order' ? '.detail-section' : '.project-quote-subsection')?.classList.add('detail-edit-section');
+  if (kind === 'project') {
+    const notesForm = document.getElementById('project-notes-form');
+    if (notesForm) {
+      const readOnly = document.createElement('p');
+      readOnly.className = 'detail-readonly-notes';
+      readOnly.textContent = record.admin_notes || 'Sem notas internas.';
+      notesForm.before(readOnly);
+    }
+  } else if (record.notes) {
+    const section = document.createElement('div');
+    section.className = 'detail-section detail-static-notes';
+    section.innerHTML = '<h3>Notas internas</h3><p>' + esc(record.notes) + '</p>';
+    root.querySelector('.detail-section')?.after(section);
+  }
+  const status = root.querySelector(kind === 'order' ? '#order-status-form select[name=status]' : '#project-fulfillment-form select[name=status]');
+  if (status) {
+    const current = kind === 'order' ? record.order_status : (record.fulfillment_status || '');
+    if (![...status.options].some(option=>option.value===String(current||''))) {
+      const option = document.createElement('option');
+      option.value = current || '';
+      option.textContent = current ? (ORDER_LABELS[current] || current) : 'Por definir';
+      status.prepend(option);
+    }
+    status.value = current || '';
+  }
+  const bar = document.createElement('div');
+  bar.className = 'unified-edit-bar';
+  bar.innerHTML = '<p class="unified-edit-feedback" role="status" aria-live="polite"></p>'
+    + '<button type="button" class="secondary unified-cancel" hidden>Cancelar</button>'
+    + '<button type="button" class="unified-save" hidden>Guardar alterações</button>'
+    + '<button type="button" class="unified-start">Editar</button>';
+  root.append(bar);
+  const start=bar.querySelector('.unified-start'),cancel=bar.querySelector('.unified-cancel'),save=bar.querySelector('.unified-save'),feedback=bar.querySelector('.unified-edit-feedback');
+  const setEditMode = value => {
+    drawer.classList.toggle('is-editing',value);
+    start.hidden=value; cancel.hidden=!value; save.hidden=!value;
+    if (value) drawer.scrollTo({top:0,behavior:'smooth'});
+  };
+  start.addEventListener('click',()=>{feedback.textContent='';setEditMode(true);});
+  cancel.addEventListener('click',()=>{drawer.classList.remove('is-editing');(kind==='order'?openOrder(id):openProject(id));});
+  save.addEventListener('click',async()=>{
+    if(save.disabled)return;
+    feedback.textContent='';
+    let tasks;
+    try{tasks=kind==='order'?unifiedOrderTasks(record,id):unifiedProjectTasks(record,id);}
+    catch(error){feedback.textContent=error.message||'Verifica os campos antes de guardar.';return;}
+    if(tasks===null)return;
+    if(!tasks.length){setEditMode(false);feedback.textContent='Sem alterações para guardar.';return;}
+    save.disabled=true;cancel.disabled=true;start.disabled=true;
+    let completed=0;
+    try{
+      for(const task of tasks){feedback.textContent='A guardar: '+task.label+'…';await adminApi(task.action,task.body);completed++;}
+      if(kind==='order'){await loadOrders();await openOrder(id);}
+      else{await loadProjects();await openProject(id);}
+    }catch(error){
+      feedback.textContent=(completed?'Foram guardadas '+completed+' de '+tasks.length+' alterações. ':'')
+        +(error.message||'Não foi possível guardar todas as alterações.')+(completed?' Atualiza a encomenda e confirma os restantes dados.':'');
+      save.disabled=false;cancel.disabled=false;start.disabled=false;
+    }
+  });
+  // Evita que Enter em formulários antigos guarde só uma secção.
+  if(unifiedEditorController) unifiedEditorController.abort();
+  unifiedEditorController=new AbortController();
+  root.addEventListener('submit',event=>{
+    if(event.target.matches('#order-status-form,#order-payment-form,#order-edit-form,#admin-delivery-form,#project-fulfillment-form,#project-payment-form,#project-notes-form,#quote-form')){
+      event.preventDefault();event.stopImmediatePropagation();
+      if(drawer.classList.contains('is-editing'))save.click();
+    }
+  },{capture:true,signal:unifiedEditorController.signal});
 }
 
 async function openOrder(id) {
@@ -711,7 +932,7 @@ async function openOrder(id) {
       </div>
       ${deliveryFormHtml(order)}
       <div class="detail-section"><h3>Detalhes financeiros — ${order.payment_provider === 'manual' ? 'manual' : 'Stripe'}</h3><div class="detail-grid">${order.payment_provider === 'manual' ? '' : `<p><strong>Payment Intent</strong>${esc(payment.provider_payment_id || '—')}</p><p><strong>Charge</strong>${esc(payment.provider_charge_id || '—')}</p>`}<p><strong>Bruto</strong>${money(grossAmount,order.currency)}</p><p><strong>Taxas</strong>${feeAmount==null?'—':money(feeAmount,order.currency)}</p><p><strong>Líquido recebido</strong>${netAmount==null?'—':money(netAmount,order.currency)}</p><p><strong>Reembolsos</strong>${money(payment.refunded_amount,order.currency)}</p></div></div>
-      ${order.payment_provider === 'manual' ? `<div class="detail-section"><h3>Editar encomenda</h3>
+      ${order.payment_provider === 'manual' ? `<div class="detail-section"><h3>Dados da encomenda</h3>
         <form id="order-edit-form" class="order-edit-form">
           <label>Nome do cliente<input name="customerName" value="${esc(order.customer_name || '')}" required maxlength="160"></label>
           <label>Email<input type="email" name="customerEmail" value="${esc(order.customer_email || '')}"></label>
@@ -810,6 +1031,7 @@ async function openOrder(id) {
         }
       });
     }
+    setupUnifiedDetailEditor('order',order,id);
     bindFiles();
     await markSeen('order',id);
 
@@ -1016,6 +1238,7 @@ async function openProject(id) {
         button.disabled = false;
       }
     }));
+    setupUnifiedDetailEditor('project',project,id);
     bindFiles();
     await markSeen('project',id);
   } catch (error) { openDrawer(`<p class="error">${esc(error.message)}</p>`); }
