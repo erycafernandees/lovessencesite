@@ -5937,7 +5937,7 @@ html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline
 #page-shop .natal-preview-photo{height:260px;background:linear-gradient(145deg,#fbf8fb,#f6f0f5)!important;overflow:hidden}
 #page-shop .natal-preview-photo-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.85rem;min-height:220px;color:#8d7588;font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;text-align:center}
 #page-shop .natal-preview-photo-icon{font-family:Georgia,serif;font-size:2.4rem;color:#b68baa;opacity:.6}
-#page-shop .natal-preview-card .natal-new-tag{background:#66135e!important;color:#fff!important;border:0!important;top:1rem;left:1rem;font-weight:700;letter-spacing:.13em}
+#page-shop .natal-preview-card .natal-new-tag{background:#992339!important;color:#fff!important;border:0!important;top:1rem;left:1rem;font-weight:700;letter-spacing:.13em}
 #page-shop .natal-preview-card .product-info{display:flex;flex-direction:column;padding:1.4rem;min-height:245px}
 #page-shop .natal-preview-card .product-desc{flex:0 0 auto;margin-bottom:.75rem}
 #page-shop .natal-preview-card .product-price{font-weight:650;font-size:1.05rem}
@@ -5951,6 +5951,20 @@ html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline
 #page-shop .natal-preview-variant label{font-size:.74rem}
 #page-shop .natal-preview-variant select{width:100%;border:1px solid #e3cde0;background:#fff;padding:.65rem;color:#66135e;font:inherit;font-size:.79rem;border-radius:3px}
 @media(max-width:768px){#page-shop .natal-preview-photo{height:auto;aspect-ratio:3/4}#page-shop .natal-preview-photo-inner{min-height:220px}#page-shop .natal-preview-card .product-info{min-height:0}}
+
+/* Vermelho escuro natalício para a primeira categoria da loja — sem alterar os restantes filtros */
+#page-shop .category-tabs .cat-tab[data-filter="natal"]{
+  color:#992339!important;
+  border-color:#992339!important;
+  font-weight:700!important;
+}
+#page-shop .category-tabs .cat-tab[data-filter="natal"].active,
+#page-shop .category-tabs .cat-tab[data-filter="natal"]:hover,
+#page-shop .category-tabs .cat-tab[data-filter="natal"]:focus-visible{
+  color:#fff!important;
+  background:#992339!important;
+  border-color:#992339!important;
+}
 </style>
 </head>
 <body>
