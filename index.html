@@ -5925,13 +5925,17 @@ html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline
   }
 }
 
-/* Homepage — Essência do Amor (rosas brancas): ampliar apenas a fotografia em 10%.
-   Não altera a imagem da loja, o cartão ou as restantes fotografias. */
-#page-home .featured-bg .products-grid .product-img img[src$="essencia-amor-rosas-brancas-sombra.png"] {
+/* HOME «Mais Procurados» — dar maior presença à box de rosas brancas.
+   A anterior regra comum aplicava padding de 4%, anulando visualmente o aumento.
+   A classe é exclusiva da homepage e não altera a fotografia da loja. */
+#page-home .featured-bg .products-grid .product-img img.home-white-roses-image {
+  padding: 0 !important;
+  object-fit: contain !important;
+  object-position: center center !important;
   transform: scale(1.10) !important;
   transform-origin: center center !important;
 }
-#page-home .featured-bg .products-grid .product-card:hover .product-img img[src$="essencia-amor-rosas-brancas-sombra.png"] {
+#page-home .featured-bg .products-grid .product-card:hover .product-img img.home-white-roses-image {
   transform: scale(1.10) !important;
 }
 </style>
@@ -9024,7 +9028,7 @@ html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline
       <div class="product-card">
         <div class="product-img has-photo">
           <span class="product-tag">Mais Oferecida</span>
-          <img src="assets/products/covers/essencia-amor-rosas-brancas-sombra.png" alt="Essência do Amor, box presente Love Essences" loading="lazy" decoding="async"/>
+          <img class="home-white-roses-image" src="assets/products/covers/essencia-amor-rosas-brancas-sombra.png" alt="Essência do Amor, box presente Love Essences" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Essência do Amor</h3>
