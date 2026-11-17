@@ -4,6 +4,27 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="theme-color" content="#66135e"/>
+<script>
+/* Campanha da homepage: 01/11 a 25/12/2026, hora de Portugal. Em 26/12
+   regressam os artigos habituais sem qualquer alteração manual. */
+(function() {
+  function portugalDayValue(now) {
+    var parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Europe/Lisbon', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).formatToParts(now);
+    var values = {};
+    parts.forEach(function(part) { if (part.type !== 'literal') values[part.type] = part.value; });
+    return Number(values.year) * 10000 + Number(values.month) * 100 + Number(values.day);
+  }
+  function syncChristmasHome() {
+    var day = portugalDayValue(new Date());
+    document.documentElement.classList.toggle('christmas-home-2026', day >= 20261101 && day <= 20261225);
+  }
+  syncChristmasHome();
+  window.setInterval(syncChristmasHome, 60000);
+  document.addEventListener('visibilitychange', syncChristmasHome);
+})();
+</script>
 <script>(function(){var d=new Date(),m=d.getMonth();if(m===10||m===11||(m===0&&d.getDate()<=6))document.documentElement.classList.add('christmas-season-on')})()</script>
 <!-- SEO:START -->
 <title>Love Essences | Lembranças Personalizadas e Presentes Artesanais</title>
@@ -5970,6 +5991,73 @@ html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline
   background:#992339!important;
   border-color:#992339!important;
 }
+
+/* Homepage sazonal 2026: 4 artigos de Natal em vez dos 4 habituais até 25/12.
+   Mudança automática para os originais no dia 26/12, incluindo se a página ficar aberta. */
+#page-home #homepage-featured-products .home-featured-christmas-grid,
+#page-home #homepage-featured-products .home-featured-christmas-only {
+  display:none!important;
+}
+html.christmas-home-2026 #page-home #homepage-featured-products .home-featured-default-grid,
+html.christmas-home-2026 #page-home #homepage-featured-products .home-featured-default-only {
+  display:none!important;
+}
+html.christmas-home-2026 #page-home #homepage-featured-products .home-featured-christmas-grid {
+  display:grid!important;
+}
+html.christmas-home-2026 #page-home #homepage-featured-products p.home-featured-christmas-only {
+  display:block!important;
+}
+html.christmas-home-2026 #page-home #homepage-featured-products button.home-featured-christmas-only {
+  display:inline-flex!important;
+}
+html.christmas-home-2026 #page-home #homepage-featured-products .section-title em {
+  color:#B3263E!important;
+  background:none!important;
+  background-image:none!important;
+  -webkit-text-fill-color:#B3263E!important;
+}
+#page-home #homepage-featured-products .home-natal-photo-placeholder {
+  background:#f8f2f7!important;
+  height:280px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+#page-home #homepage-featured-products .home-natal-photo-inner {
+  color:#977b90;
+  font-size:.7rem;
+  font-weight:500;
+  letter-spacing:.11em;
+  text-align:center;
+  text-transform:uppercase;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:.9rem;
+}
+#page-home #homepage-featured-products .home-natal-photo-symbol {
+  font-family:Georgia,serif;
+  font-size:2.2rem;
+  color:#b68baa;
+}
+#page-home #homepage-featured-products .home-natal-new-tag {
+  background:#992339!important;
+  color:#fff!important;
+  font-weight:700!important;
+  letter-spacing:.13em;
+}
+#page-home #homepage-featured-products .home-natal-featured-card .product-footer {
+  margin-top:auto;
+}
+@media(max-width:768px) {
+  #page-home #homepage-featured-products .home-natal-photo-placeholder {
+    height:auto!important;
+    aspect-ratio:3/4;
+  }
+}
 </style>
 </head>
 <body>
@@ -9035,15 +9123,17 @@ html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline
   </div>
 
   <!-- FEATURED PRODUCTS -->
-  <section class="featured-bg">
+  <section class="featured-bg" id="homepage-featured-products">
     <div class="products-header">
       <div>
-        <p class="section-label">✦ Mais Procurados</p>
+        <p class="section-label home-featured-default-only">✦ Mais Procurados</p>
+        <p class="section-label home-featured-christmas-only">✦ Especial Natal</p>
         <h2 class="section-title">Os Presentes que <em>emocionam</em></h2>
       </div>
-      <button type="button" class="btn-outline" onclick="showPage('shop')">Ver Toda a Coleção →</button>
+      <button type="button" class="btn-outline home-featured-default-only" onclick="showPage('shop')">Ver Toda a Coleção →</button>
+      <button type="button" class="btn-outline home-featured-christmas-only" onclick="openShopCategory('natal')">Ver a Coleção Natal →</button>
     </div>
-    <div class="products-grid">
+    <div class="products-grid home-featured-default-grid">
       <div class="product-card">
         <div class="product-img has-photo">
           <img src="assets/products/covers/bloom-mini-5.png" alt="Bloom, peça artesanal Love Essences" loading="lazy" decoding="async"/>
@@ -9095,6 +9185,76 @@ html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline
           <div class="product-footer">
             <span class="product-price">Desde 3,50€/un</span>
             <button type="button" class="product-btn" onclick="openProduct('memoria_perfumada')">Personalizar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="products-grid home-featured-christmas-grid">
+      <div class="product-card home-natal-featured-card">
+        <div class="product-img has-photo home-natal-photo-placeholder">
+          <span class="product-tag home-natal-new-tag">NOVIDADE</span>
+          <div class="home-natal-photo-inner" aria-label="Fotografia de Vila Encantada em breve">
+            <span aria-hidden="true" class="home-natal-photo-symbol">✦</span>
+            <span>Fotografia em breve</span>
+          </div>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">Vila Encantada</h3>
+          <p class="product-desc">Uma vela especial inspirada nas vilas de Natal.</p>
+          <div class="product-footer">
+            <span class="product-price">9,90 €</span>
+            <button type="button" class="product-btn" onclick="openShopCategory('natal')">Ver coleção</button>
+          </div>
+        </div>
+      </div>
+      <div class="product-card home-natal-featured-card">
+        <div class="product-img has-photo home-natal-photo-placeholder">
+          <span class="product-tag home-natal-new-tag">NOVIDADE</span>
+          <div class="home-natal-photo-inner" aria-label="Fotografia de Sagrada Família em breve">
+            <span aria-hidden="true" class="home-natal-photo-symbol">✦</span>
+            <span>Fotografia em breve</span>
+          </div>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">Sagrada Família</h3>
+          <p class="product-desc">Uma peça artesanal para celebrar a tradição natalícia.</p>
+          <div class="product-footer">
+            <span class="product-price">9,90 €</span>
+            <button type="button" class="product-btn" onclick="openShopCategory('natal')">Ver coleção</button>
+          </div>
+        </div>
+      </div>
+      <div class="product-card home-natal-featured-card">
+        <div class="product-img has-photo home-natal-photo-placeholder">
+          <span class="product-tag home-natal-new-tag">NOVIDADE</span>
+          <div class="home-natal-photo-inner" aria-label="Fotografia de Carrossel Encantado em breve">
+            <span aria-hidden="true" class="home-natal-photo-symbol">✦</span>
+            <span>Fotografia em breve</span>
+          </div>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">Carrossel Encantado</h3>
+          <p class="product-desc">Carrossel decorativo perfumado, com tampa e sem vela.</p>
+          <div class="product-footer">
+            <span class="product-price">14,90 €</span>
+            <button type="button" class="product-btn" onclick="openShopCategory('natal')">Ver coleção</button>
+          </div>
+        </div>
+      </div>
+      <div class="product-card home-natal-featured-card">
+        <div class="product-img has-photo home-natal-photo-placeholder">
+          <span class="product-tag home-natal-new-tag">NOVIDADE</span>
+          <div class="home-natal-photo-inner" aria-label="Fotografia de Bloom de Natal em breve">
+            <span aria-hidden="true" class="home-natal-photo-symbol">✦</span>
+            <span>Fotografia em breve</span>
+          </div>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">Bloom de Natal</h3>
+          <p class="product-desc">Abóbora decorativa com flores, disponível em dois tamanhos.</p>
+          <div class="product-footer">
+            <span class="product-price">Desde 18,90 €</span>
+            <button type="button" class="product-btn" onclick="openShopCategory('natal')">Ver coleção</button>
           </div>
         </div>
       </div>
