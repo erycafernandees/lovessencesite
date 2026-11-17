@@ -112,6 +112,7 @@ OCCASION_ROUTES = {
 }
 
 CATEGORY_BY_NAME = {
+    "Natal": "natal",
     "Coleção Assinatura": "pecas",
     "Coleção Memórias": "memorias",
     "Lembranças para Eventos": "eventos",
