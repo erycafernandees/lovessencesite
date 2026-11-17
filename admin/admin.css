@@ -168,3 +168,8 @@
 .badge.delivery-hand{background:#D9F3EF;color:#126C67}
 .delivery-section .order-payment-form{margin-top:0;padding-top:.2rem;border-top:0}
 .delivery-section .order-payment-form>button{justify-self:start}
+
+.delivery-address{margin:.75rem 0 1rem;padding:.9rem 1rem;background:#fbf8fb;border:1px solid var(--line);border-radius:10px}
+.delivery-address>strong{display:block;font-size:.76rem;color:var(--ink);margin-bottom:.5rem}
+.delivery-address p{margin:.15rem 0!important;line-height:1.65!important;overflow-wrap:anywhere}
+.delivery-address p strong{color:var(--ink)}
