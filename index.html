@@ -1533,6 +1533,19 @@
     display: grid;
     gap: 1.25rem;
   }
+  .pd-natal-fragrance-heading {
+    font-family: var(--sans);
+    font-size: .84rem;
+    letter-spacing: .06em;
+    font-weight: 600;
+    color: #66135e;
+    margin-bottom: .55rem;
+  }
+  #pd-natal-fragrance-groups .pd-fragrance-group + .pd-fragrance-group {
+    margin-top: 1.15rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(102,19,94,.14);
+  }
   .pd-fragrance-group {
     display: grid;
     gap: 0.55rem;
@@ -10258,8 +10271,9 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
         <div class="pd-fabrics" id="pd-natal-colors"></div>
       </div>
       <div class="pd-section" id="pd-natal-note-section" style="display:none;">
-        <h4>Fragrâncias desta edição</h4>
-        <p class="pd-custom-note" id="pd-natal-note"></p>
+        <h4>Escolhe a fragrância <span class="pd-required-mark">*</span></h4>
+        <div class="pd-soap-fragrance-groups" id="pd-natal-fragrance-groups" role="radiogroup" aria-label="Fragrâncias da coleção Natal" aria-required="true"></div>
+        <p class="pd-custom-note" id="pd-natal-note">Seleciona a fragrância pretendida.</p>
       </div>
 
       <!-- Cor da caixa (visível apenas para produtos com caixas coloridas) -->
@@ -14602,6 +14616,7 @@ var currentBearColor = null;
 var currentFabricId = null;
 var currentSoapFragrance = '';
 var currentNatalColor = '';
+var currentNatalFragrance = '';
 var currentGalleryImages = [];
 var currentGalleryIndex = 0;
 var productGalleryTimer = null;
@@ -14623,6 +14638,7 @@ function openProduct(productId, options) {
   currentBearColor = p.bearColors && p.bearColors.length > 0 ? p.bearColors[0] : null;
   currentFabricId = p.fabricOptions && p.fabricOptions.length > 0 ? p.fabricOptions[0].id : null;
   currentSoapFragrance = '';
+  currentNatalFragrance = '';
   currentNatalColor = p.natalColorOptions && p.natalColorOptions.length ? p.natalColorOptions[0] : '';
   if (window.LoveCommerce) window.LoveCommerce.setProductFiles([]);
 
@@ -15292,6 +15308,20 @@ function renderNatalCandleOptions(p) {
     : 'A seleção de fragrâncias das velas de Natal ainda está por definir.';
 }
 
+var CHRISTMAS_FRAGRANCES = ['Eucalipto com Menta','Home Sweet Home','Rosa Champanhe','Vanilla Frappuccino','Cashmere','Holiday Spice','Canela e Laranja','Caramelo com Framboesa e Baunilha'];
+var CHRISTMAS_SIGNATURE_FRAGRANCES = ['Doce Encanto','Explosão Floral'];
+function selectNatalFragrance(fragrance) {
+  currentNatalFragrance = fragrance;
+  var group = document.getElementById('pd-natal-fragrance-groups');
+  if (!group) return;
+  group.classList.remove('pd-field-error');
+  group.setAttribute('aria-invalid','false');
+  group.querySelectorAll('.pd-soap-fragrance-option').forEach(function(button) {
+    var selected = button.dataset.fragrance === fragrance;
+    button.classList.toggle('active',selected);
+    button.setAttribute('aria-checked',selected ? 'true' : 'false');
+  });
+}
 function renderNatalProductOptions(p) {
   renderNatalCandleOptions(p);
   var colorSection = document.getElementById('pd-natal-color-section');
@@ -15317,9 +15347,40 @@ function renderNatalProductOptions(p) {
   }
   var noteSection = document.getElementById('pd-natal-note-section');
   var note = document.getElementById('pd-natal-note');
+  var groups = document.getElementById('pd-natal-fragrance-groups');
   if (noteSection) noteSection.style.display = p.natalFragrancePending ? '' : 'none';
-  if (note && p.natalFragrancePending) note.textContent =
-    'Fragrâncias de Natal: Eucalipto com Menta · Home Sweet Home · Rosa Champanhe · Vanilla Frappuccino · Cashmere · Holiday Spice · Canela e Laranja · Caramelo com Framboesa e Baunilha. Confirma connosco a fragrância pretendida antes da encomenda.';
+  if (groups) {
+    groups.innerHTML = '';
+    groups.classList.remove('pd-field-error');
+    groups.removeAttribute('aria-invalid');
+    if (p.natalFragrancePending) [
+      { title: 'Especial Natal', fragrances: CHRISTMAS_FRAGRANCES },
+      { title: 'Assinatura', fragrances: CHRISTMAS_SIGNATURE_FRAGRANCES }
+    ].forEach(function(group) {
+      var wrapper = document.createElement('div');
+      wrapper.className = 'pd-fragrance-group';
+      var heading = document.createElement('h5');
+      heading.className = 'pd-natal-fragrance-heading';
+      heading.textContent = group.title;
+      wrapper.appendChild(heading);
+      var list = document.createElement('div');
+      list.className = 'pd-soap-fragrance-list';
+      group.fragrances.forEach(function(fragrance) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'pd-soap-fragrance-option';
+        button.dataset.fragrance = fragrance;
+        button.setAttribute('role','radio');
+        button.setAttribute('aria-checked','false');
+        button.textContent = fragrance;
+        button.onclick = function() { selectNatalFragrance(fragrance); };
+        list.appendChild(button);
+      });
+      wrapper.appendChild(list);
+      groups.appendChild(wrapper);
+    });
+  }
+  if (note && p.natalFragrancePending) note.textContent = 'Seleciona a fragrância pretendida antes de finalizar.';
 }
 
 function getCurrentProductSelection() {
@@ -15358,6 +15419,11 @@ function getCurrentProductSelection() {
     eventDetails.push('Velas: ' + candleLabel + ' (+' + formatPrice(supplement) + ')');
     personalization.natalCandle = candleChoice;
     addonCodes.push(currentProduct + ':vela_' + candleChoice);
+  }
+  if (p.natalFragrancePending && currentNatalFragrance) {
+    itemName += ', Fragrância: ' + currentNatalFragrance;
+    eventDetails.push('Fragrância: ' + currentNatalFragrance);
+    personalization.natalFragrance = currentNatalFragrance;
   }
   if (p.natalColorOptions && currentNatalColor) {
     itemName += ', Cor: ' + currentNatalColor;
@@ -15514,6 +15580,19 @@ function handleProductCta() {
         freeTextInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
         freeTextInput.focus({ preventScroll: true });
       }
+      return;
+    }
+  }
+  if (product && product.natalFragrancePending) {
+    var natalSection = document.getElementById('pd-natal-note-section');
+    if (natalSection && natalSection.style.display !== 'none' && !currentNatalFragrance) {
+      var natalGroups = document.getElementById('pd-natal-fragrance-groups');
+      if (natalGroups) {
+        natalGroups.classList.add('pd-field-error');
+        natalGroups.setAttribute('aria-invalid','true');
+        natalGroups.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+      alert('Seleciona uma fragrância antes de continuar.');
       return;
     }
   }
