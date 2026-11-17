@@ -123,7 +123,7 @@ function badge(value) { const labels = {...ORDER_LABELS,...PROJECT_LABELS,...QUO
 const CTT_TRACKING_PAGE = 'https://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx';
 function deliverySummary(record) {
   if (record.delivery_method === 'ctt') {
-    return `<span class="badge delivery-ctt">CTT</span>${record.delivery_tracking_code ? `<small class="delivery-row-detail">${esc(record.delivery_tracking_code)}</small>` : ''}`;
+    return '<span class="badge delivery-ctt">CTT</span>';
   }
   if (record.delivery_method === 'hand_delivery') {
     return '<span class="badge delivery-hand">Em mãos</span>';
@@ -137,12 +137,27 @@ function localDeliveryDateInput(iso) {
   const pad = n => String(n).padStart(2,'0');
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
+function deliveryAddressHtml(record) {
+  const shipping = record.shipping_address;
+  const address = shipping?.address || shipping;
+  if (!address || typeof address !== 'object') return '';
+  const street = [address.line1, address.line2].filter(Boolean).map(value => String(value).trim()).filter(Boolean);
+  const location = [address.postal_code, address.city].filter(Boolean).map(value => String(value).trim()).join(' ');
+  const region = address.state && String(address.state).trim().toLowerCase() !== String(address.city || '').trim().toLowerCase() ? String(address.state).trim() : '';
+  const country = address.country === 'PT' ? 'Portugal' : (address.country || '');
+  const lines = [...street, location, region, country].filter(Boolean);
+  if (!lines.length) return '';
+  const recipient = shipping?.name && shipping.name !== record.customer_name
+    ? `<p><strong>Destinatário</strong> ${esc(shipping.name)}</p>` : '';
+  return `<div class="delivery-address"><strong>Morada de entrega</strong>${recipient}<p>${lines.map(esc).join('<br>')}</p></div>`;
+}
 function deliveryFormHtml(record) {
   const method = record.delivery_method || '';
   const tracking = String(record.delivery_tracking_code || '');
   return `<div class="detail-section delivery-section">
     <h3>Entrega</h3>
     <p class="order-current-status">${deliverySummary(record)}</p>
+    ${deliveryAddressHtml(record)}
     <form id="admin-delivery-form" class="order-payment-form">
       <label>Modalidade de entrega
         <select name="deliveryMethod">
