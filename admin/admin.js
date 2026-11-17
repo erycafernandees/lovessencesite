@@ -6,6 +6,7 @@ const mfaCard = document.getElementById('mfa-card');
 const authShell = document.getElementById('auth-shell');
 const app = document.getElementById('admin-app');
 const drawer = document.getElementById('detail-drawer');
+let unifiedEditorController = null;
 const backdrop = document.getElementById('drawer-backdrop');
 let currentView = 'orders';
 let searchTerm = '';
@@ -686,7 +687,6 @@ async function markSeen(kind,id) {
   } catch (error) { console.warn('Não foi possível marcar como visto:',error); }
 }
 
-let unifiedEditorController = null;
 function unifiedDeliveryTask(record, kind, id) {
   const form = document.getElementById('admin-delivery-form');
   if (!form) return null;
