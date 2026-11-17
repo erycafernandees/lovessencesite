@@ -1557,19 +1557,35 @@
     border-color: #246B45;
     background: #246B45;
   }
+  /* Duas colunas: Especial Natal à esquerda, Assinatura à direita. */
+  #pd-natal-fragrance-groups {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 1.75rem;
+  }
+  #pd-natal-fragrance-groups > .pd-fragrance-group {
+    min-width: 0;
+  }
   #pd-natal-fragrance-groups .pd-fragrance-group + .pd-fragrance-group {
-    margin-top: 1.15rem;
-    padding-top: 1.1rem;
+    margin-top: 0;
+    padding-top: 0;
     border-top: 0;
   }
-  /* Apenas as duas fragrâncias Assinatura ficam lado a lado. */
   #pd-natal-fragrance-groups .pd-fragrance-group:last-child .pd-soap-fragrance-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 1.2rem;
+    display: flex;
+    flex-direction: column;
   }
-  #pd-natal-fragrance-groups .pd-fragrance-group:last-child .pd-soap-fragrance-option {
-    min-width: 0;
+  @media (max-width: 520px) {
+    #pd-natal-fragrance-groups {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: .75rem;
+    }
+    #pd-natal-fragrance-groups .pd-soap-fragrance-option {
+      font-size: .73rem;
+      gap: .4rem;
+      overflow-wrap: anywhere;
+    }
   }
   .pd-fragrance-group {
     display: grid;
