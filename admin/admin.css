@@ -173,3 +173,38 @@
 .delivery-address>strong{display:block;font-size:.76rem;color:var(--ink);margin-bottom:.5rem}
 .delivery-address p{margin:.15rem 0!important;line-height:1.65!important;overflow-wrap:anywhere}
 .delivery-address p strong{color:var(--ink)}
+
+
+/* Consulta simples; a edição só fica disponível após premir Editar. */
+.detail-drawer:not(.is-editing) #order-status-form,
+.detail-drawer:not(.is-editing) #order-payment-form,
+.detail-drawer:not(.is-editing) #order-edit-form,
+.detail-drawer:not(.is-editing) #project-fulfillment-form,
+.detail-drawer:not(.is-editing) #project-payment-form,
+.detail-drawer:not(.is-editing) #project-notes-form,
+.detail-drawer:not(.is-editing) #admin-delivery-form,
+.detail-drawer:not(.is-editing) .detail-edit-section{display:none!important}
+.detail-drawer.is-editing #order-status-form button,
+.detail-drawer.is-editing #order-payment-form button[type="submit"],
+.detail-drawer.is-editing #order-edit-form button[type="submit"],
+.detail-drawer.is-editing #project-fulfillment-form button,
+.detail-drawer.is-editing #project-payment-form button[type="submit"],
+.detail-drawer.is-editing #project-notes-form button[type="submit"],
+.detail-drawer.is-editing #admin-delivery-form button[type="submit"],
+.detail-drawer.is-editing #quote-form button[type="submit"]{display:none!important}
+.detail-drawer.is-editing .detail-readonly-notes,
+.detail-drawer.is-editing .detail-static-notes{display:none!important}
+.detail-readonly-notes{white-space:pre-wrap;overflow-wrap:anywhere}
+.delivery-readonly-details{padding:.25rem 0 .4rem}
+.delivery-readonly-details p{margin:.35rem 0!important;overflow-wrap:anywhere}
+.delivery-readonly-details strong{color:var(--ink)}
+.delivery-readonly-details a{color:var(--deep);text-decoration:underline;text-underline-offset:2px}
+.delivery-code{font-weight:600;user-select:text}
+#drawer-content{padding-bottom:105px}
+.unified-edit-bar{position:fixed;z-index:22;bottom:0;right:0;width:min(620px,100%);background:rgba(255,255,255,.98);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(63,7,58,.06);padding:1rem 2rem;display:flex;align-items:center;justify-content:flex-end;gap:.6rem;flex-wrap:wrap}
+.unified-edit-bar button{min-width:112px;font-size:.81rem}
+.unified-edit-bar button[hidden]{display:none!important}
+.unified-edit-feedback{flex:1 1 100%;margin:0!important;color:var(--deep)!important;font-size:.76rem!important}
+.unified-edit-feedback:empty{display:none}
+.unified-edit-bar button:disabled{opacity:.55;cursor:wait}
+@media(max-width:600px){.unified-edit-bar{padding:.8rem 1rem}.unified-edit-bar button{flex:1}.detail-drawer{padding-bottom:5rem}}
