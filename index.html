@@ -1541,6 +1541,22 @@
     color: #66135e;
     margin-bottom: .55rem;
   }
+  /* Verde de Natal apenas nas opções natalícias; Assinatura mantém o roxo. */
+  #pd-natal-fragrance-groups .pd-fragrance-group:first-child .pd-natal-fragrance-heading {
+    color: #246B45;
+    font-weight: 700;
+  }
+  #pd-natal-fragrance-groups .pd-fragrance-group:first-child .pd-soap-fragrance-option::before {
+    border-color: #246B45;
+  }
+  #pd-natal-fragrance-groups .pd-fragrance-group:first-child .pd-soap-fragrance-option:hover,
+  #pd-natal-fragrance-groups .pd-fragrance-group:first-child .pd-soap-fragrance-option.active {
+    color: #246B45;
+  }
+  #pd-natal-fragrance-groups .pd-fragrance-group:first-child .pd-soap-fragrance-option.active::before {
+    border-color: #246B45;
+    background: #246B45;
+  }
   #pd-natal-fragrance-groups .pd-fragrance-group + .pd-fragrance-group {
     margin-top: 1.15rem;
     padding-top: 1.1rem;
