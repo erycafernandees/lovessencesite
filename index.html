@@ -5902,6 +5902,28 @@ html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline
 #page-home .holiday-visual:before{color:var(--rose)}
 #page-home .holiday-visual-caption{color:var(--deep-rose)}
 
+
+/* Título exclusivo da coleção Natal: identidade Love Essences, vermelho bordô e verde-musgo. */
+#page-shop .shop-hero #shop-page-title .titulo-natal{
+  display:inline-block;
+  font-family:var(--sans);
+  font-size:inherit;
+  font-style:normal;
+  font-weight:800!important;
+  letter-spacing:.045em;
+  text-transform:uppercase;
+  color:#852b42;
+  background:linear-gradient(95deg,#992c3d 0%,#8c2b3d 42%,#627551 72%,#465f48 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+@media (prefers-contrast:more){
+  #page-shop .shop-hero #shop-page-title .titulo-natal{
+    background:none;
+    -webkit-text-fill-color:#852b42;
+  }
+}
 </style>
 </head>
 <body>
@@ -12783,7 +12805,7 @@ var LOVE_CATEGORY_SEO = {
   natal: {
     title: 'Presentes de Natal Artesanais e Personalizados | Love Essences',
     description: 'Descobre uma seleção de presentes artesanais e personalizados Love Essences para oferecer no Natal.',
-    heading: 'Especial <em>Natal</em>',
+    heading: 'Especial <span class="titulo-natal">NATAL</span>',
     label: 'Natal'
   },
   pecas: {
