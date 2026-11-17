@@ -1562,6 +1562,15 @@
     padding-top: 1.1rem;
     border-top: 0;
   }
+  /* Apenas as duas fragrâncias Assinatura ficam lado a lado. */
+  #pd-natal-fragrance-groups .pd-fragrance-group:last-child .pd-soap-fragrance-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.2rem;
+  }
+  #pd-natal-fragrance-groups .pd-fragrance-group:last-child .pd-soap-fragrance-option {
+    min-width: 0;
+  }
   .pd-fragrance-group {
     display: grid;
     gap: 0.55rem;
