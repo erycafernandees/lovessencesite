@@ -5884,6 +5884,23 @@ html.christmas-season-on .mobile-nav-link.christmas-season{display:block!importa
 .arrivals-card img{height:145px;padding:.45rem}.arrivals-card-copy{align-self:center;padding:.85rem}
 }
 
+
+/* Ajustes de identidade Love Essences: Natal segue a paleta violeta/rosa da loja */
+#nav-row2 a.holiday-nav-link{color:#852b42!important;font-weight:800!important;letter-spacing:.1em}
+#nav-row2 a.holiday-nav-link:hover{color:#6c1c32!important}
+html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline-flex!important;align-items:center;justify-content:center}
+#page-home .holiday-showcase{background:linear-gradient(118deg,#fdf9fc 0%,#f8eff8 65%,#f1e3ef 100%);border-color:rgba(180,104,171,.22);box-shadow:0 16px 48px rgba(102,19,94,.07)}
+#page-home .holiday-kicker,.arrivals-showcase .arrivals-kicker{color:var(--deep-rose)}
+#page-home .holiday-showcase h2{color:var(--dark)}
+#page-home .holiday-showcase h2 em,.arrivals-showcase h2 em{color:var(--rose)}
+#page-home .holiday-desc{color:var(--warm-gray)}
+#page-home .holiday-actions button{border-color:var(--deep-rose)}
+#page-home .holiday-actions button.holiday-primary{background:var(--deep-rose);color:#fff}
+#page-home .holiday-actions button.holiday-secondary{color:var(--deep-rose)}
+#page-home .holiday-visual{border-color:rgba(180,104,171,.22);background:radial-gradient(ellipse,#fff 0%,#f9f0f9 72%,#f0e3f0 100%)}
+#page-home .holiday-visual:before{color:var(--rose)}
+#page-home .holiday-visual-caption{color:var(--deep-rose)}
+
 </style>
 </head>
 <body>
@@ -8724,8 +8741,8 @@ html.christmas-season-on .mobile-nav-link.christmas-season{display:block!importa
 
     <div id="nav-row2" class="hidden md:flex" aria-label="Navegação principal">
       <a href="/" onclick="showPage('home'); return false;">Início</a>
+      <a class="christmas-season holiday-nav-link" href="/categorias/natal/" onclick="openShopCategory('natal'); return false;">NATAL</a>
       <a href="/loja/" onclick="showPage('shop'); return false;">Loja</a>
-      <a class="christmas-season holiday-nav-link" href="/#colecao-natal" onclick="showHomeHighlight('colecao-natal'); return false;">Natal</a>
       <a href="/ocasioes/" onclick="showPage('occasions'); return false;">Ocasiões</a>
       <a href="/sobre-nos/" onclick="showPage('about'); return false;">Sobre Nós</a>
       <a href="/acompanhar-encomenda/" onclick="showPage('tracking'); return false;">Acompanhar</a>
@@ -8764,7 +8781,7 @@ html.christmas-season-on .mobile-nav-link.christmas-season{display:block!importa
       <div class="mobile-menu-section">
         <span class="mobile-menu-title">Em Destaque</span>
         <div class="mobile-menu-links">
-          <button type="button" class="mobile-nav-link christmas-season" onclick="showHomeHighlight('colecao-natal')">Especial Natal</button>
+          <button type="button" class="mobile-nav-link christmas-season" onclick="openShopCategory('natal')">Natal</button>
           <button type="button" class="mobile-nav-link" onclick="showHomeHighlight('novidades')">Novidades</button>
         </div>
       </div>
@@ -8927,7 +8944,7 @@ html.christmas-season-on .mobile-nav-link.christmas-season{display:block!importa
       <h2 id="holiday-title">Neste Natal, oferece <em>algo que fica.</em></h2>
       <p class="holiday-desc">Presentes artesanais, aromas e detalhes personalizados para tornar esta época ainda mais especial. Feitos à mão, com intenção e carinho.</p>
       <div class="holiday-actions">
-        <button type="button" class="holiday-primary" onclick="showPage('shop')">Explorar presentes</button>
+        <button type="button" class="holiday-primary" onclick="openShopCategory('natal')">Explorar presentes</button>
         <button type="button" class="holiday-secondary" onclick="showPage('contact')">Pedir personalização</button>
       </div>
     </div>
@@ -9615,6 +9632,7 @@ html.christmas-season-on .mobile-nav-link.christmas-season{display:block!importa
     <h2 class="section-title" id="shop-page-title" data-page-heading>Cada peça é única.<br/><em>Como quem a vai receber.</em></h2>
     <p id="shop-page-intro">Produtos artesanais feitos com intenção e amor, escolhe o teu presente perfeito.</p>
     <div class="category-tabs">
+      <button type="button" class="cat-tab christmas-season" data-filter="natal" onclick="filterCategory(this,'natal')">Natal</button>
       <button type="button" class="cat-tab" data-filter="pecas" onclick="filterCategory(this,'pecas')">Coleção Assinatura</button>
       <button type="button" class="cat-tab" data-filter="memorias" onclick="filterCategory(this,'memorias')">Coleção Memórias</button>
       <button type="button" class="cat-tab" data-filter="eventos" onclick="filterCategory(this,'eventos')"><span class="cat-label-desktop">Lembranças para Eventos</span><span class="cat-label-mobile">Lembranças</span></button>
@@ -11010,6 +11028,7 @@ var I18N_TEXT = {
     "Pequenos aromas, grandes memórias.": "Little scents, lasting memories.",
     "Uma essência para levar contigo.": "A scent to take with you.",
     "Um miminho perfumado e delicado.": "A delicate, fragrant treat.",
+    "NATAL": "CHRISTMAS",
     "Mais Procurados": "Most Loved",
     "Os Presentes que emocionam": "Gifts that move people",
     "Ver Toda a Coleção →": "View the Full Collection →",
@@ -11240,6 +11259,7 @@ var I18N_TEXT = {
     "Pequenos aromas, grandes memórias.": "Pequeños aromas, grandes recuerdos.",
     "Uma essência para levar contigo.": "Una esencia para llevar contigo.",
     "Um miminho perfumado e delicado.": "Un detalle delicado y perfumado.",
+    "NATAL": "NAVIDAD",
     "Mais Procurados": "Más Buscados",
     "Os Presentes que emocionam": "Regalos que emocionan",
     "Ver Toda a Coleção →": "Ver Toda la Colección →",
@@ -12722,6 +12742,7 @@ var LOVE_PAGE_ROUTES = {
 };
 
 var LOVE_CATEGORY_ROUTES = {
+  natal: '/categorias/natal/',
   pecas: '/categorias/colecao-assinatura/',
   memorias: '/categorias/colecao-memorias/',
   eventos: '/categorias/lembrancas-para-eventos/',
@@ -12802,6 +12823,12 @@ var LOVE_STATIC_SEO = {
 };
 
 var LOVE_CATEGORY_SEO = {
+  natal: {
+    title: 'Presentes de Natal Artesanais e Personalizados | Love Essences',
+    description: 'Descobre uma seleção de presentes artesanais e personalizados Love Essences para oferecer no Natal.',
+    heading: 'Especial <em>Natal</em>',
+    label: 'Natal'
+  },
   pecas: {
     title: 'Coleção Assinatura | Love Essences',
     description: 'Descobre a Coleção Assinatura Love Essences: peças artesanais feitas à mão para oferecer e guardar momentos especiais.',
@@ -14317,6 +14344,8 @@ function openProduct(productId, options) {
 }
 
 var LOVE_PRODUCT_TYPE_FILTERS = {
+  // Seleção de presentes existentes na loja; produtos especificamente natalícios poderão ser acrescentados depois.
+  natal: ['bloom', 'essencia_amor', 'aurora', 'luz_serena', 'doce_luz', 'aroma_em_viagem'],
   difusores: ['mini_difusor', 'aroma_em_viagem', 'mini_difusor_sabonete'],
   sabonetes: ['trouxinha_aromatica', 'bem_querer', 'mini_difusor_sabonete', 'bilhete_perfumado'],
   velas: ['luz_serena', 'doce_luz', 'memoria_perfumada']
@@ -14350,6 +14379,7 @@ function renderProductRelatedLinks(productId, product) {
   var links = [];
 
   Object.keys(LOVE_PRODUCT_TYPE_FILTERS).forEach(function(category) {
+    if (category === 'natal' && !document.documentElement.classList.contains('christmas-season-on')) return;
     if (LOVE_PRODUCT_TYPE_FILTERS[category].indexOf(productId) !== -1) {
       links.push({ label: LOVE_CATEGORY_SEO[category].label, url: LOVE_CATEGORY_ROUTES[category] });
     }
@@ -15163,6 +15193,7 @@ var occasionLabels = {
 };
 
 var categoryLabels = {
+  'natal': 'Seleção de presentes de Natal',
   'todos': 'Sugestões para todos os momentos',
   'pecas': 'Coleção Assinatura',
   'memorias': 'Coleção Memórias',
