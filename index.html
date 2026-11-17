@@ -5903,18 +5903,23 @@ html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline
 #page-home .holiday-visual-caption{color:var(--deep-rose)}
 
 
-/* Título da coleção Natal: vermelho natalício sólido, sem degradé. */
-#page-shop .shop-hero #shop-page-title .titulo-natal{
-  display:inline-block;
-  font-family:var(--sans);
+/* NATAL: vermelho sólido; sem fundos, degradés ou máscaras. */
+#page-shop .shop-hero #shop-page-title strong.natal-vermelho-solido {
+  display:inline;
+  color:#B3263E!important;
+  font-family:var(--sans)!important;
   font-size:inherit;
-  font-style:normal;
+  font-style:normal!important;
   font-weight:800!important;
   letter-spacing:.045em;
-  text-transform:uppercase;
-  color:#B3263E!important;
+  text-transform:uppercase!important;
   background:none!important;
+  background-image:none!important;
+  -webkit-background-clip:border-box!important;
+  background-clip:border-box!important;
   -webkit-text-fill-color:#B3263E!important;
+  -webkit-mask-image:none!important;
+  mask-image:none!important;
 }
 
 /* HOME «Mais Procurados» — dar maior presença à box de rosas brancas.
@@ -13067,7 +13072,7 @@ var LOVE_CATEGORY_SEO = {
   natal: {
     title: 'Presentes de Natal Artesanais e Personalizados | Love Essences',
     description: 'Descobre uma seleção de presentes artesanais e personalizados Love Essences para oferecer no Natal.',
-    heading: 'Especial <span class="titulo-natal" style="color:#B3263E!important;background:none!important;-webkit-text-fill-color:#B3263E!important">NATAL</span>',
+    heading: 'Especial <strong class="natal-vermelho-solido" style="color:#B3263E!important;background:none!important;background-image:none!important;-webkit-background-clip:border-box!important;-webkit-text-fill-color:#B3263E!important;font-weight:800!important">NATAL</strong>',
     label: 'Natal'
   },
   pecas: {
