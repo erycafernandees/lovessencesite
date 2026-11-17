@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta name="theme-color" content="#66135e"/>
+<script>(function(){var d=new Date(),m=d.getMonth();if(m===10||m===11||(m===0&&d.getDate()<=6))document.documentElement.classList.add('christmas-season-on')})()</script>
 <!-- SEO:START -->
 <title>Love Essences | Lembranças Personalizadas e Presentes Artesanais</title>
 <meta name="description" content="Descobre presentes artesanais e personalizados, sabonetes, velas, difusores e lembranças para momentos especiais, feitos à mão em Portugal."/>
@@ -5836,6 +5837,53 @@
 .cart-drawer .cart-checkout-btn { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.075em; }
 .cart-drawer .cart-clear-btn { font-family: var(--sans); font-size: 0.78rem; }
 
+
+/* Natal e novidades — Love Essences */
+.christmas-season{display:none!important}
+html.christmas-season-on .holiday-showcase{display:grid!important}
+html.christmas-season-on #nav-row2 .christmas-season{display:inline-flex!important}
+html.christmas-season-on .mobile-nav-link.christmas-season{display:block!important}
+#nav-row2 .holiday-nav-link{color:#526d57;font-weight:700}
+.holiday-showcase,.arrivals-showcase{scroll-margin-top:calc(var(--header-offset) + 16px)}
+.holiday-showcase{max-width:1400px;margin:4rem auto 4rem;padding:clamp(2rem,5vw,4.5rem);grid-template-columns:1.15fr .85fr;align-items:center;gap:3rem;border:1px solid #d8dfd0;border-radius:30px;background:linear-gradient(120deg,#faf6ef 0%,#f3f5ed 70%,#e6ecdf 100%);box-shadow:0 20px 55px #47533e13}
+.holiday-kicker,.arrivals-kicker{font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#61785c}
+.holiday-showcase h2{font:500 clamp(2.7rem,5vw,5rem)/1.05 var(--serif);color:#334b3b;margin:1.2rem 0}
+.holiday-showcase h2 em,.arrivals-showcase h2 em{font-weight:400;color:#967b48}
+.holiday-desc{color:#576558;font-size:.92rem;line-height:1.9;max-width:540px}
+.holiday-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.8rem}
+.holiday-actions button{padding:.85rem 1.5rem;border:1px solid #526e58;border-radius:40px;cursor:pointer;font:700 .72rem var(--sans);transition:transform .2s}
+.holiday-actions button:hover{transform:translateY(-2px)}
+.holiday-primary{background:#526e58;color:#fff}
+.holiday-secondary{background:transparent;color:#405744}
+.holiday-visual{min-height:350px;position:relative;display:grid;place-items:center;border-radius:48% 48% 18px 18px;border:1px solid #dbcdb9;background:radial-gradient(ellipse,#fffdf9 0%,#eee5d7 90%)}
+.holiday-visual:before{content:'✦';position:absolute;top:12%;right:12%;color:#b69862;font-size:2rem}
+.holiday-visual img{width:100%;height:330px;object-fit:contain;padding:1rem;filter:drop-shadow(0 12px 14px #443c2b20)}
+.holiday-visual-caption{position:absolute;bottom:14px;left:0;right:0;text-align:center;text-transform:uppercase;font-size:.62rem;letter-spacing:.15em;color:#6b7359}
+.arrivals-showcase{max-width:1400px;margin:3.2rem auto 5rem;padding:0 3rem}
+.arrivals-head{display:flex;justify-content:space-between;align-items:end;gap:1.5rem;margin-bottom:1.6rem}
+.arrivals-showcase h2{font:500 clamp(2.5rem,4vw,4rem)/1.1 var(--serif);margin:.5rem 0;color:var(--dark)}
+.arrivals-sub{font-size:.86rem;color:var(--warm-gray)}
+.arrivals-all{font-size:.78rem;color:var(--deep-rose);text-decoration:none;border-bottom:1px solid;padding-bottom:.3rem;white-space:nowrap}
+.arrivals-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.3rem}
+.arrivals-card{display:block;border:1px solid #e9e0e8;border-radius:20px;overflow:hidden;text-decoration:none;color:var(--dark);background:#fff;transition:transform .2s,box-shadow .2s}
+.arrivals-card:hover{transform:translateY(-4px);box-shadow:0 18px 36px #66135e18}
+.arrivals-card figure{display:grid;place-items:center;position:relative;background:#faf7fa}
+.arrivals-card img{width:100%;height:240px;object-fit:contain;padding:1rem}
+.arrivals-tag{position:absolute;top:13px;left:13px;background:#fff;padding:.35rem .7rem;border-radius:20px;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#765271}
+.arrivals-card-copy{padding:1.1rem 1.25rem 1.4rem}
+.arrivals-card h3{font-size:1.03rem;font-weight:600}
+.arrivals-card p{font-size:.75rem;color:var(--warm-gray);margin-top:.35rem}
+@media(max-width:1480px){.holiday-showcase{margin-left:5vw;margin-right:5vw}}
+@media(max-width:760px){
+.holiday-showcase{grid-template-columns:1fr!important;margin:2.5rem 1rem 3rem;padding:2rem 1.3rem;gap:1.4rem;border-radius:22px}
+.holiday-showcase h2{font-size:clamp(2.7rem,10vw,3.6rem)}
+.holiday-actions button{width:100%}
+.holiday-visual{min-height:250px}.holiday-visual img{height:250px}
+.arrivals-showcase{margin:2.7rem auto 3.5rem;padding:0 1rem}.arrivals-head{display:block}.arrivals-all{display:inline-block;margin-top:1rem}
+.arrivals-grid{grid-template-columns:1fr;gap:1rem}.arrivals-card{display:grid;grid-template-columns:40% 60%;min-height:140px}
+.arrivals-card img{height:145px;padding:.45rem}.arrivals-card-copy{align-self:center;padding:.85rem}
+}
+
 </style>
 </head>
 <body>
@@ -8677,6 +8725,7 @@
     <div id="nav-row2" class="hidden md:flex" aria-label="Navegação principal">
       <a href="/" onclick="showPage('home'); return false;">Início</a>
       <a href="/loja/" onclick="showPage('shop'); return false;">Loja</a>
+      <a class="christmas-season holiday-nav-link" href="/#colecao-natal" onclick="showHomeHighlight('colecao-natal'); return false;">Natal</a>
       <a href="/ocasioes/" onclick="showPage('occasions'); return false;">Ocasiões</a>
       <a href="/sobre-nos/" onclick="showPage('about'); return false;">Sobre Nós</a>
       <a href="/acompanhar-encomenda/" onclick="showPage('tracking'); return false;">Acompanhar</a>
@@ -8712,6 +8761,13 @@
     </div>
 
     <div class="mobile-menu-grid">
+      <div class="mobile-menu-section">
+        <span class="mobile-menu-title">Em Destaque</span>
+        <div class="mobile-menu-links">
+          <button type="button" class="mobile-nav-link christmas-season" onclick="showHomeHighlight('colecao-natal')">Especial Natal</button>
+          <button type="button" class="mobile-nav-link" onclick="showHomeHighlight('novidades')">Novidades</button>
+        </div>
+      </div>
       <div class="mobile-menu-section">
         <span class="mobile-menu-title">Loja</span>
         <div class="mobile-menu-links">
@@ -8864,6 +8920,23 @@
   </section>
 
 
+  <!-- Natal: só 1 novembro a 6 janeiro; seleção editorial, sem inventar stock -->
+  <section class="christmas-season holiday-showcase" id="colecao-natal" aria-labelledby="holiday-title">
+    <div>
+      <p class="holiday-kicker">✦ Especial Natal</p>
+      <h2 id="holiday-title">Neste Natal, oferece <em>algo que fica.</em></h2>
+      <p class="holiday-desc">Presentes artesanais, aromas e detalhes personalizados para tornar esta época ainda mais especial. Feitos à mão, com intenção e carinho.</p>
+      <div class="holiday-actions">
+        <button type="button" class="holiday-primary" onclick="showPage('shop')">Explorar presentes</button>
+        <button type="button" class="holiday-secondary" onclick="showPage('contact')">Pedir personalização</button>
+      </div>
+    </div>
+    <div class="holiday-visual">
+      <img src="assets/products/covers/essencia-amor-rosas-brancas-sombra.png" alt="Essência do Amor, box artesanal Love Essences" loading="lazy" decoding="async"/>
+      <span class="holiday-visual-caption">Um gesto com significado</span>
+    </div>
+  </section>
+
   <!-- STRIP -->
   <div class="value-strip" aria-label="Valores da marca">
     <div class="value-strip-track">
@@ -8958,6 +9031,32 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Novidades: secção permanente, artigos existentes no catálogo -->
+  <section class="arrivals-showcase" id="novidades" aria-labelledby="arrivals-title">
+    <div class="arrivals-head">
+      <div>
+        <p class="arrivals-kicker">✦ Novidades</p>
+        <h2 id="arrivals-title">Novidades para <em>descobrir</em></h2>
+        <p class="arrivals-sub">Pequenos detalhes, novas formas de surpreender.</p>
+      </div>
+      <a class="arrivals-all" href="/loja/">Ver toda a coleção</a>
+    </div>
+    <div class="arrivals-grid">
+      <a class="arrivals-card" href="/produtos/mini-difusor/">
+        <figure><span class="arrivals-tag">Novo</span><img src="assets/products/covers/mini-difusor-batizado-antonio-1.png" alt="Mini Difusor personalizado Love Essences" loading="lazy" decoding="async"/></figure>
+        <div class="arrivals-card-copy"><h3>Mini Difusor</h3><p>Pequenos aromas, grandes memórias.</p></div>
+      </a>
+      <a class="arrivals-card" href="/produtos/aroma-em-viagem/">
+        <figure><span class="arrivals-tag">Novo</span><img src="assets/products/covers/aroma-em-viagem.png" alt="Aroma em Viagem, difusor para carro Love Essences" loading="lazy" decoding="async"/></figure>
+        <div class="arrivals-card-copy"><h3>Aroma em Viagem</h3><p>Uma essência para levar contigo.</p></div>
+      </a>
+      <a class="arrivals-card" href="/produtos/trouxinha-aromatica/">
+        <figure><span class="arrivals-tag">Novo</span><img src="assets/products/covers/trouxinha-aromatica.png" alt="Trouxinha Aromática Love Essences" loading="lazy" decoding="async"/></figure>
+        <div class="arrivals-card-copy"><h3>Trouxinha Aromática</h3><p>Um miminho perfumado e delicado.</p></div>
+      </a>
     </div>
   </section>
 
@@ -10894,6 +10993,23 @@ var I18N_TEXT = {
     "Cruelty-Free": "Cruelty-Free",
     "Enviado com Amor": "Sent with Love",
     "Embalagem de Oferta": "Gift Packaging",
+    "Natal": "Christmas",
+    "Em Destaque": "Highlights",
+    "Especial Natal": "Christmas Edit",
+    "Neste Natal, oferece": "This Christmas, give",
+    "algo que fica.": "something that lasts.",
+    "Presentes artesanais, aromas e detalhes personalizados para tornar esta época ainda mais especial. Feitos à mão, com intenção e carinho.": "Handmade gifts, scents and personalised details to make this season even more special. Crafted with care and intention.",
+    "Explorar presentes": "Explore gifts",
+    "Pedir personalização": "Request a custom gift",
+    "Um gesto com significado": "A gift with meaning",
+    "Novidades": "New Arrivals",
+    "Novidades para": "New arrivals to",
+    "descobrir": "discover",
+    "Pequenos detalhes, novas formas de surpreender.": "Little details, new ways to surprise.",
+    "Ver toda a coleção": "View the collection",
+    "Pequenos aromas, grandes memórias.": "Little scents, lasting memories.",
+    "Uma essência para levar contigo.": "A scent to take with you.",
+    "Um miminho perfumado e delicado.": "A delicate, fragrant treat.",
     "Mais Procurados": "Most Loved",
     "Os Presentes que emocionam": "Gifts that move people",
     "Ver Toda a Coleção →": "View the Full Collection →",
@@ -11107,6 +11223,23 @@ var I18N_TEXT = {
     "Cruelty-Free": "Cruelty-Free",
     "Enviado com Amor": "Enviado con Amor",
     "Embalagem de Oferta": "Embalaje de Regalo",
+    "Natal": "Navidad",
+    "Em Destaque": "Destacados",
+    "Especial Natal": "Especial Navidad",
+    "Neste Natal, oferece": "Esta Navidad, regala",
+    "algo que fica.": "algo que perdura.",
+    "Presentes artesanais, aromas e detalhes personalizados para tornar esta época ainda mais especial. Feitos à mão, com intenção e carinho.": "Regalos artesanales, aromas y detalles personalizados para hacer esta época aún más especial. Hechos a mano con cariño.",
+    "Explorar presentes": "Explorar regalos",
+    "Pedir personalização": "Pedir personalización",
+    "Um gesto com significado": "Un regalo con significado",
+    "Novidades": "Novedades",
+    "Novidades para": "Novedades por",
+    "descobrir": "descubrir",
+    "Pequenos detalhes, novas formas de surpreender.": "Pequeños detalles, nuevas formas de sorprender.",
+    "Ver toda a coleção": "Ver toda la colección",
+    "Pequenos aromas, grandes memórias.": "Pequeños aromas, grandes recuerdos.",
+    "Uma essência para levar contigo.": "Una esencia para llevar contigo.",
+    "Um miminho perfumado e delicado.": "Un detalle delicado y perfumado.",
     "Mais Procurados": "Más Buscados",
     "Os Presentes que emocionam": "Regalos que emocionan",
     "Ver Toda a Coleção →": "Ver Toda la Colección →",
@@ -13287,6 +13420,15 @@ function syncActivePageHeading(name) {
   });
   var activePage = document.getElementById('page-' + name);
   if (activePage) setPageHeadingLevel(activePage.querySelector('[data-page-heading]'), 'h1');
+}
+
+function showHomeHighlight(sectionId) {
+  if (typeof closeMenu === 'function') closeMenu();
+  showPage('home');
+  setTimeout(function () {
+    var section = document.getElementById(sectionId);
+    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 120);
 }
 
 function showPage(name, options) {
