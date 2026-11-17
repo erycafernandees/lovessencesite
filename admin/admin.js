@@ -851,9 +851,8 @@ function setupUnifiedDetailEditor(kind, record, id) {
     + '<button type="button" class="secondary unified-cancel" hidden>Cancelar</button>'
     + '<button type="button" class="unified-save" hidden>Guardar alterações</button>'
     + '<button type="button" class="unified-start">Editar</button>';
-  // A barra é irmã da área de conteúdo, não parte do conteúdo deslocável.
-  // Assim, permanece sempre no fundo do painel e não tapa a morada.
-  drawer.append(bar);
+  // Botões no fluxo normal: só aparecem após percorrer todos os detalhes.
+  root.append(bar);
   const start=bar.querySelector('.unified-start'),cancel=bar.querySelector('.unified-cancel'),save=bar.querySelector('.unified-save'),feedback=bar.querySelector('.unified-edit-feedback');
   const setEditMode = value => {
     drawer.classList.toggle('is-editing',value);
