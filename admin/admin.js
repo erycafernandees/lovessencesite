@@ -653,7 +653,7 @@ function renderProjectRows(allRows) {
   document.querySelectorAll('[data-project]').forEach(row => row.addEventListener('click', () => openProject(row.dataset.project)));
 }
 
-function openDrawer(html) { drawer.classList.remove('is-editing'); if (unifiedEditorController) unifiedEditorController.abort(); document.getElementById('drawer-content').innerHTML = html; backdrop.hidden = false; drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
+function openDrawer(html) { drawer.classList.remove('is-editing'); if (unifiedEditorController) unifiedEditorController.abort(); drawer.querySelector('.unified-edit-bar')?.remove(); document.getElementById('drawer-content').innerHTML = html; backdrop.hidden = false; drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
 function closeDrawer() { drawer.classList.remove('open'); drawer.setAttribute('aria-hidden','true'); setTimeout(() => { backdrop.hidden = true; }, 250); }
 document.getElementById('drawer-close').addEventListener('click', closeDrawer); backdrop.addEventListener('click', closeDrawer);
 
@@ -851,12 +851,14 @@ function setupUnifiedDetailEditor(kind, record, id) {
     + '<button type="button" class="secondary unified-cancel" hidden>Cancelar</button>'
     + '<button type="button" class="unified-save" hidden>Guardar alterações</button>'
     + '<button type="button" class="unified-start">Editar</button>';
-  root.append(bar);
+  // A barra é irmã da área de conteúdo, não parte do conteúdo deslocável.
+  // Assim, permanece sempre no fundo do painel e não tapa a morada.
+  drawer.append(bar);
   const start=bar.querySelector('.unified-start'),cancel=bar.querySelector('.unified-cancel'),save=bar.querySelector('.unified-save'),feedback=bar.querySelector('.unified-edit-feedback');
   const setEditMode = value => {
     drawer.classList.toggle('is-editing',value);
     start.hidden=value; cancel.hidden=!value; save.hidden=!value;
-    if (value) drawer.scrollTo({top:0,behavior:'smooth'});
+    if (value) root.scrollTo({top:0,behavior:'smooth'});
   };
   start.addEventListener('click',()=>{feedback.textContent='';setEditMode(true);});
   cancel.addEventListener('click',()=>{drawer.classList.remove('is-editing');(kind==='order'?openOrder(id):openProject(id));});
