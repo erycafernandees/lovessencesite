@@ -5957,26 +5957,14 @@ html.christmas-season-on .category-tabs .cat-tab.christmas-season{display:inline
   transform: scale(1.10) !important;
 }
 
-/* Natal: cards editoriais temporários na mesma linguagem visual da Love Essences */
-#page-shop .natal-preview-card{border-color:rgba(180,104,171,.2);border-radius:0!important;box-shadow:none!important;cursor:default}
-#page-shop .natal-preview-card:hover{transform:none;box-shadow:none}
-#page-shop .natal-preview-photo{height:260px;background:linear-gradient(145deg,#fbf8fb,#f6f0f5)!important;overflow:hidden}
-#page-shop .natal-preview-photo-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.85rem;min-height:220px;color:#8d7588;font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;text-align:center}
-#page-shop .natal-preview-photo-icon{font-family:Georgia,serif;font-size:2.4rem;color:#b68baa;opacity:.6}
-#page-shop .natal-preview-card .natal-new-tag{background:#992339!important;color:#fff!important;border:0!important;top:1rem;left:1rem;font-weight:700;letter-spacing:.13em}
-#page-shop .natal-preview-card .product-info{display:flex;flex-direction:column;padding:1.4rem;min-height:245px}
-#page-shop .natal-preview-card .product-desc{flex:0 0 auto;margin-bottom:.75rem}
-#page-shop .natal-preview-card .product-price{font-weight:650;font-size:1.05rem}
-#page-shop .natal-stock-label{font-size:.7rem;letter-spacing:.04em;color:#9c3148}
-#page-shop .natal-preview-details{margin-top:1.2rem;border-top:1px solid #ebdfe9;padding-top:.8rem;color:#70626d}
-#page-shop .natal-preview-details summary{cursor:pointer;color:#66135e;font-size:.76rem;letter-spacing:.04em;list-style-position:inside}
-#page-shop .natal-preview-details[open] summary{margin-bottom:.8rem}
-#page-shop .natal-preview-detail-note,#page-shop .natal-preview-disclaimer,#page-shop .natal-option-footnote{font-size:.73rem;line-height:1.55;margin-top:.55rem}
-#page-shop .natal-preview-disclaimer{color:#a27d9b}
-#page-shop .natal-preview-variant{display:flex;flex-direction:column;gap:.45rem}
-#page-shop .natal-preview-variant label{font-size:.74rem}
-#page-shop .natal-preview-variant select{width:100%;border:1px solid #e3cde0;background:#fff;padding:.65rem;color:#66135e;font:inherit;font-size:.79rem;border-radius:3px}
-@media(max-width:768px){#page-shop .natal-preview-photo{height:auto;aspect-ratio:3/4}#page-shop .natal-preview-photo-inner{min-height:220px}#page-shop .natal-preview-card .product-info{min-height:0}}
+/* Natal: mesmos cartões, preços, botões e fluxo que o resto da loja. */
+#page-shop .natal-product-card .natal-new-tag{
+  background:#992339!important;color:#fff!important;font-weight:700!important;letter-spacing:.13em!important;
+}
+#page-product .pd-natal-select{display:block;width:100%;min-height:44px;border:1px solid #decddd;
+ background:#fff;color:#66135e;padding:.7rem .85rem;font:inherit;font-size:.88rem;border-radius:4px}
+#page-product #pd-natal-candle-section label{display:block;font-size:.85rem;margin-bottom:.6rem;color:#66135e}
+#page-product #pd-natal-note-section .pd-custom-note{line-height:1.65}
 
 /* Vermelho escuro natalício para a primeira categoria da loja — sem alterar os restantes filtros */
 #page-shop .category-tabs .cat-tab[data-filter="natal"]{
@@ -9203,7 +9191,7 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
           <p class="product-desc">Uma vela especial inspirada nas vilas de Natal.</p>
           <div class="product-footer">
             <span class="product-price">9,90 €</span>
-            <button type="button" class="product-btn" onclick="openShopCategory('natal')">Ver coleção</button>
+            <button type="button" class="product-btn" onclick="openProduct('natal_vila_encantada')">Personalizar</button>
           </div>
         </div>
       </div>
@@ -9220,7 +9208,7 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
           <p class="product-desc">Uma peça artesanal para celebrar a tradição natalícia.</p>
           <div class="product-footer">
             <span class="product-price">9,90 €</span>
-            <button type="button" class="product-btn" onclick="openShopCategory('natal')">Ver coleção</button>
+            <button type="button" class="product-btn" onclick="openProduct('natal_sagrada_familia')">Personalizar</button>
           </div>
         </div>
       </div>
@@ -9237,7 +9225,7 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
           <p class="product-desc">Carrossel decorativo perfumado, com tampa e sem vela.</p>
           <div class="product-footer">
             <span class="product-price">14,90 €</span>
-            <button type="button" class="product-btn" onclick="openShopCategory('natal')">Ver coleção</button>
+            <button type="button" class="product-btn" onclick="openProduct('natal_carrossel')">Personalizar</button>
           </div>
         </div>
       </div>
@@ -9254,7 +9242,7 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
           <p class="product-desc">Abóbora decorativa com flores, disponível em dois tamanhos.</p>
           <div class="product-footer">
             <span class="product-price">Desde 18,90 €</span>
-            <button type="button" class="product-btn" onclick="openShopCategory('natal')">Ver coleção</button>
+            <button type="button" class="product-btn" onclick="openProduct('natal_bloom')">Personalizar</button>
           </div>
         </div>
       </div>
@@ -9879,188 +9867,105 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
     </div>
 
     <div class="shop-products-grid" id="shop-products-grid">
-      <!-- ESPECIAL NATAL: seleção de novidades em pré-visualização, sem checkout nem fotografias -->
-      <article class="product-card natal-preview-card" data-category="natal" data-occasion="alguem-especial" data-preview-only="true">
-        <div class="product-img has-photo natal-preview-photo" aria-label="Fotografia de Vila Encantada ainda por adicionar">
+      <!-- ESPECIAL NATAL: cartões alinhados com a lógica da loja e páginas próprias -->
+      <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
+        <div class="product-img has-photo">
           <span class="product-tag natal-new-tag">NOVIDADE</span>
-          <div class="natal-preview-photo-inner">
-            <span class="natal-preview-photo-icon" aria-hidden="true">✦</span>
-            <span>Fotografia em breve</span>
-          </div>
+          <img src="assets/products/natal-placeholder.svg" alt="Fotografia de Vila Encantada em breve" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Vila Encantada</h3>
           <p class="product-desc">Vela decorativa inspirada nas vilas natalícias.</p>
           <div class="product-footer">
             <span class="product-price">9,90 €</span>
-            
+            <button type="button" class="product-btn" onclick="openProduct('natal_vila_encantada')">Personalizar</button>
           </div>
-          <details class="natal-preview-details">
-            <summary>Ver detalhes</summary>
-            
-            <p class="natal-preview-detail-note">As fragrâncias de Natal ainda estão por definir.</p>
-            <p class="natal-preview-disclaimer">Pré-visualização · Ainda não disponível para compra</p>
-          </details>
         </div>
-      </article>
-      <article class="product-card natal-preview-card" data-category="natal" data-occasion="alguem-especial" data-preview-only="true">
-        <div class="product-img has-photo natal-preview-photo" aria-label="Fotografia de Sagrada Família ainda por adicionar">
+      </div>
+      <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
+        <div class="product-img has-photo">
           <span class="product-tag natal-new-tag">NOVIDADE</span>
-          <div class="natal-preview-photo-inner">
-            <span class="natal-preview-photo-icon" aria-hidden="true">✦</span>
-            <span>Fotografia em breve</span>
-          </div>
+          <img src="assets/products/natal-placeholder.svg" alt="Fotografia de Sagrada Família em breve" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Sagrada Família</h3>
           <p class="product-desc">Peça decorativa inspirada na tradição natalícia.</p>
           <div class="product-footer">
             <span class="product-price">9,90 €</span>
-            
+            <button type="button" class="product-btn" onclick="openProduct('natal_sagrada_familia')">Personalizar</button>
           </div>
-          <details class="natal-preview-details">
-            <summary>Ver detalhes</summary>
-            
-            <p class="natal-preview-detail-note">Fotografia a adicionar.</p>
-            <p class="natal-preview-disclaimer">Pré-visualização · Ainda não disponível para compra</p>
-          </details>
         </div>
-      </article>
-      <article class="product-card natal-preview-card" data-category="natal" data-occasion="alguem-especial" data-preview-only="true">
-        <div class="product-img has-photo natal-preview-photo" aria-label="Fotografia de Carrossel Encantado ainda por adicionar">
+      </div>
+      <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
+        <div class="product-img has-photo">
           <span class="product-tag natal-new-tag">NOVIDADE</span>
-          <div class="natal-preview-photo-inner">
-            <span class="natal-preview-photo-icon" aria-hidden="true">✦</span>
-            <span>Fotografia em breve</span>
-          </div>
+          <img src="assets/products/natal-placeholder.svg" alt="Fotografia de Carrossel Encantado em breve" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Carrossel Encantado</h3>
-          <p class="product-desc">Peça decorativa natalícia perfumada, com tampa e sem vela.</p>
+          <p class="product-desc">Peça decorativa perfumada, com tampa e sem vela.</p>
           <div class="product-footer">
             <span class="product-price">14,90 €</span>
-            
+            <button type="button" class="product-btn" onclick="openProduct('natal_carrossel')">Personalizar</button>
           </div>
-          <details class="natal-preview-details">
-            <summary>Ver detalhes</summary>
-            
-            <p class="natal-preview-detail-note">Fotografia a adicionar.</p>
-            <p class="natal-preview-disclaimer">Pré-visualização · Ainda não disponível para compra</p>
-          </details>
         </div>
-      </article>
-      <article class="product-card natal-preview-card" data-category="natal" data-occasion="alguem-especial" data-preview-only="true" data-natal-type="ball">
-        <div class="product-img has-photo natal-preview-photo" aria-label="Fotografia de Bola de Natal ainda por adicionar">
+      </div>
+      <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
+        <div class="product-img has-photo">
           <span class="product-tag natal-new-tag">NOVIDADE</span>
-          <div class="natal-preview-photo-inner">
-            <span class="natal-preview-photo-icon" aria-hidden="true">✦</span>
-            <span>Fotografia em breve</span>
-          </div>
+          <img src="assets/products/natal-placeholder.svg" alt="Fotografia de Bola de Natal em breve" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Bola de Natal</h3>
-          <p class="product-desc">Escolhe a pequena, a grande ou o conjunto. Podes adicionar vela.</p>
+          <p class="product-desc">Pequena, grande ou conjunto, com opção de vela.</p>
           <div class="product-footer">
-            <span class="product-price" aria-live="polite">Desde 12,90 €</span>
-            
+            <span class="product-price">Desde 12,90 €</span>
+            <button type="button" class="product-btn" onclick="openProduct('natal_bola')">Personalizar</button>
           </div>
-          <details class="natal-preview-details">
-            <summary>Escolher opções e ver detalhes</summary>
-            <div class="natal-preview-variant">
-              <label for="natal-bola-tamanho">Modelo</label>
-              <select id="natal-bola-tamanho" class="natal-preview-size" onchange="updateNatalPreviewSelection(this)">
-                <option value="small">Pequena — 12,90 €</option>
-                <option value="large">Grande — 15,90 €</option>
-                <option value="pair">Conjunto (pequena + grande) — preço por definir</option>
-              </select>
-              <label for="natal-bola-vela">Com vela?</label>
-              <select id="natal-bola-vela" class="natal-preview-candles" onchange="updateNatalPreviewSelection(this)">
-                <option value="none">Sem vela</option>
-                <option value="small">Com vela (+3,00 €)</option>
-              </select>
-              <p class="natal-option-footnote">Os preços das bolas são provisórios. As velas acrescem 3 € na pequena e 5 € na grande.</p>
-            </div>
-            <p class="natal-preview-detail-note">O preço base do conjunto ainda não foi definido.</p>
-            <p class="natal-preview-disclaimer">Pré-visualização · Ainda não disponível para compra</p>
-          </details>
         </div>
-      </article>
-      <article class="product-card natal-preview-card" data-category="natal" data-occasion="alguem-especial" data-preview-only="true" data-natal-type="bloom">
-        <div class="product-img has-photo natal-preview-photo" aria-label="Fotografia de Bloom de Natal ainda por adicionar">
+      </div>
+      <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
+        <div class="product-img has-photo">
           <span class="product-tag natal-new-tag">NOVIDADE</span>
-          <div class="natal-preview-photo-inner">
-            <span class="natal-preview-photo-icon" aria-hidden="true">✦</span>
-            <span>Fotografia em breve</span>
-          </div>
+          <img src="assets/products/natal-placeholder.svg" alt="Fotografia de Bloom de Natal em breve" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Bloom de Natal</h3>
-          <p class="product-desc">Abóbora decorativa sem tampa. Disponível em dois tamanhos.</p>
+          <p class="product-desc">Abóbora floral sem tampa, em dois tamanhos.</p>
           <div class="product-footer">
-            <span class="product-price" aria-live="polite">Desde 18,90 €</span>
-            
+            <span class="product-price">Desde 18,90 €</span>
+            <button type="button" class="product-btn" onclick="openProduct('natal_bloom')">Personalizar</button>
           </div>
-          <details class="natal-preview-details">
-            <summary>Escolher opções e ver detalhes</summary>
-            <div class="natal-preview-variant">
-              <label for="natal-bloom-tamanho">Tamanho</label>
-              <select id="natal-bloom-tamanho" class="natal-preview-size" onchange="updateNatalPreviewSelection(this)">
-                <option value="small">Pequeno — 18,90 €</option>
-                <option value="large">Grande — 35,00 €</option>
-              </select>
-              <p class="natal-option-footnote">Sem opção de conjunto.</p>
-            </div>
-            <p class="natal-preview-detail-note">A seleção de fragrâncias para as flores será anunciada em breve.</p>
-            <p class="natal-preview-disclaimer">Pré-visualização · Ainda não disponível para compra</p>
-          </details>
         </div>
-      </article>
-      <article class="product-card natal-preview-card" data-category="natal" data-occasion="alguem-especial" data-preview-only="true">
-        <div class="product-img has-photo natal-preview-photo" aria-label="Fotografia de Aconchego ainda por adicionar">
+      </div>
+      <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
+        <div class="product-img has-photo">
           <span class="product-tag natal-new-tag">NOVIDADE</span>
-          <div class="natal-preview-photo-inner">
-            <span class="natal-preview-photo-icon" aria-hidden="true">✦</span>
-            <span>Fotografia em breve</span>
-          </div>
+          <img src="assets/products/natal-placeholder.svg" alt="Fotografia de Aconchego em breve" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Aconchego</h3>
-          <p class="product-desc">Abóbora com tampa entreaberta e arranjo de flores.</p>
+          <p class="product-desc">Abóbora com tampa entreaberta e flores.</p>
           <div class="product-footer">
             <span class="product-price">15,90 €</span>
-            
+            <button type="button" class="product-btn" onclick="openProduct('natal_aconchego')">Personalizar</button>
           </div>
-          <details class="natal-preview-details">
-            <summary>Ver detalhes</summary>
-            
-            <p class="natal-preview-detail-note">A seleção de fragrâncias para as flores será anunciada em breve.</p>
-            <p class="natal-preview-disclaimer">Pré-visualização · Ainda não disponível para compra</p>
-          </details>
         </div>
-      </article>
-      <article class="product-card natal-preview-card" data-category="natal" data-occasion="alguem-especial" data-preview-only="true">
-        <div class="product-img has-photo natal-preview-photo" aria-label="Fotografia de Vela Abóbora ainda por adicionar">
+      </div>
+      <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
+        <div class="product-img has-photo">
           <span class="product-tag natal-new-tag">NOVIDADE</span>
-          <div class="natal-preview-photo-inner">
-            <span class="natal-preview-photo-icon" aria-hidden="true">✦</span>
-            <span>Fotografia em breve</span>
-          </div>
+          <img src="assets/products/natal-placeholder.svg" alt="Fotografia de Vela Abóbora em breve" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">Vela Abóbora</h3>
-          <p class="product-desc">Vela em forma de abóbora, de edição limitada.</p>
+          <p class="product-desc">Vela de edição limitada, disponível em quatro cores.</p>
           <div class="product-footer">
             <span class="product-price">12,90 €</span>
-            <span class="natal-stock-label">Quantidade limitada</span>
+            <button type="button" class="product-btn" onclick="openProduct('natal_vela_abobora')">Personalizar</button>
           </div>
-          <details class="natal-preview-details">
-            <summary>Ver detalhes</summary>
-            
-            <p class="natal-preview-detail-note">Cores: castanho, verde-escuro, rosa velho e branco. Nome final por definir.</p>
-            <p class="natal-preview-disclaimer">Pré-visualização · Ainda não disponível para compra</p>
-          </details>
         </div>
-      </article>
+      </div>
       <!-- ========== COLEÇÃO ASSINATURA ========== -->
       <div class="product-card group rounded-[26px] bg-white/95 shadow-[0_18px_48px_rgba(102,19,94,0.10)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_rgba(102,19,94,0.16)]" data-category="pecas" data-occasion="aniversarios,presente-romantico,alguem-especial">
         <div class="product-img has-photo relative flex items-center justify-center"><img src="assets/products/covers/bloom-mini-5.png" alt="Bloom, peça artesanal Love Essences" loading="lazy"/></div>
@@ -10335,6 +10240,24 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
       <div class="pd-section" id="pd-size-section" style="display:none;">
         <h4 id="pd-size-title">Escolhe o tamanho</h4>
         <div class="pd-sizes" id="pd-sizes"></div>
+      </div>
+
+      <!-- Opções de vela para a bola de Natal -->
+      <div class="pd-section" id="pd-natal-candle-section" style="display:none;">
+        <h4>Adicionar vela</h4>
+        <label for="pd-natal-candle">Escolhe se queres adicionar uma vela</label>
+        <select class="pd-natal-select" id="pd-natal-candle" onchange="updateProductPrice()"></select>
+        <p class="pd-custom-note" id="pd-natal-candle-note"></p>
+      </div>
+
+      <!-- Cor da vela Abóbora e indicação de aromas pendentes -->
+      <div class="pd-section" id="pd-natal-color-section" style="display:none;">
+        <h4>Escolhe a cor</h4>
+        <div class="pd-fabrics" id="pd-natal-colors"></div>
+      </div>
+      <div class="pd-section" id="pd-natal-note-section" style="display:none;">
+        <h4>Fragrâncias desta edição</h4>
+        <p class="pd-custom-note" id="pd-natal-note"></p>
       </div>
 
       <!-- Cor da caixa (visível apenas para produtos com caixas coloridas) -->
@@ -13900,6 +13823,131 @@ function openTrackingWhatsApp() {
 /* Edita aqui para alterar conteúdo das páginas de detalhe.     */
 /* ============================================================ */
 var PRODUCT_CATALOG = {
+  natal_vila_encantada: {
+    category: 'Natal',
+    name: 'Vila Encantada',
+    visual: '✦',
+    image: 'assets/products/natal-placeholder.svg',
+    visualBg: '#faf6f9',
+    storyTitle: 'O artigo',
+    story: 'Vela decorativa inspirada nas vilas natalícias.',
+    sizes: [],
+    basePrice: 9.9,
+    details: 'Vela artesanal de edição natalícia · Fragrâncias da coleção em preparação · Fotografia a adicionar.',
+    tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
+    quote: 'Uma criação artesanal para oferecer nesta época.',
+    natalFragrancePending: true,
+    quoteOnly: true,
+    ctaLabel: 'Pedir informações',
+  },
+  natal_sagrada_familia: {
+    category: 'Natal',
+    name: 'Sagrada Família',
+    visual: '✦',
+    image: 'assets/products/natal-placeholder.svg',
+    visualBg: '#faf6f9',
+    storyTitle: 'O artigo',
+    story: 'Peça decorativa inspirada na tradição natalícia.',
+    sizes: [],
+    basePrice: 9.9,
+    details: 'Peça de Natal artesanal · Fotografia a adicionar.',
+    tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
+    quote: 'Uma criação artesanal para oferecer nesta época.',
+    ctaLabel: 'Adicionar ao Carrinho',
+  },
+  natal_carrossel: {
+    category: 'Natal',
+    name: 'Carrossel Encantado',
+    visual: '✦',
+    image: 'assets/products/natal-placeholder.svg',
+    visualBg: '#faf6f9',
+    storyTitle: 'O artigo',
+    story: 'Peça decorativa perfumada, com tampa e sem vela.',
+    sizes: [],
+    basePrice: 14.9,
+    details: 'Carrossel decorativo perfumado com tampa · Não inclui vela · Fotografia a adicionar.',
+    tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
+    quote: 'Uma criação artesanal para oferecer nesta época.',
+    ctaLabel: 'Adicionar ao Carrinho',
+  },
+  natal_bola: {
+    category: 'Natal',
+    name: 'Bola de Natal',
+    visual: '✦',
+    image: 'assets/products/natal-placeholder.svg',
+    visualBg: '#faf6f9',
+    storyTitle: 'O artigo',
+    story: 'Pequena, grande ou conjunto, com opção de vela.',
+    sizeTitle: 'Escolhe a opção',
+    sizes: [
+      { id: 'Pequena', label: 'Pequena', price: 12.9 },
+      { id: 'Grande', label: 'Grande', price: 15.9 },
+      { id: 'Conjunto', label: 'Conjunto (pequena + grande)', price: null }
+    ],
+    details: 'Bola decorativa de Natal · Tamanho pequeno ou grande · Conjunto disponível mediante confirmação · Vela opcional, com acréscimo.',
+    tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
+    quote: 'Uma criação artesanal para oferecer nesta época.',
+    natalFragrancePending: true,
+    natalCandleOptions: true,
+    quoteOnly: true,
+    ctaLabel: 'Pedir informações',
+  },
+  natal_bloom: {
+    category: 'Natal',
+    name: 'Bloom de Natal',
+    visual: '✦',
+    image: 'assets/products/natal-placeholder.svg',
+    visualBg: '#faf6f9',
+    storyTitle: 'O artigo',
+    story: 'Abóbora floral sem tampa, em dois tamanhos.',
+    sizeTitle: 'Escolhe a opção',
+    sizes: [
+      { id: 'Pequeno', label: 'Pequeno', price: 18.9 },
+      { id: 'Grande', label: 'Grande', price: 35 }
+    ],
+    details: 'Abóbora artesanal sem tampa, com composição floral · Disponível em dois tamanhos · Sem conjunto.',
+    tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
+    quote: 'Uma criação artesanal para oferecer nesta época.',
+    natalFragrancePending: true,
+    quoteOnly: true,
+    ctaLabel: 'Pedir informações',
+  },
+  natal_aconchego: {
+    category: 'Natal',
+    name: 'Aconchego',
+    visual: '✦',
+    image: 'assets/products/natal-placeholder.svg',
+    visualBg: '#faf6f9',
+    storyTitle: 'O artigo',
+    story: 'Abóbora com tampa entreaberta e flores.',
+    sizes: [],
+    basePrice: 15.9,
+    details: 'Abóbora decorativa com a tampa entreaberta e arranjo de flores · Fotografia a adicionar.',
+    tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
+    quote: 'Uma criação artesanal para oferecer nesta época.',
+    natalFragrancePending: true,
+    quoteOnly: true,
+    ctaLabel: 'Pedir informações',
+  },
+  natal_vela_abobora: {
+    category: 'Natal',
+    name: 'Vela Abóbora',
+    visual: '✦',
+    image: 'assets/products/natal-placeholder.svg',
+    visualBg: '#faf6f9',
+    storyTitle: 'O artigo',
+    story: 'Vela de edição limitada, disponível em quatro cores.',
+    sizes: [],
+    basePrice: 12.9,
+    details: 'Vela artesanal em forma de abóbora · Quantidades limitadas · Fotografia a adicionar.',
+    tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
+    quote: 'Uma criação artesanal para oferecer nesta época.',
+    natalFragrancePending: true,
+    natalColorOptions: ['Castanho', 'Verde-escuro', 'Rosa velho', 'Branco'],
+    natalLimitedEdition: true,
+    quoteOnly: true,
+    ctaLabel: 'Pedir informações',
+  },
   bloom: {
     category: 'Coleção Assinatura',
     soapFlowerOptions: true,
@@ -14552,6 +14600,7 @@ var currentBoxColor = null;
 var currentBearColor = null;
 var currentFabricId = null;
 var currentSoapFragrance = '';
+var currentNatalColor = '';
 var currentGalleryImages = [];
 var currentGalleryIndex = 0;
 var productGalleryTimer = null;
@@ -14573,6 +14622,7 @@ function openProduct(productId, options) {
   currentBearColor = p.bearColors && p.bearColors.length > 0 ? p.bearColors[0] : null;
   currentFabricId = p.fabricOptions && p.fabricOptions.length > 0 ? p.fabricOptions[0].id : null;
   currentSoapFragrance = '';
+  currentNatalColor = p.natalColorOptions && p.natalColorOptions.length ? p.natalColorOptions[0] : '';
   if (window.LoveCommerce) window.LoveCommerce.setProductFiles([]);
 
   updateProductVisual();
@@ -14677,7 +14727,7 @@ function openProduct(productId, options) {
       btn.className = 'pd-size' + (s.id === currentSizeId ? ' active' : '');
       btn.dataset.sizeId = s.id;
       btn.innerHTML = '<span class="pd-size-label">' + s.label + '</span>' +
-                      '<span class="pd-size-price">' + formatPrice(s.price) + '</span>';
+                      '<span class="pd-size-price">' + (typeof s.price === 'number' ? formatPrice(s.price) : 'Preço por definir') + '</span>';
       btn.onclick = function() { selectSize(s.id); };
       sizesEl.appendChild(btn);
     });
@@ -14705,13 +14755,14 @@ function openProduct(productId, options) {
   renderProductBearColors(p);
   renderProductFabricOptions(p);
   renderProductFreeTextOption(p);
+  renderNatalProductOptions(p);
   updateProductPrice();
   showPage('product', { history: options.history !== false, productId: productId });
 }
 
 var LOVE_PRODUCT_TYPE_FILTERS = {
-  // Os nove artigos novos do Natal são exclusivos do filtro Natal nesta pré-visualização.
-  natal: [],
+  // Artigos novos da coleção Natal, com páginas de produto próprias.
+  natal: ['natal_vila_encantada', 'natal_sagrada_familia', 'natal_carrossel', 'natal_bola', 'natal_bloom', 'natal_aconchego', 'natal_vela_abobora'],
   difusores: ['mini_difusor', 'aroma_em_viagem', 'mini_difusor_sabonete'],
   sabonetes: ['trouxinha_aromatica', 'bem_querer', 'mini_difusor_sabonete', 'bilhete_perfumado'],
   velas: ['luz_serena', 'doce_luz', 'memoria_perfumada']
@@ -15058,6 +15109,7 @@ function selectSize(sizeId) {
     btn.classList.toggle('active', btn.dataset.sizeId === sizeId);
   });
   updateProductVisual();
+  if (PRODUCT_CATALOG[currentProduct]) renderNatalCandleOptions(PRODUCT_CATALOG[currentProduct]);
   updateProductPrice();
 }
 
@@ -15210,6 +15262,64 @@ function updateProductVisual() {
   if (p.visualBg) visual.style.background = p.visualBg;
 }
 
+function renderNatalCandleOptions(p) {
+  var section = document.getElementById('pd-natal-candle-section');
+  var select = document.getElementById('pd-natal-candle');
+  var note = document.getElementById('pd-natal-candle-note');
+  if (!section || !select) return;
+  section.style.display = p.natalCandleOptions ? '' : 'none';
+  select.innerHTML = '';
+  if (!p.natalCandleOptions) return;
+  var choices = [{value:'none',label:'Sem vela'}];
+  if (currentSizeId === 'Grande') choices.push({value:'large',label:'Com vela (+5,00 €)'});
+  else if (currentSizeId === 'Conjunto') choices = [
+    {value:'none',label:'Sem velas'},
+    {value:'small',label:'Vela na bola pequena (+3,00 €)'},
+    {value:'large',label:'Vela na bola grande (+5,00 €)'},
+    {value:'both',label:'Velas nas duas (+8,00 €)'}
+  ];
+  else choices.push({value:'small',label:'Com vela (+3,00 €)'});
+  choices.forEach(function(choice) {
+    var option = document.createElement('option');
+    option.value = choice.value;
+    option.textContent = choice.label;
+    select.appendChild(option);
+  });
+  if (note) note.textContent = currentSizeId === 'Conjunto'
+    ? 'O preço do conjunto ainda está por definir.'
+    : 'A seleção de fragrâncias das velas de Natal ainda está por definir.';
+}
+
+function renderNatalProductOptions(p) {
+  renderNatalCandleOptions(p);
+  var colorSection = document.getElementById('pd-natal-color-section');
+  var colors = document.getElementById('pd-natal-colors');
+  if (colorSection && colors) {
+    colors.innerHTML = '';
+    colorSection.style.display = p.natalColorOptions ? '' : 'none';
+    (p.natalColorOptions || []).forEach(function(color, index) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'pd-fabric' + (index === 0 ? ' active' : '');
+      button.dataset.natalColor = color;
+      button.innerHTML = '<span class="pd-fabric-label">' + productEscapeHtml(color) + '</span>';
+      button.onclick = function() {
+        currentNatalColor = color;
+        colors.querySelectorAll('.pd-fabric').forEach(function(item) {
+          item.classList.toggle('active', item.dataset.natalColor === color);
+        });
+        updateProductPrice();
+      };
+      colors.appendChild(button);
+    });
+  }
+  var noteSection = document.getElementById('pd-natal-note-section');
+  var note = document.getElementById('pd-natal-note');
+  if (noteSection) noteSection.style.display = p.natalFragrancePending ? '' : 'none';
+  if (note && p.natalFragrancePending) note.textContent =
+    'A seleção limitada de fragrâncias para esta edição será anunciada em breve. Até lá, confirma connosco os detalhes da encomenda.';
+}
+
 function getCurrentProductSelection() {
   if (!currentProduct) return null;
   var p = PRODUCT_CATALOG[currentProduct];
@@ -15232,6 +15342,24 @@ function getCurrentProductSelection() {
     }
   } else if (typeof p.basePrice === 'number') {
     price = p.basePrice;
+  }
+
+  var natalCandle = document.getElementById('pd-natal-candle');
+  var candleChoice = p.natalCandleOptions && natalCandle ? natalCandle.value : 'none';
+  if (p.natalCandleOptions && candleChoice && candleChoice !== 'none') {
+    var supplement = candleChoice === 'both' ? 8 : candleChoice === 'large' ? 5 : 3;
+    if (typeof price === 'number') price += supplement;
+    hasPaidAddon = true;
+    var candleLabel = candleChoice === 'both' ? 'velas nas duas' : candleChoice === 'large' ? 'vela na grande' : 'vela na pequena';
+    itemName += ', ' + candleLabel;
+    eventDetails.push('Velas: ' + candleLabel + ' (+' + formatPrice(supplement) + ')');
+    personalization.natalCandle = candleChoice;
+    addonCodes.push(currentProduct + ':vela_' + candleChoice);
+  }
+  if (p.natalColorOptions && currentNatalColor) {
+    itemName += ', Cor: ' + currentNatalColor;
+    personalization.natalColor = currentNatalColor;
+    eventDetails.push('Cor: ' + currentNatalColor);
   }
 
   if (p.boxColors && p.boxColors.length && currentBoxColor) {
@@ -15330,7 +15458,7 @@ function getCurrentProductSelection() {
     qty: qty,
     emoji: p.visual || '🎁',
     image: image || getCartImageForName(itemName),
-    quoteOnly: !!p.quoteOnly,
+    quoteOnly: !!p.quoteOnly || price === null || (p.natalFragrancePending && candleChoice !== 'none'),
     hasPaidAddon: hasPaidAddon,
     formProductName: p.formProductName || p.name,
     summary: eventDetails.join('\n'),
@@ -15346,10 +15474,14 @@ function updateProductPrice() {
   if (!selection) return;
   var p = PRODUCT_CATALOG[currentProduct];
 
-  document.getElementById('pd-price').textContent = selection.hasPaidAddon
-    ? formatPrice(selection.price) + (p.priceSuffix || '')
-    : p.priceLabel || (formatPrice(selection.price) + (p.priceSuffix || ''));
+  document.getElementById('pd-price').textContent = selection.price === null
+    ? 'Preço por definir'
+    : selection.hasPaidAddon
+      ? formatPrice(selection.price) + (p.priceSuffix || '')
+      : p.priceLabel || (formatPrice(selection.price) + (p.priceSuffix || ''));
   document.getElementById('pd-price-from').style.display = 'none';
+  var cta = document.getElementById('pd-cta');
+  if (cta) cta.textContent = selection.quoteOnly ? 'Pedir informações' : (p.ctaLabel || 'Adicionar ao Carrinho');
 }
 
 function formatPrice(value) {
@@ -15602,34 +15734,6 @@ function updateShopMeta(visibleCount) {
   }
 }
 
-function updateNatalPreviewSelection(select) {
-  var card = select && select.closest('.natal-preview-card');
-  if (!card) return;
-  var priceNode = card.querySelector('.product-price');
-  var sizeNode = card.querySelector('.natal-preview-size');
-  if (!priceNode || !sizeNode) return;
-  var size = sizeNode.value;
-  if (card.dataset.natalType === 'bloom') {
-    priceNode.textContent = size === 'large' ? '35,00 €' : '18,90 €';
-    return;
-  }
-  if (card.dataset.natalType !== 'ball') return;
-  var candleNode = card.querySelector('.natal-preview-candles');
-  if (!candleNode) return;
-  if (select === sizeNode) {
-    if (size === 'small') candleNode.innerHTML = '<option value="none">Sem vela</option><option value="small">Com vela (+3,00 €)</option>';
-    else if (size === 'large') candleNode.innerHTML = '<option value="none">Sem vela</option><option value="large">Com vela (+5,00 €)</option>';
-    else candleNode.innerHTML = '<option value="none">Sem velas</option><option value="small">Vela na pequena (+3,00 €)</option><option value="large">Vela na grande (+5,00 €)</option><option value="both">Velas nas duas (+8,00 €)</option>';
-  }
-  if (size === 'pair') {
-    priceNode.textContent = 'Preço por definir';
-    return;
-  }
-  var base = size === 'large' ? 15.9 : 12.9;
-  var supplement = candleNode.value === 'none' ? 0 : (size === 'large' ? 5 : 3);
-  priceNode.textContent = (base + supplement).toFixed(2).replace('.', ',') + ' €';
-}
-
 function applyShopFilters() {
   var cards = document.querySelectorAll('#shop-products-grid .product-card');
   var visibleCount = 0;
@@ -15640,8 +15744,8 @@ function applyShopFilters() {
     var productId = getProductIdFromCard(card);
     var product = productId ? PRODUCT_CATALOG[productId] : null;
     var typeProducts = LOVE_PRODUCT_TYPE_FILTERS[currentCategory];
-    var isNatalPreview = card.dataset.previewOnly === 'true';
-    var categoryMatch = isNatalPreview
+    var isNatalExclusive = card.dataset.natalOnly === 'true';
+    var categoryMatch = isNatalExclusive
       ? currentCategory === 'natal'
       : (currentCategory === 'todos' || cardCategory === currentCategory ||
          (typeProducts && typeProducts.indexOf(productId) !== -1));
