@@ -90,6 +90,7 @@ STATIC_ROUTES = [
 ]
 
 CATEGORY_ROUTES = {
+    "natal": Route("/categorias/natal/", "shop", "Presentes de Natal Artesanais e Personalizados | Love Essences", "Descobre uma seleção de presentes artesanais e personalizados Love Essences para oferecer no Natal.", heading="Especial <em>Natal</em>", label="Natal", category="natal"),
     "pecas": Route("/categorias/colecao-assinatura/", "shop", "Coleção Assinatura | Love Essences", "Descobre a Coleção Assinatura Love Essences: peças artesanais feitas à mão para oferecer e guardar momentos especiais.", heading="Coleção <em>Assinatura</em>", label="Coleção Assinatura", category="pecas"),
     "memorias": Route("/categorias/colecao-memorias/", "shop", "Boxes e Presentes da Coleção Memórias | Love Essences", "Descobre boxes e presentes artesanais da Coleção Memórias, preparados para oferecer a alguém especial.", heading="Coleção <em>Memórias</em>", label="Coleção Memórias", category="memorias"),
     "eventos": Route("/categorias/lembrancas-para-eventos/", "shop", "Lembranças Personalizadas para Eventos | Love Essences", "Descobre difusores, sabonetes, velas e outras lembranças personalizadas para casamentos, batizados, comunhões e eventos.", heading="Lembranças personalizadas<br/><em>para eventos</em>", label="Lembranças para Eventos", category="eventos"),
