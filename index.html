@@ -6116,13 +6116,13 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
 </style>
 <style>
 /* Natal 2026. Reutiliza tipografia, cores e botões originais Love Essences. */
-#natal26-intro, #natal26-shipping, #natal26-related, #natal26-business { display:none; }
+#natal26-intro, #natal26-related, #natal26-business { display:none; }
 body.natal26-shop #page-shop .shop-hero>.section-label,
 body.natal26-shop #page-shop #shop-page-intro,
 body.natal26-shop #page-shop .shop-hero>.category-tabs,
 body.natal26-shop #page-shop .shop-results-meta>button { display:none!important; }
-body.natal26-shop #natal26-intro, body.natal26-shop #natal26-shipping,
-body.natal26-shop #natal26-related, body.natal26-shop #natal26-business {display:block;}
+body.natal26-shop #natal26-intro, body.natal26-shop #natal26-related,
+body.natal26-shop #natal26-business {display:block;}
 body.natal26-shop #page-shop .shop-hero {background:var(--cream);}
 #natal26-intro{text-align:center;}
 #natal26-intro .natal26-eyebrow {display:block;font-family:var(--sans);font-size:.76rem;text-transform:uppercase;letter-spacing:.18em;color:var(--warm-gray);margin:1rem 0 0;}
@@ -6144,7 +6144,6 @@ body.natal26-shop #page-shop #shop-results-label{
  font-weight:400!important;letter-spacing:-.035em!important;text-transform:none!important;color:var(--dark)!important;
 }
 body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:none!important;}
-#natal26-shipping {margin:2.65rem auto;max-width:1100px;padding:1.2rem 1.5rem;background:var(--cream);border:1px solid rgba(180,104,171,.18);border-radius:20px;color:var(--deep-rose);font-family:var(--sans);font-size:.85rem;text-align:center;}
 #natal26-related {margin:2.8rem auto;max-width:1280px;}
 #natal26-related h3,#natal26-business h3{
  font-family:var(--sans);font-weight:400;font-size:clamp(1.5rem,2.35vw,2.1rem);
@@ -18305,15 +18304,11 @@ renderCart();
       makeButton("business","Natal para empresas")+
       makeButton("all","Ver todos");
    text.appendChild(shortcuts);
-   var shipping=document.createElement("aside");
-   shipping.id="natal26-shipping";
-   shipping.textContent="Portes grátis em encomendas acima de 60€ em Portugal Continental";
-   grid.insertAdjacentElement("afterend",shipping);
    var related=document.createElement("section");
    related.id="natal26-related";
    related.setAttribute("aria-label","Sugestões de outros artigos Love Essences");
    related.innerHTML='<h3>Também te pode interessar</h3><div id="natal26-related-grid"></div>';
-   shipping.insertAdjacentElement("afterend",related);
+   grid.insertAdjacentElement("afterend",related);
    var recommendations=related.querySelector("#natal26-related-grid");
    var sourceCards=Array.from(grid.querySelectorAll(".product-card"));
    recommendedIds.forEach(function(id){
@@ -18405,7 +18400,7 @@ renderCart();
    if(intro)intro.style.display=on?"none":"";
    var occasion=document.querySelector("#page-shop .shop-results-meta>button");
    if(occasion)occasion.style.display=on?"none":"";
-   ["natal26-intro","natal26-shortcuts","natal26-shipping","natal26-related","natal26-business"].forEach(function(id){
+   ["natal26-intro","natal26-shortcuts","natal26-related","natal26-business"].forEach(function(id){
      var el=document.getElementById(id);
      if(el)el.style.display=on?(id==="natal26-shortcuts"?"":"block"):"none";
    });
