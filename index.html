@@ -6153,10 +6153,8 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
  letter-spacing:-.035em;color:var(--dark);margin:0 auto 1.9rem;
 }
 #natal26-related h3{text-align:left;}
-#natal26-related-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.7rem;}
+/* A grelha de recomendações herda integralmente os estilos da Loja. */
 #natal26-related-grid .product-card {min-width:0;}
-#natal26-related-grid .product-img {height:235px;}
-#natal26-related-grid .product-info {min-height:230px;}
 #natal26-business {margin:3rem auto 0;max-width:1100px;padding:3rem 2.25rem;background:var(--cream);border:1px solid rgba(180,104,171,.18);border-radius:26px;text-align:center;}
 #natal26-business h3{margin:.75rem auto 1rem;text-align:center;}
 #natal26-business p {max-width:680px;margin:.55rem auto;color:var(--warm-gray);font-family:var(--sans);font-size:.87rem;line-height:1.7;}
@@ -6166,7 +6164,6 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
  text-transform:uppercase;border-radius:2px;cursor:pointer;
 }
 #natal26-business .natal26-business-cta:hover{background:var(--deep-rose);border-color:var(--deep-rose);}
-@media(max-width:1040px){#natal26-related-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:768px){
  #page-shop #natal26-shortcuts {
    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem;max-width:100%;margin-top:1.8rem;
@@ -6175,10 +6172,6 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
    width:100%;min-width:0;white-space:normal;text-align:center;justify-content:center;
    padding:.7rem .45rem;line-height:1.3;font-size:.69rem;letter-spacing:.08em;
  }
- #natal26-related-grid{gap:.85rem;}
- #natal26-related-grid .product-img{height:175px;}
- #natal26-related-grid .product-info{padding:1rem;min-height:195px;}
- #natal26-related-grid .product-name{font-size:1.15rem;}
  #natal26-business{padding:2rem 1.25rem;}
 }
 @media(max-width:360px){#page-shop #natal26-shortcuts .cat-tab{font-size:.63rem;}}
@@ -18328,7 +18321,7 @@ renderCart();
    var related=document.createElement("section");
    related.id="natal26-related";
    related.setAttribute("aria-label","Sugestões de outros artigos Love Essences");
-   related.innerHTML='<h3>Também te pode interessar</h3><div id="natal26-related-grid"></div>';
+   related.innerHTML='<h3>Também te pode interessar</h3><div class="shop-products-grid" id="natal26-related-grid"></div>';
    grid.insertAdjacentElement("afterend",related);
    var recommendations=related.querySelector("#natal26-related-grid");
    var sourceCards=Array.from(grid.querySelectorAll(".product-card"));
