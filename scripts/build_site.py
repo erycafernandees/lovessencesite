@@ -786,7 +786,8 @@ def write_404(output: Path) -> None:
 
 
 def get_routes(source: str) -> tuple[list[Product], list[Route]]:
-    products = parse_products(source)
+    # Manter a Bola de Natal no catálogo interno, mas sem página pública enquanto não há fotografias.
+    products = [product for product in parse_products(source) if product.product_id != "natal_bola"]
     product_routes = [
         Route(
             product.path,
