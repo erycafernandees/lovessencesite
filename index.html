@@ -9964,7 +9964,7 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
           <h3 class="product-name">Sagrada Família</h3>
           <p class="product-desc">Uma peça artesanal de sabonete que celebra a tradição e o verdadeiro significado do Natal.</p>
           <div class="product-footer">
-            <span class="product-price">12,00 €</span>
+            <span class="product-price">12€</span>
             <button type="button" class="product-btn" onclick="openProduct('natal_sagrada_familia')">Personalizar</button>
           </div>
         </div>
@@ -10288,7 +10288,7 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
         <h4>Acabamento</h4>
         <label for="pd-golden-details" style="display:flex;align-items:center;gap:0.65rem;cursor:pointer;">
           <input type="checkbox" id="pd-golden-details" onchange="updateProductPrice()" style="width:18px;height:18px;accent-color:#a98042;"/>
-          Detalhes em dourado (+2,00 €)
+          Detalhes em dourado (+2€)
         </label>
       </div>
 
@@ -13909,7 +13909,7 @@ var PRODUCT_CATALOG = {
     sizes: [],
     basePrice: 12.9,
     goldenDetailsPrice: 2,
-    details: 'Carrossel artesanal com tampa e vela perfumada incluída · Detalhes em dourado opcionais (+2,00 €).',
+    details: 'Carrossel artesanal com tampa e vela perfumada incluída · Detalhes em dourado opcionais (+2€).',
     tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
     quote: 'Uma criação artesanal para oferecer nesta época.',
     ctaLabel: 'Adicionar ao Carrinho',
@@ -13929,7 +13929,7 @@ var PRODUCT_CATALOG = {
       { id: 'Grande', label: 'Grande', price: 16.9 },
       { id: 'Conjunto', label: 'Conjunto (pequena + grande)', price: 30 }
     ],
-    details: 'Bola decorativa de Natal · Tamanho pequeno ou grande · Conjunto disponível · Velas opcionais, com acréscimo de 8,00 € por vela.',
+    details: 'Bola decorativa de Natal · Tamanho pequeno ou grande · Conjunto disponível · Velas opcionais, com acréscimo de 8€ por vela.',
     tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
     quote: 'Uma criação artesanal para oferecer nesta época.',
     natalFragrancePending: true,
@@ -15324,18 +15324,18 @@ function renderNatalCandleOptions(p) {
   var choices = [{value:'none',label:'Sem vela'}];
   if (currentSizeId === 'Conjunto') choices = [
     {value:'none',label:'Sem velas'},
-    {value:'small',label:'Com vela pequena (+8,00 €)'},
-    {value:'large',label:'Com vela grande (+8,00 €)'},
-    {value:'both',label:'Com ambas as velas (+16,00 €)'}
+    {value:'small',label:'Com vela pequena (+8€)'},
+    {value:'large',label:'Com vela grande (+8€)'},
+    {value:'both',label:'Com ambas as velas (+16€)'}
   ];
-  else choices.push({value:currentSizeId === 'Grande' ? 'large' : 'small',label:'Com vela (+8,00 €)'});
+  else choices.push({value:currentSizeId === 'Grande' ? 'large' : 'small',label:'Com vela (+8€)'});
   choices.forEach(function(choice) {
     var option = document.createElement('option');
     option.value = choice.value;
     option.textContent = choice.label;
     select.appendChild(option);
   });
-  if (note) note.textContent = 'Cada vela acrescenta 8,00 € ao preço da opção escolhida.';
+  if (note) note.textContent = 'Cada vela acrescenta 8€ ao preço da opção escolhida.';
 }
 
 var CHRISTMAS_FRAGRANCES = ['Eucalipto com Menta','Home Sweet Home','Rosa Champanhe','Vanilla Frappuccino','Cashmere','Holiday Spice','Canela e Laranja','Caramelo com Framboesa e Baunilha'];
