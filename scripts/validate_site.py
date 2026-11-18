@@ -76,7 +76,7 @@ def validate(output: Path) -> None:
             assert page.count('src="./assets/js/analytics-config.js"') == 1, "config analytics ausente/duplicada"
             assert page.count('src="./assets/js/analytics.js"') == 1, "analytics ausente/duplicada"
             assert page.count('src="./assets/js/commercial-content.js"') == 1, "conteúdo comercial ausente/duplicado"
-            assert len(re.findall(r'href="/assets/css/site\\.css(?:\\?v=[a-f0-9]{12})?"', page)) == 1, "CSS partilhado ausente/duplicado"
+            assert len(re.findall(r'href="/assets/css/site\.css(?:\?v=[a-f0-9]{12})?"', page)) == 1, "CSS partilhado ausente/duplicado"
             assert len(re.findall(r'src="/assets/js/site\.js(?:\?v=[a-f0-9]{12})?"', page)) == 1, "JavaScript partilhado ausente/duplicado"
 
             content_key = f"category:{route.category}" if route.category else f"occasion:{route.occasion}" if route.occasion else ""
