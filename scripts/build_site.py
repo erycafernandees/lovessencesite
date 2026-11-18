@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import base64
 import html as html_lib
+import hashlib
 import json
 import re
 import shutil
@@ -706,7 +707,8 @@ def extract_shared_assets(source: str, output: Path) -> str:
     js_path = output / "assets" / "js" / "site.js"
     js_path.parent.mkdir(parents=True, exist_ok=True)
     js_path.write_text("\n;\n".join(scripts).strip() + "\n", encoding="utf-8")
-    after_footer = re.sub(r"<script>.*?</script>", '<script src="/assets/js/site.js"></script>', after_footer, count=1, flags=re.S)
+    js_version = hashlib.sha256(js_path.read_bytes()).hexdigest()[:12]
+    after_footer = re.sub(r"<script>.*?</script>", f'<script src="/assets/js/site.js?v={js_version}"></script>', after_footer, count=1, flags=re.S)
     after_footer = re.sub(r"<script>.*?</script>", "", after_footer, flags=re.S)
     return before_scripts + after_footer
 
