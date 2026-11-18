@@ -6138,16 +6138,22 @@ body.natal26-shop #page-shop .shop-hero {background:var(--cream);}
   margin:2rem auto 0;padding:0;overflow:visible;background:none;border:0;box-shadow:none;
 }
 #page-shop #natal26-shortcuts .cat-tab {font-family:var(--sans);}
-/* Regressar à Loja é uma ação distinta dos quatro filtros natalícios. */
-#page-shop #natal26-store-link,
-#page-shop #natal26-related .natal26-related-more .cat-tab {
+/* Link secundário para a loja: discreto, sem quinto botão nem símbolos. */
+#page-shop .natal26-store-text-link {
   display:inline-flex;align-items:center;justify-content:center;
-  box-sizing:border-box;min-height:44px;
-  text-align:center;text-decoration:none;font-family:var(--sans);
+  box-sizing:border-box;min-height:44px;width:auto;max-width:100%;
+  padding:.55rem .8rem;border:0;background:transparent;
+  font-family:var(--sans);font-size:.73rem;line-height:1.4;
+  font-weight:500;letter-spacing:.095em;text-transform:uppercase;
+  color:var(--deep-rose);text-align:center;text-decoration:underline;
+  text-underline-offset:5px;text-decoration-thickness:1px;
+  transition:color .2s ease;
 }
-#page-shop #natal26-store-link{margin:1.15rem auto 0;}
+#page-shop .natal26-store-text-link:hover,
+#page-shop .natal26-store-text-link:focus-visible {color:var(--rose);}
+#page-shop #natal26-store-link{margin:.5rem auto 0;}
 #page-shop #natal26-related .natal26-related-more{
-  display:flex;justify-content:center;margin:1.7rem auto 0;
+  display:flex;justify-content:center;margin:1.4rem auto 0;
 }
 #page-shop #natal26-shortcuts .cat-tab[aria-pressed="true"] {
   background:var(--rose);border-color:var(--rose);color:#fff;
@@ -6183,8 +6189,8 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
    width:100%;min-width:0;white-space:normal;text-align:center;justify-content:center;
    padding:.7rem .45rem;line-height:1.3;font-size:.69rem;letter-spacing:.08em;
  }
- #page-shop #natal26-store-link {width:100%;max-width:100%;padding:.85rem 1rem;}
- #page-shop #natal26-related .natal26-related-more .cat-tab {width:100%;padding:.85rem 1rem;}
+ #page-shop #natal26-store-link {width:auto;max-width:100%;padding:.65rem .8rem;}
+ #page-shop #natal26-related .natal26-related-more .natal26-store-text-link {width:auto;}
  #natal26-business{padding:2rem 1.25rem;}
 }
 @media(max-width:360px){#page-shop #natal26-shortcuts .cat-tab{font-size:.63rem;}}
@@ -18335,7 +18341,7 @@ renderCart();
    // É um link, não um quinto filtro de Natal.
    var storeLink=document.createElement("a");
    storeLink.id="natal26-store-link";
-   storeLink.className="cat-tab";
+   storeLink.className="natal26-store-text-link";
    storeLink.href="/loja/";
    storeLink.textContent="Ver toda a Loja";
    text.appendChild(storeLink);
@@ -18343,7 +18349,7 @@ renderCart();
    related.id="natal26-related";
    related.setAttribute("aria-label","Sugestões de outros artigos Love Essences");
    related.innerHTML='<h3>Também te pode interessar</h3><div class="shop-products-grid" id="natal26-related-grid"></div>'+
-     '<div class="natal26-related-more"><a href="/loja/" class="cat-tab">Ver toda a Loja</a></div>';
+     '<div class="natal26-related-more"><a href="/loja/" class="natal26-store-text-link">Ver toda a Loja</a></div>';
    grid.insertAdjacentElement("afterend",related);
    var recommendations=related.querySelector("#natal26-related-grid");
    var sourceCards=Array.from(grid.querySelectorAll(".product-card"));
