@@ -793,8 +793,8 @@ PRODUCT_SEO = {
         "Bloom de Natal com flores de sabonete em abóbora decorativa. Tamanhos Mini e M, desde 18,90€. Descobre as opções e pede informações."
     ],
     "natal_aconchego": [
-        "Aconchego — Abóbora com Flores de Sabonete | Love Essences",
-        "Aconchego: abóbora decorativa com flores de sabonete e tampa entreaberta, por 15,90€. Um presente artesanal de Natal feito em Portugal."
+        "Luna — Abóbora com Flores de Sabonete | Love Essences",
+        "Luna: abóbora decorativa com flores de sabonete e tampa entreaberta, por 15,90€. Um presente artesanal de Natal feito em Portugal."
     ],
     "natal_carrossel": [
         "Carrossel Encantado — Vela de Natal | Love Essences",
