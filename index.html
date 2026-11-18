@@ -6124,6 +6124,8 @@ body.natal26-shop #page-shop .shop-results-meta>button { display:none!important;
 body.natal26-shop #natal26-intro, body.natal26-shop #natal26-related {display:block;}
 body.natal26-shop.natal26-business-selected #natal26-business{display:block;}
 body.natal26-shop.natal26-business-selected #shop-products-grid{display:none;}
+/* A escolha empresas apresenta apenas o convite empresarial, não a CTA genérica da loja. */
+body.natal26-shop.natal26-business-selected #shop-personal-order-cta{display:none!important;}
 body.natal26-shop #page-shop .shop-hero {background:var(--cream);}
 #natal26-intro{text-align:center;}
 #natal26-intro .natal26-eyebrow {display:block;font-family:var(--sans);font-size:.76rem;text-transform:uppercase;letter-spacing:.18em;color:var(--warm-gray);margin:1rem 0 0;}
@@ -10305,7 +10307,7 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
   </section>
 
   <!-- Personalização: bloco centrado na coleção Natal e restantes categorias -->
-  <section class="bg-white px-[5vw] py-16 md:px-[8vw]" aria-label="Encomendas personalizadas" style="text-align:center; box-sizing:border-box; width:100%;">
+  <section id="shop-personal-order-cta" class="bg-white px-[5vw] py-16 md:px-[8vw]" aria-label="Encomendas personalizadas" style="text-align:center; box-sizing:border-box; width:100%;">
     <div style="width:100%; max-width:760px; margin:0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
       <p class="section-label" style="text-align:center; width:100%; margin-left:auto; margin-right:auto;">✦ Não encontraste o que procuras?</p>
       <h2 class="section-title" style="max-width:600px; margin:0 auto 1rem; text-align:center;">Criamos o presente<br/><em>exatamente para ti</em></h2>
