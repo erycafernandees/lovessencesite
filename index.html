@@ -18072,9 +18072,21 @@ renderCart();
   };
 
   function getProductIdFromCard(card) {
+    // Use the stable product action, independent of translated titles.
+    var action = card.querySelector('[onclick*="openProduct("]');
+    var match = action && (action.getAttribute('onclick') || '').match(/openProduct\\(['"]([^'"]+)['"]\\)/);
+    if (match && PRODUCT_CATALOG[match[1]]) return match[1];
+    var link = card.querySelector('a[href*="/produtos/"]');
+    if (link && typeof getProductUrl === 'function') {
+      var path = new URL(link.getAttribute('href'), document.baseURI).pathname;
+      var id = Object.keys(PRODUCT_CATALOG).find(function(key) {
+        return new URL(getProductUrl(key), document.baseURI).pathname === path;
+      });
+      if (id) return id;
+    }
     var title = card.querySelector('.product-name');
     var name = title ? sourceI18nText(title.textContent) : '';
-    return PRODUCT_CARD_OPEN_MAP[name] || '';
+    return PRODUCT_CARD_OPEN_MAP[name] || Object.keys(PRODUCT_CATALOG).find(function(id) { return PRODUCT_CATALOG[id].name === name; }) || '';
   }
 
   function openCardProduct(card) {
