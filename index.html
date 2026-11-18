@@ -6110,6 +6110,27 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
   transform: scale(1.1);
 }
 </style>
+<style>
+/* LOVE ESSENCES - campanha de Natal 2026 (reversão automática 26/12) */
+.christmas-2026-ui{display:none!important}
+html.christmas-shop-2026 .christmas-2026-ui{display:block!important}
+html.christmas-shop-2026 #page-shop .shop-hero>.section-label,
+html.christmas-shop-2026 #page-shop #shop-page-intro,
+html.christmas-shop-2026 #page-shop .shop-results-meta>button{display:none!important}
+html.christmas-shop-2026 #page-shop .christmas-eyebrow{color:#526e58;font-weight:600;font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;margin:0 0 1rem}
+html.christmas-shop-2026 #page-shop .christmas-intro{color:#5c665e;max-width:650px;margin:1rem auto 0;line-height:1.8}
+.christmas-price-shortcuts{max-width:840px;margin:2.3rem auto 0;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.christmas-price-shortcuts button{background:#fff;border:1px solid #b8c6b9;border-radius:14px;color:#34503c;font:inherit;cursor:pointer;padding:1rem 1.45rem;min-width:210px;text-align:center;transition:.2s}
+.christmas-price-shortcuts button:hover,.christmas-price-shortcuts button[aria-pressed="true"]{background:#e7eee7;border-color:#3c6445}
+.christmas-price-shortcuts small{display:block;font-size:.74rem;color:#68776c;margin-top:.3rem}
+.christmas-shipping-band{max-width:1050px;margin:2.7rem auto;padding:1.1rem 1.5rem;text-align:center;background:#e9f0e9;border-radius:14px;color:#35533d;font-size:.88rem}
+.christmas-business-card{max-width:1050px;margin:2rem auto 0;background:#f5f5f0;border-radius:20px;padding:2rem 2.4rem;text-align:center;color:#344637}
+.christmas-business-card h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3vw,2.3rem);margin:.5rem auto}
+.christmas-business-card p{max-width:680px;margin:.6rem auto 1rem;line-height:1.7}
+.christmas-business-card button{cursor:pointer;border:1px solid #54735a;background:#54735a;color:#fff;padding:.8rem 1.4rem;border-radius:4px}
+html.christmas-shop-2026 #page-shop .shop-products-grid .product-card.christmas-price-hidden{display:none!important}
+@media(max-width:640px){.christmas-price-shortcuts{gap:.65rem}.christmas-price-shortcuts button{min-width:130px;flex:1;padding:.85rem}.christmas-business-card{padding:1.5rem}.christmas-shipping-band{margin:1.5rem auto}}
+</style>
 </head>
 <body>
 
@@ -18184,5 +18205,90 @@ renderCart();
 </script>
 
 <script src="./assets/js/commerce.js?v=20261116"></script>
+
+<script>
+/* Natal 2026: esta apresentação existe apenas até 25/12; às 00:00 de
+   26/12 (Europe/Lisbon) a loja volta à apresentação normal sem intervenção. */
+(function(){
+  var priceMode='all', baseAnnouncement=null;
+  function portugalDay(){
+    var v={};
+    new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Lisbon',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).forEach(function(p){if(p.type!=='literal')v[p.type]=p.value});
+    return Number(v.year)*10000+Number(v.month)*100+Number(v.day);
+  }
+  function active(){
+    var day=portugalDay();
+    return day>=20261118&&day<=20261225&&typeof currentCategory!=='undefined'&&currentCategory==='natal'&&
+      document.getElementById('page-shop')?.classList.contains('active');
+  }
+  function updatePriceFilter(){
+    document.querySelectorAll('#shop-products-grid .natal-product-card').forEach(function(card){
+      var name=card.querySelector('.product-name')?.textContent?.trim()||'';
+      var high=name==='Bloom de Natal'||name==='Luna';
+      card.classList.toggle('christmas-price-hidden',active()&&priceMode!=='all'&&
+        (priceMode==='under15'?high:!high));
+    });
+    document.querySelectorAll('[data-christmas-price]').forEach(function(b){
+      b.setAttribute('aria-pressed',String(active()&&priceMode===b.dataset.christmasPrice));
+    });
+  }
+  window.setChristmasPrice2026=function(mode){priceMode=mode;updatePriceFilter();};
+  function sync(){
+    var day=portugalDay(), season=day>=20261118&&day<=20261225, on=active();
+    document.documentElement.classList.toggle('christmas-shop-2026',on);
+    var label=document.querySelector('#page-shop .christmas-order-deadline');
+    if(label)label.textContent=day<=20261212?'Encomenda até 12 de dezembro para receber antes do Natal, sujeito aos prazos dos CTT.':'Para encomendas de Natal, confirma primeiro a disponibilidade e os prazos de entrega.';
+    var business=document.querySelector('.christmas-business-deadline');
+    if(business)business.textContent=day<=20261130?'Pede orçamento até 30 de novembro.':'Contacta-nos para confirmar a disponibilidade de encomendas empresariais.';
+    var announcement=document.querySelectorAll('#announce-bar .announce-track span');
+    announcement.forEach(function(el){
+      if(el.dataset.christmasOriginal===undefined)el.dataset.christmasOriginal=el.textContent;
+      el.textContent=season&&day<=20261212
+        ?'✦ Natal 2026 · Encomenda até 12 de dezembro · Entrega sujeita aos prazos dos CTT · Portes grátis acima de 60 € ✦'
+        :el.dataset.christmasOriginal;
+    });
+    if(!on)priceMode='all';
+    updatePriceFilter();
+  }
+  function init(){
+    var hero=document.querySelector('#page-shop .shop-hero');
+    if(!hero)return;
+    var label=hero.querySelector('.section-label');
+    if(label)label.insertAdjacentHTML('afterend','<p class="christmas-2026-ui christmas-eyebrow">Natal 2026</p>');
+    var intro=document.getElementById('shop-page-intro');
+    if(intro)intro.insertAdjacentHTML('afterend',
+      '<p class="christmas-2026-ui christmas-intro">Peças criadas à mão, uma a uma, para oferecer, decorar e tornar o Natal ainda mais especial.</p>'+
+      '<p class="christmas-2026-ui christmas-intro christmas-order-deadline" style="font-size:.8rem"></p>'+
+      '<div class="christmas-2026-ui christmas-price-shortcuts" aria-label="Escolher presentes por orçamento">'+
+      '<button type="button" data-christmas-price="under15" aria-pressed="false" onclick="setChristmasPrice2026(\'under15\')">Até 15€<small>Pequenos presentes, grandes gestos</small></button>'+
+      '<button type="button" data-christmas-price="over15" aria-pressed="false" onclick="setChristmasPrice2026(\'over15\')">Presentes especiais<small>Criações para surpreender</small></button>'+
+      '<button type="button" data-christmas-price="all" aria-pressed="true" onclick="setChristmasPrice2026(\'all\')">Ver todos<small>Toda a coleção Natal</small></button></div>');
+    var grid=document.getElementById('shop-products-grid');
+    if(grid)grid.insertAdjacentHTML('afterend',
+      '<div class="christmas-2026-ui christmas-shipping-band">✦ O teu Natal com portes grátis em compras acima de 60€ em Portugal Continental.</div>'+
+      '<section class="christmas-2026-ui christmas-business-card" aria-label="Natal para empresas">'+
+      '<span style="font-size:.72rem;letter-spacing:.16em;color:#647b69">LOVE ESSENCES · EMPRESAS</span>'+
+      '<h3>Um Natal especial para a tua equipa</h3>'+
+      '<p>Lembranças artesanais e personalizadas para colaboradores, clientes e parceiros.</p>'+
+      '<p class="christmas-business-deadline" style="font-size:.82rem"></p>'+
+      '<button type="button" onclick="showPage(\'contact\')">Pedir orçamento</button></section>');
+    var oldApply=window.applyShopFilters;
+    if(typeof oldApply==='function'){
+      window.applyShopFilters=function(){var result=oldApply.apply(this,arguments);sync();return result;};
+    }
+    var oldShow=window.showPage;
+    if(typeof oldShow==='function'){
+      window.showPage=function(){var result=oldShow.apply(this,arguments);sync();return result;};
+    }
+    sync();
+    setInterval(sync,60000);
+    document.addEventListener('visibilitychange',sync);
+    window.addEventListener('popstate',function(){setTimeout(sync,0)});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+</script>
+
 </body>
 </html>
