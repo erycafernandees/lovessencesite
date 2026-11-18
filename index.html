@@ -9955,20 +9955,6 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
       <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
         <div class="product-img has-photo">
           <span class="product-tag natal-new-tag">NOVIDADE</span>
-          <img src="assets/products/natal-placeholder.svg" alt="Fotografia de Bola de Natal em breve" loading="lazy" decoding="async"/>
-        </div>
-        <div class="product-info">
-          <h3 class="product-name">Bola de Natal</h3>
-          <p class="product-desc">Um pequeno encanto para oferecer ou guardar. Escolhe o tamanho, combina as duas peças e acrescenta uma vela, se desejares.</p>
-          <div class="product-footer">
-            <span class="product-price">Desde 14,90 €</span>
-            <button type="button" class="product-btn" onclick="openProduct('natal_bola')">Personalizar</button>
-          </div>
-        </div>
-      </div>
-      <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
-        <div class="product-img has-photo">
-          <span class="product-tag natal-new-tag">NOVIDADE</span>
           <img src="assets/products/bloom-natal.jpg" alt="Bloom de Natal, peça artesanal Love Essences" loading="lazy" decoding="async"/>
         </div>
         <div class="product-info">
@@ -13925,6 +13911,7 @@ var PRODUCT_CATALOG = {
     quote: 'Uma criação artesanal para oferecer nesta época.',
     ctaLabel: 'Adicionar ao Carrinho',
   },
+  // Temporariamente retirado da venda pública até existirem fotografias.
   natal_bola: {
     category: 'Natal',
     name: 'Bola de Natal',
@@ -14822,7 +14809,7 @@ function openProduct(productId, options) {
 
 var LOVE_PRODUCT_TYPE_FILTERS = {
   // Artigos novos da coleção Natal, com páginas de produto próprias.
-  natal: ['natal_vila_encantada', 'natal_sagrada_familia', 'natal_carrossel', 'natal_bola', 'natal_bloom', 'natal_aconchego', 'natal_vela_abobora'],
+  natal: ['natal_vila_encantada', 'natal_sagrada_familia', 'natal_carrossel', 'natal_bloom', 'natal_aconchego', 'natal_vela_abobora'],
   difusores: ['mini_difusor', 'aroma_em_viagem', 'mini_difusor_sabonete'],
   sabonetes: ['trouxinha_aromatica', 'bem_querer', 'mini_difusor_sabonete', 'bilhete_perfumado'],
   velas: ['luz_serena', 'doce_luz', 'memoria_perfumada']
