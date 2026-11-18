@@ -511,7 +511,15 @@ document.getElementById('cleanup-tools').addEventListener('toggle', () => {
 });
 document.querySelectorAll('.tabs button').forEach(button => button.addEventListener('click', () => {
   document.querySelectorAll('.tabs button').forEach(item => item.classList.remove('active'));
-  button.classList.add('active'); currentView = button.dataset.view; statusFilter = ''; updateStatusOptions(); loadView();
+  button.classList.add('active');
+  currentView = button.dataset.view;
+  const isGallery = currentView === 'gallery';
+  document.getElementById('admin-orders-workspace').hidden = isGallery;
+  document.getElementById('admin-gallery-workspace').hidden = !isGallery;
+  if (isGallery) { loadProductGalleryAdmin(); return; }
+  statusFilter = '';
+  updateStatusOptions();
+  loadView();
 }));
 
 async function loadView() {
@@ -1355,6 +1363,126 @@ function bindFiles() {
     });
   });
 }
+
+
+/* Galerias de Natal: edição autenticada com MFA. */
+const PRODUCT_GALLERY_BUCKET = 'product-gallery';
+const PRODUCT_GALLERY_NAMES = {
+  natal_sagrada_familia:'Sagrada Família',
+  natal_vela_abobora:'Vela Abóbora',
+  natal_vila_encantada:'Vila Encantada',
+  natal_carrossel:'Carrossel Encantado'
+};
+const galleryProductSelect = document.getElementById('gallery-product');
+const galleryFeedback = document.getElementById('gallery-feedback');
+let galleryRows = [];
+let galleryBusy = false;
+function galleryNotice(message, isError=false) {
+  galleryFeedback.textContent = message;
+  galleryFeedback.classList.toggle('is-error', isError);
+}
+async function loadProductGalleryAdmin() {
+  if (currentView !== 'gallery' || galleryBusy) return;
+  const productId = galleryProductSelect.value;
+  if (!PRODUCT_GALLERY_NAMES[productId]) return;
+  const list = document.getElementById('gallery-images');
+  list.textContent = 'A carregar fotografias…';
+  const {data,error} = await supabase.from('product_gallery_images')
+    .select('id,product_id,object_path,sort_order,created_at')
+    .eq('product_id', productId).order('sort_order').order('created_at');
+  if (galleryProductSelect.value !== productId || currentView !== 'gallery') return;
+  if (error) {
+    list.textContent = 'Não foi possível carregar a galeria.';
+    galleryNotice(error.message || 'Erro ao carregar fotografias.', true);
+    return;
+  }
+  galleryRows = data || [];
+  if (!galleryRows.length) {
+    list.textContent = 'Ainda não existem fotografias adicionais. A fotografia principal permanece no site.';
+    return;
+  }
+  list.innerHTML = galleryRows.map((row,index) => {
+    const url = supabase.storage.from(PRODUCT_GALLERY_BUCKET).getPublicUrl(row.object_path).data.publicUrl;
+    return '<div class="gallery-image-item"><img src="'+esc(url)+'" alt="Fotografia adicional '+(index+1)+'" loading="lazy"/>'+
+      '<button type="button" data-gallery-remove="'+esc(row.id)+'">Eliminar fotografia</button></div>';
+  }).join('');
+}
+galleryProductSelect.addEventListener('change', () => {
+  galleryNotice('');
+  loadProductGalleryAdmin();
+});
+document.getElementById('gallery-upload-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  if (galleryBusy) return;
+  const productId = galleryProductSelect.value;
+  const fileInput = document.getElementById('gallery-files');
+  const files = Array.from(fileInput.files || []);
+  if (!PRODUCT_GALLERY_NAMES[productId] || !files.length) {
+    galleryNotice('Seleciona um artigo e pelo menos uma fotografia.',true);
+    return;
+  }
+  if (galleryRows.length + files.length > 12) {
+    galleryNotice('Podes adicionar até 12 fotografias extra por artigo.',true);
+    return;
+  }
+  const formats = {'image/jpeg':'jpg','image/png':'png','image/webp':'webp'};
+  if (files.some(file => !formats[file.type] || file.size < 1 || file.size > 10485760)) {
+    galleryNotice('Aceitamos JPG, PNG ou WebP até 10 MB por fotografia.',true);
+    return;
+  }
+  const submit = document.getElementById('gallery-upload-button');
+  galleryBusy = true;
+  submit.disabled = true;
+  galleryProductSelect.disabled = true;
+  let added = 0;
+  try {
+    for (const file of files) {
+      const objectPath = productId+'/'+crypto.randomUUID()+'.'+formats[file.type];
+      const upload = await supabase.storage.from(PRODUCT_GALLERY_BUCKET).upload(objectPath,file,{
+        contentType:file.type,upsert:false,cacheControl:'3600'
+      });
+      if (upload.error) throw upload.error;
+      const save = await supabase.from('product_gallery_images').insert({
+        product_id:productId,object_path:objectPath,sort_order:galleryRows.length+added
+      });
+      if (save.error) {
+        await supabase.storage.from(PRODUCT_GALLERY_BUCKET).remove([objectPath]);
+        throw save.error;
+      }
+      added++;
+    }
+    fileInput.value = '';
+    galleryNotice(added+' fotografia(s) adicionada(s) a '+PRODUCT_GALLERY_NAMES[productId]+'.');
+  } catch(error) {
+    galleryNotice(added+' adicionada(s). '+(error.message || 'Erro ao guardar.'),true);
+  } finally {
+    galleryBusy = false;
+    submit.disabled = false;
+    galleryProductSelect.disabled = false;
+    await loadProductGalleryAdmin();
+  }
+});
+document.getElementById('gallery-images').addEventListener('click',async event => {
+  const button = event.target.closest('button[data-gallery-remove]');
+  if (!button || galleryBusy) return;
+  const record = galleryRows.find(item => item.id === button.dataset.galleryRemove);
+  if (!record || !window.confirm('Eliminar esta fotografia da galeria?')) return;
+  galleryBusy = true;
+  button.disabled = true;
+  try {
+    const deletion = await supabase.from('product_gallery_images').delete().eq('id',record.id);
+    if (deletion.error) throw deletion.error;
+    const fileDeletion = await supabase.storage.from(PRODUCT_GALLERY_BUCKET).remove([record.object_path]);
+    galleryNotice(fileDeletion.error
+      ? 'Imagem retirada da loja. O ficheiro antigo não foi eliminado do armazenamento.'
+      : 'Fotografia eliminada.',Boolean(fileDeletion.error));
+  } catch(error) {
+    galleryNotice(error.message || 'Erro ao eliminar.',true);
+  } finally {
+    galleryBusy = false;
+    await loadProductGalleryAdmin();
+  }
+});
 
 const { data: { session } } = await supabase.auth.getSession();
 if (session) { try { await ensureMfa(); } catch (error) { document.getElementById('login-error').textContent = error.message; } }
