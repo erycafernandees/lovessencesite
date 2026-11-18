@@ -9286,7 +9286,7 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
           <h3 class="product-name">Luna</h3>
           <p class="product-desc">Uma abóbora com flores de sabonete e tons suaves, pensada para oferecer neste Natal.</p>
           <div class="product-footer">
-            <span class="product-price">15,90 €</span>
+            <span class="product-price">Desde 15,90€</span>
             <button type="button" class="product-btn" onclick="openProduct('natal_aconchego')">Personalizar</button>
           </div>
         </div>
@@ -9992,7 +9992,7 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
           <h3 class="product-name">Luna</h3>
           <p class="product-desc">Uma abóbora com flores de sabonete e tons suaves, pensada para oferecer neste Natal.</p>
           <div class="product-footer">
-            <span class="product-price">15,90 €</span>
+            <span class="product-price">Desde 15,90€</span>
             <button type="button" class="product-btn" onclick="openProduct('natal_aconchego')">Personalizar</button>
           </div>
         </div>
@@ -13566,6 +13566,8 @@ Object.keys(I18N_AUDIT_TEXT).forEach(function(lang) {
   Object.assign(I18N_TEXT[lang], I18N_AUDIT_TEXT[lang]);
 });
 
+Object.keys({"en":{"O Luna é uma composição de flores de sabonete numa peça decorativa inspirada na forma de uma abóbora, com tampa incluída. A tampa entreaberta revela as flores e dá um toque delicado à decoração. Disponível nos tamanhos Mini e M.":"Luna is an arrangement of soap flowers in a pumpkin-inspired decorative piece, with a lid included. The half-open lid reveals the flowers and adds a delicate touch to your décor. Available in Mini and M.","Peça decorativa em forma de abóbora, com tampa incluída e flores de sabonete · Mini: 15,90€ · M: 29,90€.":"Pumpkin-shaped decorative piece with lid and soap flowers · Mini: €15.90 · M: €29.90."},"es":{"O Luna é uma composição de flores de sabonete numa peça decorativa inspirada na forma de uma abóbora, com tampa incluída. A tampa entreaberta revela as flores e dá um toque delicado à decoração. Disponível nos tamanhos Mini e M.":"Luna es una composición de flores de jabón en una pieza decorativa inspirada en una calabaza, con tapa incluida. La tapa entreabierta revela las flores y aporta un toque delicado a la decoración. Disponible en Mini y M.","Peça decorativa em forma de abóbora, com tampa incluída e flores de sabonete · Mini: 15,90€ · M: 29,90€.":"Pieza decorativa en forma de calabaza con tapa y flores de jabón · Mini: 15,90€ · M: 29,90€."}}).forEach(function(lang) { Object.assign(I18N_TEXT[lang], {"en":{"O Luna é uma composição de flores de sabonete numa peça decorativa inspirada na forma de uma abóbora, com tampa incluída. A tampa entreaberta revela as flores e dá um toque delicado à decoração. Disponível nos tamanhos Mini e M.":"Luna is an arrangement of soap flowers in a pumpkin-inspired decorative piece, with a lid included. The half-open lid reveals the flowers and adds a delicate touch to your décor. Available in Mini and M.","Peça decorativa em forma de abóbora, com tampa incluída e flores de sabonete · Mini: 15,90€ · M: 29,90€.":"Pumpkin-shaped decorative piece with lid and soap flowers · Mini: €15.90 · M: €29.90."},"es":{"O Luna é uma composição de flores de sabonete numa peça decorativa inspirada na forma de uma abóbora, com tampa incluída. A tampa entreaberta revela as flores e dá um toque delicado à decoração. Disponível nos tamanhos Mini e M.":"Luna es una composición de flores de jabón en una pieza decorativa inspirada en una calabaza, con tapa incluida. La tapa entreabierta revela las flores y aporta un toque delicado a la decoración. Disponible en Mini y M.","Peça decorativa em forma de abóbora, com tampa incluída e flores de sabonete · Mini: 15,90€ · M: 29,90€.":"Pieza decorativa en forma de calabaza con tapa y flores de jabón · Mini: 15,90€ · M: 29,90€."}}[lang]); });
+
 var I18N_REVERSE = {};
 Object.keys(I18N_TEXT).forEach(function(lang) {
   Object.keys(I18N_TEXT[lang]).forEach(function(source) {
@@ -14693,10 +14695,13 @@ var PRODUCT_CATALOG = {
     image: 'assets/products/aconchego.jpg',
     visualBg: '#faf6f9',
     storyTitle: 'O artigo',
-    story: 'Há presentes que parecem um abraço. O Luna combina a forma delicada de uma abóbora com tampa entreaberta e flores de sabonete, criando um apontamento suave para a decoração da estação.',
-    sizes: [],
-    basePrice: 15.9,
-    details: 'Abóbora decorativa com a tampa entreaberta e flores de sabonete',
+    story: 'O Luna é uma composição de flores de sabonete numa peça decorativa inspirada na forma de uma abóbora, com tampa incluída. A tampa entreaberta revela as flores e dá um toque delicado à decoração. Disponível nos tamanhos Mini e M.',
+    sizeTitle: 'Escolhe o tamanho',
+    sizes: [
+      { id: 'Mini', label: 'Mini', price: 15.9 },
+      { id: 'M', label: 'M', price: 29.9 }
+    ],
+    details: 'Peça decorativa em forma de abóbora, com tampa incluída e flores de sabonete · Mini: 15,90€ · M: 29,90€.',
     tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
     quote: 'Uma criação artesanal para oferecer nesta época.',
     natalFragrancePending: true,
