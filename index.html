@@ -15500,6 +15500,44 @@ var currentNatalFragrance = '';
 var currentGalleryImages = [];
 var currentGalleryIndex = 0;
 var productGalleryTimer = null;
+// Fotografias adicionadas na gestão, sem substituir a capa original do produto.
+var productGalleryPublishedImages = Object.create(null);
+var productGalleryManagedIds = {
+  natal_sagrada_familia:true,natal_vela_abobora:true,
+  natal_vila_encantada:true,natal_carrossel:true
+};
+async function loadPublishedProductGallery(productId) {
+  if (!productGalleryManagedIds[productId]) return;
+  var commerce = window.LOVE_COMMERCE_CONFIG || {};
+  if (!commerce.supabaseUrl || !commerce.supabaseAnonKey) return;
+  try {
+    var root = commerce.supabaseUrl.replace(/[/]+$/,'');
+    var endpoint = root + '/rest/v1/product_gallery_images';
+    var query = '?product_id=eq.' + encodeURIComponent(productId) +
+      '&select=object_path&order=sort_order.asc,created_at.asc';
+    var response = await fetch(endpoint+query,{
+      headers:{apikey:commerce.supabaseAnonKey,Accept:'application/json'},
+      cache:'no-store'
+    });
+    if (!response.ok) throw new Error('Galeria indisponível');
+    var records = await response.json();
+    if (!Array.isArray(records)) return;
+    var base = root + '/storage/v1/object/public/product-gallery/';
+    productGalleryPublishedImages[productId] = records
+      .filter(function(item) {
+        return item && typeof item.object_path === 'string' &&
+          item.object_path.startsWith(productId+'/') &&
+          /^[a-z0-9_]+[/][a-f0-9-]{36}[.](jpg|jpeg|png|webp)$/.test(item.object_path);
+      })
+      .map(function(item) {
+        return base + item.object_path.split('/').map(encodeURIComponent).join('/');
+      });
+    if (currentProduct === productId && document.getElementById('page-product'))
+      updateProductVisual();
+  } catch(error) {
+    console.warn('Galeria pública indisponível:',error);
+  }
+}
 
 function openProduct(productId, options) {
   options = options || {};
@@ -15527,6 +15565,7 @@ function openProduct(productId, options) {
   if (window.LoveCommerce) window.LoveCommerce.setProductFiles([]);
 
   updateProductVisual();
+  loadPublishedProductGallery(productId);
 
   // Cabeçalho
   document.getElementById('pd-category').textContent = '✦ ' + p.category;
@@ -16068,8 +16107,10 @@ function getProductGalleryImages(p, activeSize) {
   // Para adicionar mais fotos a um artigo, usar a lista gallery no produto.
   if (activeSize && Array.isArray(activeSize.gallery)) activeSize.gallery.forEach(addImage);
   if (Array.isArray(p.gallery)) p.gallery.forEach(addImage);
+  if (productGalleryManagedIds[currentProduct] && Array.isArray(productGalleryPublishedImages[currentProduct]))
+    productGalleryPublishedImages[currentProduct].forEach(addImage);
 
-  return images.slice(0, 12);
+  return images.slice(0, productGalleryManagedIds[currentProduct] ? 20 : 12);
 }
 
 function renderProductGallery(images, altBase) {
