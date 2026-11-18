@@ -6138,6 +6138,17 @@ body.natal26-shop #page-shop .shop-hero {background:var(--cream);}
   margin:2rem auto 0;padding:0;overflow:visible;background:none;border:0;box-shadow:none;
 }
 #page-shop #natal26-shortcuts .cat-tab {font-family:var(--sans);}
+/* Regressar à Loja é uma ação distinta dos quatro filtros natalícios. */
+#page-shop #natal26-store-link,
+#page-shop #natal26-related .natal26-related-more .cat-tab {
+  display:inline-flex;align-items:center;justify-content:center;
+  box-sizing:border-box;min-height:44px;
+  text-align:center;text-decoration:none;font-family:var(--sans);
+}
+#page-shop #natal26-store-link{margin:1.15rem auto 0;}
+#page-shop #natal26-related .natal26-related-more{
+  display:flex;justify-content:center;margin:1.7rem auto 0;
+}
 #page-shop #natal26-shortcuts .cat-tab[aria-pressed="true"] {
   background:var(--rose);border-color:var(--rose);color:#fff;
 }
@@ -6172,6 +6183,8 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
    width:100%;min-width:0;white-space:normal;text-align:center;justify-content:center;
    padding:.7rem .45rem;line-height:1.3;font-size:.69rem;letter-spacing:.08em;
  }
+ #page-shop #natal26-store-link {width:100%;max-width:100%;padding:.85rem 1rem;}
+ #page-shop #natal26-related .natal26-related-more .cat-tab {width:100%;padding:.85rem 1rem;}
  #natal26-business{padding:2rem 1.25rem;}
 }
 @media(max-width:360px){#page-shop #natal26-shortcuts .cat-tab{font-size:.63rem;}}
@@ -18316,12 +18329,21 @@ renderCart();
       makeButton("under15","Até 15€")+
       makeButton("over15","Presentes especiais")+
       makeButton("business","Natal para empresas")+
-      makeButton("all","Ver todos");
+      makeButton("all","Toda a coleção Natal");
    text.appendChild(shortcuts);
+   // Uma saída explícita da coleção: carregamento real da Loja sem filtros.
+   // É um link, não um quinto filtro de Natal.
+   var storeLink=document.createElement("a");
+   storeLink.id="natal26-store-link";
+   storeLink.className="cat-tab";
+   storeLink.href="/loja/";
+   storeLink.textContent="Ver toda a Loja";
+   text.appendChild(storeLink);
    var related=document.createElement("section");
    related.id="natal26-related";
    related.setAttribute("aria-label","Sugestões de outros artigos Love Essences");
-   related.innerHTML='<h3>Também te pode interessar</h3><div class="shop-products-grid" id="natal26-related-grid"></div>';
+   related.innerHTML='<h3>Também te pode interessar</h3><div class="shop-products-grid" id="natal26-related-grid"></div>'+
+     '<div class="natal26-related-more"><a href="/loja/" class="cat-tab">Ver toda a Loja</a></div>';
    grid.insertAdjacentElement("afterend",related);
    var recommendations=related.querySelector("#natal26-related-grid");
    var sourceCards=Array.from(grid.querySelectorAll(".product-card"));
