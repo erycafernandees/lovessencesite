@@ -16093,4 +16093,2066 @@ function renderNatalProductOptions(p) {
       button.type = 'button';
       button.className = 'pd-fabric' + (index === 0 ? ' active' : '');
       button.dataset.natalColor = color;
-     
+      button.innerHTML = '<span class="pd-fabric-label">' + productEscapeHtml(color) + '</span>';
+      button.onclick = function() {
+        currentNatalColor = color;
+        colors.querySelectorAll('.pd-fabric').forEach(function(item) {
+          item.classList.toggle('active', item.dataset.natalColor === color);
+        });
+        updateProductPrice();
+      };
+      colors.appendChild(button);
+    });
+  }
+  var noteSection = document.getElementById('pd-natal-note-section');
+  var note = document.getElementById('pd-natal-note');
+  var groups = document.getElementById('pd-natal-fragrance-groups');
+  if (noteSection) noteSection.style.display = p.natalFragrancePending ? '' : 'none';
+  if (groups) {
+    groups.innerHTML = '';
+    groups.classList.remove('pd-field-error');
+    groups.removeAttribute('aria-invalid');
+    if (p.natalFragrancePending) [
+      { title: 'Especial Natal', fragrances: CHRISTMAS_FRAGRANCES },
+      { title: 'Assinatura', fragrances: CHRISTMAS_SIGNATURE_FRAGRANCES }
+    ].forEach(function(group) {
+      var wrapper = document.createElement('div');
+      wrapper.className = 'pd-fragrance-group';
+      var heading = document.createElement('h5');
+      heading.className = 'pd-natal-fragrance-heading';
+      heading.textContent = group.title;
+      wrapper.appendChild(heading);
+      var list = document.createElement('div');
+      list.className = 'pd-soap-fragrance-list';
+      group.fragrances.forEach(function(fragrance) {
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'pd-soap-fragrance-option';
+        button.dataset.fragrance = fragrance;
+        button.setAttribute('role','radio');
+        button.setAttribute('aria-checked','false');
+        button.textContent = fragrance;
+        button.onclick = function() { selectNatalFragrance(fragrance); };
+        list.appendChild(button);
+      });
+      wrapper.appendChild(list);
+      groups.appendChild(wrapper);
+    });
+  }
+  if (note && p.natalFragrancePending) note.textContent = 'Seleciona a fragrância pretendida antes de finalizar.';
+}
+
+function getCurrentProductSelection() {
+  if (!currentProduct) return null;
+  var p = PRODUCT_CATALOG[currentProduct];
+  var price = 0;
+  var itemName = p.name;
+  var size = null;
+  var image = p.image || '';
+  var qty = 1;
+  var eventDetails = [];
+  var hasPaidAddon = false;
+  var personalization = {};
+  var addonCodes = [];
+
+  if (p.sizes && p.sizes.length > 0 && currentSizeId) {
+    size = p.sizes.find(function(s) { return s.id === currentSizeId; });
+    if (size) {
+      price = size.price;
+      itemName += ' (' + size.label + ')';
+      if (p.category === 'Natal') eventDetails.push('Opção: ' + size.label);
+      if (size.image) image = size.image;
+    }
+  } else if (typeof p.basePrice === 'number') {
+    price = p.basePrice;
+  }
+
+  var natalCandle = document.getElementById('pd-natal-candle');
+  var candleChoice = p.natalCandleOptions && natalCandle ? natalCandle.value : 'none';
+  if (p.natalCandleOptions && candleChoice && candleChoice !== 'none') {
+    var supplement = candleChoice === 'both' ? 16 : 8;
+    if (typeof price === 'number') price += supplement;
+    hasPaidAddon = true;
+    var candleLabel = candleChoice === 'both' ? 'velas nas duas' : candleChoice === 'large' ? 'vela na grande' : 'vela na pequena';
+    itemName += ', ' + candleLabel;
+    eventDetails.push('Velas: ' + candleLabel + ' (+' + formatPrice(supplement) + ')');
+    personalization.natalCandle = candleChoice;
+    addonCodes.push(currentProduct + ':vela_' + candleChoice);
+  }
+  var goldenDetailsInput = document.getElementById('pd-golden-details');
+  if (p.goldenDetailsPrice && goldenDetailsInput && goldenDetailsInput.checked) {
+    price += p.goldenDetailsPrice;
+    hasPaidAddon = true;
+    itemName += ', detalhes em dourado';
+    eventDetails.push('Detalhes em dourado (+' + formatPrice(p.goldenDetailsPrice) + ')');
+    personalization.goldenDetails = true;
+    addonCodes.push(currentProduct + ':golden_details');
+  }
+  if (p.natalFragrancePending && currentNatalFragrance) {
+    itemName += ', Fragrância: ' + currentNatalFragrance;
+    eventDetails.push('Fragrância: ' + currentNatalFragrance);
+    personalization.natalFragrance = currentNatalFragrance;
+  }
+  if (p.natalColorOptions && currentNatalColor) {
+    itemName += ', Cor: ' + currentNatalColor;
+    personalization.natalColor = currentNatalColor;
+    eventDetails.push('Cor: ' + currentNatalColor);
+  }
+
+  if (p.boxColors && p.boxColors.length && currentBoxColor) {
+    itemName += ', Cor da caixa: ' + currentBoxColor;
+    personalization.boxColor = currentBoxColor;
+  }
+
+  if (p.bearColors && p.bearColors.length && currentBearColor) {
+    itemName += ', Cor do ursinho: ' + currentBearColor;
+    personalization.bearColor = currentBearColor;
+  }
+
+  if (p.eventOptions) {
+    var qtyInput = document.getElementById('pd-event-qty');
+    var minQty = p.minQty || 1;
+    qty = qtyInput ? parseInt(qtyInput.value, 10) : (p.defaultQty || minQty);
+    if (!Number.isFinite(qty) || qty < minQty) {
+      qty = minQty;
+      if (qtyInput) qtyInput.value = minQty;
+    }
+
+    var nameInput = document.getElementById('pd-event-name');
+    var dateInput = document.getElementById('pd-event-date');
+    var sweetColorsInput = document.getElementById('pd-event-sweet-colors');
+    var fragranceInput = document.getElementById('pd-event-fragrance');
+    var phraseInput = document.getElementById('pd-event-phrase');
+    var cardInput = document.getElementById('pd-event-card');
+    var eventName = nameInput ? nameInput.value.trim() : '';
+    var eventDate = dateInput ? dateInput.value.trim() : '';
+    var sweetColors = sweetColorsInput ? sweetColorsInput.value.trim() : '';
+    var fragrance = fragranceInput ? fragranceInput.value.trim() : '';
+    var phrase = phraseInput ? phraseInput.value.trim() : '';
+
+    if (eventName) eventDetails.push('Nome: ' + eventName);
+    if (eventDate) eventDetails.push('Data: ' + eventDate);
+    if (sweetColors) eventDetails.push('Cores dos doces: ' + sweetColors);
+    if (fragrance) eventDetails.push('Fragrância: ' + fragrance);
+    if (phrase) eventDetails.push('Frase da etiqueta: "' + phrase + '"');
+    personalization.event = { name: eventName, date: eventDate, sweetColors: sweetColors, fragrance: fragrance, labelPhrase: phrase };
+    if (typeof p.cardAddonPrice === 'number' && cardInput && cardInput.checked) {
+      price += p.cardAddonPrice;
+      hasPaidAddon = true;
+      addonCodes.push(currentProduct + ':event_card');
+      eventDetails.push('Com cartão (+' + formatPrice(p.cardAddonPrice) + '/un)');
+    }
+    if (eventDetails.length) itemName += ', ' + eventDetails.join(', ');
+  }
+
+  if (p.soapFlowerOptions) {
+    var soapColorsInput = document.getElementById('pd-soap-colors');
+    var soapColors = soapColorsInput ? soapColorsInput.value.trim() : '';
+    if (currentSoapFragrance) eventDetails.push('Fragrância: ' + currentSoapFragrance);
+    if (soapColors) eventDetails.push('Cores e tons: ' + soapColors);
+    if (currentSoapFragrance || soapColors) {
+      itemName += ', ' + [
+        currentSoapFragrance ? 'Fragrância: ' + currentSoapFragrance : '',
+        soapColors ? 'Cores e tons: ' + soapColors : ''
+      ].filter(Boolean).join(', ');
+    }
+    personalization.soap = { fragrance: currentSoapFragrance, colors: soapColors };
+  }
+
+  if (p.fabricOptions && p.fabricOptions.length && currentFabricId) {
+    var fabric = p.fabricOptions.find(function(option) { return option.id === currentFabricId; });
+    if (fabric) {
+      itemName += ', ' + (p.fabricCartLabel || 'Tecido') + ': ' + fabric.label;
+      personalization.fabric = { id: fabric.id, label: fabric.label };
+    }
+  }
+
+  if (p.freeTextOption) {
+    var freeTextInput = document.getElementById('pd-free-text');
+    var freeTextValue = freeTextInput ? freeTextInput.value.trim() : '';
+    if (freeTextValue) {
+      var freeTextDetail = (p.freeTextOption.cartLabel || p.freeTextOption.title || 'Escolha') + ': ' + freeTextValue;
+      itemName += ', ' + freeTextDetail;
+      eventDetails.push(freeTextDetail);
+      personalization.freeText = { label: p.freeTextOption.cartLabel || p.freeTextOption.title || 'Escolha', value: freeTextValue };
+    }
+  }
+
+  if (p.customizable) {
+    var input = document.getElementById('pd-custom-text');
+    if (input && input.value.trim().length > 0 && typeof p.customPrice === 'number') {
+      var customText = input.value.trim();
+      price += p.customPrice;
+      itemName += ', ' + (p.customCartLabel || 'Personalização') + ': "' + customText + '"';
+      personalization.customText = customText;
+      addonCodes.push(currentProduct + ':custom_text');
+    }
+  }
+
+  return {
+    name: itemName,
+    price: price,
+    qty: qty,
+    emoji: p.visual || '🎁',
+    image: image || getCartImageForName(itemName),
+    quoteOnly: !!p.quoteOnly || price === null || (p.natalFragrancePending && candleChoice !== 'none'),
+    hasPaidAddon: hasPaidAddon,
+    formProductName: p.formProductName || p.name,
+    summary: eventDetails.join('\n'),
+    productCode: currentProduct,
+    variantCode: currentProduct + ':' + String(currentSizeId || 'default').toLowerCase(),
+    personalization: personalization,
+    addonCodes: addonCodes
+  };
+}
+
+function updateProductPrice() {
+  var selection = getCurrentProductSelection();
+  if (!selection) return;
+  var p = PRODUCT_CATALOG[currentProduct];
+
+  document.getElementById('pd-price').textContent = selection.price === null
+    ? 'Preço por definir'
+    : selection.hasPaidAddon
+      ? formatPrice(selection.price) + (p.priceSuffix || '')
+      : p.priceLabel || (formatPrice(selection.price) + (p.priceSuffix || ''));
+  document.getElementById('pd-price-from').style.display = 'none';
+  var scentSection = document.getElementById('pd-natal-note-section');
+  if (scentSection && p.natalCandleOptions) {
+    var candle = document.getElementById('pd-natal-candle');
+    scentSection.style.display = candle && candle.value !== 'none' ? '' : 'none';
+  }
+  var cta = document.getElementById('pd-cta');
+  if (cta) cta.textContent = selection.quoteOnly ? 'Pedir informações' : (p.ctaLabel || 'Adicionar ao Carrinho');
+}
+
+function formatPrice(value) {
+  // Formato europeu: 32,90€  ou  60€
+  if (value % 1 === 0) return value + '€';
+  return value.toFixed(2).replace('.', ',') + '€';
+}
+
+function handleProductCta() {
+  if (!currentProduct) { showPage('contact'); return; }
+  var product = PRODUCT_CATALOG[currentProduct];
+  if (product && product.freeTextOption && product.freeTextOption.required) {
+    var freeTextInput = document.getElementById('pd-free-text');
+    var missingFreeText = !freeTextInput || !freeTextInput.value.trim();
+    if (freeTextInput) {
+      freeTextInput.classList.toggle('pd-field-error', missingFreeText);
+      freeTextInput.setAttribute('aria-invalid', missingFreeText ? 'true' : 'false');
+    }
+    if (missingFreeText) {
+      alert(translatedText('Indica a cor ou combinação de cores pretendida antes de adicionar o produto ao carrinho.', currentLanguage));
+      if (freeTextInput) {
+        freeTextInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        freeTextInput.focus({ preventScroll: true });
+      }
+      return;
+    }
+  }
+  if (product && product.natalFragrancePending) {
+    var natalSection = document.getElementById('pd-natal-note-section');
+    if (natalSection && natalSection.style.display !== 'none' && !currentNatalFragrance) {
+      var natalGroups = document.getElementById('pd-natal-fragrance-groups');
+      if (natalGroups) {
+        natalGroups.classList.add('pd-field-error');
+        natalGroups.setAttribute('aria-invalid','true');
+        natalGroups.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+      alert('Seleciona uma fragrância antes de continuar.');
+      return;
+    }
+  }
+  if (product && product.soapFlowerOptions) {
+    var fragranceGroups = document.getElementById('pd-soap-fragrance-groups');
+    var colorsInput = document.getElementById('pd-soap-colors');
+    var colorsValue = colorsInput ? colorsInput.value.trim() : '';
+    var missingFragrance = !currentSoapFragrance;
+    var missingColors = !colorsValue;
+
+    if (fragranceGroups) {
+      fragranceGroups.classList.toggle('pd-field-error', missingFragrance);
+      fragranceGroups.setAttribute('aria-invalid', missingFragrance ? 'true' : 'false');
+    }
+    if (colorsInput) {
+      colorsInput.classList.toggle('pd-field-error', missingColors);
+      colorsInput.setAttribute('aria-invalid', missingColors ? 'true' : 'false');
+      colorsInput.oninput = function() {
+        var valid = Boolean(colorsInput.value.trim());
+        colorsInput.classList.toggle('pd-field-error', !valid);
+        colorsInput.setAttribute('aria-invalid', valid ? 'false' : 'true');
+      };
+    }
+
+    if (missingFragrance || missingColors) {
+      alert(missingFragrance && missingColors
+        ? 'Seleciona uma fragrância e indica as cores e tons pretendidos.'
+        : missingFragrance
+          ? 'Seleciona uma fragrância antes de adicionar o produto ao carrinho.'
+          : 'Indica as cores e tons pretendidos antes de adicionar o produto ao carrinho.');
+      var target = missingFragrance ? fragranceGroups : colorsInput;
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var focusTarget = missingFragrance ? target.querySelector('button') : target;
+        if (focusTarget) focusTarget.focus({ preventScroll: true });
+      }
+      return;
+    }
+  }
+  var selection = getCurrentProductSelection();
+  if (!selection) { showPage('contact'); return; }
+
+  if (selection.quoteOnly) {
+    openProductQuoteRequest(selection);
+    return;
+  }
+
+  var lineKey = addCartLine(selection.name, selection.price, selection.emoji, selection.image, selection.qty || 1, {
+    productCode: selection.productCode,
+    variantCode: selection.variantCode,
+    personalization: selection.personalization,
+    addonCodes: selection.addonCodes
+  });
+  if (window.LoveCommerce) {
+    window.LoveCommerce.attachProductFiles(lineKey).catch(function(error) {
+      alert(error.message || 'Não foi possível guardar os ficheiros de referência.');
+    });
+  }
+
+  var cta = document.getElementById('pd-cta');
+  if (cta) {
+    var originalLabel = cta.textContent;
+    cta.textContent = 'Adicionado ao carrinho ✓';
+    setTimeout(function() {
+      cta.textContent = originalLabel;
+    }, 1400);
+  }
+}
+
+function openProductQuoteRequest(selection) {
+  openQuoteRequest(selection.formProductName);
+  setTimeout(function() {
+    var descricao = document.querySelector('#contact-form textarea[name="ideia"]');
+    var quantidade = document.querySelector('#form-quantidade input');
+    var ocasiao = document.getElementById('form-ocasiao');
+    if (ocasiao && PRODUCT_CATALOG[currentProduct] && PRODUCT_CATALOG[currentProduct].category === 'Lembranças para Eventos') {
+      ocasiao.value = 'Casamento ou Batizado';
+      toggleEventoCelebracao();
+    }
+    if (quantidade) quantidade.value = String(selection.qty || '');
+    if (descricao) {
+      descricao.value = 'Detalhes escolhidos no artigo ' + selection.formProductName + ':\n' + (selection.summary || 'Sem personalização indicada ainda.');
+    }
+  }, 350);
+}
+
+function closeMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const btn  = document.getElementById('hamburger');
+  if (!menu || !btn) return;
+  menu.classList.remove('open');
+  btn.classList.remove('open');
+  btn.setAttribute('aria-expanded', 'false');
+}
+
+function toggleMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const btn  = document.getElementById('hamburger');
+  if (!menu || !btn) return;
+  const open = menu.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+function navTo(page) {
+  closeMenu();
+  showPage(page);
+}
+
+function handleOccasionCardKey(event, occasion) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    openOccasion(occasion);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const cartBtn = document.getElementById('cart-nav-btn');
+
+  initLanguageSwitcher();
+  syncHeaderOffsets();
+  initPageHistory();
+  initScrollTopButton();
+  window.addEventListener('resize', syncHeaderOffsets);
+  window.addEventListener('orientationchange', syncHeaderOffsets);
+
+  if (hamburger) {
+    hamburger.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleMenu();
+    });
+  }
+
+  if (cartBtn) {
+    cartBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      openCart();
+    });
+  }
+
+  if (mobileMenu) {
+    mobileMenu.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    const menu = document.getElementById('mobile-menu');
+    const btn  = document.getElementById('hamburger');
+    if (!menu || !btn) return;
+
+    if (menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+      closeMenu();
+    }
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeMenu();
+      closeCart();
+    }
+  });
+});
+
+var currentCategory = 'todos';
+var currentOccasion = 'todos';
+
+var occasionLabels = {
+  'todos': 'todos os momentos',
+  'aniversarios': 'aniversários',
+  'presente-romantico': 'presentes românticos',
+  'alguem-especial': 'alguém especial',
+  'casamentos-batizados': 'casamentos & batizados',
+  'casamento': 'casamento',
+  'batizado': 'batizado',
+  'comunhao': 'comunhão',
+  'empresas': 'eventos & empresas',
+  'pequeninos': 'os mais pequeninos'
+};
+
+var categoryLabels = {
+  'natal': 'Seleção de presentes de Natal',
+  'todos': 'Sugestões para todos os momentos',
+  'pecas': 'Coleção Assinatura',
+  'memorias': 'Coleção Memórias',
+  'eventos': 'Lembranças Personalizadas para Eventos',
+  'difusores': 'Difusores Personalizados',
+  'sabonetes': 'Sabonetes Artesanais',
+  'velas': 'Velas Personalizadas'
+};
+
+function setActiveFilter(selector, attribute, value) {
+  document.querySelectorAll(selector).forEach(function(item) {
+    item.classList.toggle('active', item.getAttribute(attribute) === value);
+  });
+}
+
+function updateShopMeta(visibleCount) {
+  var label = document.getElementById('shop-results-label');
+  if (!label) return;
+
+  var state = { page: 'shop' };
+  if (currentCategory !== 'todos') state.category = currentCategory;
+  if (currentOccasion !== 'todos') state.occasion = currentOccasion;
+  var commercialContent = getCommercialContentForState(state);
+  if (commercialContent && commercialContent.resultsHeading) {
+    label.textContent = commercialContent.resultsHeading;
+    return;
+  }
+
+  var categoryText = categoryLabels[currentCategory] || 'Sugestões para todos os momentos';
+  var occasionText = occasionLabels[currentOccasion] || 'todos os momentos';
+
+  if (currentCategory === 'todos' && currentOccasion === 'todos') {
+    label.textContent = 'Sugestões para todos os momentos';
+  } else if (currentCategory === 'todos') {
+    label.textContent = 'Sugestões para ' + occasionText;
+  } else if (currentOccasion === 'todos') {
+    label.textContent = categoryText;
+  } else {
+    label.textContent = categoryText + ' para ' + occasionText;
+  }
+}
+
+function applyShopFilters() {
+  var cards = document.querySelectorAll('#shop-products-grid .product-card');
+  var visibleCount = 0;
+
+  cards.forEach(function(card) {
+    var cardOccasions = (card.dataset.occasion || '').split(',');
+    var cardCategory = card.dataset.category;
+    var productId = getProductIdFromCard(card);
+    var product = productId ? PRODUCT_CATALOG[productId] : null;
+    var typeProducts = LOVE_PRODUCT_TYPE_FILTERS[currentCategory];
+    var isNatalExclusive = card.dataset.natalOnly === 'true';
+    var categoryMatch = isNatalExclusive
+      ? (currentCategory === 'natal' || (currentCategory === 'todos' &&
+          document.documentElement.classList.contains('christmas-season-on')))
+      : (currentCategory === 'todos' || cardCategory === currentCategory ||
+         (typeProducts && typeProducts.indexOf(productId) !== -1));
+
+    // Lógica de ocasião:
+    // - "todos" mostra tudo
+    // - Caso contrário, o card precisa ter explicitamente esta ocasião nas suas data-occasion
+    // Cada produto tem ocasiões explícitas. "Eventos & Empresas" mostra apenas a curadoria marcada com empresas.
+    var occasionMatch;
+    if (currentOccasion === 'todos') {
+      occasionMatch = true;
+    } else if (LOVE_OCCASION_TAGS[currentOccasion]) {
+      occasionMatch = productHasOccasion(product, currentOccasion);
+    } else {
+      occasionMatch = cardOccasions.indexOf(currentOccasion) !== -1;
+    }
+
+    var match = categoryMatch && occasionMatch;
+
+    card.style.display = match ? '' : 'none';
+    if (match) {
+      card.style.animation = 'fadeIn 0.3s ease';
+      visibleCount += 1;
+    }
+  });
+
+  var emptyState = document.getElementById('shop-empty-state');
+  if (emptyState) emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+
+  var discountNote = document.getElementById('events-discount-note');
+  if (discountNote) {
+    var eventOccasions = ['casamentos-batizados', 'casamento', 'batizado', 'comunhao', 'empresas', 'pequeninos'];
+    var showDiscountNote = currentCategory === 'eventos' || eventOccasions.indexOf(currentOccasion) !== -1;
+    discountNote.style.display = showDiscountNote ? 'grid' : 'none';
+  }
+
+  updateShopMeta(visibleCount);
+}
+
+function filterCategory(btn, category) {
+  currentCategory = category;
+  // Se o utilizador clica "Todos" da categoria, assumimos que quer ver tudo
+  //, limpa também a ocasião que possa estar aplicada de forma invisível.
+  if (category === 'todos') {
+    currentOccasion = 'todos';
+    setActiveFilter('.occasion-pill', 'data-occasion', 'todos');
+    updateActiveOccasionChip();
+    syncOccasionSelect();
+  }
+  setActiveFilter('.cat-tab', 'data-filter', category);
+  applyShopFilters();
+  syncPageHistory('shop', { category: category });
+}
+
+function openShopCategory(category, options) {
+  options = options || {};
+  closeMenu();
+  currentCategory = category || 'todos';
+  currentOccasion = 'todos';
+  window._intentionalFilter = true;
+  showPage('shop', { history: options.history !== false, category: currentCategory });
+  setActiveFilter('.cat-tab', 'data-filter', currentCategory);
+  setActiveFilter('.occasion-pill', 'data-occasion', 'todos');
+  updateActiveOccasionChip();
+  syncOccasionSelect();
+  applyShopFilters();
+
+  setTimeout(function() {
+    var hero = document.querySelector('.shop-hero');
+    if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 120);
+}
+
+function filterOccasion(btn, occasion) {
+  currentOccasion = occasion;
+  setActiveFilter('.occasion-pill', 'data-occasion', occasion);
+  updateActiveOccasionChip();
+  syncOccasionSelect();
+  applyShopFilters();
+  syncPageHistory('shop', { occasion: occasion });
+}
+
+function filterOccasionFromSelect(occasion) {
+  currentOccasion = occasion;
+  setActiveFilter('.occasion-pill', 'data-occasion', occasion);
+  updateActiveOccasionChip();
+  syncOccasionSelect();
+  applyShopFilters();
+  syncPageHistory('shop', { occasion: occasion });
+}
+
+function clearOccasionFilter() {
+  currentOccasion = 'todos';
+  setActiveFilter('.occasion-pill', 'data-occasion', 'todos');
+  updateActiveOccasionChip();
+  syncOccasionSelect();
+  applyShopFilters();
+  syncPageHistory('shop', {});
+}
+
+function syncOccasionSelect() {
+  // Mantém o dropdown e o seu estilo "ativo" sincronizados com currentOccasion
+  var sel = document.getElementById('occasion-select');
+  if (!sel) return;
+  sel.value = currentOccasion;
+  if (currentOccasion === 'todos') {
+    sel.classList.remove('has-value');
+  } else {
+    sel.classList.add('has-value');
+  }
+}
+
+function updateActiveOccasionChip() {
+  var chip = document.getElementById('active-occasion-chip');
+  if (!chip) return;
+  if (currentOccasion === 'todos') {
+    chip.style.display = 'none';
+  } else {
+    var label = (typeof occasionLabels !== 'undefined' && occasionLabels[currentOccasion]) || currentOccasion;
+    chip.querySelector('.chip-label').textContent = label;
+    chip.style.display = 'inline-flex';
+  }
+}
+
+function openOccasion(occasion, options) {
+  options = options || {};
+  document.getElementById('mobile-menu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  currentCategory = 'todos';
+  currentOccasion = occasion;
+  window._intentionalFilter = true;  // sinaliza que showPage('shop') NÃO deve resetar
+  showPage('shop', { history: options.history !== false, occasion: occasion });
+  setActiveFilter('.cat-tab', 'data-filter', 'todos');
+  setActiveFilter('.occasion-pill', 'data-occasion', occasion);
+  updateActiveOccasionChip();
+  syncOccasionSelect();
+  applyShopFilters();
+
+  setTimeout(function() {
+    var hero = document.querySelector('.shop-hero');
+    if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 120);
+}
+
+function initOccasionCardsAccessibility() {
+  document.querySelectorAll('.occasion-card').forEach(function(card) {
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() {
+    applyShopFilters();
+    initOccasionCardsAccessibility();
+    initTestiMarquee();
+  });
+} else {
+  applyShopFilters();
+  initOccasionCardsAccessibility();
+  initTestiMarquee();
+}
+
+function initTestiMarquee() {
+  var wrap = document.querySelector('.testi-marquee-wrap');
+  if (!wrap) return;
+  wrap.addEventListener('touchstart', function() { wrap.classList.add('paused'); }, { passive: true });
+  wrap.addEventListener('touchend',   function() { wrap.classList.remove('paused'); }, { passive: true });
+}
+
+function initTestimonialsCarousel() {
+  var carousel = document.getElementById('testimonial-carousel');
+  if (!carousel) return;
+
+  var slides = Array.prototype.slice.call(carousel.querySelectorAll('.testimonial-slide'));
+  var dots = Array.prototype.slice.call(carousel.querySelectorAll('.testimonial-dot'));
+  var prevBtn = carousel.querySelector('[data-testimonial-prev]');
+  var nextBtn = carousel.querySelector('[data-testimonial-next]');
+  var currentEl = document.getElementById('testimonial-current');
+  var totalEl = document.getElementById('testimonial-total');
+  var currentIndex = 0;
+  var autoplay = null;
+  var touchStartX = 0;
+  var touchEndX = 0;
+
+  if (!slides.length) return;
+  if (totalEl) totalEl.textContent = String(slides.length).padStart(2, '0');
+
+  function renderSlides(index) {
+    currentIndex = (index + slides.length) % slides.length;
+
+    slides.forEach(function(slide, i) {
+      var active = i === currentIndex;
+      if (active) {
+        slide.style.display = 'block';
+        slide.style.animation = 'fadeIn 0.45s ease';
+        slide.setAttribute('aria-hidden', 'false');
+      } else {
+        slide.style.display = 'none';
+        slide.setAttribute('aria-hidden', 'true');
+      }
+      slide.classList.toggle('active', active);
+    });
+
+    dots.forEach(function(dot, i) {
+      dot.classList.toggle('active', i === currentIndex);
+      dot.setAttribute('aria-selected', i === currentIndex ? 'true' : 'false');
+    });
+
+    if (currentEl) currentEl.textContent = String(currentIndex + 1).padStart(2, '0');
+  }
+
+  function stopAutoplay() {
+    if (autoplay) {
+      clearInterval(autoplay);
+      autoplay = null;
+    }
+  }
+
+  function startAutoplay() {
+    stopAutoplay();
+    autoplay = setInterval(function() {
+      renderSlides(currentIndex + 1);
+    }, 5000);
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', function() {
+      renderSlides(currentIndex - 1);
+      startAutoplay();
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function() {
+      renderSlides(currentIndex + 1);
+      startAutoplay();
+    });
+  }
+
+  dots.forEach(function(dot, index) {
+    dot.addEventListener('click', function() {
+      renderSlides(index);
+      startAutoplay();
+    });
+  });
+
+  carousel.addEventListener('mouseenter', stopAutoplay);
+  carousel.addEventListener('mouseleave', startAutoplay);
+  carousel.addEventListener('focusin', stopAutoplay);
+  carousel.addEventListener('focusout', startAutoplay);
+
+  carousel.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].clientX;
+    stopAutoplay();
+  }, { passive: true });
+
+  carousel.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].clientX;
+    var delta = touchEndX - touchStartX;
+    if (Math.abs(delta) > 40) {
+      renderSlides(currentIndex + (delta < 0 ? 1 : -1));
+    }
+    startAutoplay();
+  }, { passive: true });
+
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) stopAutoplay();
+    else startAutoplay();
+  });
+
+  renderSlides(0);
+  startAutoplay();
+}
+
+// ── Pedido de projeto totalmente personalizado ──────────────────
+async function handleSubmit(e) {
+  e.preventDefault();
+  const form    = document.getElementById('contact-form');
+  const btn     = document.getElementById('submit-btn');
+  const errMsg  = document.getElementById('form-error');
+  const success = document.getElementById('form-success');
+  const isCartCheckout = form.dataset.cartCheckout === 'true';
+  const cartSignature = form.dataset.cartSignature || '';
+
+  btn.disabled = true;
+  btn.textContent = 'A enviar…';
+  errMsg.style.display = 'none';
+
+  try {
+    if (!window.LoveCommerce) throw new Error('O serviço de pedidos ainda não está disponível.');
+    var result = await window.LoveCommerce.submitProject(form);
+    var successCopy = success.querySelector('p');
+    if (successCopy) successCopy.textContent = isCartCheckout
+      ? 'Obrigada! Recebemos a tua encomenda ' + result.projectNumber + '. Vamos confirmar a disponibilidade, o prazo e a forma de pagamento por contacto.'
+      : 'Obrigada! Recebemos o pedido ' + result.projectNumber + '. Vamos analisá-lo e entrar em contacto contigo antes de preparar o orçamento.';
+    if (isCartCheckout) completeCartCheckout(cartSignature);
+    form.style.display = 'none';
+    success.style.display = 'block';
+    if (window.LoveAnalytics) LoveAnalytics.track('generate_lead', { lead_type: isCartCheckout ? 'catalog_form' : 'custom_project' });
+  } catch (error) {
+    if (window.LoveAnalytics) LoveAnalytics.trackCheckoutError(isCartCheckout ? 'catalog_form' : 'custom_project', 'submit_error');
+    if (window.LoveSiteMonitor) window.LoveSiteMonitor.report('form_submit', isCartCheckout ? 'cart' : 'contact', error && error.diagnostic || String(error));
+    errMsg.textContent = (error instanceof TypeError || /failed to fetch|networkerror/i.test(String(error && error.message || '')))
+      ? 'Não foi possível comunicar com o serviço de pedidos. Podes tentar novamente ou enviar-nos a tua ideia diretamente por email.'
+      : (error.message || 'Não foi possível concluir o pedido. Tenta novamente.');
+    errMsg.appendChild(document.createTextNode(' Contacta-nos: '));
+    var emailLink = document.createElement('a');
+    emailLink.href = 'mailto:love-essences@outlook.com?subject=' + encodeURIComponent('Pedido de orçamento Love Essences');
+    emailLink.textContent = 'love-essences@outlook.com';
+    emailLink.style.textDecoration = 'underline';
+    errMsg.appendChild(emailLink);
+    errMsg.setAttribute('role', 'alert');
+    errMsg.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = isCartCheckout ? 'Finalizar pedido →' : 'Enviar Pedido →';
+  }
+}
+
+function toggleEventoCelebracao() {
+  // Mostra os campos "Tipo de evento" e "Quantidade" apenas quando a ocasião
+  // selecionada implica um evento ou encomenda em volume.
+  var ocasiao = document.getElementById('form-ocasiao');
+  var tipoEvento = document.getElementById('form-tipo-evento');
+  var quantidade = document.getElementById('form-quantidade');
+  if (!ocasiao || !tipoEvento || !quantidade) return;
+
+  var triggers = ['Casamento ou Batizado', 'Eventos & Empresas', 'Para os Mais Pequeninos', 'Outra Celebração'];
+  var show = triggers.indexOf(ocasiao.value) !== -1;
+
+  tipoEvento.style.display = show ? '' : 'none';
+  quantidade.style.display = show ? '' : 'none';
+
+  // Reset dos sub-campos se a ocasião deixou de ser de evento
+  if (!show) {
+    var t = tipoEvento.querySelector('select');
+    var q = quantidade.querySelector('input');
+    if (t) t.value = '';
+    if (q) q.value = '';
+  }
+}
+
+var FRAGRANCE_PRODUCTS = [
+  'Mini Difusor 30ml (4,10€/un)',
+  'Mini Difusor 50ml (5,90€/un)',
+  'Aroma em Viagem (desde 3€)',
+  'Trouxinha Aromática (5€/un)',
+  'Bem-Querer (4€/un)',
+  'Mini Difusor + Mini Sabonete (5€/un)',
+  'Luz Serena (3,50€/un)',
+  'Doce Luz (3,50€/un)',
+  'Memória Perfumada (desde 3,50€/un)',
+  'Bilhete Perfumado (2€/un, mínimo 12)'
+];
+
+function toggleFragranceField() {
+  var produto = document.getElementById('form-produto');
+  var fragranceGroup = document.getElementById('form-fragrancia');
+  var fragranceSelect = document.getElementById('form-fragrancia-select');
+  if (!produto || !fragranceGroup) return;
+
+  var selected = produto.options[produto.selectedIndex];
+  var selectedText = selected ? sourceI18nText(selected.text) : '';
+  var show = FRAGRANCE_PRODUCTS.indexOf(selectedText) !== -1;
+
+  fragranceGroup.style.display = show ? '' : 'none';
+  if (!show && fragranceSelect) fragranceSelect.value = '';
+}
+
+function openQuoteRequest(productName) {
+  showPage('contact');
+  setTimeout(function() {
+    var idea = document.querySelector('#contact-form textarea[name="ideia"]');
+    if (idea && productName) idea.value = 'Gostaria de criar uma versão especial inspirada em ' + productName + '. ';
+
+    var form = document.getElementById('contact-form');
+    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 250);
+}
+
+function updateContactReferenceStatus(files) {
+  var status = document.getElementById('project-inspirations-status');
+  if (!status) return;
+
+  var count = files ? files.length : 0;
+  status.textContent = !count
+    ? 'Nenhum ficheiro selecionado'
+    : count === 1
+      ? files[0].name
+      : count + ' ficheiros selecionados';
+}
+
+function resetForm() {
+  const form    = document.getElementById('contact-form');
+  const success = document.getElementById('form-success');
+  const btn     = document.getElementById('submit-btn');
+  const title   = document.getElementById('contact-form-title');
+  const subtitle = document.getElementById('contact-form-subtitle');
+  form.reset();
+  updateContactReferenceStatus([]);
+  delete form.dataset.cartCheckout;
+  delete form.dataset.cartSignature;
+  form.style.display = 'block';
+  success.style.display = 'none';
+  btn.disabled = false;
+  btn.textContent = 'Enviar Pedido →';
+  if (title) title.textContent = 'Conta-nos a tua ideia';
+  if (subtitle) {
+    subtitle.textContent = '';
+    subtitle.hidden = true;
+  }
+}
+</script>
+<!-- Checkout do catálogo temporariamente por formulário. As propostas aprovadas mantêm o fluxo Stripe. -->
+
+<!-- ============================================================ -->
+<!-- CART JAVASCRIPT                                              -->
+<!-- ============================================================ -->
+<script>
+// ── Cart State ───────────────────────────────────────────────
+var cart = [];
+try {
+  cart = JSON.parse(localStorage.getItem('le_cart') || '[]');
+  if (!Array.isArray(cart)) cart = [];
+} catch (err) {
+  cart = [];
+}
+
+var SHIPPING_FLAT_RATE = 5.90;
+var FREE_SHIPPING_THRESHOLD = 60;
+var SHIPPING_DESTINATIONS = ['mainland', 'islands', 'international'];
+var shippingDestination = 'mainland';
+try {
+  var savedShippingDestination = localStorage.getItem('le_shipping_destination');
+  if (SHIPPING_DESTINATIONS.indexOf(savedShippingDestination) !== -1) {
+    shippingDestination = savedShippingDestination;
+  }
+} catch (err) {}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, function(char) {
+    return {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char];
+  });
+}
+
+function escapeJsString(value) {
+  return String(value)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r?\n/g, ' ');
+}
+
+function saveCart() {
+  localStorage.setItem('le_cart', JSON.stringify(cart));
+}
+
+var CART_IMAGE_MAP = {
+  'Bloom': 'assets/products/bloom-mini-5.jpg',
+  'Aurora': 'assets/products/aurora.jpg',
+  'Serenata': 'assets/products/serenata.jpg',
+  'Diamante': 'assets/products/diamante-v2.jpg',
+  'Prisma': 'assets/products/prisma.jpg',
+  'Nala': 'assets/products/nala.jpg',
+  'Aura': 'assets/products/pequeno-diamante.jpg',
+  'Essência do Amor': 'assets/products/essencia-amor-m2.jpg',
+  'Essência do Amor (S)': 'assets/products/essencia-amor-s.jpg',
+  'Essência do Amor (M)': 'assets/products/essencia-amor-m2.jpg',
+  'Essência do Amor (L)': 'assets/products/essencia-amor-l.jpg',
+  'Pensar em Ti': 'assets/products/pensar-em-ti.jpg',
+  'Lembrei-me de Ti': 'assets/products/lembrei-me-de-ti.jpg',
+  'Aroma em Viagem': 'assets/products/aroma-em-viagem.jpg',
+  'Brinde Perfeito': 'assets/products/brinde-perfeito.jpg',
+  'Trouxinha Aromática': 'assets/products/trouxinha-aromatica.jpg',
+  'Bem-Querer': 'assets/products/bem-querer.jpg',
+  'Luz Serena': 'assets/products/luz-serena.png',
+  'Doce Luz': 'assets/products/doce-luz.png',
+  'Memória Perfumada': 'assets/products/memoria-perfumada.png',
+  'Bilhete Perfumado': 'assets/products/bilhete-perfumado.png',
+  'Mini Difusor': 'assets/products/mini-difusor-batizado-antonio-1.jpg',
+  'Mini Difusor + Mini Sabonete': 'assets/products/mini-difusor-mais-mini-sabonete.jpg',
+  'Sopros de Alegria': 'assets/products/sopros-de-alegria-soft.jpg',
+  'Laço de Memória': 'assets/products/laco-de-memoria.jpg',
+  'Pequeno Artista': 'assets/products/pequeno-artista.jpg',
+  'Momento Criativo': 'assets/products/momento-criativo.jpg',
+  'Caixinha de Arte': 'assets/products/caixinha-de-arte.jpg',
+  'Miminho Doce': 'assets/products/miminho-doce-cone.jpg'
+};
+
+var LOVE_PRODUCT_CODE_BY_NAME = {
+  'Bloom':'bloom','Aurora':'aurora','Serenata':'serenata','Diamante':'diamante','Prisma':'prisma','Nala':'nala','Aura':'aura',
+  'Essência do Amor':'essencia_amor','Pensar em Ti':'pensar_em_ti','Lembrei-me de Ti':'lembrei_me_de_ti',
+  'Mini Difusor':'mini_difusor','Aroma em Viagem':'aroma_em_viagem','Brinde Perfeito':'brinde_perfeito',
+  'Trouxinha Aromática':'trouxinha_aromatica','Bem-Querer':'bem_querer','Mini Difusor + Mini Sabonete':'mini_difusor_sabonete',
+  'Sopros de Alegria':'sopros_alegria','Luz Serena':'luz_serena','Doce Luz':'doce_luz','Memória Perfumada':'memoria_perfumada',
+  'Bilhete Perfumado':'bilhete_perfumado','Laço de Memória':'laco_memoria','Pequeno Artista':'pequeno_artista',
+  'Momento Criativo':'momento_criativo','Caixinha de Arte':'caixinha_arte','Miminho Doce':'miminho_doce'
+};
+
+var LOVE_DEFAULT_VARIANT_BY_CODE = {
+  bloom:'bloom:mini',essencia_amor:'essencia_amor:s',pensar_em_ti:'pensar_em_ti:s',mini_difusor:'mini_difusor:30ml',
+  brinde_perfeito:'brinde_perfeito:porto',memoria_perfumada:'memoria_perfumada:simples',miminho_doce:'miminho_doce:laco_marshmallows'
+};
+
+function getCartImageForName(name) {
+  var cleanName = String(name || '').split(/\s*(?:,|\u2014)\s+/)[0].trim();
+  if (CART_IMAGE_MAP[cleanName]) return CART_IMAGE_MAP[cleanName];
+
+  var baseName = cleanName.replace(/\s*\([^)]*\)\s*$/, '').trim();
+  return CART_IMAGE_MAP[baseName] || '';
+}
+
+function getCartBaseName(name) {
+  return String(name || '')
+    .split(/\s*(?:,|\u2014)\s+/)[0]
+    .replace(/\s*\([^)]*\)\s*$/, '')
+    .trim();
+}
+
+var CHILD_EVENT_PRODUCTS = [
+  'Sopros de Alegria',
+  'Pequeno Artista',
+  'Momento Criativo',
+  'Caixinha de Arte',
+  'Miminho Doce',
+  'Bilhete Perfumado'
+];
+
+var ADULT_EVENT_PRODUCTS = [
+  'Mini Difusor',
+  'Mini Difusor + Mini Sabonete',
+  'Aroma em Viagem',
+  'Brinde Perfeito',
+  'Trouxinha Aromática',
+  'Bem-Querer',
+  'Luz Serena',
+  'Doce Luz',
+  'Memória Perfumada',
+  'Laço de Memória'
+];
+
+function getSubtotal() {
+  return cart.reduce(function(sum, i){
+    return sum + (Number(i.price) || 0) * (Number(i.qty) || 0);
+  }, 0);
+}
+
+function getCartDiscount() {
+  var childSubtotal = 0;
+  var adultSubtotal = 0;
+  var childQty = 0;
+  var adultQty = 0;
+  var childNames = {};
+
+  cart.forEach(function(item) {
+    var baseName = getCartBaseName(item.name);
+    var qty = Number(item.qty) || 0;
+    var line = (Number(item.price) || 0) * qty;
+    if (CHILD_EVENT_PRODUCTS.indexOf(baseName) !== -1) {
+      childSubtotal += line;
+      childQty += qty;
+      if (qty > 0) childNames[baseName] = true;
+    } else if (ADULT_EVENT_PRODUCTS.indexOf(baseName) !== -1) {
+      adultSubtotal += line;
+      adultQty += qty;
+    }
+  });
+
+  var childTypes = Object.keys(childNames).length;
+  var eventSubtotal = childSubtotal + adultSubtotal;
+  var eventQty = childQty + adultQty;
+
+  if (childQty > 0 && adultQty > 0 && eventQty >= 50 && eventSubtotal > 0) {
+    return {
+      amount: eventSubtotal * 0.08,
+      label: 'Desconto lembranças adulto + infantil (8%)'
+    };
+  }
+
+  if (childTypes >= 2 && childSubtotal > 0) {
+    return {
+      amount: childSubtotal * 0.05,
+      label: 'Desconto kit infantil (5%)'
+    };
+  }
+
+  return { amount: 0, label: '' };
+}
+
+function addCartLine(name, price, emoji, image, qty, commerceDetails) {
+  qty = parseInt(qty, 10);
+  if (!Number.isFinite(qty) || qty < 1) qty = 1;
+  var cartImage = image || getCartImageForName(name);
+  var existing = cart.find(function(i){ return i.name === name; });
+  var baseName = getCartBaseName(name);
+  var productCode = commerceDetails && commerceDetails.productCode ? commerceDetails.productCode : LOVE_PRODUCT_CODE_BY_NAME[baseName];
+  var variantCode = commerceDetails && commerceDetails.variantCode ? commerceDetails.variantCode : (LOVE_DEFAULT_VARIANT_BY_CODE[productCode] || (productCode ? productCode + ':default' : ''));
+  if (existing) {
+    existing.qty += qty;
+    if (cartImage && !existing.image) existing.image = cartImage;
+    if (!existing.lineKey) existing.lineKey = 'line-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+    if (productCode) existing.productCode = productCode;
+    if (variantCode) existing.variantCode = variantCode;
+    if (commerceDetails) {
+      existing.personalization = commerceDetails.personalization || {};
+      existing.addonCodes = commerceDetails.addonCodes || [];
+    }
+  } else {
+    existing = {
+      lineKey: 'line-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9),
+      name: name, price: price, emoji: emoji, image: cartImage, qty: qty,
+      productCode: productCode || '', variantCode: variantCode || '',
+      personalization: commerceDetails && commerceDetails.personalization || {},
+      addonCodes: commerceDetails && commerceDetails.addonCodes || []
+    };
+    cart.push(existing);
+  }
+  saveCart();
+  renderCart();
+  openCart();
+  flashCartButton(name);
+  return existing.lineKey;
+}
+
+function addToCart(name, price, emoji, image) {
+  addCartLine(name, price, emoji, image, 1);
+}
+
+function addQuantityToCart(name, price, emoji, image, inputId) {
+  var input = document.getElementById(inputId);
+  var qty = input ? parseInt(input.value, 10) : 1;
+
+  if (!Number.isFinite(qty) || qty < 1) {
+    if (input) {
+      input.value = 1;
+      input.focus();
+    }
+    return;
+  }
+
+  addCartLine(name, price, emoji, image, qty);
+}
+
+function flashCartButton(name) {
+  var btns = document.querySelectorAll('.cart-add-btn');
+  btns.forEach(function(btn) {
+    var onclick = btn.getAttribute('onclick') || '';
+    var dataName = btn.getAttribute('data-cart-name') || '';
+    if (dataName === name || onclick.indexOf("'" + name + "'") !== -1) {
+      var originalText = btn.getAttribute('data-original-text') || btn.textContent;
+      btn.setAttribute('data-original-text', originalText);
+      btn.classList.add('added');
+      btn.textContent = 'Adicionado ✓';
+      setTimeout(function() {
+        btn.classList.remove('added');
+        btn.textContent = originalText;
+      }, 1400);
+    }
+  });
+}
+
+function removeFromCart(name) {
+  var removed = cart.find(function(i){ return i.name === name; });
+  if (removed && removed.lineKey && window.LoveCommerce) window.LoveCommerce.deleteFiles(removed.lineKey).catch(function() {});
+  cart = cart.filter(function(i){ return i.name !== name; });
+  saveCart();
+  renderCart();
+}
+
+function removeCartLine(index) {
+  var removed = cart[index];
+  if (!removed) return;
+  if (removed.lineKey && window.LoveCommerce) window.LoveCommerce.deleteFiles(removed.lineKey).catch(function() {});
+  cart.splice(index, 1);
+  saveCart();
+  renderCart();
+}
+
+function updateQty(name, delta) {
+  var item = cart.find(function(i){ return i.name === name; });
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) {
+    removeFromCart(name);
+    return;
+  }
+  saveCart();
+  renderCart();
+}
+
+function updateCartLineQty(index, delta) {
+  var item = cart[index];
+  if (!item) return;
+  item.qty = (Number(item.qty) || 0) + delta;
+  if (item.qty <= 0) {
+    removeCartLine(index);
+    return;
+  }
+  saveCart();
+  renderCart();
+}
+
+function clearCart() {
+  if (!confirm('Esvaziar o carrinho?')) return;
+  if (window.LoveCommerce) cart.forEach(function(item) { if (item.lineKey) window.LoveCommerce.deleteFiles(item.lineKey).catch(function() {}); });
+  cart = [];
+  saveCart();
+  renderCart();
+}
+
+function getCartSignature() {
+  return JSON.stringify(cart.map(function(item) {
+    return [item.lineKey || '', item.name, Number(item.price) || 0, Number(item.qty) || 0];
+  }));
+}
+
+function completeCartCheckout(expectedSignature) {
+  if (expectedSignature && expectedSignature !== getCartSignature()) return false;
+  if (window.LoveCommerce) cart.forEach(function(item) { if (item.lineKey) window.LoveCommerce.deleteFiles(item.lineKey).catch(function() {}); });
+  cart = [];
+  saveCart();
+  renderCart();
+  closeCart();
+  return true;
+}
+
+function getTotal() {
+  var subtotal = getSubtotal();
+  var discount = getCartDiscount();
+  return Math.max(0, subtotal - (discount.amount || 0));
+}
+
+function getShippingDestinationLabel(destination) {
+  if (destination === 'islands') return 'Madeira e Açores';
+  if (destination === 'international') return 'Espanha e outros destinos internacionais';
+  return 'Portugal Continental';
+}
+
+function getShippingQuote() {
+  var productSubtotal = getSubtotal();
+  if (shippingDestination === 'islands') {
+    return {
+      cost: null,
+      method: 'Portes sob consulta',
+      note: 'Portes sob consulta'
+    };
+  }
+  if (shippingDestination === 'international') {
+    return {
+      cost: null,
+      method: 'Portes calculados de acordo com o peso e o destino',
+      note: 'Portes calculados de acordo com o peso e o destino'
+    };
+  }
+  return {
+    cost: productSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FLAT_RATE,
+    method: 'Envio Expresso',
+    note: 'Portes aplicados uma única vez · Embalagem de oferta incluída'
+  };
+}
+
+function setShippingDestination(destination) {
+  if (SHIPPING_DESTINATIONS.indexOf(destination) === -1) destination = 'mainland';
+  shippingDestination = destination;
+  try { localStorage.setItem('le_shipping_destination', destination); } catch (err) {}
+  renderCart();
+}
+
+function getFreeShippingProgressText(remaining) {
+  var amount = formatShippingPrice(remaining);
+  if (currentLanguage === 'en') return 'Spend ' + amount + ' more to get free shipping.';
+  if (currentLanguage === 'es') return 'Te faltan ' + amount + ' para conseguir el envío gratuito.';
+  return 'Faltam ' + amount + ' para teres portes gratuitos.';
+}
+
+function formatShippingPrice(value) {
+  return Number(value).toFixed(2).replace('.', ',') + ' €';
+}
+
+function getCount() {
+  return cart.reduce(function(sum, i){ return sum + (Number(i.qty) || 0); }, 0);
+}
+
+function renderCart() {
+  var count = getCount();
+  var badge = document.getElementById('cart-badge');
+  badge.textContent = count;
+  badge.style.display = count > 0 ? 'flex' : 'none';
+
+  var emptyEl  = document.getElementById('cart-empty');
+  var itemsEl  = document.getElementById('cart-items');
+  var footerEl = document.getElementById('cart-footer');
+  var shippingEl = document.getElementById('cart-shipping-note');
+  var shippingDestinationEl = document.getElementById('cart-shipping-destination');
+  var shippingMethodLabel = document.getElementById('cart-shipping-method-label');
+  var shippingPrice = document.getElementById('cart-shipping-price');
+  var transportNote = document.getElementById('cart-transport-note');
+  var shippingProgress = document.getElementById('cart-shipping-progress');
+  var orderTotalEl = document.getElementById('cart-order-total-price');
+  var discountLine = document.getElementById('cart-discount-line');
+  var discountLabel = document.getElementById('cart-discount-label');
+  var discountValue = document.getElementById('cart-discount-value');
+
+  if (cart.length === 0) {
+    emptyEl.style.display = 'flex';
+    itemsEl.style.display = 'none';
+    footerEl.style.display = 'none';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  itemsEl.style.display = 'block';
+  footerEl.style.display = 'block';
+  var subtotal = getSubtotal();
+  var discount = getCartDiscount();
+  var total = getTotal();
+  var shipping = getShippingQuote();
+  if (discountLine && discountLabel && discountValue) {
+    if (discount.amount > 0) {
+      discountLine.style.display = 'flex';
+      discountLabel.textContent = discount.label;
+      discountValue.textContent = '-' + formatPrice(discount.amount);
+    } else {
+      discountLine.style.display = 'none';
+      discountLabel.textContent = '';
+      discountValue.textContent = '';
+    }
+  }
+  if (shippingDestinationEl) shippingDestinationEl.value = shippingDestination;
+  if (shippingMethodLabel) shippingMethodLabel.textContent = translatedText(shipping.method, currentLanguage);
+  if (shippingPrice) {
+    shippingPrice.textContent = shipping.cost === null
+      ? '—'
+      : shipping.cost === 0
+        ? translatedText('Grátis', currentLanguage)
+        : formatShippingPrice(shipping.cost);
+  }
+  if (transportNote) transportNote.style.display = shippingDestination === 'mainland' ? '' : 'none';
+  if (shippingEl) {
+    var hasFreeShipping = shippingDestination === 'mainland' && shipping.cost === 0;
+    shippingEl.textContent = hasFreeShipping ? '' : translatedText(shipping.note, currentLanguage);
+    shippingEl.style.display = hasFreeShipping ? 'none' : '';
+  }
+  if (shippingProgress) {
+    var remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+    if (shippingDestination === 'mainland' && remaining <= 0) {
+      shippingProgress.textContent = translatedText('Conseguiste portes gratuitos! 💜', currentLanguage);
+      shippingProgress.style.display = 'block';
+    } else if (shippingDestination === 'mainland' && remaining > 0 && remaining < 15) {
+      shippingProgress.textContent = getFreeShippingProgressText(remaining);
+      shippingProgress.style.display = 'block';
+    } else {
+      shippingProgress.textContent = '';
+      shippingProgress.style.display = 'none';
+    }
+  }
+  if (orderTotalEl) {
+    orderTotalEl.textContent = shipping.cost === null
+      ? translatedText('A confirmar', currentLanguage)
+      : formatPrice(total + shipping.cost);
+  }
+
+  itemsEl.innerHTML = cart.map(function(item, index) {
+    var displayName = escapeHtml(item.name);
+    var displayEmoji = escapeHtml(item.emoji || '');
+    var imageSrc = escapeHtml(item.image || getCartImageForName(item.name));
+    var visualHtml = imageSrc
+      ? '<img src="' + imageSrc + '" alt="' + displayName + '">'
+      : displayEmoji;
+    var price = Number(item.price) || 0;
+    var qty = Number(item.qty) || 0;
+    var lineTotal = price * qty;
+    return '<div class="cart-item">' +
+      '<div class="cart-item-emoji">' + visualHtml + '</div>' +
+      '<div class="cart-item-info">' +
+        '<div class="cart-item-name">' + displayName + '</div>' +
+        '<div class="cart-item-price">' + formatPrice(lineTotal) + ' <span style="color:var(--warm-gray);font-weight:300;font-size:0.78rem;">(' + formatPrice(price) + ' × ' + qty + ')</span></div>' +
+      '</div>' +
+      '<div class="cart-item-controls">' +
+        '<button type="button" class="qty-btn" onclick="updateCartLineQty(' + index + ',-1)" style="touch-action:manipulation;">−</button>' +
+        '<span class="qty-display">' + qty + '</span>' +
+        '<button type="button" class="qty-btn" onclick="updateCartLineQty(' + index + ',1)" style="touch-action:manipulation;">+</button>' +
+        '<button type="button" class="cart-item-remove" onclick="removeCartLine(' + index + ')" title="Remover">✕</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── Cart Drawer open/close ────────────────────────────────────
+function openCart() {
+  closeMenu();
+  const drawer = document.getElementById('cart-drawer');
+  const overlay = document.getElementById('cart-overlay');
+  if (!drawer || !overlay) return;
+  drawer.classList.add('open');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  syncHeaderOffsets();
+}
+
+function closeCart() {
+  const drawer = document.getElementById('cart-drawer');
+  const overlay = document.getElementById('cart-overlay');
+  if (drawer) drawer.classList.remove('open');
+  if (overlay) overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  syncHeaderOffsets();
+}
+
+// ── Checkout ──────────────────────────────────────────────────
+function buildOrderSummary() {
+  var lines = cart.map(function(i){
+    var qty = Number(i.qty) || 0;
+    var price = Number(i.price) || 0;
+    return qty + 'x ' + i.name + ' (' + formatPrice(price * qty) + ')';
+  });
+  var subtotal = getSubtotal();
+  var discount = getCartDiscount();
+  if (discount.amount > 0) {
+    lines.push('Subtotal: ' + formatPrice(subtotal));
+    lines.push(discount.label + ': -' + formatPrice(discount.amount));
+  }
+  var shipping = getShippingQuote();
+  lines.push(translatedText('Total dos produtos', currentLanguage) + ': ' + formatPrice(getTotal()));
+  lines.push(translatedText('Destino da entrega', currentLanguage) + ': ' + translatedText(getShippingDestinationLabel(shippingDestination), currentLanguage));
+  if (shipping.cost === null) {
+    lines.push(translatedText(shipping.method, currentLanguage));
+    lines.push(translatedText('Total da encomenda', currentLanguage) + ': ' + translatedText('A confirmar', currentLanguage));
+  } else {
+    lines.push(translatedText('Envio Expresso', currentLanguage) + ': ' + (shipping.cost === 0 ? translatedText('Grátis', currentLanguage) : formatShippingPrice(shipping.cost)));
+    lines.push(translatedText('Entrega normalmente realizada em 2 dias úteis após a expedição.', currentLanguage));
+    lines.push(translatedText('Total da encomenda', currentLanguage) + ': ' + formatPrice(getTotal() + shipping.cost));
+  }
+  return lines.join('\n');
+}
+
+function checkoutWhatsApp() {
+  if (!cart.length) {
+    alert(currentLanguage === 'en'
+      ? 'Your cart is empty.'
+      : currentLanguage === 'es'
+        ? 'Tu carrito está vacío.'
+        : 'O teu carrinho está vazio.');
+    return;
+  }
+
+  var shipping = getShippingQuote();
+  var productLines = cart.map(function(item) {
+    var qty = Number(item.qty) || 0;
+    var price = Number(item.price) || 0;
+    return '**' + qty + 'x ' + item.name + ': ' + formatShippingPrice(price * qty) + '**';
+  });
+  var shippingCost = shipping.cost === null
+    ? 'A confirmar'
+    : formatShippingPrice(shipping.cost);
+  var orderTotal = shipping.cost === null
+    ? 'A confirmar'
+    : formatShippingPrice(getTotal() + shipping.cost);
+  var message = 'Olá! Gostaria de finalizar a minha encomenda na Love Essences:\n\n' +
+    productLines.join('\n') +
+    '\n\n📦 ' + shipping.method + ': ' + shippingCost +
+    '\n📍 ' + getShippingDestinationLabel(shippingDestination) +
+    '\n\n**Total: ' + orderTotal + '**\n\n' +
+    'Gostaria de avançar com a encomenda. Podem indicar-me os dados para pagamento?';
+
+  closeCart();
+  window.open(
+    'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message),
+    '_blank',
+    'noopener,noreferrer'
+  );
+}
+
+function checkoutForm() {
+  if (!cart.length) {
+    alert(translatedText('O teu carrinho está vazio', currentLanguage));
+    return;
+  }
+
+  var signature = getCartSignature();
+  var summary = buildOrderSummary();
+  var totalQty = cart.reduce(function(total, item) {
+    return total + (Number(item.qty) || 0);
+  }, 0);
+  var shipping = getShippingQuote();
+  var budget = shipping.cost === null
+    ? formatPrice(getTotal()) + ' + portes a confirmar'
+    : formatPrice(getTotal() + shipping.cost);
+
+  closeCart();
+  showPage('contact');
+
+  setTimeout(function() {
+    var form = document.getElementById('contact-form');
+    if (!form) return;
+
+    var success = document.getElementById('form-success');
+    var errMsg = document.getElementById('form-error');
+    var btn = document.getElementById('submit-btn');
+    var title = document.getElementById('contact-form-title');
+    var subtitle = document.getElementById('contact-form-subtitle');
+
+    form.reset();
+    form.style.display = 'block';
+    if (success) success.style.display = 'none';
+    if (errMsg) errMsg.style.display = 'none';
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Finalizar pedido →';
+    }
+
+    form.dataset.cartCheckout = 'true';
+    form.dataset.cartSignature = signature;
+    if (title) title.textContent = 'Finalizar pedido';
+    if (subtitle) {
+      subtitle.textContent = 'Confirma os teus dados e envia o pedido. Vamos validar a disponibilidade, o prazo e a forma de pagamento por contacto. Se adicionaste imagens de referência aos produtos, anexa-as novamente abaixo.';
+      subtitle.hidden = false;
+    }
+
+    var occasion = form.querySelector('[name="ocasiao"]');
+    var project = form.querySelector('[name="tipo_projeto"]');
+    var quantity = form.querySelector('[name="quantidade"]');
+    var budgetField = form.querySelector('[name="orcamento"]');
+    var idea = form.querySelector('[name="ideia"]');
+
+    if (occasion) occasion.value = 'Outra';
+    if (project) project.value = 'Conjunto personalizado';
+    if (quantity) quantity.value = totalQty + (totalQty === 1 ? ' unidade' : ' unidades');
+    if (budgetField) budgetField.value = 'Total estimado: ' + budget;
+    if (idea) idea.value = 'Pedido iniciado no carrinho:\n\n' + summary + '\n\nDetalhes adicionais:\n';
+
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 250);
+}
+
+// ── Init ─────────────────────────────────────────────────────
+renderCart();
+</script>
+
+
+<script>
+/* ── HERO BUTTONS ─────────────────────────────────────────────────── */
+(function () {
+  function bindHeroButton(id, page) {
+    var btn = document.getElementById(id);
+    if (!btn) return;
+
+    function go(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (typeof closeMenu === 'function') {
+        try { closeMenu(); } catch (err) {}
+      }
+      if (typeof showPage === 'function') {
+        showPage(page);
+      } else {
+        window.location.hash = '#page-' + page;
+      }
+      return false;
+    }
+
+    btn.addEventListener('click', go, { passive: false });
+  }
+
+  function initHeroButtons() {
+    bindHeroButton('hero-shop-btn', 'shop');
+    bindHeroButton('hero-about-btn', 'about');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHeroButtons);
+  } else {
+    initHeroButtons();
+  }
+})();
+</script>
+
+
+
+
+
+<script>
+/* ── MOBILE FEEDBACK AUTO-SCROLL ───────────────────────────────── */
+(function () {
+  var feedbackTimer = null;
+  var feedbackIndex = 0;
+  var feedbackMedia = window.matchMedia('(max-width: 900px)');
+
+  function stopFeedbackAutoScroll() {
+    if (!feedbackTimer) return;
+    window.clearInterval(feedbackTimer);
+    feedbackTimer = null;
+  }
+
+  function startFeedbackAutoScroll() {
+    var list = document.querySelector('.feedback-list');
+    if (!list || !feedbackMedia.matches) {
+      stopFeedbackAutoScroll();
+      return;
+    }
+
+    var cards = Array.prototype.slice.call(list.querySelectorAll('.feedback-card'));
+    if (cards.length < 2) return;
+
+    stopFeedbackAutoScroll();
+    feedbackTimer = window.setInterval(function () {
+      if (document.hidden) return;
+      feedbackIndex = (feedbackIndex + 1) % cards.length;
+      list.scrollTo({
+        left: cards[feedbackIndex].offsetLeft - list.offsetLeft,
+        behavior: 'smooth'
+      });
+    }, 3600);
+  }
+
+  function bindFeedbackAutoScroll() {
+    var list = document.querySelector('.feedback-list');
+    if (!list) return;
+
+    if (!list.dataset.autoScrollBound) {
+      list.addEventListener('pointerdown', function () {
+        stopFeedbackAutoScroll();
+        window.setTimeout(startFeedbackAutoScroll, 6500);
+      });
+      list.dataset.autoScrollBound = 'true';
+    }
+
+    startFeedbackAutoScroll();
+  }
+
+  document.addEventListener('DOMContentLoaded', bindFeedbackAutoScroll);
+  window.addEventListener('resize', bindFeedbackAutoScroll);
+  document.addEventListener('visibilitychange', bindFeedbackAutoScroll);
+})();
+</script>
+
+
+<script>
+/* ── DESKTOP FEEDBACK CAROUSEL ─────────────────────────────────── */
+(function () {
+  var desktopFeedbackTimer = null;
+  var desktopFeedbackIndex = 0;
+  var desktopFeedbackMedia = window.matchMedia('(min-width: 901px)');
+  var SHORT_FEEDBACK_PAGE_SIZE = 4;
+  var LONG_FEEDBACK_PAGE_SIZE = 2;
+  var LONG_FEEDBACK_LIMIT = 110;
+
+  function stopDesktopFeedbackCarousel() {
+    if (!desktopFeedbackTimer) return;
+    window.clearInterval(desktopFeedbackTimer);
+    desktopFeedbackTimer = null;
+  }
+
+  function clearDesktopFeedbackState(list, cards) {
+    if (list) list.removeAttribute('data-feedback-carousel');
+    cards.forEach(function (card) {
+      card.classList.remove('is-feedback-visible');
+      card.removeAttribute('aria-hidden');
+    });
+  }
+
+  function getFeedbackTextLength(card) {
+    var text = card ? card.querySelector('p') : null;
+    return text ? text.textContent.replace(/\s+/g, ' ').trim().length : 0;
+  }
+
+  function getDesktopFeedbackPageSize(cards, startIndex) {
+    var nextFour = cards.slice(startIndex, startIndex + SHORT_FEEDBACK_PAGE_SIZE);
+    var hasLongFeedback = nextFour.some(function (card) {
+      return getFeedbackTextLength(card) > LONG_FEEDBACK_LIMIT;
+    });
+    return hasLongFeedback ? LONG_FEEDBACK_PAGE_SIZE : SHORT_FEEDBACK_PAGE_SIZE;
+  }
+
+  function showDesktopFeedbackPage(cards) {
+    var pageSize = getDesktopFeedbackPageSize(cards, desktopFeedbackIndex);
+    if (desktopFeedbackIndex > cards.length - 1) {
+      desktopFeedbackIndex = 0;
+      pageSize = getDesktopFeedbackPageSize(cards, desktopFeedbackIndex);
+    }
+
+    cards.forEach(function (card, index) {
+      var visible = index >= desktopFeedbackIndex && index < desktopFeedbackIndex + pageSize;
+      card.classList.toggle('is-feedback-visible', visible);
+      card.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    });
+
+    return pageSize;
+  }
+
+  function startDesktopFeedbackCarousel() {
+    var list = document.querySelector('.feedback-list');
+    if (!list) return;
+
+    var cards = Array.prototype.slice.call(list.querySelectorAll('.feedback-card'));
+    if (!desktopFeedbackMedia.matches || cards.length <= LONG_FEEDBACK_PAGE_SIZE) {
+      stopDesktopFeedbackCarousel();
+      clearDesktopFeedbackState(list, cards);
+      return;
+    }
+
+    list.setAttribute('data-feedback-carousel', 'desktop');
+    var currentPageSize = showDesktopFeedbackPage(cards);
+
+    stopDesktopFeedbackCarousel();
+    desktopFeedbackTimer = window.setInterval(function () {
+      if (document.hidden) return;
+      desktopFeedbackIndex = desktopFeedbackIndex + currentPageSize >= cards.length ? 0 : desktopFeedbackIndex + currentPageSize;
+      currentPageSize = showDesktopFeedbackPage(cards);
+    }, 5200);
+  }
+
+  document.addEventListener('DOMContentLoaded', startDesktopFeedbackCarousel);
+  window.addEventListener('resize', startDesktopFeedbackCarousel);
+  document.addEventListener('visibilitychange', startDesktopFeedbackCarousel);
+})();
+</script>
+
+
+<script>
+/* ── NEWSLETTER FORMSPREE ─────────────────────────────────── */
+(function () {
+  function bindNewsletterForms() {
+    document.querySelectorAll('.newsletter-form').forEach(function(form) {
+      if (form.dataset.newsletterBound) return;
+      form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        var button = form.querySelector('button[type="submit"]');
+        var originalText = button ? button.textContent : '';
+        if (button) {
+          button.disabled = true;
+          button.textContent = '...';
+        }
+
+        try {
+          var response = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { 'Accept': 'application/json' }
+          });
+
+          if (!response.ok) throw new Error('Newsletter submit failed');
+
+          alert('Obrigada! Vemo-nos em breve 💜');
+          form.reset();
+        } catch (error) {
+          alert('Não foi possível guardar o email. Tenta novamente, por favor.');
+        } finally {
+          if (button) {
+            button.disabled = false;
+            button.textContent = originalText;
+          }
+        }
+      });
+      form.dataset.newsletterBound = 'true';
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', bindNewsletterForms);
+})();
+</script>
+
+
+<script>
+/* ── MOBILE OCCASIONS CAROUSEL ─────────────────────────────────── */
+(function () {
+  var AUTOPLAY_DELAY = 4200;
+  var scrollTimer = null;
+  var autoplayTimer = null;
+  var currentIndex = 0;
+  var isVisible = false;
+  var isInteracting = false;
+  var pointerStartX = 0;
+  var pointerMoved = false;
+
+  function setupMobileOccasionsCarousel() {
+    var track = document.querySelector('.mobile-home-occasion-track');
+    if (!track || track.dataset.carouselReady === 'true') return;
+
+    var cards = Array.prototype.slice.call(track.querySelectorAll('.mobile-home-occasion-card'));
+    if (cards.length < 2) return;
+
+    var mobileQuery = window.matchMedia('(max-width: 768px)');
+    var reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function firstCardOffset() {
+      return cards[0].offsetLeft;
+    }
+
+    function targetScrollLeft(index) {
+      return Math.max(0, cards[index].offsetLeft - firstCardOffset());
+    }
+
+    function nearestCardIndex() {
+      var closestIndex = 0;
+      var closestDistance = Infinity;
+      cards.forEach(function (card, index) {
+        var distance = Math.abs(targetScrollLeft(index) - track.scrollLeft);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+      return closestIndex;
+    }
+
+    function goToSlide(index, behavior) {
+      currentIndex = (index + cards.length) % cards.length;
+      track.scrollTo({
+        left: targetScrollLeft(currentIndex),
+        behavior: behavior || 'smooth'
+      });
+    }
+
+    function stopAutoplay() {
+      if (autoplayTimer) window.clearTimeout(autoplayTimer);
+      autoplayTimer = null;
+    }
+
+    function scheduleAutoplay() {
+      stopAutoplay();
+      if (!mobileQuery.matches || reducedMotionQuery.matches || !isVisible || isInteracting || document.hidden) return;
+      autoplayTimer = window.setTimeout(function () {
+        goToSlide(currentIndex + 1, 'smooth');
+        scheduleAutoplay();
+      }, AUTOPLAY_DELAY);
+    }
+
+    track.addEventListener('scroll', function () {
+      if (scrollTimer) window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(function () {
+        currentIndex = nearestCardIndex();
+      }, 90);
+    }, { passive: true });
+
+    track.addEventListener('pointerdown', function (event) {
+      isInteracting = true;
+      pointerStartX = event.clientX;
+      pointerMoved = false;
+      stopAutoplay();
+    }, { passive: true });
+
+    track.addEventListener('pointermove', function (event) {
+      if (Math.abs(event.clientX - pointerStartX) > 8) pointerMoved = true;
+    }, { passive: true });
+
+    function finishInteraction() {
+      isInteracting = false;
+      currentIndex = nearestCardIndex();
+      scheduleAutoplay();
+    }
+
+    track.addEventListener('pointerup', finishInteraction, { passive: true });
+    track.addEventListener('pointercancel', finishInteraction, { passive: true });
+    track.addEventListener('click', function (event) {
+      if (!pointerMoved) return;
+      event.preventDefault();
+      event.stopPropagation();
+      pointerMoved = false;
+    }, true);
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function (entries) {
+        isVisible = entries[0].isIntersecting;
+        scheduleAutoplay();
+      }, { threshold: 0.35 });
+      observer.observe(track);
+    } else {
+      isVisible = true;
+    }
+
+    document.addEventListener('visibilitychange', scheduleAutoplay);
+    window.addEventListener('resize', function () {
+      goToSlide(currentIndex, 'auto');
+      scheduleAutoplay();
+    });
+
+    track.dataset.carouselReady = 'true';
+    scheduleAutoplay();
+  }
+
+  document.addEventListener('DOMContentLoaded', setupMobileOccasionsCarousel);
+})();
+</script>
+
+
+<script>
+/* ── TOUCH GUARD ─────────────────────────────────────────────────── */
+(function () {
+  var MOVE_LIMIT = 12;
+
+  function findTouchableCard(target) {
+    if (!target || !target.closest) return null;
+    return target.closest('.products-grid .product-card, #shop-products-grid .product-card, .occasion-card');
+  }
+
+  document.addEventListener('pointerdown', function (e) {
+    if (e.pointerType !== 'touch') return;
+    var card = findTouchableCard(e.target);
+    if (!card) return;
+    card.dataset.touchStartX = String(e.clientX);
+    card.dataset.touchStartY = String(e.clientY);
+    card.dataset.touchMoved = 'false';
+  }, { passive: true, capture: true });
+
+  document.addEventListener('pointermove', function (e) {
+    if (e.pointerType !== 'touch') return;
+    var card = findTouchableCard(e.target);
+    if (!card || !card.dataset.touchStartX || !card.dataset.touchStartY) return;
+    var dx = Math.abs(e.clientX - Number(card.dataset.touchStartX));
+    var dy = Math.abs(e.clientY - Number(card.dataset.touchStartY));
+    if (dx > MOVE_LIMIT || dy > MOVE_LIMIT) card.dataset.touchMoved = 'true';
+  }, { passive: true, capture: true });
+
+  document.addEventListener('click', function (e) {
+    var card = findTouchableCard(e.target);
+    if (!card || card.dataset.touchMoved !== 'true') return;
+    e.preventDefault();
+    e.stopPropagation();
+    card.dataset.touchMoved = 'false';
+  }, true);
+})();
+</script>
+
+
+<script>
+/* ── SHOP CARD OPEN ─────────────────────────────────────────────── */
+(function () {
+  var PRODUCT_CARD_OPEN_MAP = {
+    'Bloom': 'bloom',
+    'Aurora': 'aurora',
+    'Serenata': 'serenata',
+    'Diamante': 'diamante',
+    'Prisma': 'prisma',
+    'Nala': 'nala',
+    'Aura': 'aura',
+    'Essência do Amor': 'essencia_amor',
+    'Pensar em Ti': 'pensar_em_ti',
+    'Lembrei-me de Ti': 'lembrei_me_de_ti',
+    'Mini Difusor': 'mini_difusor',
+    'Mini Difusor + Mini Sabonete': 'mini_difusor_sabonete',
+    'Aroma em Viagem': 'aroma_em_viagem',
+    'Brinde Perfeito': 'brinde_perfeito',
+    'Trouxinha Aromática': 'trouxinha_aromatica',
+    'Bem-Querer': 'bem_querer',
+    'Sopros de Alegria': 'sopros_alegria',
+    'Luz Serena': 'luz_serena',
+    'Doce Luz': 'doce_luz',
+    'Memória Perfumada': 'memoria_perfumada',
+    'Bilhete Perfumado': 'bilhete_perfumado',
+    'Laço de Memória': 'laco_memoria',
+    'Pequeno Artista': 'pequeno_artista',
+    'Momento Criativo': 'momento_criativo',
+    'Caixinha de Arte': 'caixinha_arte',
+    'Miminho Doce': 'miminho_doce'
+  };
+
+  function getProductIdFromCard(card) {
+    var title = card.querySelector('.product-name');
+    var name = title ? sourceI18nText(title.textContent) : '';
+    return PRODUCT_CARD_OPEN_MAP[name] || '';
+  }
+
+  function openCardProduct(card) {
+    var productId = getProductIdFromCard(card);
+    if (productId && typeof openProduct === 'function') openProduct(productId);
+  }
+
+  function setupShopCardOpen() {
+    document.querySelectorAll('.products-grid .product-card, #shop-products-grid .product-card').forEach(function(card) {
+      var productId = getProductIdFromCard(card);
+      if (!productId) return;
+
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', translatedText('Abrir', currentLanguage) + ' ' + card.querySelector('.product-name').textContent.trim());
+
+      if (card.dataset.cardOpenBound) return;
+      card.addEventListener('click', function(event) {
+        if (event.target.closest('button, a, select, input, textarea, label')) return;
+        openCardProduct(card);
+      });
+      card.addEventListener('keydown', function(event) {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        openCardProduct(card);
+      });
+      card.dataset.cardOpenBound = 'true';
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupShopCardOpen);
+  window.addEventListener('resize', setupShopCardOpen);
+})();
+</script>
+
+<script>
+/* ── HOMEPAGE IMAGE RECOVERY ───────────────────────────────────── */
+(function () {
+  function retryImageOnce(image) {
+    if (!image || image.dataset.imageRetry === 'done') return;
+    image.dataset.imageRetry = 'done';
+
+    var source = image.getAttribute('src');
+    if (!source) return;
+
+    try {
+      var retryUrl = new URL(source, document.baseURI);
+      retryUrl.searchParams.set('image-retry', '1');
+      image.src = retryUrl.href;
+    } catch (error) {
+      image.src = source + (source.indexOf('?') === -1 ? '?' : '&') + 'image-retry=1';
+    }
+  }
+
+  function protectHomepageImages() {
+    document.querySelectorAll('#page-home img').forEach(function (image) {
+      var isHero = image.classList.contains('home-hero-photo-image');
+      image.loading = isHero ? 'eager' : 'lazy';
+      image.decoding = 'async';
+      if (isHero) image.fetchPriority = 'high';
+
+      if (!image.dataset.imageGuard) {
+        image.addEventListener('error', function () {
+          retryImageOnce(image);
+        }, { once: true });
+        image.dataset.imageGuard = 'ready';
+      }
+
+      if (image.complete && image.naturalWidth === 0) {
+        retryImageOnce(image);
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', protectHomepageImages);
+  window.addEventListener('pageshow', protectHomepageImages);
+})();
+</script>
+
+<script src="./assets/js/commerce.js?v=20261116"></script>
+</body>
+</html>
