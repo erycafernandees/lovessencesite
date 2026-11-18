@@ -18378,8 +18378,10 @@ renderCart();
    var spans=document.querySelectorAll("#announce-bar .announce-track span");
    spans.forEach(function(el){
      if(!originalAnnouncement.has(el))originalAnnouncement.set(el,el.textContent);
-     el.textContent=inSeason()&&day<=20261212
-       ?"Natal 2026   Encomendas até 12 de dezembro   Entrega sujeita aos prazos dos CTT   Portes grátis acima de 60 €"
+     el.textContent=inSeason()
+       ?(day<=20261212
+         ?"Natal 2026   Encomendas até 12 de dezembro   Entrega sujeita aos prazos dos CTT   Portes grátis acima de 60 €"
+         :"Natal 2026   Consulta os prazos de entrega antes de encomendar   Portes grátis acima de 60 €")
        :originalAnnouncement.get(el);
    });
    var originalTabs=document.querySelector("#page-shop .shop-hero>.category-tabs");
