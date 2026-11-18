@@ -6115,58 +6115,71 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
 }
 </style>
 <style>
-/* Natal 2026: aproveitar a identidade visual da Love Essences, sem decoração adicional. */
-#natal26-intro,#natal26-shortcuts,#natal26-shipping,#natal26-related,#natal26-business{display:none}
-body.natal26-shop #page-shop .shop-hero{background:var(--cream);padding-bottom:3rem}
+/* Natal 2026. Reutiliza tipografia, cores e botões originais Love Essences. */
+#natal26-intro, #natal26-shipping, #natal26-related, #natal26-business { display:none; }
 body.natal26-shop #page-shop .shop-hero>.section-label,
 body.natal26-shop #page-shop #shop-page-intro,
 body.natal26-shop #page-shop .shop-hero>.category-tabs,
-body.natal26-shop #page-shop .shop-results-meta>button{display:none!important}
-body.natal26-shop #natal26-intro{display:block}
-body.natal26-shop #natal26-shortcuts{display:grid}
-body.natal26-shop #natal26-shipping,
-body.natal26-shop #natal26-related,
-body.natal26-shop #natal26-business{display:block}
-#natal26-intro{text-align:center}
-#natal26-intro .natal26-eyebrow{display:block;font-family:var(--sans);font-size:.76rem;font-weight:500;text-transform:uppercase;letter-spacing:.2em;color:var(--deep-rose);margin:0 auto .6rem}
-#natal26-intro .natal26-description{font-family:var(--sans);color:var(--warm-gray);font-size:.93rem;font-weight:400;line-height:1.7;max-width:800px;margin:1rem auto .45rem}
-#natal26-intro .natal26-deadline{font-family:var(--sans);color:#8b7584;font-size:.76rem;line-height:1.65;margin:.45rem auto 0;max-width:780px}
-#natal26-shortcuts{max-width:1130px;margin:2.25rem auto 0;grid-template-columns:repeat(4,minmax(0,1fr));gap:.85rem}
-#natal26-shortcuts .natal26-pill{box-sizing:border-box;min-width:0;min-height:85px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.32rem;padding:1rem .8rem;border:1px solid rgba(180,104,171,.3);border-radius:999px;background:var(--warm-white);font-family:var(--sans);color:var(--deep-rose);text-align:center;cursor:pointer;transition:background .25s,border-color .25s,box-shadow .25s,transform .25s}
-#natal26-shortcuts .natal26-pill:hover,#natal26-shortcuts .natal26-pill[aria-pressed="true"]{background:#f7ebf5;border-color:var(--rose);box-shadow:0 5px 16px rgba(102,19,94,.07)}
-#natal26-shortcuts .natal26-pill:focus-visible{outline:2px solid var(--deep-rose);outline-offset:3px}
-#natal26-shortcuts .natal26-pill-copy{display:flex;min-width:0;flex-direction:column;align-items:center;gap:.3rem}
-#natal26-shortcuts .natal26-pill-title{font-family:var(--sans);font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.075em;color:var(--deep-rose);line-height:1.4}
-#natal26-shortcuts .natal26-pill-sub{font-family:var(--sans);font-size:.69rem;line-height:1.35;font-weight:400;color:#806b7a}
-body.natal26-shop #page-shop .shop-results-meta{justify-content:flex-start;text-align:left}
-body.natal26-shop #page-shop #shop-results-label{font-family:var(--sans)!important;font-size:clamp(1.5rem,2.35vw,2.1rem)!important;font-weight:400!important;letter-spacing:-.035em!important;text-transform:none!important;color:var(--dark)!important}
-body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden{display:none!important}
-#natal26-shipping{margin:2.65rem auto;max-width:1100px;padding:1.2rem 1.5rem;background:var(--cream);border:1px solid rgba(180,104,171,.18);border-radius:22px;color:var(--deep-rose);font-family:var(--sans);font-size:.85rem;font-weight:500;line-height:1.5;text-align:center}
-#natal26-related{margin:2.8rem auto;max-width:1280px}
-#natal26-related h3,#natal26-business h3{font-family:var(--sans);font-weight:400;font-size:clamp(1.5rem,2.35vw,2.1rem);letter-spacing:-.035em;color:var(--dark);margin:0 auto 1.9rem}
-#natal26-related h3{text-align:left}
-#natal26-related-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.7rem}
-#natal26-related-grid .product-card{min-width:0}
-#natal26-related-grid .product-img{height:235px}
-#natal26-related-grid .product-info{min-height:230px}
-#natal26-business{margin:3rem auto 0;max-width:1100px;padding:3rem 2.25rem;background:var(--cream);border:1px solid rgba(180,104,171,.18);border-radius:26px;text-align:center}
-#natal26-business h3{margin:.75rem auto 1rem;text-align:center}
-#natal26-business p{max-width:680px;margin:.55rem auto;color:var(--warm-gray);font-family:var(--sans);font-size:.87rem;line-height:1.7}
-#natal26-business .natal26-business-cta{margin-top:1.2rem;background:var(--rose);color:#fff;border:1px solid var(--rose);padding:.8rem 1.5rem;font-family:var(--sans);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;border-radius:30px;cursor:pointer;transition:background .25s,border-color .25s}
-#natal26-business .natal26-business-cta:hover{background:var(--deep-rose);border-color:var(--deep-rose)}
-@media(max-width:1040px){#natal26-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));max-width:680px}#natal26-related-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){
- body.natal26-shop #page-shop .shop-hero{padding:2.5rem 5vw 2rem}
- #natal26-shortcuts{gap:.65rem;margin-top:1.65rem}
- #natal26-shortcuts .natal26-pill{min-height:93px;padding:1rem .6rem;border-radius:22px}
- #natal26-shortcuts .natal26-pill-title{font-size:.73rem;letter-spacing:.04em}
- #natal26-shortcuts .natal26-pill-sub{font-size:.65rem}
- #natal26-related-grid{gap:.85rem}
- #natal26-related-grid .product-img{height:175px}
- #natal26-related-grid .product-info{padding:1rem;min-height:195px}
- #natal26-related-grid .product-name{font-size:1.15rem}
- #natal26-business{padding:2rem 1.25rem}
+body.natal26-shop #page-shop .shop-results-meta>button { display:none!important; }
+body.natal26-shop #natal26-intro, body.natal26-shop #natal26-shipping,
+body.natal26-shop #natal26-related, body.natal26-shop #natal26-business {display:block;}
+body.natal26-shop #page-shop .shop-hero {background:var(--cream);}
+#natal26-intro{text-align:center;}
+#natal26-intro .natal26-eyebrow {display:block;font-family:var(--sans);font-size:.76rem;text-transform:uppercase;letter-spacing:.18em;color:var(--warm-gray);margin:1rem 0 0;}
+#natal26-intro .natal26-description {font-family:var(--sans);font-weight:300;font-size:.95rem;color:var(--warm-gray);line-height:1.7;max-width:790px;margin:1rem auto 0;}
+#natal26-intro .natal26-deadline {font-family:var(--sans);font-size:.78rem;line-height:1.6;color:var(--warm-gray);margin:1rem auto 0;max-width:720px;}
+/* As opções surgem no fluxo normal, depois do texto. Não usar nav: nav é fixo na loja. */
+#page-shop #natal26-shortcuts {
+  position:static;top:auto;left:auto;z-index:auto;width:auto;
+  display:flex;justify-content:center;align-items:center;gap:.8rem;flex-wrap:wrap;
+  margin:2rem auto 0;padding:0;overflow:visible;background:none;border:0;box-shadow:none;
 }
+#page-shop #natal26-shortcuts .cat-tab {font-family:var(--sans);}
+#page-shop #natal26-shortcuts .cat-tab[aria-pressed="true"] {
+  background:var(--rose);border-color:var(--rose);color:#fff;
+}
+body.natal26-shop #page-shop .shop-results-meta{justify-content:flex-start;text-align:left;}
+body.natal26-shop #page-shop #shop-results-label{
+ font-family:var(--sans)!important;font-size:clamp(1.5rem,2.35vw,2.1rem)!important;
+ font-weight:400!important;letter-spacing:-.035em!important;text-transform:none!important;color:var(--dark)!important;
+}
+body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:none!important;}
+#natal26-shipping {margin:2.65rem auto;max-width:1100px;padding:1.2rem 1.5rem;background:var(--cream);border:1px solid rgba(180,104,171,.18);border-radius:20px;color:var(--deep-rose);font-family:var(--sans);font-size:.85rem;text-align:center;}
+#natal26-related {margin:2.8rem auto;max-width:1280px;}
+#natal26-related h3,#natal26-business h3{
+ font-family:var(--sans);font-weight:400;font-size:clamp(1.5rem,2.35vw,2.1rem);
+ letter-spacing:-.035em;color:var(--dark);margin:0 auto 1.9rem;
+}
+#natal26-related h3{text-align:left;}
+#natal26-related-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1.7rem;}
+#natal26-related-grid .product-card {min-width:0;}
+#natal26-related-grid .product-img {height:235px;}
+#natal26-related-grid .product-info {min-height:230px;}
+#natal26-business {margin:3rem auto 0;max-width:1100px;padding:3rem 2.25rem;background:var(--cream);border:1px solid rgba(180,104,171,.18);border-radius:26px;text-align:center;}
+#natal26-business h3{margin:.75rem auto 1rem;text-align:center;}
+#natal26-business p {max-width:680px;margin:.55rem auto;color:var(--warm-gray);font-family:var(--sans);font-size:.87rem;line-height:1.7;}
+#natal26-business .natal26-business-cta {
+ margin-top:1.2rem;background:var(--rose);color:#fff;border:1px solid var(--rose);
+ padding:.8rem 1.5rem;font-family:var(--sans);font-size:.75rem;letter-spacing:.1em;
+ text-transform:uppercase;border-radius:2px;cursor:pointer;
+}
+#natal26-business .natal26-business-cta:hover{background:var(--deep-rose);border-color:var(--deep-rose);}
+@media(max-width:1040px){#natal26-related-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:768px){
+ #page-shop #natal26-shortcuts {
+   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem;max-width:100%;margin-top:1.8rem;
+ }
+ #page-shop #natal26-shortcuts .cat-tab {
+   width:100%;min-width:0;white-space:normal;text-align:center;justify-content:center;
+   padding:.7rem .45rem;line-height:1.3;font-size:.69rem;letter-spacing:.08em;
+ }
+ #natal26-related-grid{gap:.85rem;}
+ #natal26-related-grid .product-img{height:175px;}
+ #natal26-related-grid .product-info{padding:1rem;min-height:195px;}
+ #natal26-related-grid .product-name{font-size:1.15rem;}
+ #natal26-business{padding:2rem 1.25rem;}
+}
+@media(max-width:360px){#page-shop #natal26-shortcuts .cat-tab{font-size:.63rem;}}
 </style>
 </head>
 <body>
@@ -18264,10 +18277,8 @@ renderCart();
    return inSeason() && typeof currentCategory!=="undefined" && currentCategory==="natal" &&
      !!document.querySelector("#page-shop.page.active");
  }
- function makeButton(action,label,sub){
-   return '<button type="button" class="natal26-pill" data-natal26-action="'+action+'" aria-pressed="false">'+
-     '<span class="natal26-pill-copy"><strong class="natal26-pill-title">'+label+'</strong>'+
-     '<small class="natal26-pill-sub">'+sub+'</small></span></button>';
+ function makeButton(action,label){
+   return '<button type="button" class="cat-tab" data-natal26-action="'+action+'" aria-pressed="false">'+label+'</button>';
  }
  function init(){
    if(mounted)return;
@@ -18283,15 +18294,17 @@ renderCart();
       '<p class="natal26-description">Peças criadas à mão, uma a uma, para oferecer, decorar e tornar o Natal ainda mais especial.</p>'+
       '<p class="natal26-deadline" id="natal26-deadline"></p>';
    intro.insertAdjacentElement("afterend",text);
-   var shortcuts=document.createElement("nav");
+   var shortcuts=document.createElement("div");
    shortcuts.id="natal26-shortcuts";
+   shortcuts.className="category-tabs";
+   shortcuts.setAttribute("role","group");
    shortcuts.setAttribute("aria-label","Escolher presentes de Natal");
    shortcuts.innerHTML=
-      makeButton("under15","Até 15€","Pequenos presentes, grandes gestos")+
-      makeButton("over15","Presentes especiais","Criações para surpreender")+
-      makeButton("business","Natal para empresas","Lembranças para equipas e clientes")+
-      makeButton("all","Ver todos","Toda a coleção Natal");
-   originalTabs.insertAdjacentElement("afterend",shortcuts);
+      makeButton("under15","Até 15€")+
+      makeButton("over15","Presentes especiais")+
+      makeButton("business","Natal para empresas")+
+      makeButton("all","Ver todos");
+   text.appendChild(shortcuts);
    var shipping=document.createElement("aside");
    shipping.id="natal26-shipping";
    shipping.textContent="Portes grátis em encomendas acima de 60€ em Portugal Continental";
@@ -18394,7 +18407,7 @@ renderCart();
    if(occasion)occasion.style.display=on?"none":"";
    ["natal26-intro","natal26-shortcuts","natal26-shipping","natal26-related","natal26-business"].forEach(function(id){
      var el=document.getElementById(id);
-     if(el)el.style.display=on?(id==="natal26-shortcuts"?"grid":"block"):"none";
+     if(el)el.style.display=on?(id==="natal26-shortcuts"?"":"block"):"none";
    });
    // A lista principal contém só os seis artigos de Natal; as restantes sugestões têm secção própria.
    document.querySelectorAll("#shop-products-grid .natal-product-card").forEach(function(card){
@@ -18405,7 +18418,9 @@ renderCart();
      if(on)card.style.display=(selected==="all" || (selected==="under15"?!expensive:expensive))?"":"none";
    });
    document.querySelectorAll("#natal26-shortcuts [data-natal26-action]").forEach(function(btn){
-     btn.setAttribute("aria-pressed",String(on&&selected===btn.dataset.natal26Action));
+     var isActive=on&&selected===btn.dataset.natal26Action;
+     btn.setAttribute("aria-pressed",String(isActive));
+     btn.classList.toggle("active",isActive);
    });
    if(on){
      var label=document.getElementById("shop-results-label");
