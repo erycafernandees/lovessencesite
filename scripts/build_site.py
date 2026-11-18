@@ -787,6 +787,34 @@ def write_404(output: Path) -> None:
     (output / "404.html").write_text(page, encoding="utf-8")
 
 
+PRODUCT_SEO = {
+    "natal_bloom": [
+        "Bloom de Natal — Flores de Sabonete | Love Essences",
+        "Bloom de Natal com flores de sabonete em abóbora decorativa. Tamanhos Mini e M, desde 18,90€. Descobre as opções e pede informações."
+    ],
+    "natal_aconchego": [
+        "Aconchego — Abóbora com Flores de Sabonete | Love Essences",
+        "Aconchego: abóbora decorativa com flores de sabonete e tampa entreaberta, por 15,90€. Um presente artesanal de Natal feito em Portugal."
+    ],
+    "natal_carrossel": [
+        "Carrossel Encantado — Vela de Natal | Love Essences",
+        "Carrossel Encantado com tampa e vela perfumada incluída, desde 12,90€. Detalhes dourados opcionais por mais 2€. Feito à mão em Portugal."
+    ],
+    "natal_sagrada_familia": [
+        "Sagrada Família em Sabonete — Natal | Love Essences",
+        "Sagrada Família artesanal em sabonete por 12€. Uma peça de inspiração natalícia para decorar ou oferecer. Descobre os detalhes na Love Essences."
+    ],
+    "natal_vela_abobora": [
+        "Vela Abóbora Artesanal — Natal | Love Essences",
+        "Vela Abóbora artesanal por 12,90€, disponível em quatro cores e em edição limitada. Um presente acolhedor para o Natal, feito em Portugal."
+    ],
+    "natal_vila_encantada": [
+        "Vila Encantada — Vela Artesanal de Natal | Love Essences",
+        "Vila Encantada: vela artesanal inspirada nas pequenas vilas de Natal, por 11,90€. Descobre esta peça para decorar ou oferecer na Love Essences."
+    ]
+}
+
+
 def get_routes(source: str) -> tuple[list[Product], list[Route]]:
     # Manter a Bola de Natal no catálogo interno, mas sem página pública enquanto não há fotografias.
     products = [product for product in parse_products(source) if product.product_id != "natal_bola"]
@@ -794,8 +822,8 @@ def get_routes(source: str) -> tuple[list[Product], list[Route]]:
         Route(
             product.path,
             "product",
-            f"{product.name} | Love Essences",
-            product.story,
+            PRODUCT_SEO.get(product.product_id, (f"{product.name} | Love Essences", product.story))[0],
+            PRODUCT_SEO.get(product.product_id, ("", product.story))[1],
             label=product.name,
             image=absolute_asset(product.image),
             og_type="product",
