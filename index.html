@@ -6121,8 +6121,9 @@ body.natal26-shop #page-shop .shop-hero>.section-label,
 body.natal26-shop #page-shop #shop-page-intro,
 body.natal26-shop #page-shop .shop-hero>.category-tabs,
 body.natal26-shop #page-shop .shop-results-meta>button { display:none!important; }
-body.natal26-shop #natal26-intro, body.natal26-shop #natal26-related,
-body.natal26-shop #natal26-business {display:block;}
+body.natal26-shop #natal26-intro, body.natal26-shop #natal26-related {display:block;}
+body.natal26-shop.natal26-business-selected #natal26-business{display:block;}
+body.natal26-shop.natal26-business-selected #shop-products-grid{display:none;}
 body.natal26-shop #page-shop .shop-hero {background:var(--cream);}
 #natal26-intro{text-align:center;}
 #natal26-intro .natal26-eyebrow {display:block;font-family:var(--sans);font-size:.76rem;text-transform:uppercase;letter-spacing:.18em;color:var(--warm-gray);margin:1rem 0 0;}
@@ -18349,20 +18350,15 @@ renderCart();
      '<p>Lembranças artesanais e personalizadas para colaboradores, clientes e parceiros.</p>'+
      '<p id="natal26-business-deadline" style="font-size:.8rem"></p>'+
      '<button class="natal26-business-cta" type="button">Pedir orçamento</button>';
-   related.insertAdjacentElement("afterend",business);
+   grid.insertAdjacentElement("afterend",business);
    business.querySelector("button").addEventListener("click",function(){showPage("contact");});
    shortcuts.addEventListener("click",function(event){
      var target=event.target.closest("[data-natal26-action]");
      if(!target)return;
-     var action=target.dataset.natal26Action;
-     if(action==="business"){
-       business.scrollIntoView({behavior:"smooth",block:"center"});
-     } else {
-       selected=action;
-       refresh();
-       var results=document.getElementById("shop-results-label");
-       if(results)results.scrollIntoView({behavior:"smooth",block:"start"});
-     }
+     // Tal como nos filtros normais da Loja, apenas muda o conteúdo
+     // e o botão ativo. Não deslocar a página ao selecionar uma opção.
+     selected=target.dataset.natal26Action;
+     refresh();
    });
    // Reagir às mudanças reais da loja; não interferir nos filtros nem nas páginas de produto.
    var originalApply=window.applyShopFilters;
@@ -18391,6 +18387,7 @@ renderCart();
    var day=todayPortugal();
    var on=onNatalPage();
    document.body.classList.toggle("natal26-shop",on);
+   document.body.classList.toggle("natal26-business-selected",on&&selected==="business");
    var text=document.getElementById("natal26-deadline");
    if(text){
      text.textContent=day<=20261212
@@ -18420,7 +18417,10 @@ renderCart();
    if(occasion)occasion.style.display=on?"none":"";
    ["natal26-intro","natal26-shortcuts","natal26-related","natal26-business"].forEach(function(id){
      var el=document.getElementById(id);
-     if(el)el.style.display=on?(id==="natal26-shortcuts"?"":"block"):"none";
+     if(!el)return;
+     var show=on&&(id==="natal26-business"?selected==="business":
+       id==="natal26-related"?selected!=="business":true);
+     el.style.display=show?(id==="natal26-shortcuts"?"":"block"):"none";
    });
    // A lista principal contém só os seis artigos de Natal; as restantes sugestões têm secção própria.
    document.querySelectorAll("#shop-products-grid .natal-product-card").forEach(function(card){
@@ -18438,7 +18438,8 @@ renderCart();
    if(on){
      var label=document.getElementById("shop-results-label");
      if(label)label.textContent=selected==="under15"?"Presentes de Natal até 15€":
-       selected==="over15"?"Presentes especiais de Natal":"Seleção de presentes de Natal";
+       selected==="over15"?"Presentes especiais de Natal":
+       selected==="business"?"Natal para empresas":"Seleção de presentes de Natal";
    } else selected="all";
  }
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
