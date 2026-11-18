@@ -696,7 +696,8 @@ def extract_shared_assets(source: str, output: Path) -> str:
     css_path = output / "assets" / "css" / "site.css"
     css_path.parent.mkdir(parents=True, exist_ok=True)
     css_path.write_text(css.strip() + "\n", encoding="utf-8")
-    source = re.sub(r"<style>.*?</style>", '<link rel="stylesheet" href="/assets/css/site.css"/>', source, count=1, flags=re.S)
+    css_version = hashlib.sha256(css_path.read_bytes()).hexdigest()[:12]
+    source = re.sub(r"<style>.*?</style>", f'<link rel="stylesheet" href="/assets/css/site.css?v={css_version}"/>', source, count=1, flags=re.S)
     source = re.sub(r"<style>.*?</style>", "", source, flags=re.S)
 
     footer_end = source.index("</footer>") + len("</footer>")
