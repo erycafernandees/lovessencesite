@@ -9269,7 +9269,7 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
           <h3 class="product-name">Carrossel Encantado</h3>
           <p class="product-desc">Um carrossel perfumado que desperta memórias de infância e acrescenta magia à decoração.</p>
           <div class="product-footer">
-            <span class="product-price">14,90 €</span>
+            <span class="product-price">12,90 €</span>
             <button type="button" class="product-btn" onclick="openProduct('natal_carrossel')">Personalizar</button>
           </div>
         </div>
@@ -9947,7 +9947,7 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
           <h3 class="product-name">Carrossel Encantado</h3>
           <p class="product-desc">Um carrossel perfumado que desperta memórias de infância e acrescenta magia à decoração.</p>
           <div class="product-footer">
-            <span class="product-price">14,90 €</span>
+            <span class="product-price">12,90 €</span>
             <button type="button" class="product-btn" onclick="openProduct('natal_carrossel')">Personalizar</button>
           </div>
         </div>
@@ -10292,6 +10292,15 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
         <label for="pd-natal-candle">Escolhe se queres adicionar uma vela</label>
         <select class="pd-natal-select" id="pd-natal-candle" onchange="updateProductPrice()"></select>
         <p class="pd-custom-note" id="pd-natal-candle-note"></p>
+      </div>
+
+      <!-- Acabamento dourado opcional no Carrossel Encantado -->
+      <div class="pd-section" id="pd-golden-details-section" style="display:none;">
+        <h4>Acabamento</h4>
+        <label for="pd-golden-details" style="display:flex;align-items:center;gap:0.65rem;cursor:pointer;">
+          <input type="checkbox" id="pd-golden-details" onchange="updateProductPrice()" style="width:18px;height:18px;accent-color:#a98042;"/>
+          Detalhes em dourado (+2,00 €)
+        </label>
       </div>
 
       <!-- Cor da vela Abóbora e indicação de aromas pendentes -->
@@ -13909,8 +13918,9 @@ var PRODUCT_CATALOG = {
     storyTitle: 'O artigo',
     story: 'O Natal também se faz de memórias. Com a delicadeza de um carrossel e um aroma envolvente, esta peça decorativa convida a recordar a magia da infância. Inclui tampa e não contém vela.',
     sizes: [],
-    basePrice: 14.9,
-    details: 'Carrossel decorativo perfumado com tampa · Não inclui vela.',
+    basePrice: 12.9,
+    goldenDetailsPrice: 2,
+    details: 'Carrossel decorativo perfumado com tampa · Não inclui vela · Detalhes em dourado opcionais (+2,00 €).',
     tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
     quote: 'Uma criação artesanal para oferecer nesta época.',
     ctaLabel: 'Adicionar ao Carrinho',
@@ -13927,9 +13937,9 @@ var PRODUCT_CATALOG = {
     sizes: [
       { id: 'Pequena', label: 'Pequena', price: 12.9 },
       { id: 'Grande', label: 'Grande', price: 15.9 },
-      { id: 'Conjunto', label: 'Conjunto (pequena + grande)', price: null }
+      { id: 'Conjunto', label: 'Conjunto (pequena + grande)', price: 26.9 }
     ],
-    details: 'Bola decorativa de Natal · Tamanho pequeno ou grande · Conjunto disponível mediante confirmação · Vela opcional, com acréscimo.',
+    details: 'Bola decorativa de Natal · Tamanho pequeno ou grande · Conjunto disponível · Velas opcionais, com acréscimo de 8,00 € por vela.',
     tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
     quote: 'Uma criação artesanal para oferecer nesta época.',
     natalFragrancePending: true,
@@ -14668,6 +14678,10 @@ function openProduct(productId, options) {
   currentFabricId = p.fabricOptions && p.fabricOptions.length > 0 ? p.fabricOptions[0].id : null;
   currentSoapFragrance = '';
   currentNatalFragrance = '';
+  var goldSection = document.getElementById('pd-golden-details-section');
+  var goldCheckbox = document.getElementById('pd-golden-details');
+  if (goldSection) goldSection.style.display = p.goldenDetailsPrice ? '' : 'none';
+  if (goldCheckbox) goldCheckbox.checked = false;
   currentNatalColor = p.natalColorOptions && p.natalColorOptions.length ? p.natalColorOptions[0] : '';
   if (window.LoveCommerce) window.LoveCommerce.setProductFiles([]);
 
@@ -15318,23 +15332,20 @@ function renderNatalCandleOptions(p) {
   select.innerHTML = '';
   if (!p.natalCandleOptions) return;
   var choices = [{value:'none',label:'Sem vela'}];
-  if (currentSizeId === 'Grande') choices.push({value:'large',label:'Com vela (+5,00 €)'});
-  else if (currentSizeId === 'Conjunto') choices = [
+  if (currentSizeId === 'Conjunto') choices = [
     {value:'none',label:'Sem velas'},
-    {value:'small',label:'Vela na bola pequena (+3,00 €)'},
-    {value:'large',label:'Vela na bola grande (+5,00 €)'},
-    {value:'both',label:'Velas nas duas (+8,00 €)'}
+    {value:'small',label:'Com vela pequena (+8,00 €)'},
+    {value:'large',label:'Com vela grande (+8,00 €)'},
+    {value:'both',label:'Com ambas as velas (+16,00 €)'}
   ];
-  else choices.push({value:'small',label:'Com vela (+3,00 €)'});
+  else choices.push({value:currentSizeId === 'Grande' ? 'large' : 'small',label:'Com vela (+8,00 €)'});
   choices.forEach(function(choice) {
     var option = document.createElement('option');
     option.value = choice.value;
     option.textContent = choice.label;
     select.appendChild(option);
   });
-  if (note) note.textContent = currentSizeId === 'Conjunto'
-    ? 'O preço do conjunto ainda está por definir.'
-    : 'A seleção de fragrâncias das velas de Natal ainda está por definir.';
+  if (note) note.textContent = 'Cada vela acrescenta 8,00 € ao preço da opção escolhida.';
 }
 
 var CHRISTMAS_FRAGRANCES = ['Eucalipto com Menta','Home Sweet Home','Rosa Champanhe','Vanilla Frappuccino','Cashmere','Holiday Spice','Canela e Laranja','Caramelo com Framboesa e Baunilha'];
@@ -15440,7 +15451,7 @@ function getCurrentProductSelection() {
   var natalCandle = document.getElementById('pd-natal-candle');
   var candleChoice = p.natalCandleOptions && natalCandle ? natalCandle.value : 'none';
   if (p.natalCandleOptions && candleChoice && candleChoice !== 'none') {
-    var supplement = candleChoice === 'both' ? 8 : candleChoice === 'large' ? 5 : 3;
+    var supplement = candleChoice === 'both' ? 16 : 8;
     if (typeof price === 'number') price += supplement;
     hasPaidAddon = true;
     var candleLabel = candleChoice === 'both' ? 'velas nas duas' : candleChoice === 'large' ? 'vela na grande' : 'vela na pequena';
@@ -15448,6 +15459,15 @@ function getCurrentProductSelection() {
     eventDetails.push('Velas: ' + candleLabel + ' (+' + formatPrice(supplement) + ')');
     personalization.natalCandle = candleChoice;
     addonCodes.push(currentProduct + ':vela_' + candleChoice);
+  }
+  var goldenDetailsInput = document.getElementById('pd-golden-details');
+  if (p.goldenDetailsPrice && goldenDetailsInput && goldenDetailsInput.checked) {
+    price += p.goldenDetailsPrice;
+    hasPaidAddon = true;
+    itemName += ', detalhes em dourado';
+    eventDetails.push('Detalhes em dourado (+' + formatPrice(p.goldenDetailsPrice) + ')');
+    personalization.goldenDetails = true;
+    addonCodes.push(currentProduct + ':golden_details');
   }
   if (p.natalFragrancePending && currentNatalFragrance) {
     itemName += ', Fragrância: ' + currentNatalFragrance;
