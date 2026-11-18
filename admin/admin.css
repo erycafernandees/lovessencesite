@@ -212,3 +212,23 @@
 /* Em modo de consulta ficam apenas os dados e ações que não são edições. */
 .detail-drawer:not(.is-editing) .internal-notes-help,
 .detail-drawer:not(.is-editing) [data-delete-draft-quote]{display:none!important}
+
+
+/* Galerias de artigos: visual e tipografia do painel Love Essences. */
+#admin-gallery-workspace[hidden],#admin-orders-workspace[hidden]{display:none!important}
+.product-gallery-manager{max-width:960px;margin:1.65rem 0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:1.75rem}
+.product-gallery-manager .gallery-help{color:var(--muted);font-size:.82rem;line-height:1.75;max-width:720px}
+.product-gallery-manager label{max-width:540px;font-size:.75rem}
+.gallery-upload-form{display:flex;flex-wrap:wrap;gap:1rem;align-items:end}
+.gallery-upload-form label{flex:1 1 380px;margin:1rem 0 0}
+.gallery-upload-form button{flex:0 0 auto;min-height:44px}
+.gallery-upload-form button:disabled{opacity:.6;cursor:wait}
+.product-gallery-manager h2{font:400 1.65rem/1.2 var(--serif);margin:2.2rem 0 1.2rem;color:var(--deep)}
+.gallery-feedback{min-height:1.3rem;color:var(--deep);font-size:.8rem;line-height:1.5;margin:1rem 0}
+.gallery-feedback.is-error{color:#a12635}
+.gallery-image-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:1rem}
+.gallery-image-item{border:1px solid var(--line);background:#fff;border-radius:14px;overflow:hidden;padding:.5rem;display:flex;flex-direction:column;gap:.65rem}
+.gallery-image-item img{display:block;width:100%;aspect-ratio:4/5;object-fit:contain;background:#faf6f9;border-radius:10px}
+.gallery-image-item button{background:#fff;color:#a12635;border:1px solid #edd0d7;font-size:.75rem}
+.gallery-image-item button:hover{background:#fff4f6}
+@media(max-width:600px){.product-gallery-manager{padding:1.1rem}.gallery-upload-form button{width:100%}.tabs{overflow-x:auto}.tabs button{white-space:nowrap}.gallery-image-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
