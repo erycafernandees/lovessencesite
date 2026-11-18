@@ -14688,6 +14688,7 @@ function openTrackingWhatsApp() {
 /* ============================================================ */
 var PRODUCT_CATALOG = {
   natal_vila_encantada: {
+    referenceImageAllowed: false,
     category: 'Natal',
     name: 'Vila Encantada',
     visual: '✦',
@@ -14705,6 +14706,7 @@ var PRODUCT_CATALOG = {
     ctaLabel: 'Pedir informações',
   },
   natal_sagrada_familia: {
+    referenceImageAllowed: false,
     category: 'Natal',
     name: 'Sagrada Família',
     visual: '✦',
@@ -14721,6 +14723,7 @@ var PRODUCT_CATALOG = {
     ctaLabel: 'Adicionar ao Carrinho',
   },
   natal_carrossel: {
+    referenceImageAllowed: false,
     category: 'Natal',
     name: 'Carrossel Encantado',
     visual: '✦',
@@ -14822,6 +14825,7 @@ var PRODUCT_CATALOG = {
     ctaLabel: 'Pedir informações',
   },
   natal_vela_abobora: {
+    referenceImageAllowed: false,
     category: 'Natal',
     name: 'Vela Abóbora',
     visual: '✦',
@@ -15563,6 +15567,15 @@ function openProduct(productId, options) {
   if (goldCheckbox) goldCheckbox.checked = false;
   currentNatalColor = p.natalColorOptions && p.natalColorOptions.length ? p.natalColorOptions[0] : '';
   if (window.LoveCommerce) window.LoveCommerce.setProductFiles([]);
+  var referenceSection = document.getElementById('pd-reference-section');
+  var referenceInput = document.getElementById('pd-reference-files');
+  var referenceAllowed = p.referenceImageAllowed !== false;
+  if (referenceSection) referenceSection.style.display = referenceAllowed ? '' : 'none';
+  if (referenceInput) {
+    referenceInput.disabled = !referenceAllowed;
+    referenceInput.value = '';
+  }
+
 
   updateProductVisual();
   loadPublishedProductGallery(productId);
