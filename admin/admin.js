@@ -31,7 +31,7 @@ document.getElementById('admin-tests').addEventListener('change', event => { tes
 let currentRows = [];
 function filterRows(rows) {
   const q = searchTerm.trim().toLocaleLowerCase('pt-PT');
-  return rows.filter(row => (currentView !== 'orders' || ((testFilter === 'all' || Boolean(row.is_test) === (testFilter === 'test')) && (!channelFilter || row.sales_channel === channelFilter))) && (!statusFilter || (currentView === 'orders' ? row.order_status : row.fulfillment_status) === statusFilter) && (!q || [row.order_number,row.project_number,row.customer_name,row.customer_email].some(value => String(value || '').toLocaleLowerCase('pt-PT').includes(q))));
+  return rows.filter(row => (currentView !== 'orders' || ((testFilter === 'all' || Boolean(row.is_test) === (testFilter === 'test')) && (!channelFilter || row.sales_channel === channelFilter))) && (!statusFilter || (currentView === 'orders' ? row.order_status : row.fulfillment_status) === statusFilter) && (!q || [row.order_number,row.project_number,row.customer_name,row.customer_email,row.customer_phone,row.sales_channel,row.order_status,row.fulfillment_status,row.payment_status,row.delivery_tracking_code,row.project_type].some(value => String(value || '').toLocaleLowerCase('pt-PT').includes(q))));
 }
 document.getElementById('admin-search').addEventListener('input', event => { searchTerm = event.target.value; renderFilteredRows(); });
 function renderFilteredRows() { if (currentView === 'orders') renderOrderRows(currentRows); else renderProjectRows(currentRows); }
