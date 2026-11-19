@@ -424,6 +424,60 @@ document.getElementById('manual-form').addEventListener('submit', async event =>
   finally { button.disabled = false; }
 });
 
+// Esta operação usa apenas a sessão autenticada do utilizador e não envia palavras-passe ao backend da loja.
+const passwordModal = document.getElementById('password-modal');
+const passwordForm = document.getElementById('password-form');
+const passwordFeedback = document.getElementById('password-feedback');
+function closePasswordModal() {
+  passwordModal.hidden = true;
+  passwordForm.reset();
+  passwordFeedback.textContent = '';
+  passwordFeedback.classList.remove('is-success');
+}
+document.getElementById('password-settings-button').addEventListener('click', () => {
+  passwordForm.reset();
+  passwordFeedback.textContent = '';
+  passwordFeedback.classList.remove('is-success');
+  passwordModal.hidden = false;
+  passwordForm.elements.newPassword.focus();
+});
+document.getElementById('password-close').addEventListener('click', closePasswordModal);
+passwordModal.addEventListener('click', event => {
+  if (event.target === passwordModal) closePasswordModal();
+});
+passwordForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = document.getElementById('password-submit');
+  const newPassword = passwordForm.elements.newPassword.value;
+  const confirmed = passwordForm.elements.confirmPassword.value;
+  passwordFeedback.textContent = '';
+  passwordFeedback.classList.remove('is-success');
+  if (newPassword.length < 12 || newPassword.length > 128) {
+    passwordFeedback.textContent = 'Escolhe uma palavra-passe entre 12 e 128 caracteres.';
+    return;
+  }
+  if (newPassword !== confirmed) {
+    passwordFeedback.textContent = 'As palavras-passe não coincidem.';
+    return;
+  }
+  button.disabled = true;
+  try {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) throw new Error('A sessão terminou. Volta a entrar antes de alterar a palavra-passe.');
+    const { data: assurance, error: assuranceError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (assuranceError || assurance?.currentLevel !== 'aal2') throw new Error('É necessário confirmar a autenticação de dois fatores antes de alterar a palavra-passe.');
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+    passwordForm.reset();
+    passwordFeedback.classList.add('is-success');
+    passwordFeedback.textContent = 'Palavra-passe atualizada! Já podes utilizá-la no iPhone. Mantém esta sessão aberta até confirmares o acesso.';
+  } catch (error) {
+    passwordFeedback.textContent = error.message || 'Não foi possível atualizar a palavra-passe.';
+  } finally {
+    button.disabled = false;
+  }
+});
+
 document.getElementById('logout-button').addEventListener('click', async () => { await supabase.auth.signOut(); location.reload(); });
 document.getElementById('refresh-button').addEventListener('click', loadView);
 document.getElementById('select-draft-page').addEventListener('change', event => {
