@@ -156,6 +156,14 @@ function deliveryReadOnlyDetails(record) {
   const parts = [];
   if (record.delivery_method === 'ctt' && record.delivery_tracking_code) {
     parts.push('<p><strong>Código CTT</strong> <span class="delivery-code">' + esc(record.delivery_tracking_code) + '</span> · <a href="' + CTT_TRACKING_PAGE + '" target="_blank" rel="noopener noreferrer">Ver rastreio</a></p>');
+    const cttLabels = {info_received:'Etiqueta criada',in_transit:'Em trânsito',out_for_delivery:'Em distribuição',available_for_pickup:'Disponível para levantamento',delivered:'Entregue',failed_attempt:'Tentativa de entrega falhada',exception:'Ocorrência na entrega',expired:'Rastreio expirado'};
+    if (record.delivery_tracking_status) {
+      parts.push('<p><strong>Estado CTT</strong> ' + esc(cttLabels[record.delivery_tracking_status] || record.delivery_tracking_status) +
+        (record.delivery_tracking_updated_at ? ' · atualizado a ' + esc(date(record.delivery_tracking_updated_at)) : '') + '</p>');
+    } else {
+      parts.push('<p><strong>Estado CTT</strong> A aguardar atualização da transportadora</p>');
+    }
+    if (record.delivery_confirmed_at) parts.push('<p><strong>Entregue em</strong> ' + esc(date(record.delivery_confirmed_at)) + '</p>');
   }
   if (record.delivery_method === 'hand_delivery') {
     if (record.delivery_meeting_place) parts.push('<p><strong>Local combinado</strong> ' + esc(record.delivery_meeting_place) + '</p>');
@@ -262,6 +270,7 @@ function bindDeliveryForm(record,kind,id) {
         meetingAt,
         deliveryNotes:method ? form.elements.deliveryNotes.value : ''
       });
+      if (method === 'ctt') syncCttTracking().catch(error => console.warn('Sincronização CTT:',error.message));
       if(kind === 'order') {
         await loadOrders();
         await openOrder(id);
@@ -286,6 +295,20 @@ async function adminApi(action, body = {}) {
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.message || 'Não foi possível carregar os dados.');
   return data;
+}
+
+// Regista códigos CTT através do backend; as credenciais da AfterShip nunca chegam ao browser.
+async function syncCttTracking() {
+  const {data:{session}} = await supabase.auth.getSession();
+  if (!session) return;
+  const response = await fetch(config.supabaseUrl + '/functions/v1/aftership-ctt-sync', {
+    method:'POST',
+    headers:{'Content-Type':'application/json',apikey:config.supabaseAnonKey,Authorization:'Bearer '+session.access_token},
+    body:'{}'
+  });
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok) throw new Error(result.error || 'Falha ao sincronizar os envios CTT.');
+  return result;
 }
 
 async function ensureMfa() {
@@ -330,6 +353,9 @@ async function showApp() {
     console.warn('Admin profile lookup failed after MFA:', error);
   }
   await loadView();
+  syncCttTracking().then(result => {
+    if (result?.added || result?.alreadyInAfterShip) console.info('Rastreio CTT sincronizado:', result);
+  }).catch(error => console.warn('Sincronização CTT:',error.message));
 }
 
 document.getElementById('login-form').addEventListener('submit', async event => {
@@ -880,7 +906,7 @@ function setupUnifiedDetailEditor(kind, record, id) {
     save.disabled=true;cancel.disabled=true;start.disabled=true;
     let completed=0;
     try{
-      for(const task of tasks){feedback.textContent='A guardar: '+task.label+'…';await adminApi(task.action,task.body);completed++;}
+      for(const task of tasks){feedback.textContent='A guardar: '+task.label+'…';await adminApi(task.action,task.body);completed++;if(task.action==='set-delivery'&&task.body.deliveryMethod==='ctt')syncCttTracking().catch(error=>console.warn('Sincronização CTT:',error.message));}
       if(kind==='order'){await loadOrders();await openOrder(id);}
       else{await loadProjects();await openProject(id);}
     }catch(error){
