@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/admin/admin.css?v=20261119-password-settings"/>
+  <link rel="stylesheet" href="/admin/admin.css?v=20261119-password-key-fix"/>
 </head>
 <body>
   <main class="auth-shell" id="auth-shell">
@@ -43,7 +43,7 @@
   <div class="admin-app" id="admin-app" hidden>
     <header class="admin-header">
       <a href="/" class="brand"><img src="/assets/love-essences-social-logo.png" alt="Love Essences" class="brand-logo"/><span>Gestão</span></a>
-      <div class="admin-account-actions"><span id="admin-email"></span><button type="button" class="text-button" id="password-settings-button">Alterar palavra-passe</button><button class="text-button" id="logout-button">Terminar sessão</button></div>
+      <div class="admin-account-actions"><span id="admin-email"></span><button type="button" class="text-button password-icon-button" id="password-settings-button" title="Alterar palavra-passe" aria-label="Alterar palavra-passe"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3M18.5 4.5l3 3"/></svg></button><button class="text-button" id="logout-button">Terminar sessão</button></div>
     </header>
     <nav class="tabs" aria-label="Área administrativa">
       <button class="active" data-view="orders">Encomendas diretas</button>
@@ -142,7 +142,7 @@
     </section>
   </div>
   <script src="/assets/js/commerce-config.js"></script>
-  <script type="module" src="/admin/admin.js?v=20261119-password-settings"></script>
+  <script type="module" src="/admin/admin.js?v=20261119-password-key-fix"></script>
 </body>
 </html>
 
