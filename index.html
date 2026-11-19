@@ -15569,6 +15569,14 @@ var currentGalleryIndex = 0;
 var productGalleryTimer = null;
 // Fotografias adicionadas na gestão, sem substituir a capa original do produto.
 var productGalleryPublishedImages = Object.create(null);
+// SDR versions of these iPhone photos preserve the detail in pale petals.
+var bloomWebPhotos = new Set([
+  'bloom/2b94f532-be47-4f08-ada4-b919d7c78407.jpg',
+  'bloom/4355d8f2-cb39-4743-b08a-03a475f32b07.jpg',
+  'bloom/b44f5528-f2ac-4c88-8c38-7e9ae65af2d5.jpg',
+  'bloom/cceb2f22-ad36-4bbe-9370-a3b72ff61efb.jpg',
+  'bloom/ee2fb6e7-34ae-4df5-9e0e-1427257026ba.jpg'
+]);
 async function loadPublishedProductGallery(productId) {
   if (!Object.hasOwn(PRODUCT_CATALOG, productId)) return;
   var commerce = window.LOVE_COMMERCE_CONFIG || {};
@@ -15594,6 +15602,8 @@ async function loadPublishedProductGallery(productId) {
           /^[a-z0-9_]+[/][a-f0-9-]{36}[.](jpg|jpeg|png|webp)$/.test(item.object_path);
       })
       .map(function(item) {
+        if (bloomWebPhotos.has(item.object_path))
+          return '/assets/products/gallery-web/' + item.object_path.replace(/[.]jpg$/, '.webp');
         return base + item.object_path.split('/').map(encodeURIComponent).join('/');
       });
     if (currentProduct === productId && (records.length || previousCount) && document.getElementById('page-product'))
