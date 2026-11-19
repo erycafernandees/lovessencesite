@@ -1131,6 +1131,7 @@
   .pd-gallery-track { width: 100%; height: 100%; position: relative; pointer-events: auto; }
   .pd-gallery-slide { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 0.45s ease; }
   .pd-gallery-slide.active { opacity: 1; pointer-events: auto; }
+  .pd-gallery-slide img { dynamic-range-limit: no-limit; }
   .pd-gallery-slide video {
     width: 100%;
     height: 100%;
@@ -4450,7 +4451,6 @@
   }
 
   .product-card::after,
-  .pd-visual::after,
   .contact-form::after,
   .footer-grid::after {
     content: '';

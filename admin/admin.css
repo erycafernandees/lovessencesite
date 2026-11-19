@@ -228,7 +228,7 @@
 .gallery-feedback.is-error{color:#a12635}
 .gallery-image-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:1rem}
 .gallery-image-item{border:1px solid var(--line);background:#fff;border-radius:14px;overflow:hidden;padding:.5rem;display:flex;flex-direction:column;gap:.65rem}
-.gallery-image-item img{display:block;width:100%;aspect-ratio:4/5;object-fit:contain;background:#faf6f9;border-radius:10px}
+.gallery-image-item img{dynamic-range-limit:no-limit;display:block;width:100%;aspect-ratio:4/5;object-fit:contain;background:#faf6f9;border-radius:10px}
 .gallery-image-item button{background:#fff;color:#a12635;border:1px solid #edd0d7;font-size:.75rem}
 .gallery-image-item button:hover{background:#fff4f6}
 @media(max-width:600px){.product-gallery-manager{padding:1.1rem}.gallery-upload-form button{width:100%}.tabs{overflow-x:auto}.tabs button{white-space:nowrap}.gallery-image-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
