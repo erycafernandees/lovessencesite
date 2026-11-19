@@ -1,5 +1,7 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+import { prepareGalleryPhoto } from './gallery-photo.js';
+
 const config = window.LOVE_COMMERCE_CONFIG || {};
 const loginCard = document.getElementById('login-card');
 const mfaCard = document.getElementById('mfa-card');
@@ -1544,9 +1546,10 @@ document.getElementById('gallery-upload-form').addEventListener('submit', async 
   let added = 0;
   try {
     for (const file of files) {
-      const objectPath = productId+'/'+crypto.randomUUID()+'.'+formats[file.type];
-      const upload = await supabase.storage.from(PRODUCT_GALLERY_BUCKET).upload(objectPath,file,{
-        contentType:file.type,upsert:false,cacheControl:'3600'
+      const photo = await prepareGalleryPhoto(file);
+      const objectPath = productId+'/'+crypto.randomUUID()+'.'+formats[photo.type];
+      const upload = await supabase.storage.from(PRODUCT_GALLERY_BUCKET).upload(objectPath,photo,{
+        contentType:photo.type,upsert:false,cacheControl:'3600'
       });
       if (upload.error) throw upload.error;
       const save = await supabase.from('product_gallery_images').insert({
