@@ -636,6 +636,15 @@ async function loadOrders() {
   renderOrderRows(rows);
 }
 
+// Os cabeçalhos são reutilizados como etiquetas dos cartões no ecrã pequeno.
+function labelMobileTableCells() {
+  const labels = Array.from(document.querySelectorAll('#table-head th'), th => th.textContent.trim());
+  document.querySelectorAll('#table-body tr').forEach(row => {
+    row.querySelectorAll('td').forEach((cell, index) => {
+      cell.dataset.label = labels[index] || '';
+    });
+  });
+}
 function renderOrderRows(allRows) {
   const showCleanup = document.getElementById('cleanup-tools').open;
   const showSelection = showCleanup && (testFilter === 'test' || testFilter === 'real');
@@ -654,6 +663,7 @@ function renderOrderRows(allRows) {
         : '';
     return `<tr data-order="${row.id}">${selector}<td><strong>${esc(row.order_number)}</strong>${isNewOrder(row) ? ' <span class="new-tag">Nova</span>' : ''}<br>${esc(payment.provider_payment_id || '—')}</td><td>${esc(({website:'Site',whatsapp:'WhatsApp',instagram:'Instagram',other:'Outro'})[row.sales_channel] || 'Site')}${row.is_test ? ' · Teste' : ''}</td><td>${esc(row.customer_name || '—')}<br>${esc(row.customer_email || '')}</td><td>${badge(row.order_status)}</td><td>${orderPaymentBadge(row)}</td><td>${money(grossAmount, row.currency)}</td><td>${feeAmount == null ? '—' : money(feeAmount,row.currency)}</td><td>${netAmount == null ? '—' : money(netAmount,row.currency)}</td><td>${deliverySummary(row)}</td><td>${date(row.created_at)}</td>${showCleanup ? `<td>${!['paid','processing','partially_refunded','refunded'].includes(row.payment_status) && !row.paid_at && !Number(row.manual_received_amount || 0) ? `<button type="button" class="delete-order-button" data-delete-order="${esc(row.id)}" data-order-number="${esc(row.order_number)}" aria-label="Eliminar encomenda ${esc(row.order_number)}">Eliminar</button>` : '—'}</td>` : ''}</tr>`;
   }).join('');
+  labelMobileTableCells();
   document.querySelectorAll('[data-order]').forEach(row => row.addEventListener('click', () => openOrder(row.dataset.order)));
   document.querySelectorAll('[data-delete-order]').forEach(button => button.addEventListener('click', async event => {
     event.stopPropagation();
@@ -744,6 +754,7 @@ function renderProjectRows(allRows) {
       <td>${date(row.created_at)}</td>
     </tr>`;
   }).join('');
+  labelMobileTableCells();
   document.querySelectorAll('[data-project]').forEach(row => row.addEventListener('click', () => openProject(row.dataset.project)));
 }
 
