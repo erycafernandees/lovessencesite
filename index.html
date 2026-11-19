@@ -9325,7 +9325,22 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
         </div>
       </div>
     </div>
-    <div class="products-grid home-featured-christmas-grid">      <div class="product-card home-natal-featured-card">
+    <div class="products-grid home-featured-christmas-grid">
+      <div class="product-card home-natal-featured-card">
+        <div class="product-img has-photo home-natal-photo-placeholder">
+          <span class="product-tag home-natal-new-tag">NOVIDADE</span>
+          <img src="assets/products/carrinha-natal-capa.webp" alt="Rumo ao Natal, carrinha artesanal com pinheiro Love Essences" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;background:#fff"/>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">Rumo ao Natal</h3>
+          <p class="product-desc">Uma carrinha vintage leva um pinheiro e a magia das tradições de Natal, num presente artesanal cheio de carinho.</p>
+          <div class="product-footer">
+            <span class="product-price">12,90 €</span>
+            <button type="button" class="product-btn" onclick="openProduct('natal_carrinha_pinheiro')">Personalizar</button>
+          </div>
+        </div>
+      </div>
+      <div class="product-card home-natal-featured-card">
         <div class="product-img has-photo home-natal-photo-placeholder">
           <span class="product-tag home-natal-new-tag">NOVIDADE</span>
           <img src="assets/products/bloom-natal.jpg" alt="Bloom de Natal, peça artesanal Love Essences" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:contain;background:#fff"/>
@@ -10003,6 +10018,21 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
 
     <div class="shop-products-grid" id="shop-products-grid">
       <!-- ESPECIAL NATAL: cartões alinhados com a lógica da loja e páginas próprias -->
+      <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
+        <div class="product-img has-photo">
+          <span class="product-tag natal-new-tag">NOVIDADE</span>
+          <img src="assets/products/carrinha-natal-capa.webp" alt="Rumo ao Natal, carrinha com pinheiro artesanal" loading="lazy" decoding="async"/>
+        </div>
+        <div class="product-info">
+          <h3 class="product-name">Rumo ao Natal</h3>
+          <p class="product-desc">Uma carrinha cheia de encanto, com um pinheiro no tejadilho e um laço que anuncia o Natal.</p>
+          <div class="product-footer">
+            <span class="product-price">12,90 €</span>
+            <button type="button" class="product-btn" onclick="openProduct('natal_carrinha_pinheiro')">Personalizar</button>
+          </div>
+        </div>
+      </div>
+
       <div class="product-card natal-product-card" data-category="natal" data-occasion="alguem-especial" data-natal-only="true">
         <div class="product-img has-photo">
           <span class="product-tag natal-new-tag">NOVIDADE</span>
@@ -14705,6 +14735,25 @@ var PRODUCT_CATALOG = {
     quoteOnly: true,
     ctaLabel: 'Pedir informações',
   },
+  natal_carrinha_pinheiro: {
+    referenceImageAllowed: false,
+    category: 'Natal',
+    name: 'Rumo ao Natal',
+    visual: '🎄',
+    image: 'assets/products/carrinha-natal-capa.webp',
+    gallery: ['assets/products/carrinha-natal-detalhe.webp'],
+    galleryFirst: true,
+    visualBg: '#faf6f9',
+    storyTitle: 'O artigo',
+    story: 'Há viagens que nos levam de volta às memórias mais bonitas. Uma carrinha vintage, um pinheiro de Natal e um laço cheio de encanto dão vida a esta criação artesanal de sabonete perfumado. Um presente especial para celebrar a magia dos pequenos gestos e levar o espírito natalício a quem mais gostamos.',
+    sizes: [],
+    basePrice: 12.9,
+    details: 'Conjunto artesanal de sabonete com carrinha e pinheiro · Laço decorativo · Fragrâncias de Natal ou Assinatura.',
+    tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
+    quote: 'Uma pequena viagem até às memórias mais doces do Natal.',
+    natalFragrancePending: true,
+    ctaLabel: 'Adicionar ao Carrinho',
+  },
   natal_sagrada_familia: {
     referenceImageAllowed: false,
     category: 'Natal',
@@ -15715,7 +15764,7 @@ function openProduct(productId, options) {
 
 var LOVE_PRODUCT_TYPE_FILTERS = {
   // Artigos novos da coleção Natal, com páginas de produto próprias.
-  natal: ['natal_vila_encantada', 'natal_sagrada_familia', 'natal_carrossel', 'natal_bloom', 'natal_aconchego', 'natal_vela_abobora'],
+  natal: ['natal_carrinha_pinheiro', 'natal_vila_encantada', 'natal_sagrada_familia', 'natal_carrossel', 'natal_bloom', 'natal_aconchego', 'natal_vela_abobora'],
   difusores: ['mini_difusor', 'aroma_em_viagem', 'mini_difusor_sabonete'],
   sabonetes: ['trouxinha_aromatica', 'bem_querer', 'mini_difusor_sabonete', 'bilhete_perfumado'],
   velas: ['luz_serena', 'doce_luz', 'memoria_perfumada']
