@@ -318,3 +318,39 @@
   .gallery-upload-form button{width:100%;min-height:44px}
   .gallery-image-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
 }
+
+/* Harmonização tipográfica do CRM no iPhone — 19/11. */
+@media(max-width:680px){
+  .admin-app{font-size:14px;line-height:1.5}
+  .tabs button,.toolbar>button,.filters label,.filters label:has(select),
+  .summary-card span,.filters #results-count,.cleanup-disclosure summary{
+    font-family:var(--sans);font-size:14px;font-weight:600;line-height:1.45;
+  }
+  .tabs button{font-size:14px}
+  .workspace .eyebrow{font-size:11px;letter-spacing:.13em}
+  .workspace h1{font-size:30px}
+  .toolbar>button{font-size:14px}
+  .summary-card span{font-size:14px;font-weight:500}
+  .summary-card strong,.summary-grid.projects-summary .summary-card strong{
+    font-family:var(--serif);font-size:26px;line-height:1.2;font-weight:400;
+    font-variant-numeric:lining-nums tabular-nums;
+  }
+  .summary-card-note{font-size:13px;line-height:1.4}
+  .filters label,.filters label:has(select){font-size:14px;font-weight:600}
+  /* 16px nos campos impede o Safari de ampliar a página quando se escreve. */
+  .filters input,.filters select{font-family:var(--sans);font-size:16px!important;line-height:1.35;font-weight:500;padding:11px 13px;max-width:100%}
+  .filters select{padding-right:26px;white-space:nowrap;text-overflow:ellipsis}
+  .filters input::placeholder{font-size:14px;color:#897d88;opacity:1}
+  .filters #results-count{font-size:14px;font-weight:400}
+  .table-scroll th,.table-scroll td,#table-body td,#table-head th{
+    font-family:var(--sans);font-size:14px;line-height:1.45;
+  }
+  .table-scroll th,#table-head th{font-size:13px;font-weight:700;letter-spacing:.025em}
+  .table-scroll .badge{font-size:13px;font-weight:600}
+  .table-scroll .project-row-subtitle{font-size:13px}
+  .table-scroll td strong{font-size:14px}
+  .detail-section,.detail-section p,.detail-grid p,.detail-section label{font-size:14px;line-height:1.5}
+  .detail-drawer .badge{font-size:13px}
+  .product-gallery-manager label,.product-gallery-manager .gallery-help,
+  .gallery-feedback,.gallery-image-item button{font-size:14px;line-height:1.5}
+}
