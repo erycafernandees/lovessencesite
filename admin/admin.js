@@ -46,6 +46,19 @@ if (!config.enabled || !config.supabaseUrl || !config.supabaseAnonKey) {
 
 const supabase = createClient(config.supabaseUrl || 'https://invalid.supabase.co', config.supabaseAnonKey || 'invalid', { auth: { persistSession: true, autoRefreshToken: true } });
 
+// Inicializar de imediato o acesso à alteração de palavra-passe, sem depender do carregamento das encomendas.
+document.getElementById('password-settings-button')?.addEventListener('click', () => {
+  const dialog = document.getElementById('password-modal');
+  const form = document.getElementById('password-form');
+  const feedback = document.getElementById('password-feedback');
+  if (!dialog || !form || !feedback) return;
+  form.reset();
+  feedback.textContent = '';
+  feedback.classList.remove('is-success');
+  dialog.hidden = false;
+  form.elements.newPassword.focus();
+});
+
 function money(cents, currency = 'eur') { return new Intl.NumberFormat('pt-PT', { style: 'currency', currency: currency.toUpperCase() }).format((Number(cents) || 0) / 100); }
 // Encomendas manuais não têm registo Stripe: quando estão pagas e não há taxas,
 // o líquido recebido corresponde ao total da encomenda. Nunca assumir que
@@ -434,13 +447,6 @@ function closePasswordModal() {
   passwordFeedback.textContent = '';
   passwordFeedback.classList.remove('is-success');
 }
-document.getElementById('password-settings-button').addEventListener('click', () => {
-  passwordForm.reset();
-  passwordFeedback.textContent = '';
-  passwordFeedback.classList.remove('is-success');
-  passwordModal.hidden = false;
-  passwordForm.elements.newPassword.focus();
-});
 document.getElementById('password-close').addEventListener('click', closePasswordModal);
 passwordModal.addEventListener('click', event => {
   if (event.target === passwordModal) closePasswordModal();
