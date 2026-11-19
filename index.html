@@ -15566,12 +15566,8 @@ var currentGalleryIndex = 0;
 var productGalleryTimer = null;
 // Fotografias adicionadas na gestão, sem substituir a capa original do produto.
 var productGalleryPublishedImages = Object.create(null);
-var productGalleryManagedIds = {
-  natal_sagrada_familia:true,natal_vela_abobora:true,
-  natal_vila_encantada:true,natal_carrossel:true
-};
 async function loadPublishedProductGallery(productId) {
-  if (!productGalleryManagedIds[productId]) return;
+  if (!Object.hasOwn(PRODUCT_CATALOG, productId)) return;
   var commerce = window.LOVE_COMMERCE_CONFIG || {};
   if (!commerce.supabaseUrl || !commerce.supabaseAnonKey) return;
   try {
@@ -15587,6 +15583,7 @@ async function loadPublishedProductGallery(productId) {
     var records = await response.json();
     if (!Array.isArray(records)) return;
     var base = root + '/storage/v1/object/public/product-gallery/';
+    var previousCount = (productGalleryPublishedImages[productId] || []).length;
     productGalleryPublishedImages[productId] = records
       .filter(function(item) {
         return item && typeof item.object_path === 'string' &&
@@ -15596,7 +15593,7 @@ async function loadPublishedProductGallery(productId) {
       .map(function(item) {
         return base + item.object_path.split('/').map(encodeURIComponent).join('/');
       });
-    if (currentProduct === productId && document.getElementById('page-product'))
+    if (currentProduct === productId && (records.length || previousCount) && document.getElementById('page-product'))
       updateProductVisual();
   } catch(error) {
     console.warn('Galeria pública indisponível:',error);
@@ -16180,10 +16177,10 @@ function getProductGalleryImages(p, activeSize) {
   // Para adicionar mais fotos a um artigo, usar a lista gallery no produto.
   if (activeSize && Array.isArray(activeSize.gallery)) activeSize.gallery.forEach(addImage);
   if (Array.isArray(p.gallery)) p.gallery.forEach(addImage);
-  if (productGalleryManagedIds[currentProduct] && Array.isArray(productGalleryPublishedImages[currentProduct]))
+  if (Array.isArray(productGalleryPublishedImages[currentProduct]))
     productGalleryPublishedImages[currentProduct].forEach(addImage);
 
-  return images.slice(0, productGalleryManagedIds[currentProduct] ? 20 : 12);
+  return images;
 }
 
 function renderProductGallery(images, altBase) {

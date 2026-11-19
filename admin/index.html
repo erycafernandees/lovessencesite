@@ -79,17 +79,12 @@
     </section>
     <section class="workspace" id="admin-gallery-workspace" hidden>
       <div class="toolbar">
-        <div><p class="eyebrow">Galeria de produtos</p><h1>Fotografias dos artigos de Natal</h1></div>
+        <div><p class="eyebrow">Galeria de produtos</p><h1>Fotografias dos artigos</h1></div>
       </div>
       <div class="product-gallery-manager">
         <p class="gallery-help">Adiciona fotografias às galerias dos artigos. A fotografia principal da loja mantém-se; as novas imagens aparecem na página do produto. Até 12 imagens adicionais por artigo.</p>
         <label for="gallery-product">Artigo
-          <select id="gallery-product">
-            <option value="natal_sagrada_familia">Sagrada Família</option>
-            <option value="natal_vela_abobora">Vela Abóbora</option>
-            <option value="natal_vila_encantada">Vila Encantada</option>
-            <option value="natal_carrossel">Carrossel Encantado</option>
-          </select>
+          <select id="gallery-product"><!-- GALLERY_PRODUCT_OPTIONS --></select>
         </label>
         <form id="gallery-upload-form" class="gallery-upload-form">
           <label for="gallery-files">Adicionar fotografias (JPG, PNG ou WebP, máximo 10 MB cada)
@@ -143,7 +138,7 @@
     </section>
   </div>
   <script src="/assets/js/commerce-config.js"></script>
-  <script type="module" src="/admin/admin.js?v=20261119-compact-list-v2"></script>
+  <script type="module" src="/admin/admin.js?v=20261119-gallery-catalog"></script>
 </body>
 </html>
 

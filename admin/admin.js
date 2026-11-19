@@ -1475,14 +1475,8 @@ function bindFiles() {
 }
 
 
-/* Galerias de Natal: edição autenticada com MFA. */
+/* Galerias de produtos: edição autenticada com MFA. */
 const PRODUCT_GALLERY_BUCKET = 'product-gallery';
-const PRODUCT_GALLERY_NAMES = {
-  natal_sagrada_familia:'Sagrada Família',
-  natal_vela_abobora:'Vela Abóbora',
-  natal_vila_encantada:'Vila Encantada',
-  natal_carrossel:'Carrossel Encantado'
-};
 const galleryProductSelect = document.getElementById('gallery-product');
 const galleryFeedback = document.getElementById('gallery-feedback');
 let galleryRows = [];
@@ -1494,8 +1488,10 @@ function galleryNotice(message, isError=false) {
 async function loadProductGalleryAdmin() {
   if (currentView !== 'gallery' || galleryBusy) return;
   const productId = galleryProductSelect.value;
-  if (!PRODUCT_GALLERY_NAMES[productId]) return;
+  if (!productId) return;
   const list = document.getElementById('gallery-images');
+  galleryRows = [];
+  document.getElementById('gallery-upload-button').disabled = true;
   list.textContent = 'A carregar fotografias…';
   const {data,error} = await supabase.from('product_gallery_images')
     .select('id,product_id,object_path,sort_order,created_at')
@@ -1506,6 +1502,7 @@ async function loadProductGalleryAdmin() {
     galleryNotice(error.message || 'Erro ao carregar fotografias.', true);
     return;
   }
+  document.getElementById('gallery-upload-button').disabled = false;
   galleryRows = data || [];
   if (!galleryRows.length) {
     list.textContent = 'Ainda não existem fotografias adicionais. A fotografia principal permanece no site.';
@@ -1527,7 +1524,7 @@ document.getElementById('gallery-upload-form').addEventListener('submit', async 
   const productId = galleryProductSelect.value;
   const fileInput = document.getElementById('gallery-files');
   const files = Array.from(fileInput.files || []);
-  if (!PRODUCT_GALLERY_NAMES[productId] || !files.length) {
+  if (!productId || !files.length) {
     galleryNotice('Seleciona um artigo e pelo menos uma fotografia.',true);
     return;
   }
@@ -1562,7 +1559,7 @@ document.getElementById('gallery-upload-form').addEventListener('submit', async 
       added++;
     }
     fileInput.value = '';
-    galleryNotice(added+' fotografia(s) adicionada(s) a '+PRODUCT_GALLERY_NAMES[productId]+'.');
+    galleryNotice(added+' fotografia(s) adicionada(s) a '+galleryProductSelect.selectedOptions[0].textContent+'.');
   } catch(error) {
     galleryNotice(added+' adicionada(s). '+(error.message || 'Erro ao guardar.'),true);
   } finally {

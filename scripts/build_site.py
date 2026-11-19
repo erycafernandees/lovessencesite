@@ -867,6 +867,15 @@ def build(output: Path, sync_root_seo: bool) -> None:
     shutil.copy2(ROOT / "supabase/functions/_shared/site-diagnostics.mjs", output / "assets/js/site-diagnostics.mjs")
     source = (ROOT / "index.html").read_text(encoding="utf-8")
     products, routes = get_routes(source)
+    admin_page = output / "admin/index.html"
+    options = [
+        f'<option value="{html_lib.escape(product.product_id)}">{html_lib.escape(product.name)}</option>'
+        for product in sorted(products, key=lambda product: slugify(product.name))
+    ]
+    admin_page.write_text(
+        admin_page.read_text(encoding="utf-8").replace("<!-- GALLERY_PRODUCT_OPTIONS -->", "\n".join(options)),
+        encoding="utf-8",
+    )
     commercial_content = load_commercial_content()
     source = source.replace('<meta name="viewport" content="width=device-width, initial-scale=1.0"/>', '<meta name="viewport" content="width=device-width, initial-scale=1.0"/>\n<base href="/"/>', 1)
     source = extract_inline_logo(source, output)
