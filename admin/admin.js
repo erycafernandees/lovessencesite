@@ -868,6 +868,19 @@ function setupUnifiedDetailEditor(kind, record, id) {
     section.innerHTML = '<h3>Notas internas</h3><p>' + esc(record.notes) + '</p>';
     root.querySelector('.detail-section')?.after(section);
   }
+  // Na gestão de encomendas, apresentar primeiro artigos e notas,
+  // seguindo-se estados, pagamento e entrega. Mantém os mesmos formulários e IDs.
+  if (kind === 'order') {
+    const sections = [...root.children].filter(node => node.classList?.contains('detail-section'));
+    const byTitle = new Map(sections.map(section => [
+      section.querySelector('h3')?.textContent?.trim() || '', section
+    ]));
+    const item = byTitle.get('Artigos e personalização');
+    const notes = byTitle.get('Notas internas');
+    const customer = sections[0];
+    if (item && customer) customer.after(item);
+    if (notes && item) item.after(notes);
+  }
   const status = root.querySelector(kind === 'order' ? '#order-status-form select[name=status]' : '#project-fulfillment-form select[name=status]');
   if (status) {
     const current = kind === 'order' ? record.order_status : (record.fulfillment_status || '');
