@@ -789,6 +789,10 @@ def write_404(output: Path) -> None:
 
 
 PRODUCT_SEO = {
+    "natal_carrinha_pinheiro": [
+        "Rumo ao Natal — Carrinha com Pinheiro em Sabonete | Love Essences",
+        "Carrinha de Natal artesanal com pinheiro e laço, em sabonete perfumado por 12,90€. Escolhe entre fragrâncias Especial Natal e Assinatura. Feito com carinho em Portugal."
+    ],
     "natal_bloom": [
         "Bloom de Natal — Flores de Sabonete | Love Essences",
         "Bloom de Natal com flores de sabonete em abóbora decorativa. Tamanhos Mini e M, desde 18,90€. Descobre as opções e pede informações."
@@ -803,7 +807,7 @@ PRODUCT_SEO = {
     ],
     "natal_sagrada_familia": [
         "Sagrada Família em Sabonete — Natal | Love Essences",
-        "Sagrada Família artesanal em sabonete por 12€. Uma peça de inspiração natalícia para decorar ou oferecer. Descobre os detalhes na Love Essences."
+        "Sagrada Família artesanal em sabonete por 10€. Uma peça de inspiração natalícia para decorar ou oferecer. Descobre os detalhes na Love Essences."
     ],
     "natal_vela_abobora": [
         "Vela Abóbora Artesanal — Natal | Love Essences",
