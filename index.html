@@ -6109,6 +6109,17 @@ html.christmas-home-2026 #page-home #homepage-featured-products .section-title e
   }
 }
 
+/* Luna: reduzir apenas a imagem do artigo em 8% nas montras, mantendo o cartão. */
+#page-home .home-natal-featured-card .product-img img[src="assets/products/aconchego.jpg"],
+#page-shop .natal-product-card .product-img img[src="assets/products/aconchego.jpg"] {
+  transform: scale(0.92) !important;
+  transform-origin: center center !important;
+}
+#page-home .home-natal-featured-card:hover .product-img img[src="assets/products/aconchego.jpg"],
+#page-shop .natal-product-card:hover .product-img img[src="assets/products/aconchego.jpg"] {
+  transform: scale(0.92) !important;
+}
+
 /* Vela Abóbora: ampliar a fotografia nas montras em 10%. */
 .product-card .product-img img[src*="vela-abobora"] {
   transform: scale(1.1);
