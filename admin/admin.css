@@ -245,3 +245,7 @@
 #password-feedback.is-success{color:#176a45}
 #password-submit:disabled{opacity:.55;cursor:wait}
 @media(max-width:600px){.admin-account-actions{gap:.35rem .7rem}.admin-account-actions #admin-email{flex-basis:100%;text-align:right;font-size:.7rem}.password-panel{width:min(100%,480px)}}
+
+.password-icon-button{display:inline-flex;align-items:center;justify-content:center;padding:.45rem;border-radius:9px;color:var(--deep);min-width:36px;min-height:36px}
+.password-icon-button:hover,.password-icon-button:focus-visible{background:#f1e3ef}
+.password-icon-button svg{width:19px;height:19px;flex:none}
