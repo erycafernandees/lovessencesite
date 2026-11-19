@@ -319,38 +319,32 @@
   .gallery-image-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem}
 }
 
-/* Harmonização tipográfica do CRM no iPhone — 19/11. */
+
+/* Escala tipográfica do painel compacto: uma fonte legível em todos os campos. */
 @media(max-width:680px){
-  .admin-app{font-size:14px;line-height:1.5}
-  .tabs button,.toolbar>button,.filters label,.filters label:has(select),
-  .summary-card span,.filters #results-count,.cleanup-disclosure summary{
-    font-family:var(--sans);font-size:14px;font-weight:600;line-height:1.45;
-  }
-  .tabs button{font-size:14px}
-  .workspace .eyebrow{font-size:11px;letter-spacing:.13em}
-  .workspace h1{font-size:30px}
-  .toolbar>button{font-size:14px}
-  .summary-card span{font-size:14px;font-weight:500}
-  .summary-card strong,.summary-grid.projects-summary .summary-card strong{
-    font-family:var(--serif);font-size:26px;line-height:1.2;font-weight:400;
-    font-variant-numeric:lining-nums tabular-nums;
-  }
-  .summary-card-note{font-size:13px;line-height:1.4}
-  .filters label,.filters label:has(select){font-size:14px;font-weight:600}
-  /* 16px nos campos impede o Safari de ampliar a página quando se escreve. */
-  .filters input,.filters select{font-family:var(--sans);font-size:16px!important;line-height:1.35;font-weight:500;padding:11px 13px;max-width:100%}
-  .filters select{padding-right:26px;white-space:nowrap;text-overflow:ellipsis}
-  .filters input::placeholder{font-size:14px;color:#897d88;opacity:1}
-  .filters #results-count{font-size:14px;font-weight:400}
-  .table-scroll th,.table-scroll td,#table-body td,#table-head th{
-    font-family:var(--sans);font-size:14px;line-height:1.45;
-  }
-  .table-scroll th,#table-head th{font-size:13px;font-weight:700;letter-spacing:.025em}
-  .table-scroll .badge{font-size:13px;font-weight:600}
-  .table-scroll .project-row-subtitle{font-size:13px}
-  .table-scroll td strong{font-size:14px}
-  .detail-section,.detail-section p,.detail-grid p,.detail-section label{font-size:14px;line-height:1.5}
-  .detail-drawer .badge{font-size:13px}
-  .product-gallery-manager label,.product-gallery-manager .gallery-help,
-  .gallery-feedback,.gallery-image-item button{font-size:14px;line-height:1.5}
+ .admin-app{font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+ .workspace{font-size:16px}
+ .workspace h1{font-size:28px;line-height:1.17}
+ .workspace .eyebrow{font-size:12px;letter-spacing:.11em}
+ .tabs button,.toolbar>button,.admin-header #logout-button{font-family:var(--sans);font-size:15px;line-height:1.35;font-weight:600}
+ .tabs button{padding:.65rem .15rem}
+ .summary-card span,.filters label,.filters label:has(select),.filters #results-count{font-family:var(--sans);font-size:15px;line-height:1.45;font-weight:500}
+ .summary-card strong,.summary-grid.projects-summary .summary-card strong{font-family:var(--serif);font-size:27px;line-height:1.25;font-weight:400;font-variant-numeric:lining-nums tabular-nums}
+ .summary-card-note{font-family:var(--sans);font-size:14px;line-height:1.4}
+ .filters{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.7rem}
+ .filters label,.filters label:has(select){min-width:0;font-weight:600}
+ .filters input,.filters select{display:block;width:100%;max-width:100%;min-width:0;min-height:46px;font:500 16px/1.35 var(--sans)!important;padding:11px 12px;letter-spacing:0}
+ .filters select{padding-right:23px;text-overflow:ellipsis;white-space:nowrap}
+ .filters input::placeholder{font-size:15px;opacity:1;color:#877a86}
+ .filters #results-count{font-weight:400}
+ .table-scroll th,.table-scroll td,#table-body td,#table-head th{font-family:var(--sans);font-size:15px;line-height:1.4}
+ .table-scroll th,#table-head th{font-size:14px;font-weight:700;letter-spacing:.02em}
+ .table-scroll td strong{font-size:15px}
+ .table-scroll .badge,.table-scroll .project-row-subtitle{font-size:14px}
+ .table-scroll td{min-width:105px}
+ .table-scroll th:first-child,.table-scroll td:first-child{min-width:155px;max-width:175px}
+ .cleanup-disclosure summary{font-size:14px}
+ .detail-section,.detail-section p,.detail-grid p,.detail-section label{font-size:15px;line-height:1.5}
+ .detail-drawer .badge{font-size:14px}
+ .product-gallery-manager label,.product-gallery-manager .gallery-help,.gallery-feedback,.gallery-image-item button{font-size:15px;line-height:1.5}
 }
