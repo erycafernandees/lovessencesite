@@ -14751,8 +14751,7 @@ var PRODUCT_CATALOG = {
     tags: ['🎄 Natal', '🤍 Para Alguém Especial'],
     quote: 'Uma criação artesanal para oferecer nesta época.',
     natalFragrancePending: true,
-    quoteOnly: true,
-    ctaLabel: 'Pedir informações',
+    ctaLabel: 'Adicionar ao Carrinho',
   },
   natal_carrinha_pinheiro: {
     referenceImageAllowed: false,
@@ -14859,8 +14858,7 @@ var PRODUCT_CATALOG = {
       maxLength: 160,
       required: true
     },
-    quoteOnly: true,
-    ctaLabel: 'Pedir informações',
+    ctaLabel: 'Adicionar ao Carrinho',
   },
   natal_aconchego: {
     category: 'Natal',
@@ -14889,8 +14887,7 @@ var PRODUCT_CATALOG = {
       maxLength: 160,
       required: true
     },
-    quoteOnly: true,
-    ctaLabel: 'Pedir informações',
+    ctaLabel: 'Adicionar ao Carrinho',
   },
   natal_vela_abobora: {
     referenceImageAllowed: false,
@@ -14910,8 +14907,7 @@ var PRODUCT_CATALOG = {
     natalFragrancePending: true,
     natalColorOptions: ['Castanho', 'Verde-escuro', 'Rosa velho', 'Branco'],
     natalLimitedEdition: true,
-    quoteOnly: true,
-    ctaLabel: 'Pedir informações',
+    ctaLabel: 'Adicionar ao Carrinho',
   },
   bloom: {
     category: 'Coleção Assinatura',
@@ -16546,7 +16542,7 @@ function getCurrentProductSelection() {
     qty: qty,
     emoji: p.visual || '🎁',
     image: image || getCartImageForName(itemName),
-    quoteOnly: !!p.quoteOnly || price === null || (p.natalFragrancePending && candleChoice !== 'none'),
+    quoteOnly: !!p.quoteOnly || price === null,
     hasPaidAddon: hasPaidAddon,
     formProductName: p.formProductName || p.name,
     summary: eventDetails.join('\n'),
