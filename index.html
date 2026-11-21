@@ -10730,28 +10730,45 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
 </div>
 
 <!-- ============================================================ -->
+<style id="tracking-result-styles">
+#page-tracking .tracking-result[hidden]{display:none!important}
+#page-tracking .tracking-result{margin-top:1.7rem;padding:1.5rem;border:1px solid #ead5e6;border-radius:18px;background:#fcf8fc;color:#3f073a}
+#page-tracking .tracking-result-kicker{display:block;color:#a66b9f;font-size:.7rem;letter-spacing:.14em}
+#page-tracking .tracking-result-title{font-family:var(--serif);font-size:clamp(1.6rem,4vw,2.2rem);font-weight:400;margin:.5rem 0}
+#page-tracking .tracking-result-code,#page-tracking .tracking-result-detail{font-size:.88rem;line-height:1.6}
+#page-tracking .tracking-result-detail,#page-tracking .tracking-result-date{color:#745c70;margin-top:.55rem}
+#page-tracking .tracking-result-date{font-size:.8rem}
+#page-tracking .tracking-history-heading{margin:1.4rem 0 1rem;font-size:1rem}
+#page-tracking .tracking-timeline{list-style:none;margin:0 0 0 .4rem;padding:0;border-left:2px solid #d8b7d3}
+#page-tracking .tracking-timeline-item{position:relative;display:flex;flex-direction:column;gap:.2rem;padding:0 0 1.2rem 1.2rem;font-size:.85rem}
+#page-tracking .tracking-timeline-item::before{content:'';position:absolute;left:-.42rem;top:.3rem;width:.7rem;height:.7rem;background:#66135e;border-radius:50%}
+#page-tracking .tracking-timeline-item span,#page-tracking .tracking-timeline-item time{font-size:.78rem;color:#806a7b}
+#page-tracking .tracking-button:disabled{opacity:.65;cursor:wait}
+@media(max-width:768px){#page-tracking .tracking-result{padding:1.1rem}}
+</style>
 <!-- TRACKING PAGE -->
 <!-- ============================================================ -->
 <div class="page" id="page-tracking">
   <section class="tracking-hero">
     <p class="section-label">✦ Envio CTT</p>
     <h2 data-page-heading>Acompanhar Encomenda</h2>
-    <p>Assim que a sua encomenda for enviada, receberá um código de acompanhamento CTT. Insira o código abaixo para acompanhar o percurso da sua encomenda na página oficial dos CTT.</p>
+    <p>Assim que a sua encomenda for enviada, receberá um código de acompanhamento CTT. Introduza o código abaixo e acompanhe o percurso da sua encomenda aqui, sem sair da Love Essences.</p>
   </section>
 
   <section class="tracking-body">
     <div class="tracking-card">
       <span class="tracking-kicker">Seguir objeto</span>
       <h2>Veja onde está a sua encomenda</h2>
-      <p class="tracking-card-intro">Não guardamos este código no site. Ao clicar no botão, o código é copiado para que possa colá-lo diretamente na página oficial dos CTT.</p>
+      <p class="tracking-card-intro">Veja o estado do envio, as últimas atualizações e o histórico disponibilizado pela transportadora.</p>
 
       <form class="tracking-form" onsubmit="trackOrder(event)">
         <label class="tracking-label" for="trackingCode">Código de envio CTT</label>
         <div class="tracking-input-row">
           <input id="trackingCode" type="text" placeholder="Ex: RD123456789PT" autocomplete="off" inputmode="text"/>
-          <button class="tracking-button" type="submit">Acompanhar nos CTT</button>
+          <button class="tracking-button" type="submit">Ver acompanhamento</button>
         </div>
         <p class="tracking-status" id="tracking-status" aria-live="polite"></p>
+        <div class="tracking-result" id="tracking-result" aria-live="polite" hidden></div>
       </form>
 
       <div class="tracking-note-card">
@@ -10762,7 +10779,7 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
         <a href="#" class="tracking-whatsapp-button" onclick="openTrackingWhatsApp(); return false;">Falar connosco</a>
       </div>
 
-      <p class="tracking-privacy">Nesta fase, a Love Essences não guarda dados de acompanhamento no website.</p>
+      <p class="tracking-privacy">Os estados são fornecidos pela AfterShip/CTT. Por privacidade, não são apresentados dados pessoais do destinatário.</p>
     </div>
   </section>
 </div>
@@ -14678,33 +14695,35 @@ function showPage(name, options) {
   }
 }
 
-var CTT_TRACKING_URL = 'https://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx?request_locale=pt';
-
-function trackOrder(event) {
-  if (event) event.preventDefault();
-
-  var input = document.getElementById('trackingCode');
-  var status = document.getElementById('tracking-status');
-  var code = input ? input.value.trim().toUpperCase() : '';
-
-  if (!code) {
-    if (status) status.textContent = 'Por favor, insira o código de envio CTT.';
-    if (input) input.focus();
-    return;
-  }
-
-  if (input) input.value = code;
-  if (status) status.textContent = 'A abrir a página oficial dos CTT. O código foi preparado para copiar.';
-
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(code).then(function() {
-      if (status) status.textContent = 'Código copiado. Cole-o no campo de pesquisa dos CTT.';
-    }).catch(function() {
-      if (status) status.textContent = 'Copie o código e cole-o no campo de pesquisa dos CTT.';
-    });
-  }
-
-  window.open(CTT_TRACKING_URL, '_blank', 'noopener');
+function trackingDate(value){if(!value)return '';var d=new Date(value);return isNaN(d.getTime())?'':d.toLocaleString('pt-PT',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function trackOrder(event){
+if(event)event.preventDefault();
+var input=document.getElementById('trackingCode'),status=document.getElementById('tracking-status'),result=document.getElementById('tracking-result'),button=document.querySelector('#page-tracking .tracking-button');
+var code=(input?.value||'').trim().replace(/\s+/g,'').toUpperCase();
+if(result){result.hidden=true;result.replaceChildren();}
+if(!/^[A-Z]{2}[0-9]{9}[A-Z]{2}$/.test(code)){if(status)status.textContent='Introduza um código CTT válido (ex.: RD123456789PT).';return;}
+input.value=code;if(status)status.textContent='A consultar o envio…';if(button){button.disabled=true;button.textContent='A pesquisar…';}
+function el(tag,cls,txt){var n=document.createElement(tag);if(cls)n.className=cls;if(txt!=null)n.textContent=txt;return n;}
+fetch('https://qjtblalogacenjxponpi.supabase.co/functions/v1/public-ctt-tracking',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code})})
+.then(function(res){return res.json().then(function(data){return {ok:res.ok,data:data};});})
+.then(function(response){
+if(!response.ok){if(status)status.textContent=response.data.error==='not_found'?'Não encontrámos este código nas encomendas da Love Essences. Confirme o código ou contacte-nos.':'Não foi possível consultar o acompanhamento. Verifique o código ou tente novamente.';return;}
+if(status)status.textContent='';
+var data=response.data;if(!result)return;
+result.append(el('span','tracking-result-kicker','ESTADO DA ENTREGA'),el('h3','tracking-result-title',data.statusLabel||'A aguardar atualização'),el('p','tracking-result-code','Código CTT: '+data.code));
+if(data.detail)result.append(el('p','tracking-result-detail',data.detail));
+if(data.updatedAt)result.append(el('p','tracking-result-date','Última atualização: '+trackingDate(data.updatedAt)));
+if(data.expectedDelivery)result.append(el('p','tracking-result-date','Previsão de entrega: '+trackingDate(data.expectedDelivery)));
+result.append(el('h4','tracking-history-heading','Percurso da encomenda'));
+if(Array.isArray(data.checkpoints)&&data.checkpoints.length){
+var timeline=el('ol','tracking-timeline');
+data.checkpoints.forEach(function(p){var item=el('li','tracking-timeline-item');item.append(el('strong','',p.message||'Atualização do envio'));if(p.location)item.append(el('span','',p.location));if(p.time)item.append(el('time','',trackingDate(p.time)));timeline.append(item);});
+result.append(timeline);
+}else result.append(el('p','tracking-result-detail','Ainda não há um histórico detalhado disponível. Pode consultar acima o último estado recebido.'));
+if(data.source!=='aftership')result.append(el('p','tracking-result-date','Informação da última atualização recebida da transportadora.'));
+result.hidden=false;
+}).catch(function(){if(status)status.textContent='Não foi possível ligar ao serviço de acompanhamento. Tente novamente.';})
+.finally(function(){if(button){button.disabled=false;button.textContent='Ver acompanhamento';}});
 }
 
 function openTrackingWhatsApp() {
