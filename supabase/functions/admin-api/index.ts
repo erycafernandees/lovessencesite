@@ -12,6 +12,28 @@ Deno.serve(async (req) => {
     const action = String(body.action || url.searchParams.get("action") || "list-orders");
     const client = serviceClient();
 
+    if (action === "list-checkout-errors") {
+      const { data, error } = await client.from("site_error_events")
+        .select("id,created_at,category,area,page_path,error_message,resolved_at")
+        .eq("category", "checkout").order("created_at", { ascending: false }).limit(150);
+      if (error) throw error;
+      return json(req, { data: data || [], count: (data || []).length });
+    }
+
+    if (action === "resolve-checkout-error") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para alterar o estado das falhas.");
+      const id = cleanText(body.id, 80, true)!;
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
+        throw new ApiError(422, "invalid_id", "Identificador inválido.");
+      if (typeof body.resolved !== "boolean") throw new ApiError(422, "invalid_status", "Estado inválido.");
+      const { data, error } = await client.from("site_error_events")
+        .update({ resolved_at: body.resolved ? new Date().toISOString() : null, resolved_by: body.resolved ? admin.userId : null })
+        .eq("id", id).eq("category", "checkout").select("id,resolved_at").maybeSingle();
+      if (error) throw error;
+      if (!data) throw new ApiError(404, "not_found", "Falha não encontrada.");
+      return json(req, { ok: true, ...data });
+    }
+
     if (action === "list-orders") {
       const page = Math.max(1, Number(url.searchParams.get("page") || body.page || 1));
       const status = cleanText(url.searchParams.get("status") || body.status, 40);
