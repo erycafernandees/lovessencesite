@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
     if (action === "resolve-checkout-error") {
       if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para alterar o estado das falhas.");
       const id = cleanText(body.id, 80, true)!;
-      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
+      if (!/^[1-9][0-9]{0,18}$/.test(id) || BigInt(id) > 9223372036854775807n)
         throw new ApiError(422, "invalid_id", "Identificador inválido.");
       if (typeof body.resolved !== "boolean") throw new ApiError(422, "invalid_status", "Estado inválido.");
       const { data, error } = await client.from("site_error_events")
