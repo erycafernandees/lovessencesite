@@ -602,13 +602,75 @@ document.querySelectorAll('.tabs button').forEach(button => button.addEventListe
   button.classList.add('active');
   currentView = button.dataset.view;
   const isGallery = currentView === 'gallery';
-  document.getElementById('admin-orders-workspace').hidden = isGallery;
+  const isCheckoutErrors = currentView === 'checkout-errors';
+  document.getElementById('admin-orders-workspace').hidden = isGallery || isCheckoutErrors;
   document.getElementById('admin-gallery-workspace').hidden = !isGallery;
+  document.getElementById('admin-checkout-errors-workspace').hidden = !isCheckoutErrors;
   if (isGallery) { loadProductGalleryAdmin(); return; }
+  if (isCheckoutErrors) { loadCheckoutErrors(); return; }
   statusFilter = '';
   updateStatusOptions();
   loadView();
 }));
+
+let checkoutErrorRows = [];
+let checkoutErrorLoading = false;
+async function loadCheckoutErrors() {
+  const tbody = document.getElementById('checkout-errors-body');
+  if (checkoutErrorLoading) return;
+  checkoutErrorLoading = true;
+  tbody.innerHTML = '<tr><td colspan="5">A consultar falhas…</td></tr>';
+  try {
+    const response = await adminApi('list-checkout-errors');
+    checkoutErrorRows = Array.isArray(response.data) ? response.data : [];
+    renderCheckoutErrors();
+  } catch (error) {
+    tbody.innerHTML = '<tr><td colspan="5" class="error">' + esc(error.message || 'Não foi possível consultar as falhas.') + '</td></tr>';
+  } finally { checkoutErrorLoading = false; }
+}
+function renderCheckoutErrors() {
+  const tbody = document.getElementById('checkout-errors-body');
+  const pending = checkoutErrorRows.filter(item => !item.resolved_at).length;
+  const resolved = checkoutErrorRows.length - pending;
+  document.getElementById('checkout-errors-summary').innerHTML =
+    '<div class="summary-card"><span>Por resolver</span><strong>' + pending + '</strong></div>' +
+    '<div class="summary-card"><span>Resolvidas</span><strong>' + resolved + '</strong></div>' +
+    '<div class="summary-card"><span>Registos recentes</span><strong>' + checkoutErrorRows.length + '</strong></div>';
+  const filter = document.getElementById('checkout-errors-filter').value;
+  const items = checkoutErrorRows.filter(item => filter === 'all' || (filter === 'pending' ? !item.resolved_at : Boolean(item.resolved_at)));
+  document.getElementById('checkout-errors-count').textContent = items.length + ' registos';
+  if (!items.length) {
+    tbody.innerHTML = '<tr><td colspan="5">Não existem falhas para este filtro.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(item => {
+    const resolved = Boolean(item.resolved_at);
+    return '<tr>' +
+      '<td>' + esc(date(item.created_at)) + '</td>' +
+      '<td class="checkout-error-page">' + esc(item.page_path || '—') + '</td>' +
+      '<td>' + esc(item.error_message || 'Erro de checkout') + '</td>' +
+      '<td>' + (resolved ? '<span class="badge completed">Resolvida</span>' : '<span class="badge awaiting_payment">Por resolver</span>') + '</td>' +
+      '<td><button type="button" class="secondary checkout-error-toggle" data-error-id="' + esc(item.id) + '" data-resolved="' + (resolved ? 'false' : 'true') + '">' + (resolved ? 'Reabrir' : 'Marcar resolvida') + '</button></td>' +
+      '</tr>';
+  }).join('');
+}
+document.getElementById('checkout-errors-filter').addEventListener('change', renderCheckoutErrors);
+document.getElementById('checkout-errors-refresh').addEventListener('click', loadCheckoutErrors);
+document.getElementById('checkout-errors-body').addEventListener('click', async event => {
+  const button = event.target.closest('button[data-error-id]');
+  if (!button || button.disabled) return;
+  const targetResolved = button.dataset.resolved === 'true';
+  button.disabled = true;
+  try {
+    const changed = await adminApi('resolve-checkout-error', {id:button.dataset.errorId,resolved:targetResolved});
+    const record = checkoutErrorRows.find(item => item.id === button.dataset.errorId);
+    if (record) record.resolved_at = changed.resolved_at || null;
+    renderCheckoutErrors();
+  } catch (error) {
+    window.alert(error.message || 'Não foi possível atualizar a falha.');
+    button.disabled = false;
+  }
+});
 
 async function loadView() {
   const body = document.getElementById('table-body');
