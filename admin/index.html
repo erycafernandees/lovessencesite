@@ -49,6 +49,7 @@
       <button class="active" data-view="orders">Diretas</button>
       <button data-view="projects">Personalizadas</button>
       <button data-view="gallery">Fotos</button>
+      <button data-view="checkout-errors">Falhas no checkout</button>
     </nav>
     <section class="workspace" id="admin-orders-workspace">
       <div class="toolbar">
@@ -76,6 +77,21 @@
         <small>São eliminados apenas rascunhos sem pagamentos, sessões de checkout ou códigos associados. As restantes encomendas ficam protegidas.</small>
       </div>
       </details>
+    </section>
+    <section class="workspace checkout-errors-workspace" id="admin-checkout-errors-workspace" hidden>
+      <div class="toolbar">
+        <div><p class="eyebrow">Monitorização</p><h1>Falhas no checkout</h1></div>
+        <button id="checkout-errors-refresh" class="secondary" type="button">Atualizar</button>
+      </div>
+      <p class="checkout-errors-help">Mostra apenas falhas registadas na loja. Uma falha não equivale necessariamente a uma venda perdida. Não são apresentados dados de pagamento nem dados pessoais de clientes.</p>
+      <div class="summary-grid" id="checkout-errors-summary"></div>
+      <div class="filters"><label for="checkout-errors-filter">Estado
+        <select id="checkout-errors-filter"><option value="pending">Por resolver</option><option value="all">Todos</option><option value="resolved">Resolvidos</option></select>
+      </label><span id="checkout-errors-count" aria-live="polite"></span></div>
+      <div class="table-card"><div class="table-scroll"><table>
+        <thead><tr><th>Data</th><th>Página</th><th>Falha</th><th>Estado</th><th>Ação</th></tr></thead>
+        <tbody id="checkout-errors-body"><tr><td colspan="5">A carregar…</td></tr></tbody>
+      </table></div></div>
     </section>
     <section class="workspace" id="admin-gallery-workspace" hidden>
       <div class="toolbar">
