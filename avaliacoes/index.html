@@ -1,1 +1,63 @@
-<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Avaliações de clientes | Love Essences</title><meta name="description" content="Lê opiniões reais de clientes sobre sabonetes, velas, boxes e lembranças personalizadas Love Essences."><link rel="canonical" href="https://love-essences.pt/avaliacoes/"><link rel="icon" href="/assets/love-essences-social-logo.png"><style>*{box-sizing:border-box}body{margin:0;background:#fcf9fb;color:#4b1345;font-family:Arial,sans-serif}header{padding:20px;text-align:center;background:white;border-bottom:1px solid #e6d4e3}header img{height:58px;width:auto}main{max-width:1150px;padding:35px 20px 70px;margin:auto}h1{font:normal clamp(30px,5vw,45px) Georgia,serif;text-align:center}h2{font:normal 22px Georgia,serif}main>p{text-align:center;color:#816e7e;line-height:1.5}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:35px}.card{background:white;border:1px solid #eadce8;border-radius:17px;padding:20px;box-shadow:0 6px 27px #5112490a}.card img{width:100%;max-height:250px;object-fit:cover;border-radius:11px;margin-bottom:12px}.rating{color:#c99b37;letter-spacing:2px;font-size:20px}.review{line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}.name{color:#806b7c;font-size:13px}.meta{color:#867484;font-size:12px}.link{display:inline-block;margin-top:14px;color:#66135e}.empty{text-align:center;padding:40px;color:#7d6879}footer{text-align:center;padding:25px}footer a{color:#66135e}</style></head><body><header><a href="/"><img src="/assets/love-essences-social-logo.png" alt="Love Essences"></a></header><main><h1>Palavras de quem recebeu ♡</h1><p>Momentos especiais, partilhados por quem recebeu uma peça feita à mão com carinho.</p><div id="reviews" class="grid"><p class="empty">A carregar avaliações…</p></div></main><footer><a href="/">Voltar à Love Essences</a></footer><script src="/assets/js/commerce-config.js"></script><script type="module" src="/avaliacoes/index.js"></script></body></html>
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fbf8fb">
+<title>Avaliações de clientes | Love Essences</title>
+<meta name="description" content="Palavras de quem recebeu peças Love Essences: avaliações de clientes sobre presentes e lembranças feitos à mão.">
+<link rel="canonical" href="https://love-essences.pt/avaliacoes/">
+<link rel="icon" href="/assets/love-essences-social-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#511449;--deep:#66135e;--muted:#796a79;--line:#e9dce7;--paper:#fbf8fb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Quicksand',sans-serif}
+a{color:var(--deep)}
+.site-header{background:#fff;border-bottom:1px solid var(--line)}
+.header-inner{max-width:1140px;margin:auto;padding:18px 25px;display:flex;align-items:center;justify-content:center;position:relative;min-height:90px}
+.header-logo{display:block;width:clamp(190px,28vw,260px);height:auto;max-height:66px;object-fit:contain}
+.header-link{position:absolute;left:25px;font-size:.72rem;font-weight:600;text-decoration:none;color:var(--muted)}
+.header-link:hover{color:var(--deep)}
+main{max-width:1120px;margin:0 auto;padding:clamp(42px,7vw,74px) 25px 70px}
+.intro{max-width:690px;text-align:center;margin:0 auto 34px}
+.eyebrow{color:#a26798;font-size:.66rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin:0 0 12px}
+h1{font:400 clamp(28px,4vw,39px)/1.13 'Cormorant Garamond',Georgia,serif;margin:0;color:var(--ink)}
+.intro>p:last-child{margin:12px auto 0;font-size:.83rem;line-height:1.65;color:var(--muted);max-width:500px}
+.divider{height:1px;max-width:75px;background:#d9bdce;margin:26px auto 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:18px;margin:28px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 7px 25px rgba(81,20,73,.035)}
+.card img{width:100%;max-height:250px;object-fit:cover;border-radius:9px;margin-bottom:13px}
+.rating{color:#bd8d35;letter-spacing:2px;font-size:18px}
+.card h2{font:400 24px 'Cormorant Garamond',Georgia,serif;margin:9px 0}
+.review{font-size:.84rem;line-height:1.75;color:#4a3245;white-space:pre-wrap;overflow-wrap:anywhere}
+.name,.meta{font-size:.73rem;color:var(--muted);line-height:1.6}
+.empty{text-align:center;color:var(--muted);font-size:.82rem;line-height:1.7;padding:35px 15px}
+.bottom-link{display:block;text-align:center;text-decoration:none;font-size:.76rem;font-weight:600;margin:26px 0;color:var(--deep)}
+.bottom-link:hover{text-decoration:underline}
+footer{border-top:1px solid var(--line);text-align:center;padding:22px;color:var(--muted);font-size:.7rem}
+footer a{text-decoration:none}
+@media(max-width:600px){.header-inner{min-height:78px;padding:14px 20px}.header-link{display:none}main{padding:44px 18px 45px}.intro{margin-bottom:20px}.grid{gap:12px}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+<a class="header-link" href="/">← Voltar à loja</a>
+<a href="/" aria-label="Love Essences, página inicial"><img class="header-logo" src="/assets/love-essences-horizontal-logo.svg" alt="Love Essences"></a>
+</div></header>
+<main>
+<section class="intro">
+<p class="eyebrow">A nossa comunidade</p>
+<h1>Palavras de quem recebeu</h1>
+<p>Pequenos gestos, grandes significados. Descobre o que dizem sobre as nossas peças.</p>
+<div class="divider" aria-hidden="true"></div>
+</section>
+<div id="reviews" class="grid" aria-live="polite"><p class="empty">A carregar avaliações…</p></div>
+<a class="bottom-link" href="/">Voltar à Love Essences</a>
+</main>
+<footer>Feito à mão, com carinho · <a href="/">Love Essences</a></footer>
+<script src="/assets/js/commerce-config.js"></script>
+<script type="module" src="/avaliacoes/index.js"></script>
+</body>
+</html>
