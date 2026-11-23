@@ -38,7 +38,7 @@ Deno.serve(async (req:Request) => {
     return json(req,{id:data.id,url:SITE+"/avaliar/?convite="+encodeURIComponent(token)});
    }
    if(action==="list"){
-    const {data,error}=await db.from("review_invitations").select("id,customer_name,product_name,product_image_url,channel,created_at,customer_reviews(id,product_rating,experience_rating,comment,public_name,photo_path,publish_photo,publication_consent,status,created_at)").order("created_at",{ascending:false}).limit(250);
+    const {data,error}=await db.from("review_invitations").select("id,customer_name,product_name,product_image_url,source_origin,channel,created_at,customer_reviews(id,product_rating,experience_rating,comment,public_name,photo_path,publish_photo,publication_consent,status,created_at)").order("created_at",{ascending:false}).limit(250);
     if(error) throw error;
     return json(req,{data:data||[]});
    }
@@ -55,11 +55,27 @@ Deno.serve(async (req:Request) => {
       productName=product.name;
       productImageUrl=product.image_path ? SITE+"/"+String(product.image_path).replace(/^\/+/, "") : null;
     }
+    let photoPath:string|null=null;
+    const photoData=body.photoData?String(body.photoData):"";
+    if(photoData){
+      const match=photoData.match(/^data:(image\/jpeg|image\/png);base64,([a-zA-Z0-9+/=]+)$/);
+      ensure(!!match,"Fotografia inválida. Usa JPG ou PNG.");
+      ensure(match![2].length<2900000,"A fotografia deve ter até 2 MB.");
+      const bytes=Uint8Array.from(atob(match![2]),ch=>ch.charCodeAt(0));
+      ensure(bytes.length<=2097152&&hasValidMagic(bytes,match![1]),"Formato de fotografia inválido.");
+      photoPath=crypto.randomUUID()+(match![1]==="image/png"?".png":".jpg");
+      const {error:uploadError}=await db.storage.from("customer-review-photos").upload(photoPath,bytes,{contentType:match![1],upsert:false});
+      if(uploadError) throw uploadError;
+    }
     const {data,error}=await db.from("review_invitations")
       .update({product_name:productName,product_image_url:productImageUrl})
       .eq("id",invitationId).select("id,product_name,product_image_url").maybeSingle();
     if(error) throw error;
     if(!data) throw new ApiError(404,"missing","Convite não encontrado.");
+    if(photoPath){
+      const {error:photoError}=await db.from("customer_reviews").update({photo_path:photoPath,publish_photo:body.publishPhoto===true}).eq("invitation_id",invitationId);
+      if(photoError) throw photoError;
+    }
     return json(req,{ok:true,...data});
    }
    if(admin.role==="viewer") throw new ApiError(403,"forbidden","Sem autorização.");
