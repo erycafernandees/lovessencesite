@@ -50,7 +50,7 @@
       <button data-view="projects">Personalizadas</button>
       <button data-view="gallery">Fotos</button>
       <button data-view="checkout-errors">Falhas no checkout</button>
-      <a href="/admin/avaliacoes/" class="reviews-nav">Avaliações</a>
+      <button data-view="reviews">Avaliações</button>
     </nav>
     <section class="workspace" id="admin-orders-workspace">
       <div class="toolbar">
@@ -78,6 +78,24 @@
         <small>São eliminados apenas rascunhos sem pagamentos, sessões de checkout ou códigos associados. As restantes encomendas ficam protegidas.</small>
       </div>
       </details>
+    </section>
+    <section class="workspace reviews-workspace" id="admin-reviews-workspace" hidden>
+      <div class="toolbar">
+        <div><p class="eyebrow">Comunidade</p><h1>Avaliações de clientes</h1></div>
+        <button type="button" id="reviews-new-link">+ Novo link</button>
+        <button type="button" id="reviews-refresh" class="secondary">Atualizar</button>
+      </div>
+      <div class="summary-grid" id="reviews-summary"></div>
+      <div class="filters">
+        <label for="reviews-search">Pesquisar<input id="reviews-search" type="search" placeholder="Cliente, artigo, canal…" autocomplete="off"></label>
+        <label for="reviews-status">Estado<select id="reviews-status"><option value="all">Todos os estados</option><option value="pending">Por aprovar</option><option value="published">Publicadas</option><option value="rejected">Rejeitadas</option><option value="awaiting">A aguardar avaliação</option></select></label>
+        <label for="reviews-channel">Canal<select id="reviews-channel"><option value="all">Todos</option><option value="website">Site</option><option value="instagram">Instagram</option><option value="whatsapp">WhatsApp</option><option value="other">Outro</option></select></label>
+        <span id="reviews-count" aria-live="polite"></span>
+      </div>
+      <div class="table-card"><div class="table-scroll"><table>
+        <thead><tr><th>Cliente</th><th>Artigo</th><th>Canal</th><th>Produto</th><th>Experiência</th><th>Estado</th><th>Data</th></tr></thead>
+        <tbody id="reviews-body"><tr><td colspan="7">A carregar…</td></tr></tbody>
+      </table></div></div>
     </section>
     <section class="workspace checkout-errors-workspace" id="admin-checkout-errors-workspace" hidden>
       <div class="toolbar">
@@ -163,7 +181,7 @@
     </section>
   </div>
   <script src="/assets/js/commerce-config.js"></script>
-  <script type="module" src="/admin/admin.js?v=20261123-personalized-label"></script>
+  <script type="module" src="/admin/admin.js?v=20261123-reviews-workspace"></script>
 </body>
 </html>
 
