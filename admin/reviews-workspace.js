@@ -35,7 +35,7 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
     byId('reviews-body').innerHTML=entries.length?entries.map(r=>{
       const v=reviewOf(r);
       return '<tr data-review-row="'+esc(r.id)+'" tabindex="0" role="button" aria-label="Ver avaliação de '+esc(r.customer_name)+'">'+
-        '<td><strong>'+esc(r.customer_name)+'</strong></td><td>'+esc(r.product_name)+'</td>'+
+        '<td><strong>'+esc(r.customer_name)+'</strong></td><td>'+esc(r.product_name||'Por associar')+'</td>'+
         '<td>'+esc(channels[r.channel]||r.channel)+'</td><td>'+rating(v?.product_rating)+'</td>'+
         '<td>'+rating(v?.experience_rating)+'</td><td>'+badge(statusOf(r))+'</td>'+
         '<td>'+date(v?.created_at||r.created_at)+'</td></tr>';
@@ -76,14 +76,30 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
     const v=reviewOf(row),status=statusOf(row);
     const photo=v?.photo_path&&v.publish_photo?config.supabaseUrl+'/storage/v1/object/public/customer-review-photos/'+encodeURIComponent(v.photo_path):null;
     const content='<p class="eyebrow">Avaliações</p><h2>'+esc(row.customer_name)+'</h2>'+
-      '<div class="detail-section"><h3>Convite</h3><div class="detail-grid"><p><strong>Artigo</strong>'+esc(row.product_name)+'</p><p><strong>Canal</strong>'+esc(channels[row.channel]||row.channel)+'</p><p><strong>Data</strong>'+date(row.created_at)+'</p><p><strong>Estado</strong>'+badge(status)+'</p></div></div>'+
+      '<div class="detail-section"><h3>Convite</h3><div class="detail-grid"><p><strong>Artigo</strong>'+esc(row.product_name||'Por associar')+'</p><p><strong>Canal</strong>'+esc(channels[row.channel]||row.channel)+'</p><p><strong>Data</strong>'+date(row.created_at)+'</p><p><strong>Estado</strong>'+badge(status)+'</p></div></div>'+
       (v?'<div class="detail-section"><h3>Opinião da cliente</h3><div class="detail-grid"><p><strong>Produto</strong>'+rating(v.product_rating)+'</p><p><strong>Experiência</strong>'+rating(v.experience_rating)+'</p></div><p><strong>Nome público</strong>'+esc(v.public_name)+'</p><p class="reviews-comment">'+esc(v.comment)+'</p>'+
       (photo?'<img class="reviews-preview" alt="Fotografia enviada pela cliente" src="'+esc(photo)+'">':'')+
       (v.photo_path&&!v.publish_photo?'<p class="reviews-hint">A cliente não autorizou a publicação da fotografia.</p>':'')+
       '<p class="reviews-hint">Os comentários são publicados sem alterações ao seu conteúdo.</p>'+
       '<div class="reviews-actions"><button data-review-status="published" type="button">Aprovar</button><button class="secondary" data-review-status="rejected" type="button">Rejeitar / Retirar</button><button class="secondary" data-review-status="pending" type="button">Marcar pendente</button></div><p class="error" id="reviews-drawer-error" role="alert"></p></div>':
       '<div class="detail-section"><h3>A aguardar avaliação</h3><p>A cliente ainda não respondeu ao convite. Os links de convite são apresentados no momento da criação por segurança.</p></div>');
-    openDrawer(content);
+    const association='<div class="detail-section"><h3>Associar artigo Love Essences</h3>'+
+      '<p class="reviews-hint">Podes enviar o convite primeiro e associar o artigo depois. É necessário associá-lo antes de publicar a avaliação.</p>'+
+      '<form id="reviews-associate-form" class="reviews-create-form">'+
+      '<label>Artigo<input name="productName" maxlength="140" placeholder="Nome do artigo" value="'+esc(row.product_name||'')+'"></label>'+
+      '<label>Fotografia do artigo (URL opcional)<input type="url" name="productImageUrl" placeholder="https://love-essences.pt/assets/..." value="'+esc(row.product_image_url||'')+'"></label>'+
+      '<button type="submit">Guardar associação</button><p class="error" id="reviews-associate-error"></p></form></div>';
+    openDrawer(content+association);
+    byId('reviews-associate-form').addEventListener('submit',async event=>{
+      event.preventDefault();
+      const form=event.currentTarget,button=form.querySelector('button[type=submit]');
+      button.disabled=true;byId('reviews-associate-error').textContent='';
+      try{
+        await api('associate',{invitationId:row.id,...Object.fromEntries(new FormData(form))});
+        await load();
+        showDetails(rows.find(item=>item.id===row.id));
+      }catch(error){byId('reviews-associate-error').textContent=error.message;button.disabled=false}
+    });
     document.querySelectorAll('#drawer-content [data-review-status]').forEach(button=>button.addEventListener('click',()=>moderate(v.id,button.dataset.reviewStatus,button)));
   }
   function showCreate() {
@@ -92,10 +108,10 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
     const content='<p class="eyebrow">Avaliações</p><h2>Criar link de avaliação</h2><p class="reviews-hint">Envia por Instagram, WhatsApp ou outro canal, mesmo para encomendas não realizadas no site.</p>'+
       '<form id="reviews-create-form" class="reviews-create-form">'+
       '<label>Nome da cliente<input name="customerName" maxlength="100" required placeholder="Ex.: Catarina"></label>'+
-      '<label>Artigo comprado<input name="productName" maxlength="140" required placeholder="Ex.: Conjunto personalizado"></label>'+
+      '<label>Artigo comprado (opcional — podes associar depois)<input name="productName" maxlength="140" placeholder="Ex.: Conjunto personalizado"></label>'+
       '<label>Canal<select name="channel"><option value="instagram">Instagram</option><option value="whatsapp">WhatsApp</option><option value="website">Site</option><option value="other">Outro</option></select></label>'+
       '<label>URL da fotografia do artigo (opcional)<input type="url" name="productImageUrl" placeholder="https://love-essences.pt/assets/..."></label>'+
-      '<p class="reviews-hint">A fotografia é opcional. Se a incluíres, usa um link de imagem da Love Essences.</p>'+
+      '<p class="reviews-hint">Podes enviar o convite só com o nome da cliente e o canal. Mais tarde, associa o artigo na avaliação antes de a publicares.</p>'+
       '<button type="submit">Criar link</button><p class="error" id="reviews-create-error" role="alert"></p></form><div id="reviews-created-link" hidden></div>';
     openDrawer(content);creating=false;
     byId('reviews-create-form').addEventListener('submit',async e=>{
