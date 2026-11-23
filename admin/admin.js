@@ -1,7 +1,7 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 import { prepareGalleryPhoto } from './gallery-photo.js';
-import { setupReviews } from './reviews-workspace.js?v=20261123-catalog-recovery';
+import { setupReviews } from './reviews-workspace.js?v=20261123-photos-legacy';
 
 const config = window.LOVE_COMMERCE_CONFIG || {};
 const loginCard = document.getElementById('login-card');
