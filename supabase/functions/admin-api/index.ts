@@ -3,6 +3,31 @@ import { ApiError, cleanText, createSignedUploads, handleError, hasValidMagic, j
 const ORDER_STATES = ["draft","awaiting_payment","confirmed","review","awaiting_details","production","ready_to_ship","shipped","completed","cancelled"];
 const PROJECT_STATES = ["draft","submitted","in_review","awaiting_details","quoted","approved","payment_pending","paid","production","completed","declined","archived"];
 
+// Notifica apenas envios CTT completos; não reenvia a mesma referência/código.
+async function notifyCttShipment(client: ReturnType<typeof serviceClient>, kind: "order" | "project", id: string): Promise<{ queued: boolean; reason?: string }> {
+  const table = kind === "order" ? "orders" : "project_requests";
+  const statusField = kind === "order" ? "order_status" : "fulfillment_status";
+  const numberField = kind === "order" ? "order_number" : "project_number";
+  const {data: row, error}=await client.from(table).select("id,customer_email,delivery_method,delivery_tracking_code,"+statusField+","+numberField).eq("id",id).maybeSingle();
+  if(error) throw error;
+  if(!row) return {queued:false,reason:"not_found"};
+  const code=String(row.delivery_tracking_code||"").trim().toUpperCase();
+  const email=String(row.customer_email||"").trim();
+  if(row[statusField]!=="shipped" || row.delivery_method!=="ctt" || !/^[A-Z0-9-]{8,60}$/.test(code) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return {queued:false,reason:"not_ready"};
+  const {data: existing, error: lookupError}=await client.from("notification_outbox").select("id").eq("template","shipment_ctt").contains("payload",{entityKind:kind,entityId:id,trackingCode:code}).limit(1);
+  if(lookupError) throw lookupError;
+  if(existing?.length) return {queued:false,reason:"already_queued"};
+  try {
+    await queueEmail("shipment_ctt",email,{entityKind:kind,entityId:id,trackingCode:code,...(kind==="order"?{orderNumber:row[numberField]}:{projectNumber:row[numberField]})});
+    return {queued:true};
+  } catch(error) {
+    // A chave única protege de pedidos concorrentes para o mesmo envio.
+    if((error as {code?:string})?.code==="23505") return {queued:false,reason:"already_queued"};
+    throw error;
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return json(req, {}, 204);
   try {
@@ -108,7 +133,10 @@ Deno.serve(async (req) => {
         entity_type: kind === "order" ? "order" : "project_request", entity_id: id,
         before_data: before, after_data: patch,
       });
-      return json(req, { ok: true, delivery: patch });
+      let shipmentEmail={queued:false,reason:"not_ready"} as {queued:boolean;reason?:string};
+      if(method==="ctt" && tracking && (before.delivery_tracking_code!==tracking || before.delivery_method!=="ctt"))
+        try { shipmentEmail=await notifyCttShipment(client,kind,id); } catch(error) { console.error("CTT email:",error); shipmentEmail={queued:false,reason:"email_error"}; }
+      return json(req, { ok: true, delivery: patch, shipmentEmail });
     }
 
     if (action === "update-order") {
@@ -123,7 +151,10 @@ Deno.serve(async (req) => {
       if (updateError) throw updateError;
       await client.from("order_status_history").insert({ order_id: id, order_status: body.orderStatus, note: cleanText(body.note, 500), actor_user_id: admin.userId });
       await client.from("audit_log").insert({ actor_user_id: admin.userId, action: "order.status.update", entity_type: "order", entity_id: id, before_data: before, after_data: { order_status: body.orderStatus } });
-      return json(req, { ok: true });
+      let shipmentEmail={queued:false,reason:"not_ready"} as {queued:boolean;reason?:string};
+      if(body.orderStatus==="shipped" && before.order_status!=="shipped")
+        try { shipmentEmail=await notifyCttShipment(client,"order",id); } catch(error) { console.error("CTT email:",error); shipmentEmail={queued:false,reason:"email_error"}; }
+      return json(req, { ok: true, shipmentEmail });
     }
 
     if (action === "delete-order") {
@@ -354,7 +385,10 @@ Deno.serve(async (req) => {
         entity_type: "project_request", entity_id: id,
         before_data: { fulfillment_status: previous.fulfillment_status }, after_data: { fulfillment_status: next }
       });
-      return json(req, { ok: true, fulfillmentStatus: next });
+      let shipmentEmail={queued:false,reason:"not_ready"} as {queued:boolean;reason?:string};
+      if(next==="shipped" && previous.fulfillment_status!=="shipped")
+        try { shipmentEmail=await notifyCttShipment(client,"project",id); } catch(error) { console.error("CTT email:",error); shipmentEmail={queued:false,reason:"email_error"}; }
+      return json(req, { ok: true, fulfillmentStatus: next, shipmentEmail });
     }
 
     // Montante efetivamente registado como recebido: 0, sinal, parcial ou integral.
