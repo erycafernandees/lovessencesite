@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/admin/admin.css?v=20261123-multi-items"/>
+  <link rel="stylesheet" href="/admin/admin.css?v=20261123-unit-prices"/>
 </head>
 <body>
   <main class="auth-shell" id="auth-shell">
@@ -147,7 +147,7 @@
           <div id="manual-order-lines" class="manual-order-lines"><div class="manual-order-line">
             <label>Produto / descrição<input name="description" maxlength="240" required/></label>
             <label>Quantidade<input name="quantity" type="number" min="1" max="10000" step="1" value="1" required/></label>
-            <label>Valor da alínea (€)<input name="lineEuros" type="number" min="0" step="0.01" required/></label>
+            <label>Preço unitário (€)<input name="unitEuros" type="number" min="0" step="0.01" required/></label><div class="manual-line-subtotal">Subtotal <strong>0,00 €</strong></div>
             <button type="button" class="secondary manual-remove-line" aria-label="Remover artigo" hidden>Remover</button>
           </div></div>
           <button id="manual-add-line" type="button" class="secondary manual-add-line">+ Acrescentar alínea</button>
@@ -162,7 +162,7 @@
     </section>
   </div>
   <script src="/assets/js/commerce-config.js"></script>
-  <script type="module" src="/admin/admin.js?v=20261123-personalizadas"></script>
+  <script type="module" src="/admin/admin.js?v=20261123-unit-prices"></script>
 </body>
 </html>
 
