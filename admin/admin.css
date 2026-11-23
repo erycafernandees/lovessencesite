@@ -292,3 +292,7 @@
 
 /* Orçamentos em preparação: destaque suave índigo na lista de personalizadas. */
 .workspace:has(.projects-summary) .table-scroll .status-badge{display:inline-flex;align-items:center;padding:.25rem .55rem;border-radius:999px;background:#E9E7FF;color:#5247A0;font-size:.64rem;font-weight:700;white-space:nowrap}
+
+/* Link independente para a moderação de avaliações. */
+.tabs .reviews-nav{display:inline-flex;align-items:center;text-decoration:none;padding:.78rem 1rem;color:var(--muted);font-size:.78rem;font-weight:600;white-space:nowrap;border-radius:8px}
+.tabs .reviews-nav:hover{background:#f1e3ef;color:var(--deep)}
