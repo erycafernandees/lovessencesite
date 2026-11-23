@@ -848,7 +848,7 @@ def build(output: Path, sync_root_seo: bool) -> None:
         shutil.rmtree(output)
     output.mkdir(parents=True)
 
-    for directory in ("assets", "dist", "admin"):
+    for directory in ("assets", "dist", "admin", "avaliar", "avaliacoes"):
         shutil.copytree(
             ROOT / directory,
             output / directory,
