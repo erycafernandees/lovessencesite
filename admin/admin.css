@@ -273,3 +273,9 @@
 .manual-order-line .manual-remove-line[hidden]{display:none}
 .manual-add-line{margin-top:.65rem}
 @media(max-width:650px){.manual-order-line{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.manual-order-line label:first-child{grid-column:1/-1}.manual-order-line .manual-remove-line{grid-column:1/-1}}
+
+/* Preços unitários e subtotais calculados por alínea */
+.manual-order-line{grid-template-columns:minmax(0,1.8fr) minmax(85px,.65fr) minmax(115px,.8fr) minmax(105px,.75fr) auto}
+.manual-line-subtotal{font-size:.79rem;color:var(--muted);align-self:end;padding-bottom:.66rem;white-space:nowrap}
+.manual-line-subtotal strong{display:block;color:var(--ink);font-size:.94rem;margin-top:.12rem}
+@media(max-width:650px){.manual-order-line{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.manual-line-subtotal{align-self:center;padding:0}.manual-order-line .manual-remove-line{grid-column:1/-1}}
