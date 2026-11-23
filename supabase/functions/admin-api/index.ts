@@ -649,7 +649,7 @@ Deno.serve(async (req) => {
         after_data: {
           order_number: order.order_number,
           sales_channel: channel,
-          quantity,
+          items: manualItems,
           total_amount: totalAmount,
           payment_status: paid ? "paid" : "unpaid",
           is_test: body.isTest === true,
