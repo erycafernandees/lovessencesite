@@ -293,6 +293,26 @@
 /* Orçamentos em preparação: destaque suave índigo na lista de personalizadas. */
 .workspace:has(.projects-summary) .table-scroll .status-badge{display:inline-flex;align-items:center;padding:.25rem .55rem;border-radius:999px;background:#E9E7FF;color:#5247A0;font-size:.64rem;font-weight:700;white-space:nowrap}
 
-/* Link independente para a moderação de avaliações. */
-.tabs .reviews-nav{display:inline-flex;align-items:center;text-decoration:none;padding:.78rem 1rem;color:var(--muted);font-size:.78rem;font-weight:600;white-space:nowrap;border-radius:8px}
-.tabs .reviews-nav:hover{background:#f1e3ef;color:var(--deep)}
+
+/* Avaliações: componentes, tipografia e espaçamentos partilhados com o CRM. */
+#admin-reviews-workspace[hidden]{display:none!important}
+.reviews-workspace .summary-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.reviews-workspace .table-scroll table{width:100%;min-width:880px}
+.reviews-workspace .table-scroll th,.reviews-workspace .table-scroll td{white-space:nowrap;padding:.85rem .8rem;vertical-align:middle}
+.reviews-workspace .table-scroll tbody tr{cursor:pointer}
+.reviews-workspace .reviews-stars{color:#a5782f;letter-spacing:.04em;font-size:1rem;white-space:nowrap}
+.reviews-workspace .badge.review-pending{background:#fff0b8;color:#926100}
+.reviews-workspace .badge.review-published{background:#ddf3e3;color:#247240}
+.reviews-workspace .badge.review-rejected{background:#fce2e6;color:#a72138}
+.reviews-workspace .badge.review-awaiting{background:#ece8ec;color:#706470}
+.reviews-create-form{display:grid;gap:.8rem}
+.reviews-create-form label{margin:0}
+.reviews-create-form button{justify-self:start}
+.reviews-actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.reviews-actions button{font-size:.72rem;padding:.7rem .8rem;white-space:nowrap}
+.reviews-comment{white-space:pre-wrap;overflow-wrap:anywhere!important;color:var(--ink)!important;font-size:.83rem!important;margin:1rem 0!important}
+.reviews-preview{display:block;max-width:100%;max-height:280px;object-fit:contain;margin:1rem 0;border-radius:10px}
+.reviews-link{overflow-wrap:anywhere;font-size:.8rem;background:var(--paper);padding:.7rem;border:1px solid var(--line);border-radius:8px}
+.reviews-hint{color:var(--muted)!important;font-size:.75rem!important;line-height:1.6!important}
+@media(max-width:800px){.reviews-workspace .summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.reviews-workspace .filters{gap:.7rem}.reviews-actions button{flex:1 1 auto}}
