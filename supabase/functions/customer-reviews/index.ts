@@ -8,12 +8,12 @@ Deno.serve(async (req:Request) => {
   const body=await readJson<Record<string,unknown>>(req);
   const action=String(body.action||"");
   const db=serviceClient();
-  if(action==="create" || action==="list" || action==="moderate"){
+  if(action==="create" || action==="list" || action==="moderate" || action==="associate"){
    const admin=await requireAdmin(req,["owner","manager","viewer"]);
    if(action==="create"){
     if(admin.role==="viewer") throw new ApiError(403,"forbidden","Sem autorização.");
     const customer_name=cleanText(body.customerName,100,true)!;
-    const product_name=cleanText(body.productName,140,true)!;
+    const product_name=cleanText(body.productName,140);
     const channel=String(body.channel||"instagram");
     ensure(["instagram","whatsapp","website","other"].includes(channel),"Canal inválido.");
     const product_image_url=cleanText(body.productImageUrl,500);
@@ -30,10 +30,32 @@ Deno.serve(async (req:Request) => {
     if(error) throw error;
     return json(req,{data:data||[]});
    }
+   if(action==="associate"){
+    if(admin.role==="viewer") throw new ApiError(403,"forbidden","Sem autorização.");
+    const invitationId=cleanText(body.invitationId,80,true)!;
+    const productName=cleanText(body.productName,140);
+    const productImageUrl=cleanText(body.productImageUrl,500);
+    if(productImageUrl) ensure(productImageUrl.startsWith(SITE+"/") || productImageUrl.startsWith("https://www.love-essences.pt/"),"A fotografia deve pertencer à Love Essences.");
+    if(productImageUrl && !productName) throw new ApiError(422,"missing_product","Indica o artigo antes de associar uma fotografia.");
+    const {data,error}=await db.from("review_invitations")
+      .update({product_name:productName,product_image_url:productImageUrl})
+      .eq("id",invitationId).select("id,product_name,product_image_url").maybeSingle();
+    if(error) throw error;
+    if(!data) throw new ApiError(404,"missing","Convite não encontrado.");
+    return json(req,{ok:true,...data});
+   }
    if(admin.role==="viewer") throw new ApiError(403,"forbidden","Sem autorização.");
    const id=cleanText(body.reviewId,80,true)!;
    const status=String(body.status||"");
    ensure(["pending","published","rejected"].includes(status),"Estado inválido.");
+   if(status==="published"){
+     const {data:review,error:reviewError}=await db.from("customer_reviews").select("invitation_id").eq("id",id).maybeSingle();
+     if(reviewError) throw reviewError;
+     if(!review) throw new ApiError(404,"missing","Avaliação não encontrada.");
+     const {data:invitation,error:invitationError}=await db.from("review_invitations").select("product_name").eq("id",review.invitation_id).maybeSingle();
+     if(invitationError) throw invitationError;
+     if(!invitation?.product_name) throw new ApiError(422,"product_required","Associa primeiro um artigo Love Essences antes de publicar a avaliação.");
+   }
    const {data,error}=await db.from("customer_reviews").update({status,reviewed_at:new Date().toISOString()}).eq("id",id).select("id,status").maybeSingle();
    if(error) throw error;
    if(!data) throw new ApiError(404,"missing","Avaliação não encontrada.");
