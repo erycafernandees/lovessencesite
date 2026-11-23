@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/admin/admin.css?v=20261121-checkout-monitor"/>
+  <link rel="stylesheet" href="/admin/admin.css?v=20261123-multi-items"/>
 </head>
 <body>
   <main class="auth-shell" id="auth-shell">
@@ -143,9 +143,16 @@
         <label>Nome do cliente<input name="customerName" required/></label>
         <label>Email (opcional)<input name="customerEmail" type="email"/></label>
         <label>Telefone (opcional)<input name="customerPhone"/></label>
-        <label>Produto / descrição<input name="description" required/></label>
-        <label>Quantidade<input name="quantity" type="number" min="1" step="1" value="1" required/></label>
-        <label>Total (€)<input name="totalEuros" type="number" min="0" step="0.01" required/></label>
+        <div class="manual-items-field"><span class="manual-items-title">Artigos da encomenda</span>
+          <div id="manual-order-lines" class="manual-order-lines"><div class="manual-order-line">
+            <label>Produto / descrição<input name="description" maxlength="240" required/></label>
+            <label>Quantidade<input name="quantity" type="number" min="1" max="10000" step="1" value="1" required/></label>
+            <label>Valor da alínea (€)<input name="lineEuros" type="number" min="0" step="0.01" required/></label>
+            <button type="button" class="secondary manual-remove-line" aria-label="Remover artigo" hidden>Remover</button>
+          </div></div>
+          <button id="manual-add-line" type="button" class="secondary manual-add-line">+ Acrescentar alínea</button>
+        </div>
+        <label>Total da encomenda (€)<input name="totalEuros" type="number" min="0" step="0.01" readonly required/></label>
         <label>Pagamento<select name="paymentStatus"><option value="unpaid">Por pagar</option><option value="paid">Pago</option></select></label>
         <label>Notas<textarea name="notes" rows="3"></textarea></label><label>Fotografias de referência (JPG/PNG, até 10 MB cada)<input name="referencePhotos" type="file" accept="image/jpeg,image/png" multiple/></label>
         <label class="check-label"><input name="isTest" type="checkbox"/> É um teste</label>
@@ -154,7 +161,7 @@
     </section>
   </div>
   <script src="/assets/js/commerce-config.js"></script>
-  <script type="module" src="/admin/admin.js?v=20261121-checkout-monitor"></script>
+  <script type="module" src="/admin/admin.js?v=20261123-multi-items"></script>
 </body>
 </html>
 
