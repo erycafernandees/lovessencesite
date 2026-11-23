@@ -476,8 +476,8 @@ document.getElementById('manual-form').addEventListener('submit', async event =>
     while(lines.children.length>1)lines.lastElementChild.remove();
     updateManualSum(form);
     manualModal.hidden = true;
-    currentView = 'projects';
-    document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.view === 'projects'));
+    currentView = 'orders';
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.view === 'orders'));
     testFilter = 'real'; document.getElementById('admin-tests').value = 'real';
     channelFilter = ''; document.getElementById('admin-channel').value = '';
     statusFilter = '';
