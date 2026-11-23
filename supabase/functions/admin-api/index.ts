@@ -568,14 +568,15 @@ Deno.serve(async (req) => {
       }
       const customerPhone = cleanText(body.customerPhone, 50);
       const notes = cleanText(body.notes, 3000);
-      const rawItems = Array.isArray(body.items) ? body.items : [{description:body.description,quantity:body.quantity,lineAmount:body.totalAmount}];
+      const rawItems = Array.isArray(body.items) ? body.items : [{description:body.description,quantity:body.quantity,unitAmount:body.unitAmount}];
       if (!rawItems.length || rawItems.length > 50) throw new ApiError(422,"items","São permitidos 1 a 50 artigos.");
       const manualItems = rawItems.map((entry: any) => {
         const description = cleanText(entry.description,240,true)!;
-        const quantity = Number(entry.quantity), lineAmount = Number(entry.lineAmount);
-        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isSafeInteger(lineAmount) || lineAmount < 0 || lineAmount > 100000000)
-          throw new ApiError(422,"invalid_items","Verifica a quantidade e o valor de cada artigo.");
-        return {description,quantity,lineAmount};
+        const quantity = Number(entry.quantity), unitAmount = Number(entry.unitAmount);
+        const lineAmount = quantity * unitAmount;
+        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isSafeInteger(unitAmount) || unitAmount < 0 || !Number.isSafeInteger(lineAmount) || lineAmount > 100000000)
+          throw new ApiError(422,"invalid_items","Verifica a quantidade e o preço unitário de cada artigo.");
+        return {description,quantity,unitAmount,lineAmount};
       });
       const sum = manualItems.reduce((t:number,x:any)=>t+x.lineAmount,0);
       const totalAmount = Number(body.totalAmount);
@@ -617,13 +618,12 @@ Deno.serve(async (req) => {
       }).select("id,order_number,total_amount").single();
       if (orderError || !order) throw orderError || new Error("Could not create manual order");
 
-      // O valor introduzido no painel é o total acordado para a quantidade
-      // completa. Nem sempre há um preço unitário exato em cêntimos.
+      // O painel recebe preços unitários; os subtotais são calculados e validados no servidor.
       const { error: itemError } = await client.from("order_items").insert(manualItems.map((item:any)=>({
         order_id:order.id, product_code:"MANUAL", variant_code:"PERSONALIZADO",
-        name:item.description, quantity:item.quantity, unit_amount:Math.round(item.lineAmount/item.quantity),
+        name:item.description, quantity:item.quantity, unit_amount:item.unitAmount,
         line_amount:item.lineAmount, personalization:{},
-        product_snapshot:{manual:true,priceType:"negotiated_total",description:item.description,quantity:item.quantity},
+        product_snapshot:{manual:true,priceType:"unit_price",description:item.description,quantity:item.quantity},
       })));
       if (itemError) throw itemError;
 
@@ -745,14 +745,15 @@ Deno.serve(async (req) => {
       const notes = cleanText(body.notes, 3000);
       const channel = cleanText(body.channel, 20, true)!;
       if (!["instagram", "whatsapp", "other"].includes(channel)) throw new ApiError(422, "invalid_channel", "Canal inválido.");
-      const rawItems = Array.isArray(body.items) ? body.items : [{description:body.description,quantity:body.quantity,lineAmount:body.totalAmount}];
+      const rawItems = Array.isArray(body.items) ? body.items : [{description:body.description,quantity:body.quantity,unitAmount:body.unitAmount}];
       if (!rawItems.length || rawItems.length > 50) throw new ApiError(422,"items","São permitidos 1 a 50 artigos.");
       const manualItems = rawItems.map((entry: any) => {
         const description = cleanText(entry.description,240,true)!;
-        const quantity = Number(entry.quantity), lineAmount = Number(entry.lineAmount);
-        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isSafeInteger(lineAmount) || lineAmount < 0 || lineAmount > 100000000)
-          throw new ApiError(422,"invalid_items","Verifica a quantidade e o valor de cada artigo.");
-        return {description,quantity,lineAmount};
+        const quantity = Number(entry.quantity), unitAmount = Number(entry.unitAmount);
+        const lineAmount = quantity * unitAmount;
+        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isSafeInteger(unitAmount) || unitAmount < 0 || !Number.isSafeInteger(lineAmount) || lineAmount > 100000000)
+          throw new ApiError(422,"invalid_items","Verifica a quantidade e o preço unitário de cada artigo.");
+        return {description,quantity,unitAmount,lineAmount};
       });
       const sum = manualItems.reduce((t:number,x:any)=>t+x.lineAmount,0);
 
@@ -790,9 +791,9 @@ Deno.serve(async (req) => {
       if (updateError) throw updateError;
       for (let i=0;i<manualItems.length;i++){
         const item=manualItems[i], data={
-          name:item.description,quantity:item.quantity,unit_amount:Math.round(item.lineAmount/item.quantity),
+          name:item.description,quantity:item.quantity,unit_amount:item.unitAmount,
           line_amount:item.lineAmount,
-          product_snapshot:{manual:true,priceType:"negotiated_total",description:item.description,quantity:item.quantity},
+          product_snapshot:{manual:true,priceType:"unit_price",description:item.description,quantity:item.quantity},
         };
         const {error:itemError}=i<items.length
           ? await client.from("order_items").update(data).eq("id",items[i].id)
