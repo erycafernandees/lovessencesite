@@ -48,6 +48,27 @@ if (!config.enabled || !config.supabaseUrl || !config.supabaseAnonKey) {
 
 const supabase = createClient(config.supabaseUrl || 'https://invalid.supabase.co', config.supabaseAnonKey || 'invalid', { auth: { persistSession: true, autoRefreshToken: true } });
 
+/* Recuperar a autenticação logo no arranque. A área administrativa tem
+   vários módulos opcionais e um erro num deles não deve impedir a sessão. */
+let sessionBootPromise = null;
+function restoreAdminSession() {
+  if (sessionBootPromise) return sessionBootPromise;
+  sessionBootPromise = (async () => {
+    const loginError = document.getElementById('login-error');
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      if (data?.session) await ensureMfa();
+    } catch (error) {
+      console.error('Não foi possível restaurar a sessão administrativa:', error);
+      loginError.textContent = 'Não foi possível recuperar a sessão. Atualiza a página; se continuar, entra novamente.';
+    }
+  })();
+  return sessionBootPromise;
+}
+restoreAdminSession();
+
+
 // Inicializar de imediato o acesso à alteração de palavra-passe, sem depender do carregamento das encomendas.
 document.getElementById('password-settings-button')?.addEventListener('click', () => {
   const dialog = document.getElementById('password-modal');
@@ -1728,5 +1749,4 @@ document.getElementById('gallery-images').addEventListener('click',async event =
   }
 });
 
-const { data: { session } } = await supabase.auth.getSession();
-if (session) { try { await ensureMfa(); } catch (error) { document.getElementById('login-error').textContent = error.message; } }
+// A sessão é restaurada no início do módulo, antes dos controlos do CRM.
