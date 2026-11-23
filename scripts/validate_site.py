@@ -35,7 +35,7 @@ def one(pattern: str, source: str, label: str, flags: int = 0) -> str:
 def validate(output: Path) -> None:
     source = (ROOT / "index.html").read_text(encoding="utf-8")
     products, routes = get_routes(source)
-    known_route_paths = {route.path for route in routes}
+    known_route_paths = {route.path for route in routes} | {'/avaliacoes/'}  # Página autónoma gerada em avaliacoes/
     commercial_content = load_commercial_content()
     errors: list[str] = []
     titles: dict[str, str] = {}
