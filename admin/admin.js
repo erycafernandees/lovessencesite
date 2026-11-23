@@ -397,6 +397,49 @@ document.getElementById('mfa-form').addEventListener('submit', async event => {
 });
 
 
+
+function manualItemsFrom(form) {
+  const rows=[...form.querySelectorAll('.manual-order-line')];
+  if (!rows.length || rows.length>50) throw new Error('Adiciona entre 1 e 50 artigos.');
+  return rows.map(row=>{
+    const description=row.querySelector('[name=description]').value.trim();
+    const quantity=Number(row.querySelector('[name=quantity]').value);
+    const euros=String(row.querySelector('[name=lineEuros]').value).replace(',','.');
+    const lineAmount=Math.round(Number(euros)*100);
+    if(!description || !Number.isInteger(quantity) || quantity<1 || quantity>10000 || !/^\\d+(?:\\.\\d{1,2})?$/.test(euros) || !Number.isSafeInteger(lineAmount) || lineAmount<0)
+      throw new Error('Verifica a descrição, quantidade e valor de cada alínea.');
+    return {description,quantity,lineAmount};
+  });
+}
+function updateManualSum(form) {
+  const rows=[...form.querySelectorAll('.manual-order-line')];
+  const cents=rows.reduce((sum,row)=>sum+Math.round((Number(row.querySelector('[name=lineEuros]').value)||0)*100),0);
+  form.querySelector('[name=totalEuros]').value=(cents/100).toFixed(2);
+}
+function bindManualLines(form,button) {
+  const holder=form.querySelector('.manual-order-lines');
+  button.addEventListener('click',()=>{
+    if(holder.children.length>=50)return;
+    const row=holder.firstElementChild.cloneNode(true);
+    row.querySelector('[name=description]').value='';
+    row.querySelector('[name=quantity]').value='1';
+    row.querySelector('[name=lineEuros]').value='';
+    row.querySelector('.manual-remove-line').hidden=false;
+    holder.append(row);
+    row.querySelector('[name=description]').focus();
+    updateManualSum(form);
+  });
+  holder.addEventListener('input',()=>updateManualSum(form));
+  holder.addEventListener('click',event=>{
+    const button=event.target.closest('.manual-remove-line');
+    if(!button || holder.children.length===1)return;
+    button.closest('.manual-order-line').remove();
+    updateManualSum(form);
+  });
+  updateManualSum(form);
+}
+bindManualLines(document.getElementById('manual-form'),document.getElementById('manual-add-line'));
+
 const manualModal = document.getElementById('manual-modal');
 document.getElementById('new-order-button').addEventListener('click', () => { manualModal.hidden = false; document.getElementById('manual-error').textContent = ''; });
 document.getElementById('manual-close').addEventListener('click', () => { manualModal.hidden = true; });
@@ -417,7 +460,7 @@ document.getElementById('manual-form').addEventListener('submit', async event =>
     const created = await adminApi('create-manual-order', {
       channel: values.get('channel'), customerName: values.get('customerName'),
       customerEmail: values.get('customerEmail'), customerPhone: values.get('customerPhone'),
-      description: values.get('description'), quantity: Number(values.get('quantity')),
+      items: manualItemsFrom(form),
       totalAmount: Math.round(amount * 100), paymentStatus: values.get('paymentStatus'),
       notes: values.get('notes'), isTest: values.has('isTest')
     });
@@ -428,6 +471,9 @@ document.getElementById('manual-form').addEventListener('submit', async event =>
       await adminApi('finish-order-photo',{attachmentId:prepared.attachmentId});
     }
     form.reset();
+    const lines=form.querySelector('.manual-order-lines');
+    while(lines.children.length>1)lines.lastElementChild.remove();
+    updateManualSum(form);
     manualModal.hidden = true;
     currentView = 'orders';
     document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.view === 'orders'));
@@ -905,18 +951,16 @@ function unifiedOrderTasks(record, id) {
     const customerEmail = String(fd.get('customerEmail') || '').trim();
     const customerPhone = String(fd.get('customerPhone') || '').trim();
     const channel = String(fd.get('channel') || '');
-    const description = String(fd.get('description') || '').trim();
-    const quantity = Number(fd.get('quantity'));
+    const editedItems=manualItemsFrom(manual);
     const notes = String(fd.get('notes') || '').trim();
     const changed = customerName !== String(record.customer_name || '').trim()
       || customerEmail.toLowerCase() !== String(record.customer_email || '').trim().toLowerCase()
       || customerPhone !== String(record.customer_phone || '').trim()
       || channel !== String(record.sales_channel || '')
-      || description !== String(record.order_items?.[0]?.name || '').trim()
-      || quantity !== Number(record.order_items?.[0]?.quantity || 1)
+      || JSON.stringify(editedItems) !== JSON.stringify((record.order_items||[]).map(item=>({description:String(item.name||'').trim(),quantity:Number(item.quantity),lineAmount:Number(item.line_amount)})))
       || editedTotal !== total || notes !== String(record.notes || '').trim();
     if (changed) tasks.push({label:'Dados da encomenda',action:'edit-manual-order',body:{
-      id, customerName, customerEmail, customerPhone, channel, description, quantity, totalAmount:editedTotal, notes, markPaid:false
+      id, customerName, customerEmail, customerPhone, channel, items:editedItems, totalAmount:editedTotal, notes, markPaid:false
     }});
   }
   const delivery = unifiedDeliveryTask(record,'order',id);
@@ -1121,9 +1165,16 @@ async function openOrder(id) {
           <label>Email<input type="email" name="customerEmail" value="${esc(order.customer_email || '')}"></label>
           <label>Telefone<input name="customerPhone" value="${esc(order.customer_phone || '')}"></label>
           <label>Canal<select name="channel">${[['instagram','Instagram'],['whatsapp','WhatsApp'],['other','Outro']].map(([v,l])=>`<option value="${v}" ${order.sales_channel===v?'selected':''}>${l}</option>`).join('')}</select></label>
-          <label>Produto / descrição<input name="description" value="${esc(order.order_items?.[0]?.name || '')}" required maxlength="240"></label>
-          <label>Quantidade<input type="number" name="quantity" min="1" step="1" max="10000" value="${Number(order.order_items?.[0]?.quantity || 1)}" required></label>
-          <label>Total (€)<input type="number" name="totalEuros" min="0" step="0.01" value="${(Number(order.total_amount)/100).toFixed(2)}" ${order.payment_status==='paid'?'readonly':''} required></label>
+          <div class="manual-items-field"><span class="manual-items-title">Artigos da encomenda</span>
+            <div class="manual-order-lines">${(order.order_items||[]).map((item,index)=>`<div class="manual-order-line">
+              <label>Produto / descrição<input name="description" value="${esc(item.name||'')}" required maxlength="240"></label>
+              <label>Quantidade<input name="quantity" type="number" min="1" max="10000" step="1" value="${Number(item.quantity||1)}" required></label>
+              <label>Valor da alínea (€)<input name="lineEuros" type="number" min="0" step="0.01" value="${(Number(item.line_amount||0)/100).toFixed(2)}" required></label>
+              <button type="button" class="secondary manual-remove-line" ${index===0?'hidden':''}>Remover</button>
+            </div>`).join('')}</div>
+            <button type="button" class="secondary manual-add-line">+ Acrescentar alínea</button>
+          </div>
+          <label>Total da encomenda (€)<input type="number" name="totalEuros" min="0" step="0.01" value="${(Number(order.total_amount)/100).toFixed(2)}" readonly required></label>
           <label>Notas<textarea name="notes" rows="3">${esc(order.notes || '')}</textarea></label>
           <p id="order-edit-error" class="error" role="alert"></p>
           <button type="submit">Guardar alterações</button>
@@ -1132,6 +1183,8 @@ async function openOrder(id) {
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(order.attachments)}</div>`);
     document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadOrders(); });
     bindDeliveryForm(order,'order',id);
+    const itemEditForm=document.getElementById('order-edit-form');
+    if(itemEditForm) bindManualLines(itemEditForm,itemEditForm.querySelector('.manual-add-line'));
     const paymentForm = document.getElementById('order-payment-form');
     if (paymentForm) {
       const stageSelect = document.getElementById('order-payment-stage');
@@ -1201,8 +1254,7 @@ async function openOrder(id) {
           await adminApi('edit-manual-order', {
             id, customerName: values.get('customerName'),
             customerEmail: values.get('customerEmail'), customerPhone: values.get('customerPhone'),
-            channel: values.get('channel'), description: values.get('description'),
-            quantity: Number(values.get('quantity')),
+            channel: values.get('channel'), items: manualItemsFrom(event.currentTarget),
             totalAmount: Math.round(Number(values.get('totalEuros')) * 100),
             notes: values.get('notes'), markPaid: false
           });
