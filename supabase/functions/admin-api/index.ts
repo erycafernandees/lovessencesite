@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     if (action === "list-orders") {
       const page = Math.max(1, Number(url.searchParams.get("page") || body.page || 1));
       const status = cleanText(url.searchParams.get("status") || body.status, 40);
-      let query = client.from("orders").select("id,order_number,source,order_status,payment_status,payment_provider,manual_received_amount,total_amount,currency,customer_name,customer_email,delivery_method,delivery_tracking_code,delivery_meeting_place,delivery_meeting_at,created_at,paid_at,sales_channel,is_test,admin_seen_at,payments(gross_amount,processing_fee_amount,net_amount,refunded_amount,provider_payment_id)", { count: "exact" })
+      let query = client.from("orders").select("id,order_number,source,order_status,payment_status,payment_provider,manual_received_amount,total_amount,currency,customer_name,customer_email,delivery_method,delivery_tracking_code,delivery_meeting_place,delivery_meeting_at,expected_delivery_date,created_at,paid_at,sales_channel,is_test,admin_seen_at,payments(gross_amount,processing_fee_amount,net_amount,refunded_amount,provider_payment_id)", { count: "exact" })
         .is("project_request_id", null)
         .order("created_at", { ascending: false }).range((page - 1) * 25, page * 25 - 1);
       if (status) query = query.eq("order_status", status);
@@ -579,6 +579,9 @@ Deno.serve(async (req) => {
       if (body.isTest !== undefined && typeof body.isTest !== "boolean") {
         throw new ApiError(422, "invalid_test", "O tipo de encomenda não é válido.");
       }
+      const expectedDeliveryDate = body.expectedDeliveryDate == null || body.expectedDeliveryDate === "" ? null : String(body.expectedDeliveryDate);
+      if (expectedDeliveryDate && (!/^\d{4}-\d{2}-\d{2}$/.test(expectedDeliveryDate) || !Number.isFinite(Date.parse(expectedDeliveryDate)) || new Date(expectedDeliveryDate).toISOString().slice(0,10) !== expectedDeliveryDate))
+        throw new ApiError(422,"invalid_expected_delivery_date","A data prevista de entrega não é válida.");
       const paid = body.paymentStatus === "paid";
       const now = new Date().toISOString();
       const token = randomToken();
@@ -588,6 +591,7 @@ Deno.serve(async (req) => {
         payment_status: paid ? "paid" : "unpaid",
         payment_provider: "manual",
         sales_channel: channel,
+        expected_delivery_date: expectedDeliveryDate,
         customer_name: customerName,
         customer_email: customerEmail?.toLowerCase() || null,
         customer_phone: customerPhone,
@@ -745,6 +749,9 @@ Deno.serve(async (req) => {
       const totalAmount = Number(body.totalAmount);
       if (sum !== totalAmount) throw new ApiError(422,"total_mismatch","O total não coincide com a soma dos artigos.");
       if (!Number.isSafeInteger(totalAmount) || totalAmount < 0 || totalAmount > 100000000) throw new ApiError(422, "invalid_total", "Total inválido.");
+      const expectedDeliveryDate = body.expectedDeliveryDate == null || body.expectedDeliveryDate === "" ? null : String(body.expectedDeliveryDate);
+      if (expectedDeliveryDate && (!/^\d{4}-\d{2}-\d{2}$/.test(expectedDeliveryDate) || !Number.isFinite(Date.parse(expectedDeliveryDate)) || new Date(expectedDeliveryDate).toISOString().slice(0,10) !== expectedDeliveryDate))
+        throw new ApiError(422,"invalid_expected_delivery_date","A data prevista de entrega não é válida.");
       const markPaid = body.markPaid === true;
       const alreadyPaid = before.payment_status === "paid";
       if (!alreadyPaid && before.payment_status !== "unpaid") throw new ApiError(409, "payment_locked", "Este pagamento não pode ser alterado manualmente.");
@@ -763,6 +770,7 @@ Deno.serve(async (req) => {
         customer_email: customerEmail?.toLowerCase() || null,
         customer_phone: customerPhone,
         sales_channel: channel,
+        expected_delivery_date: expectedDeliveryDate,
         notes,
         subtotal_amount: totalAmount,
         total_amount: totalAmount,
