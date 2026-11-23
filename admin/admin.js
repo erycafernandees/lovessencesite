@@ -404,16 +404,23 @@ function manualItemsFrom(form) {
   return rows.map(row=>{
     const description=row.querySelector('[name=description]').value.trim();
     const quantity=Number(row.querySelector('[name=quantity]').value);
-    const euros=String(row.querySelector('[name=lineEuros]').value).replace(',','.');
-    const lineAmount=Math.round(Number(euros)*100);
-    if(!description || !Number.isInteger(quantity) || quantity<1 || quantity>10000 || !/^\d+(?:\.\d{1,2})?$/.test(euros) || !Number.isSafeInteger(lineAmount) || lineAmount<0)
-      throw new Error('Verifica a descrição, quantidade e valor de cada alínea.');
-    return {description,quantity,lineAmount};
+    const euros=String(row.querySelector('[name=unitEuros]').value).replace(',','.');
+    const unitAmount=Math.round(Number(euros)*100);
+    if(!description || !Number.isInteger(quantity) || quantity<1 || quantity>10000 || !/^\d+(?:\.\d{1,2})?$/.test(euros) || !Number.isSafeInteger(unitAmount) || unitAmount<0 || !Number.isSafeInteger(unitAmount*quantity))
+      throw new Error('Verifica a descrição, quantidade e preço unitário de cada alínea.');
+    return {description,quantity,unitAmount};
   });
 }
 function updateManualSum(form) {
   const rows=[...form.querySelectorAll('.manual-order-line')];
-  const cents=rows.reduce((sum,row)=>sum+Math.round((Number(row.querySelector('[name=lineEuros]').value)||0)*100),0);
+  const cents=rows.reduce((sum,row)=>{
+    const quantity=Number(row.querySelector('[name=quantity]').value)||0;
+    const unitCents=Math.round((Number(row.querySelector('[name=unitEuros]').value)||0)*100);
+    const subtotal=quantity*unitCents;
+    const label=row.querySelector('.manual-line-subtotal strong');
+    if(label) label.textContent=money(subtotal);
+    return sum+subtotal;
+  },0);
   form.querySelector('[name=totalEuros]').value=(cents/100).toFixed(2);
 }
 function bindManualLines(form,button) {
@@ -423,7 +430,7 @@ function bindManualLines(form,button) {
     const row=holder.firstElementChild.cloneNode(true);
     row.querySelector('[name=description]').value='';
     row.querySelector('[name=quantity]').value='1';
-    row.querySelector('[name=lineEuros]').value='';
+    row.querySelector('[name=unitEuros]').value='';
     row.querySelector('.manual-remove-line').hidden=false;
     holder.append(row);
     row.querySelector('[name=description]').focus();
@@ -966,7 +973,7 @@ function unifiedOrderTasks(record, id) {
       || customerEmail.toLowerCase() !== String(record.customer_email || '').trim().toLowerCase()
       || customerPhone !== String(record.customer_phone || '').trim()
       || channel !== String(record.sales_channel || '')
-      || JSON.stringify(editedItems) !== JSON.stringify((record.order_items||[]).map(item=>({description:String(item.name||'').trim(),quantity:Number(item.quantity),lineAmount:Number(item.line_amount)})))
+      || JSON.stringify(editedItems) !== JSON.stringify((record.order_items||[]).map(item=>({description:String(item.name||'').trim(),quantity:Number(item.quantity),unitAmount:Number(item.unit_amount)})))
       || editedTotal !== total || notes !== String(record.notes || '').trim()
       || String(fd.get('expectedDeliveryDate') || '') !== String(record.expected_delivery_date || '');
     if (changed) tasks.push({label:'Dados da encomenda',action:'edit-manual-order',body:{
@@ -1180,7 +1187,7 @@ async function openOrder(id) {
             <div class="manual-order-lines">${(order.order_items||[]).map((item,index)=>`<div class="manual-order-line">
               <label>Produto / descrição<input name="description" value="${esc(item.name||'')}" required maxlength="240"></label>
               <label>Quantidade<input name="quantity" type="number" min="1" max="10000" step="1" value="${Number(item.quantity||1)}" required></label>
-              <label>Valor da alínea (€)<input name="lineEuros" type="number" min="0" step="0.01" value="${(Number(item.line_amount||0)/100).toFixed(2)}" required></label>
+              <label>Preço unitário (€)<input name="unitEuros" type="number" min="0" step="0.01" value="${(Number(item.unit_amount||0)/100).toFixed(2)}" required></label><div class="manual-line-subtotal">Subtotal <strong>${money(item.line_amount,order.currency)}</strong></div>
               <button type="button" class="secondary manual-remove-line" ${index===0?'hidden':''}>Remover</button>
             </div>`).join('')}</div>
             <button type="button" class="secondary manual-add-line">+ Acrescentar alínea</button>
