@@ -1,4 +1,89 @@
 <!doctype html>
-<html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>A tua opinião é especial | Love Essences</title><link rel="icon" href="/assets/love-essences-social-logo.png"><style>
-:root{font-family:'Trebuchet MS',Arial,sans-serif;color:#511449;background:#fcf8fb}*{box-sizing:border-box}body{margin:0;padding:20px}main{max-width:650px;margin:25px auto;background:white;border:1px solid #eddfea;border-radius:22px;padding:clamp(20px,5vw,45px);box-shadow:0 15px 50px #500e4510}header{text-align:center}header img{width:95px;max-height:85px;object-fit:contain}h1{font-family:Georgia,serif;font-weight:400;font-size:clamp(29px,5vw,40px);margin:20px 0 10px}p{line-height:1.6}.product{background:#faf4f9;border-radius:14px;padding:15px;display:flex;align-items:center;gap:15px;margin:25px 0}.product img{width:85px;height:85px;object-fit:cover;border-radius:10px}.field{margin:20px 0}label,.field>strong{display:block;font-weight:600;font-size:14px;margin-bottom:8px}input[type=text],textarea{width:100%;font:inherit;border:1px solid #ddc9d9;border-radius:9px;padding:13px;color:#511449}textarea{min-height:105px;resize:vertical}.stars{display:flex;gap:7px}.stars button{border:0;background:transparent;color:#c8bdc7;font-size:33px;cursor:pointer;padding:0 4px}.stars button.active{color:#d6a443}.check{display:flex;align-items:start;gap:10px;margin:18px 0;font-size:13px;line-height:1.5}.check input{margin-top:3px}.primary{padding:14px 22px;border:0;border-radius:10px;background:#66135e;color:#fff;font:600 15px inherit;width:100%;cursor:pointer}.primary:disabled{opacity:.5}.muted{font-size:12px;color:#887282}.message{padding:14px;border-radius:10px;background:#f1e3ef;line-height:1.5;margin-top:15px}a{color:#66135e}footer{text-align:center;font-size:12px;margin:22px}input[type=file]{width:100%;font-size:13px}
-</style></head><body><main><header><a href="/"><img src="/assets/love-essences-social-logo.png" alt="Love Essences"></a><h1>A tua opinião é especial ♡</h1><p>Obrigada por fazeres parte da nossa história. Conta-nos como foi receber a tua encomenda!</p></header><div id="notice" class="message">A carregar o teu convite…</div><form id="review-form" hidden><div class="product" id="product"></div><div class="field"><strong>O que achaste do teu produto?</strong><div class="stars" id="product-stars" aria-label="Classificação do produto"></div></div><div class="field"><strong>E da experiência com a Love Essences?</strong><div class="stars" id="experience-stars" aria-label="Classificação da experiência"></div></div><div class="field"><label for="public-name">Nome a apresentar no site</label><input id="public-name" type="text" maxlength="65" required><p class="muted">Podes usar só o primeiro nome, se preferires.</p></div><div class="field"><label for="comment">Conta-nos a tua experiência</label><textarea id="comment" maxlength="1500" minlength="10" placeholder="Como foi receber a tua encomenda?" required></textarea></div><div class="field"><label for="photo">Fotografia da tua encomenda (opcional, JPG ou PNG até 2 MB)</label><input id="photo" type="file" accept="image/jpeg,image/png"><label class="check"><input id="photo-consent" type="checkbox"> Autorizo a publicação desta fotografia juntamente com a minha avaliação.</label></div><label class="check"><input id="consent" type="checkbox" required> Autorizo a Love Essences a publicar o nome indicado, as minhas classificações e o meu comentário no site. Sei que a avaliação será analisada antes da publicação.</label><button class="primary" id="submit" type="submit">Enviar a minha avaliação 💜</button><p class="muted">A tua avaliação é voluntária. Para pedidos de remoção, contacta-nos através do site.</p></form></main><footer>Feito com carinho · <a href="/">Love Essences</a></footer><script src="/assets/js/commerce-config.js"></script><script type="module" src="/avaliar/review.js?v=20261123-form-fix"></script></body></html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#fbf8fb">
+<title>Partilha a tua experiência | Love Essences</title>
+<link rel="icon" href="/assets/love-essences-social-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#511449;--deep:#66135e;--muted:#796a79;--line:#e9dce7;--paper:#fbf8fb;--sans:'Quicksand',sans-serif;--serif:'Cormorant Garamond',Georgia,serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans)}
+a{color:var(--deep)}
+.site-header{background:#fff;border-bottom:1px solid var(--line)}
+.header-inner{max-width:1140px;margin:auto;padding:18px 25px;display:flex;align-items:center;justify-content:center;position:relative;min-height:90px}
+.header-logo{display:block;width:clamp(190px,28vw,260px);height:auto;max-height:66px;object-fit:contain}
+.header-link{position:absolute;left:25px;font-size:.72rem;font-weight:600;text-decoration:none;color:var(--muted)}
+.header-link:hover{color:var(--deep)}
+main{max-width:760px;margin:0 auto;padding:clamp(35px,6vw,65px) 22px 65px}
+.intro{text-align:center;margin:0 auto 28px;max-width:640px}
+.eyebrow{color:#a26798;font-size:.66rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin:0 0 12px}
+h1{font:400 clamp(28px,4vw,39px)/1.13 var(--serif);margin:0}
+.intro .description{margin:12px auto 0;font-size:.83rem;line-height:1.7;color:var(--muted)}
+.divider{height:1px;width:76px;background:#d9bdce;margin:24px auto 0}
+.form-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:clamp(20px,4vw,35px);box-shadow:0 7px 25px rgba(81,20,73,.035)}
+[hidden]{display:none!important}
+.product{background:#fbf7fa;border:1px solid #f0e7ef;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:15px;margin:0 0 27px}
+.product img{width:76px;height:76px;object-fit:cover;border-radius:8px}
+.product strong{font-size:.82rem;font-weight:600}
+.product .muted{margin:3px 0 0}
+.field{margin:0 0 25px}
+.field>strong,.field>label:not(.check){display:block;color:var(--ink);font-size:.8rem;font-weight:600;margin:0 0 11px}
+input[type=text],textarea{width:100%;font:500 .84rem var(--sans);padding:13px 14px;background:#fff;border:1px solid #e1d2df;border-radius:9px;color:var(--ink);outline:none}
+input[type=text]:focus,textarea:focus{border-color:#a26798;box-shadow:0 0 0 3px #f4e7f1}
+textarea{min-height:115px;resize:vertical;line-height:1.65}
+input[type=file]{display:block;width:100%;font:.77rem var(--sans);color:var(--muted)}
+.stars{display:flex;align-items:center;gap:7px}
+.stars button{border:0;background:transparent;color:#c8bdc7;font-size:31px;line-height:1;cursor:pointer;padding:1px 3px;transition:color .15s}
+.stars button.active{color:#c9a15a}
+.stars button:focus-visible{outline:2px solid var(--deep);outline-offset:3px;border-radius:4px}
+.check{display:flex;align-items:flex-start;gap:11px;font-size:.73rem;line-height:1.7;color:#715d6d;font-weight:500;margin:13px 0}
+.check input{margin:4px 0 0;accent-color:var(--deep);flex:0 0 auto}
+.muted{font-size:.72rem;line-height:1.6;color:var(--muted)}
+.message{padding:18px 20px;border-radius:10px;background:#f7edf5;color:var(--ink);font-size:.82rem;line-height:1.65}
+.primary{display:block;width:100%;border:0;border-radius:9px;background:var(--deep);color:#fff;padding:15px 22px;font:600 .84rem var(--sans);cursor:pointer;margin-top:22px}
+.primary:hover{background:#52104c}
+.primary:disabled{opacity:.55;cursor:wait}
+.bottom-link{display:block;text-align:center;text-decoration:none;font-size:.76rem;font-weight:600;margin:25px auto 0}
+footer{border-top:1px solid var(--line);text-align:center;padding:22px;color:var(--muted);font-size:.7rem}
+footer a{text-decoration:none}
+@media(max-width:600px){.header-inner{min-height:78px;padding:14px 20px}.header-link{display:none}main{padding:40px 16px 45px}.intro{margin-bottom:22px}.form-card{padding:20px 18px}.stars button{font-size:30px}}
+</style>
+</head>
+<body>
+<header class="site-header"><div class="header-inner">
+<a class="header-link" href="/">← Voltar à loja</a>
+<a href="/" aria-label="Love Essences, página inicial"><img class="header-logo" src="/assets/love-essences-horizontal-logo.svg" alt="Love Essences"></a>
+</div></header>
+<main>
+<section class="intro">
+<p class="eyebrow">A tua avaliação</p>
+<h1>Partilha a tua experiência</h1>
+<p class="description">Conta-nos como foi receber a tua encomenda Love Essences.</p>
+<div class="divider" aria-hidden="true"></div>
+</section>
+<section class="form-card">
+<div id="notice" class="message" role="status" aria-live="polite">A carregar o teu convite…</div>
+<form id="review-form" hidden>
+<div class="product" id="product"></div>
+<div class="field"><strong>O que achaste do teu produto?</strong><div class="stars" id="product-stars" aria-label="Classificação do produto"></div></div>
+<div class="field"><strong>E da experiência com a Love Essences?</strong><div class="stars" id="experience-stars" aria-label="Classificação da experiência"></div></div>
+<div class="field"><label for="public-name">Nome a apresentar no site</label><input id="public-name" type="text" maxlength="65" required><p class="muted">Podes usar só o primeiro nome, se preferires.</p></div>
+<div class="field"><label for="comment">Conta-nos a tua experiência</label><textarea id="comment" maxlength="1500" minlength="10" placeholder="Como foi receber a tua encomenda?" required></textarea></div>
+<div class="field"><label for="photo">Fotografia da tua encomenda (opcional, JPG ou PNG até 2 MB)</label><input id="photo" type="file" accept="image/jpeg,image/png"><label class="check"><input id="photo-consent" type="checkbox">Autorizo a publicação desta fotografia juntamente com a minha avaliação.</label></div>
+<label class="check"><input id="consent" type="checkbox" required>Autorizo a Love Essences a publicar o nome indicado, as minhas classificações e o meu comentário no site. Sei que a avaliação será analisada antes da publicação.</label>
+<button class="primary" id="submit" type="submit">Enviar a minha avaliação ♡</button>
+<p class="muted">A tua avaliação é voluntária. Para pedidos de remoção, contacta-nos através do site.</p>
+</form>
+</section>
+<a class="bottom-link" href="/">Voltar à Love Essences</a>
+</main>
+<footer>Feito à mão, com carinho · <a href="/">Love Essences</a></footer>
+<script src="/assets/js/commerce-config.js"></script>
+<script type="module" src="/avaliar/review.js?v=20261123-form-fix"></script>
+</body>
+</html>
