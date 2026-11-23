@@ -70,7 +70,9 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
   async function load() {
     byId('reviews-body').innerHTML='<tr><td colspan="7">A carregar…</td></tr>';
     try {
-      const [res]=await Promise.all([api('list'),loadCatalog()]);rows=Array.isArray(res.data)?res.data:[];
+      const res=await api('list');rows=Array.isArray(res.data)?res.data:[];
+      // Nunca ocultar avaliações por uma falha independente no catálogo.
+      await loadCatalog().catch(error=>{console.warn('Catálogo de avaliações indisponível:',error);});
       summary();render();
     }catch(err){byId('reviews-body').innerHTML='<tr><td colspan="7" class="error">'+esc(err.message)+'</td></tr>';byId('reviews-count').textContent='';}
   }
