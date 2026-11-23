@@ -88,7 +88,7 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
     const photo=v?.photo_path&&v.publish_photo?config.supabaseUrl+'/storage/v1/object/public/customer-review-photos/'+encodeURIComponent(v.photo_path):null;
     const content='<p class="eyebrow">Avaliações</p><h2>'+esc(row.customer_name)+'</h2>'+
       '<div class="detail-section"><h3>Convite</h3><div class="detail-grid"><p><strong>Artigo</strong>'+esc(row.product_name||'Por associar')+'</p><p><strong>Canal</strong>'+esc(channels[row.channel]||row.channel)+'</p><p><strong>Data</strong>'+date(row.created_at)+'</p><p><strong>Estado</strong>'+badge(status)+'</p></div></div>'+
-      (v?'<div class="detail-section"><h3>Opinião da cliente</h3><div class="detail-grid"><p><strong>Produto</strong>'+rating(v.product_rating)+'</p><p><strong>Experiência</strong>'+rating(v.experience_rating)+'</p></div><p><strong>Nome público</strong>'+esc(v.public_name)+'</p><p class="reviews-comment">'+esc(v.comment)+'</p>'+
+      (v?'<div class="detail-section"><h3>Opinião da cliente</h3><div class="detail-grid"><p><strong>Produto</strong>'+rating(v.product_rating)+'</p><p><strong>Experiência</strong>'+rating(v.experience_rating)+'</p></div><p><strong>Nome público</strong>'+esc(v.public_name)+'</p>'+(v.comment?'<p class="reviews-comment">'+esc(v.comment)+'</p>':'<p class="reviews-hint">Avaliação apenas com estrelas.</p>')+
       (photo?'<img class="reviews-preview" alt="Fotografia enviada pela cliente" src="'+esc(photo)+'">':'')+
       (v.photo_path&&!v.publish_photo?'<p class="reviews-hint">A cliente não autorizou a publicação da fotografia.</p>':'')+
       '<p class="reviews-hint">Os comentários são publicados sem alterações ao seu conteúdo.</p>'+
