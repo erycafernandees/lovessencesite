@@ -4,7 +4,7 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
   const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[char]));
   const statuses={awaiting:'A aguardar',pending:'Por aprovar',published:'Publicada',rejected:'Rejeitada'};
   const channels={website:'Site',instagram:'Instagram',whatsapp:'WhatsApp',other:'Outro'};
-  let rows=[],creating=false;
+  let rows=[],creating=false,products=[];
   async function api(action,extra={}) {
     const {data:{session}}=await supabase.auth.getSession();
     if(!session) throw Error('A sessão terminou. Volta a entrar no CRM.');
@@ -15,6 +15,17 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
     const json=await res.json().catch(()=>({}));
     if(!res.ok)throw Error(json.message||'Não foi possível concluir a operação.');
     return json;
+  }
+  async function loadCatalog(){
+    const response=await api('catalog');
+    products=Array.isArray(response.data)?response.data:[];
+  }
+  function productSelect(selectedName=''){
+    const selected=products.find(p=>p.name===selectedName)?.code||'';
+    return '<label>Artigo Love Essences (opcional — podes associar depois)<select name="productCode">'+
+      '<option value="">Selecionar mais tarde / Personalizado</option>'+
+      products.map(p=>'<option value="'+esc(p.code)+'"'+(p.code===selected?' selected':'')+'>'+esc(p.name)+' · '+esc(p.category)+'</option>').join('')+
+      '</select></label>';
   }
   function reviewOf(row) {
     const value=row.customer_reviews;
@@ -59,7 +70,7 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
   async function load() {
     byId('reviews-body').innerHTML='<tr><td colspan="7">A carregar…</td></tr>';
     try {
-      const res=await api('list');rows=Array.isArray(res.data)?res.data:[];
+      const [res]=await Promise.all([api('list'),loadCatalog()]);rows=Array.isArray(res.data)?res.data:[];
       summary();render();
     }catch(err){byId('reviews-body').innerHTML='<tr><td colspan="7" class="error">'+esc(err.message)+'</td></tr>';byId('reviews-count').textContent='';}
   }
@@ -86,8 +97,7 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
     const association='<div class="detail-section"><h3>Associar artigo Love Essences</h3>'+
       '<p class="reviews-hint">Podes enviar o convite primeiro e associar o artigo depois. É necessário associá-lo antes de publicar a avaliação.</p>'+
       '<form id="reviews-associate-form" class="reviews-create-form">'+
-      '<label>Artigo<input name="productName" maxlength="140" placeholder="Nome do artigo" value="'+esc(row.product_name||'')+'"></label>'+
-      '<label>Fotografia do artigo (URL opcional)<input type="url" name="productImageUrl" placeholder="https://love-essences.pt/assets/..." value="'+esc(row.product_image_url||'')+'"></label>'+
+      productSelect(row.product_name||'')+
       '<button type="submit">Guardar associação</button><p class="error" id="reviews-associate-error"></p></form></div>';
     openDrawer(content+association);
     byId('reviews-associate-form').addEventListener('submit',async event=>{
@@ -108,9 +118,8 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
     const content='<p class="eyebrow">Avaliações</p><h2>Criar link de avaliação</h2><p class="reviews-hint">Envia por Instagram, WhatsApp ou outro canal, mesmo para encomendas não realizadas no site.</p>'+
       '<form id="reviews-create-form" class="reviews-create-form">'+
       '<label>Nome da cliente<input name="customerName" maxlength="100" required placeholder="Ex.: Catarina"></label>'+
-      '<label>Artigo comprado (opcional — podes associar depois)<input name="productName" maxlength="140" placeholder="Ex.: Conjunto personalizado"></label>'+
+      productSelect()+
       '<label>Canal<select name="channel"><option value="instagram">Instagram</option><option value="whatsapp">WhatsApp</option><option value="website">Site</option><option value="other">Outro</option></select></label>'+
-      '<label>URL da fotografia do artigo (opcional)<input type="url" name="productImageUrl" placeholder="https://love-essences.pt/assets/..."></label>'+
       '<p class="reviews-hint">Podes enviar o convite só com o nome da cliente e o canal. Mais tarde, associa o artigo na avaliação antes de a publicares.</p>'+
       '<button type="submit">Criar link</button><p class="error" id="reviews-create-error" role="alert"></p></form><div id="reviews-created-link" hidden></div>';
     openDrawer(content);creating=false;
