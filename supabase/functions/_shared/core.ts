@@ -178,6 +178,7 @@ export async function queueEmail(template: string, recipient: string, payload: R
     admin_order_paid: `Nova encomenda paga ${payload.orderNumber || ""}`,
     admin_project_received: `Novo projeto personalizado ${payload.projectNumber || ""}`,
     quote_ready: `A tua proposta Love Essences ${payload.projectNumber || ""}`,
+    shipment_ctt: `A tua encomenda ${payload.orderNumber || payload.projectNumber || ""} está a caminho — Love Essences`,
     site_error_alert: "Alerta: erros recorrentes no site Love Essences",
     commerce_audit_alert: "Alerta: verificar pagamentos e encomendas Love Essences",
   };
@@ -205,6 +206,11 @@ function escapeText(value: unknown): string {
 
 function emailHtml(template: string, payload: Record<string, unknown>): string {
   const number = String(payload.orderNumber || payload.projectNumber || "");
+  if (template === "shipment_ctt") {
+    const code = escapeText(payload.trackingCode);
+    const reference = escapeText(payload.orderNumber || payload.projectNumber);
+    return `<!doctype html><html lang="pt"><body style="margin:0;background:#f8f3f7;font-family:Arial,sans-serif;color:#3f073a"><div style="max-width:620px;margin:auto;padding:36px"><div style="background:#fff;border-radius:20px;padding:36px"><p style="color:#b468ab;letter-spacing:.14em;text-transform:uppercase;font-size:12px">LOVE ESSENCES | SABONETES ARTESANAIS &amp; CO.</p><h1 style="font-family:Georgia,serif;font-weight:400">A tua encomenda está a caminho! 💜</h1><p style="line-height:1.7">Preparámos a tua encomenda com atenção a cada detalhe e já foi enviada pelos CTT.</p><p style="line-height:1.8"><strong>Encomenda:</strong> ${reference}<br><strong>Código de acompanhamento CTT:</strong> ${code}</p><p style="margin:26px 0"><a href="https://love-essences.pt/acompanhar-encomenda/" style="display:inline-block;padding:14px 22px;border-radius:8px;background:#66135e;color:#fff;text-decoration:none">Acompanhar encomenda</a></p><p style="line-height:1.7">Na página, introduz o código acima para acompanhares o percurso sem saíres da Love Essences.</p><p style="color:#765c73;font-size:13px">Obrigada por escolheres a Love Essences. Podes responder a este email se precisares de ajuda.</p></div></div></body></html>`;
+  }
   const isQuote = template === "quote_ready";
   const isSiteError = template === "site_error_alert";
   const isCommerceAudit = template === "commerce_audit_alert";
