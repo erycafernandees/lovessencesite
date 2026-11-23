@@ -1193,7 +1193,7 @@ async function openOrder(id) {
         </form></div>` : ''}
       <div class="detail-section"><h3>Artigos e personalização</h3>${order.order_items.map(item => `<div class="line-item"><strong>${esc(item.quantity)} × ${esc(item.name)}</strong><p>${money(item.line_amount,order.currency)}</p>${personalizationHtml(item.personalization)}</div>`).join('')}</div>
       <div class="detail-section"><h3>Ficheiros privados</h3>${filesHtml(order.attachments)}</div>`);
-    document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadOrders(); });
+    document.getElementById('order-status-form').addEventListener('submit', async event => { event.preventDefault(); await adminApi('update-order',{id,orderStatus:new FormData(event.currentTarget).get('status')}); await openOrder(id); await loadView(); });
     bindDeliveryForm(order,'order',id);
     const itemEditForm=document.getElementById('order-edit-form');
     if(itemEditForm) bindManualLines(itemEditForm,itemEditForm.querySelector('.manual-add-line'));
@@ -1245,7 +1245,7 @@ async function openOrder(id) {
             id, receivedAmount: amount, fullyPaid, confirmReduction,
             paymentMethod: paymentForm.elements.paymentMethod.value
           });
-          await loadOrders();
+          await loadView();
           await openOrder(id);
         } catch (error) {
           paymentError.textContent = error.message || 'Não foi possível guardar o pagamento.';
@@ -1271,7 +1271,7 @@ async function openOrder(id) {
             expectedDeliveryDate: values.get('expectedDeliveryDate') || null,
             notes: values.get('notes'), markPaid: false
           });
-          await loadOrders();
+          await loadView();
           await openOrder(id);
         } catch (cause) {
           error.textContent = cause.message || 'Não foi possível guardar as alterações.';
