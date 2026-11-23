@@ -279,3 +279,13 @@
 .manual-line-subtotal{font-size:.79rem;color:var(--muted);align-self:end;padding-bottom:.66rem;white-space:nowrap}
 .manual-line-subtotal strong{display:block;color:var(--ink);font-size:.94rem;margin-top:.12rem}
 @media(max-width:650px){.manual-order-line{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.manual-line-subtotal{align-self:center;padding:0}.manual-order-line .manual-remove-line{grid-column:1/-1}}
+
+/* Listagem de personalizadas: manter etiquetas, datas e valores sempre numa linha. */
+.workspace:has(.projects-summary) .table-scroll table{width:max-content;min-width:100%}
+.workspace:has(.projects-summary) .table-scroll th,
+.workspace:has(.projects-summary) .table-scroll td,
+.workspace:has(.projects-summary) .table-scroll .badge,
+.workspace:has(.projects-summary) .table-scroll .status-badge,
+.workspace:has(.projects-summary) .table-scroll .project-row-subtitle{white-space:nowrap;overflow-wrap:normal;word-break:normal}
+.workspace:has(.projects-summary) .table-scroll th,
+.workspace:has(.projects-summary) .table-scroll td{padding-inline:.7rem}
