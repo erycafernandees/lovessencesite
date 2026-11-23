@@ -1,6 +1,7 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 import { prepareGalleryPhoto } from './gallery-photo.js';
+import { setupReviews } from './reviews-workspace.js';
 
 const config = window.LOVE_COMMERCE_CONFIG || {};
 const loginCard = document.getElementById('login-card');
@@ -387,7 +388,11 @@ async function showApp() {
   } catch (error) {
     console.warn('Admin profile lookup failed after MFA:', error);
   }
-  await loadView();
+  if (location.hash === '#avaliacoes') {
+    document.querySelector('.tabs button[data-view="reviews"]').click();
+  } else {
+    await loadView();
+  }
   syncCttTracking().then(result => {
     if (result?.added || result?.alreadyInAfterShip) console.info('Rastreio CTT sincronizado:', result);
   }).catch(error => console.warn('Sincronização CTT:',error.message));
@@ -683,11 +688,14 @@ document.querySelectorAll('.tabs button').forEach(button => button.addEventListe
   currentView = button.dataset.view;
   const isGallery = currentView === 'gallery';
   const isCheckoutErrors = currentView === 'checkout-errors';
-  document.getElementById('admin-orders-workspace').hidden = isGallery || isCheckoutErrors;
+  const isReviews = currentView === 'reviews';
+  document.getElementById('admin-orders-workspace').hidden = isGallery || isCheckoutErrors || isReviews;
   document.getElementById('admin-gallery-workspace').hidden = !isGallery;
   document.getElementById('admin-checkout-errors-workspace').hidden = !isCheckoutErrors;
+  document.getElementById('admin-reviews-workspace').hidden = !isReviews;
   if (isGallery) { loadProductGalleryAdmin(); return; }
   if (isCheckoutErrors) { loadCheckoutErrors(); return; }
+  if (isReviews) { reviewsWorkspace.load(); return; }
   statusFilter = '';
   updateStatusOptions();
   loadView();
@@ -1753,6 +1761,9 @@ document.getElementById('gallery-images').addEventListener('click',async event =
     await loadProductGalleryAdmin();
   }
 });
+
+// Inicializar a quinta aba antes de recuperar a sessão e instalar os eventos de navegação.
+const reviewsWorkspace = setupReviews({ supabase, config, openDrawer, closeDrawer });
 
 // Recuperar a sessão apenas depois de os botões e as abas terem eventos associados.
 await restoreAdminSession();
