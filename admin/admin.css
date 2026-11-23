@@ -316,3 +316,7 @@
 .reviews-hint{color:var(--muted)!important;font-size:.75rem!important;line-height:1.6!important}
 @media(max-width:800px){.reviews-workspace .summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.reviews-workspace .filters{gap:.7rem}.reviews-actions button{flex:1 1 auto}}
+
+/* Alinhar as ações das Avaliações como nas restantes áreas da gestão. */
+.reviews-workspace .toolbar #reviews-new-link{margin-left:auto}
+.reviews-workspace .toolbar #reviews-refresh{margin-left:0}
