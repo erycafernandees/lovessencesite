@@ -406,7 +406,7 @@ function manualItemsFrom(form) {
     const quantity=Number(row.querySelector('[name=quantity]').value);
     const euros=String(row.querySelector('[name=lineEuros]').value).replace(',','.');
     const lineAmount=Math.round(Number(euros)*100);
-    if(!description || !Number.isInteger(quantity) || quantity<1 || quantity>10000 || !/^\\d+(?:\\.\\d{1,2})?$/.test(euros) || !Number.isSafeInteger(lineAmount) || lineAmount<0)
+    if(!description || !Number.isInteger(quantity) || quantity<1 || quantity>10000 || !/^\d+(?:\.\d{1,2})?$/.test(euros) || !Number.isSafeInteger(lineAmount) || lineAmount<0)
       throw new Error('Verifica a descrição, quantidade e valor de cada alínea.');
     return {description,quantity,lineAmount};
   });
