@@ -8,16 +8,28 @@ Deno.serve(async (req:Request) => {
   const body=await readJson<Record<string,unknown>>(req);
   const action=String(body.action||"");
   const db=serviceClient();
-  if(action==="create" || action==="list" || action==="moderate" || action==="associate"){
+  if(action==="create" || action==="list" || action==="moderate" || action==="associate" || action==="catalog"){
    const admin=await requireAdmin(req,["owner","manager","viewer"]);
+   if(action==="catalog"){
+    const {data,error}=await db.from("products").select("code,name,category,image_path").eq("active",true).order("name");
+    if(error) throw error;
+    return json(req,{data:(data||[]).map(p=>({code:p.code,name:p.name,category:p.category}))});
+   }
    if(action==="create"){
     if(admin.role==="viewer") throw new ApiError(403,"forbidden","Sem autorização.");
     const customer_name=cleanText(body.customerName,100,true)!;
-    const product_name=cleanText(body.productName,140);
+    let product_name:string|null=null;
+    let product_image_url:string|null=null;
+    const productCode=cleanText(body.productCode,100);
+    if(productCode){
+      const {data:product,error:productError}=await db.from("products").select("name,image_path").eq("code",productCode).eq("active",true).maybeSingle();
+      if(productError) throw productError;
+      if(!product) throw new ApiError(422,"unknown_product","Escolhe um artigo válido do catálogo.");
+      product_name=product.name;
+      product_image_url=product.image_path ? SITE+"/"+String(product.image_path).replace(/^\/+/, "") : null;
+    }
     const channel=String(body.channel||"instagram");
     ensure(["instagram","whatsapp","website","other"].includes(channel),"Canal inválido.");
-    const product_image_url=cleanText(body.productImageUrl,500);
-    if(product_image_url) ensure(product_image_url.startsWith(SITE+"/")||product_image_url.startsWith("https://www.love-essences.pt/"),"A fotografia deve pertencer à Love Essences.");
     const token=randomToken();
     const token_hash=await sha256(token);
     const row={customer_name,product_name,channel,product_image_url,token_hash};
@@ -33,10 +45,16 @@ Deno.serve(async (req:Request) => {
    if(action==="associate"){
     if(admin.role==="viewer") throw new ApiError(403,"forbidden","Sem autorização.");
     const invitationId=cleanText(body.invitationId,80,true)!;
-    const productName=cleanText(body.productName,140);
-    const productImageUrl=cleanText(body.productImageUrl,500);
-    if(productImageUrl) ensure(productImageUrl.startsWith(SITE+"/") || productImageUrl.startsWith("https://www.love-essences.pt/"),"A fotografia deve pertencer à Love Essences.");
-    if(productImageUrl && !productName) throw new ApiError(422,"missing_product","Indica o artigo antes de associar uma fotografia.");
+    const productCode=cleanText(body.productCode,100);
+    let productName:string|null=null;
+    let productImageUrl:string|null=null;
+    if(productCode){
+      const {data:product,error:productError}=await db.from("products").select("name,image_path").eq("code",productCode).eq("active",true).maybeSingle();
+      if(productError) throw productError;
+      if(!product) throw new ApiError(422,"unknown_product","Escolhe um artigo válido do catálogo.");
+      productName=product.name;
+      productImageUrl=product.image_path ? SITE+"/"+String(product.image_path).replace(/^\/+/, "") : null;
+    }
     const {data,error}=await db.from("review_invitations")
       .update({product_name:productName,product_image_url:productImageUrl})
       .eq("id",invitationId).select("id,product_name,product_image_url").maybeSingle();
@@ -75,8 +93,8 @@ Deno.serve(async (req:Request) => {
    if(new Date(invite.expires_at).getTime()<Date.now()) throw new ApiError(410,"expired","Este convite expirou.");
    const product_rating=Number(body.productRating),experience_rating=Number(body.experienceRating);
    ensure(Number.isInteger(product_rating)&&product_rating>=1&&product_rating<=5&&Number.isInteger(experience_rating)&&experience_rating>=1&&experience_rating<=5,"Indica as duas classificações.");
-   const comment=cleanText(body.comment,1500,true)!;
-   ensure(comment.length>=10,"Escreve pelo menos 10 caracteres.");
+   const comment=cleanText(body.comment,1500)||"";
+   if(comment && comment.length<10) throw new ApiError(422,"short_comment","Se quiseres escrever, utiliza pelo menos 10 caracteres.");
    const public_name=cleanText(body.publicName,65,true)!;
    ensure(body.publicationConsent===true,"Confirma a autorização para publicar a avaliação.");
    let photo_path:string|null=null;
