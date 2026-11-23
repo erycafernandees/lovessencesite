@@ -66,8 +66,7 @@ function restoreAdminSession() {
   })();
   return sessionBootPromise;
 }
-restoreAdminSession();
-
+// A recuperação é acionada após a instalação de todos os eventos do CRM.
 
 // Inicializar de imediato o acesso à alteração de palavra-passe, sem depender do carregamento das encomendas.
 document.getElementById('password-settings-button')?.addEventListener('click', () => {
@@ -466,7 +465,13 @@ function bindManualLines(form,button) {
   });
   updateManualSum(form);
 }
-bindManualLines(document.getElementById('manual-form'),document.getElementById('manual-add-line'));
+const initialManualForm = document.getElementById('manual-form');
+const initialManualAdd = document.getElementById('manual-add-line');
+if (initialManualForm && initialManualAdd && initialManualForm.querySelector('.manual-order-line [name=unitEuros]')) {
+  bindManualLines(initialManualForm, initialManualAdd);
+} else {
+  console.error('Formulário de encomendas com versão incompatível. Atualiza a página.');
+}
 
 const manualModal = document.getElementById('manual-modal');
 document.getElementById('new-order-button').addEventListener('click', () => { manualModal.hidden = false; document.getElementById('manual-error').textContent = ''; });
@@ -1749,4 +1754,5 @@ document.getElementById('gallery-images').addEventListener('click',async event =
   }
 });
 
-// A sessão é restaurada no início do módulo, antes dos controlos do CRM.
+// Recuperar a sessão apenas depois de os botões e as abas terem eventos associados.
+await restoreAdminSession();
