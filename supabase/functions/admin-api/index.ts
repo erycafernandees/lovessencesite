@@ -557,13 +557,19 @@ Deno.serve(async (req) => {
         throw new ApiError(422, "invalid_email", "O email indicado não é válido.");
       }
       const customerPhone = cleanText(body.customerPhone, 50);
-      const description = cleanText(body.description, 240, true)!;
       const notes = cleanText(body.notes, 3000);
-      const quantity = Number(body.quantity);
+      const rawItems = Array.isArray(body.items) ? body.items : [{description:body.description,quantity:body.quantity,lineAmount:body.totalAmount}];
+      if (!rawItems.length || rawItems.length > 50) throw new ApiError(422,"items","São permitidos 1 a 50 artigos.");
+      const manualItems = rawItems.map((entry: any) => {
+        const description = cleanText(entry.description,240,true)!;
+        const quantity = Number(entry.quantity), lineAmount = Number(entry.lineAmount);
+        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isSafeInteger(lineAmount) || lineAmount < 0 || lineAmount > 100000000)
+          throw new ApiError(422,"invalid_items","Verifica a quantidade e o valor de cada artigo.");
+        return {description,quantity,lineAmount};
+      });
+      const sum = manualItems.reduce((t:number,x:any)=>t+x.lineAmount,0);
       const totalAmount = Number(body.totalAmount);
-      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000) {
-        throw new ApiError(422, "invalid_quantity", "Indica uma quantidade válida.");
-      }
+      if (totalAmount !== sum) throw new ApiError(422,"total_mismatch","O total não coincide com a soma dos artigos.");
       if (!Number.isSafeInteger(totalAmount) || totalAmount < 0 || totalAmount > 100000000) {
         throw new ApiError(422, "invalid_total", "O total da encomenda não é válido.");
       }
@@ -599,17 +605,12 @@ Deno.serve(async (req) => {
 
       // O valor introduzido no painel é o total acordado para a quantidade
       // completa. Nem sempre há um preço unitário exato em cêntimos.
-      const { error: itemError } = await client.from("order_items").insert({
-        order_id: order.id,
-        product_code: "MANUAL",
-        variant_code: "PERSONALIZADO",
-        name: description,
-        quantity,
-        unit_amount: Math.round(totalAmount / quantity),
-        line_amount: totalAmount,
-        personalization: {},
-        product_snapshot: { manual: true, priceType: "negotiated_total", description, quantity },
-      });
+      const { error: itemError } = await client.from("order_items").insert(manualItems.map((item:any)=>({
+        order_id:order.id, product_code:"MANUAL", variant_code:"PERSONALIZADO",
+        name:item.description, quantity:item.quantity, unit_amount:Math.round(item.lineAmount/item.quantity),
+        line_amount:item.lineAmount, personalization:{},
+        product_snapshot:{manual:true,priceType:"negotiated_total",description:item.description,quantity:item.quantity},
+      })));
       if (itemError) throw itemError;
 
       if (paid) {
@@ -730,19 +731,28 @@ Deno.serve(async (req) => {
       const notes = cleanText(body.notes, 3000);
       const channel = cleanText(body.channel, 20, true)!;
       if (!["instagram", "whatsapp", "other"].includes(channel)) throw new ApiError(422, "invalid_channel", "Canal inválido.");
-      const description = cleanText(body.description, 240, true)!;
-      const quantity = Number(body.quantity);
+      const rawItems = Array.isArray(body.items) ? body.items : [{description:body.description,quantity:body.quantity,lineAmount:body.totalAmount}];
+      if (!rawItems.length || rawItems.length > 50) throw new ApiError(422,"items","São permitidos 1 a 50 artigos.");
+      const manualItems = rawItems.map((entry: any) => {
+        const description = cleanText(entry.description,240,true)!;
+        const quantity = Number(entry.quantity), lineAmount = Number(entry.lineAmount);
+        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isSafeInteger(lineAmount) || lineAmount < 0 || lineAmount > 100000000)
+          throw new ApiError(422,"invalid_items","Verifica a quantidade e o valor de cada artigo.");
+        return {description,quantity,lineAmount};
+      });
+      const sum = manualItems.reduce((t:number,x:any)=>t+x.lineAmount,0);
+
       const totalAmount = Number(body.totalAmount);
-      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000) throw new ApiError(422, "invalid_quantity", "Quantidade inválida.");
+      if (sum !== totalAmount) throw new ApiError(422,"total_mismatch","O total não coincide com a soma dos artigos.");
       if (!Number.isSafeInteger(totalAmount) || totalAmount < 0 || totalAmount > 100000000) throw new ApiError(422, "invalid_total", "Total inválido.");
       const markPaid = body.markPaid === true;
       const alreadyPaid = before.payment_status === "paid";
       if (!alreadyPaid && before.payment_status !== "unpaid") throw new ApiError(409, "payment_locked", "Este pagamento não pode ser alterado manualmente.");
       if (alreadyPaid && Number(before.total_amount) !== totalAmount) throw new ApiError(409, "paid_total_locked", "Não é possível alterar o valor de uma encomenda já paga.");
       if (totalAmount < Number(before.manual_received_amount || 0)) throw new ApiError(409, "partial_total_locked", "O total não pode ser inferior ao valor já recebido.");
-      const { data: items, error: itemsError } = await client.from("order_items").select("id").eq("order_id", id);
+      const { data: items, error: itemsError } = await client.from("order_items").select("id").eq("order_id", id).order("id", { ascending: true });
       if (itemsError) throw itemsError;
-      if (!items || items.length !== 1) throw new ApiError(409, "items_locked", "Esta encomenda não tem um único artigo manual editável.");
+      if (!items?.length) throw new ApiError(409, "items_locked", "Não existem artigos editáveis.");
       const { data: existingPayments, error: paymentsError } = await client.from("payments").select("id,provider,status").eq("order_id", id);
       if (paymentsError) throw paymentsError;
       if (!alreadyPaid && existingPayments?.length) throw new ApiError(409, "payment_locked", "Já existe um registo de pagamento associado. A edição do pagamento foi bloqueada.");
@@ -760,12 +770,21 @@ Deno.serve(async (req) => {
       };
       const { error: updateError } = await client.from("orders").update(patch).eq("id", id);
       if (updateError) throw updateError;
-      const { error: itemError } = await client.from("order_items").update({
-        name: description, quantity, unit_amount: Math.round(totalAmount / quantity),
-        line_amount: totalAmount,
-        product_snapshot: { manual: true, priceType: "negotiated_total", description, quantity },
-      }).eq("id", items[0].id);
-      if (itemError) throw itemError;
+      for (let i=0;i<manualItems.length;i++){
+        const item=manualItems[i], data={
+          name:item.description,quantity:item.quantity,unit_amount:Math.round(item.lineAmount/item.quantity),
+          line_amount:item.lineAmount,
+          product_snapshot:{manual:true,priceType:"negotiated_total",description:item.description,quantity:item.quantity},
+        };
+        const {error:itemError}=i<items.length
+          ? await client.from("order_items").update(data).eq("id",items[i].id)
+          : await client.from("order_items").insert({...data,order_id:id,product_code:"MANUAL",variant_code:"PERSONALIZADO",personalization:{}});
+        if(itemError) throw itemError;
+      }
+      if(items.length>manualItems.length){
+        const {error:removeError}=await client.from("order_items").delete().in("id",items.slice(manualItems.length).map((item:any)=>item.id));
+        if(removeError) throw removeError;
+      }
       if (paidNow) {
         const { error: paymentError } = await client.from("payments").insert({
           order_id: id, provider: "manual", status: "paid", currency: "eur",
@@ -783,7 +802,7 @@ Deno.serve(async (req) => {
       await client.from("audit_log").insert({
         actor_user_id: admin.userId, action: "order.manual.edit", entity_type: "order",
         entity_id: id, before_data: before,
-        after_data: { ...patch, description, quantity, payment_method: paidNow ? cleanText(body.paymentMethod, 80) || "outro" : null },
+        after_data: { ...patch, items: manualItems, payment_method: paidNow ? cleanText(body.paymentMethod, 80) || "outro" : null },
       });
       return json(req, { ok: true, paymentStatus: paidNow || alreadyPaid ? "paid" : "unpaid" });
     }
