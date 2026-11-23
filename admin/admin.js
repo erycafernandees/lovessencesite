@@ -462,6 +462,7 @@ document.getElementById('manual-form').addEventListener('submit', async event =>
       customerEmail: values.get('customerEmail'), customerPhone: values.get('customerPhone'),
       items: manualItemsFrom(form),
       totalAmount: Math.round(amount * 100), paymentStatus: values.get('paymentStatus'),
+      expectedDeliveryDate: values.get('expectedDeliveryDate') || null,
       notes: values.get('notes'), isTest: values.has('isTest')
     });
     for (const file of photos) {
@@ -958,9 +959,11 @@ function unifiedOrderTasks(record, id) {
       || customerPhone !== String(record.customer_phone || '').trim()
       || channel !== String(record.sales_channel || '')
       || JSON.stringify(editedItems) !== JSON.stringify((record.order_items||[]).map(item=>({description:String(item.name||'').trim(),quantity:Number(item.quantity),lineAmount:Number(item.line_amount)})))
-      || editedTotal !== total || notes !== String(record.notes || '').trim();
+      || editedTotal !== total || notes !== String(record.notes || '').trim()
+      || String(fd.get('expectedDeliveryDate') || '') !== String(record.expected_delivery_date || '');
     if (changed) tasks.push({label:'Dados da encomenda',action:'edit-manual-order',body:{
-      id, customerName, customerEmail, customerPhone, channel, items:editedItems, totalAmount:editedTotal, notes, markPaid:false
+      id, customerName, customerEmail, customerPhone, channel, items:editedItems, totalAmount:editedTotal, notes,
+      expectedDeliveryDate: fd.get('expectedDeliveryDate') || null, markPaid:false
     }});
   }
   const delivery = unifiedDeliveryTask(record,'order',id);
@@ -1146,7 +1149,7 @@ async function openOrder(id) {
           <button type="submit">Guardar pagamento</button>
         </form>` : '';
     openDrawer(`<p class="eyebrow">Encomenda</p><h2>${esc(order.order_number)}</h2>
-      <div class="detail-section"><div class="detail-grid"><p><strong>Cliente</strong>${esc(order.customer_name || '—')}</p><p><strong>Email</strong>${esc(order.customer_email || '—')}</p><p><strong>Telefone</strong>${esc(order.customer_phone || '—')}</p><p><strong>Total</strong>${money(order.total_amount,order.currency)}</p></div></div>
+      <div class="detail-section"><div class="detail-grid"><p><strong>Cliente</strong>${esc(order.customer_name || '—')}</p><p><strong>Email</strong>${esc(order.customer_email || '—')}</p><p><strong>Telefone</strong>${esc(order.customer_phone || '—')}</p><p><strong>Total</strong>${money(order.total_amount,order.currency)}</p><p><strong>Entrega prevista</strong>${esc(order.expected_delivery_date || 'Por definir')}</p></div></div>
       <div class="detail-section"><h3>Estado da encomenda</h3><p class="order-current-status">${badge(order.order_status)}</p><form class="status-form" id="order-status-form"><select name="status">${['confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'].map(status => `<option value="${status}" ${status===order.order_status?'selected':''}>${ORDER_LABELS[status]}</option>`).join('')}</select><button>Guardar estado</button></form></div>
       <div class="detail-section"><h3>Estado do pagamento</h3>
         <p class="order-current-status">${orderPaymentBadge(order)}</p>
@@ -1175,6 +1178,7 @@ async function openOrder(id) {
             <button type="button" class="secondary manual-add-line">+ Acrescentar alínea</button>
           </div>
           <label>Total da encomenda (€)<input type="number" name="totalEuros" min="0" step="0.01" value="${(Number(order.total_amount)/100).toFixed(2)}" readonly required></label>
+          <label>Data prevista de entrega (opcional)<input name="expectedDeliveryDate" type="date" value="${esc(order.expected_delivery_date || '')}"></label>
           <label>Notas<textarea name="notes" rows="3">${esc(order.notes || '')}</textarea></label>
           <p id="order-edit-error" class="error" role="alert"></p>
           <button type="submit">Guardar alterações</button>
@@ -1256,6 +1260,7 @@ async function openOrder(id) {
             customerEmail: values.get('customerEmail'), customerPhone: values.get('customerPhone'),
             channel: values.get('channel'), items: manualItemsFrom(event.currentTarget),
             totalAmount: Math.round(Number(values.get('totalEuros')) * 100),
+            expectedDeliveryDate: values.get('expectedDeliveryDate') || null,
             notes: values.get('notes'), markPaid: false
           });
           await loadOrders();
