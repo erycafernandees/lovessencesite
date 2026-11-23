@@ -38,12 +38,22 @@ Deno.serve(async (req) => {
       const page = Math.max(1, Number(url.searchParams.get("page") || body.page || 1));
       const status = cleanText(url.searchParams.get("status") || body.status, 40);
       let query = client.from("orders").select("id,order_number,source,order_status,payment_status,payment_provider,manual_received_amount,total_amount,currency,customer_name,customer_email,delivery_method,delivery_tracking_code,delivery_meeting_place,delivery_meeting_at,expected_delivery_date,created_at,paid_at,sales_channel,is_test,admin_seen_at,payments(gross_amount,processing_fee_amount,net_amount,refunded_amount,provider_payment_id)", { count: "exact" })
-        .is("project_request_id", null)
+        .is("project_request_id", null).neq("payment_provider","manual")
         .order("created_at", { ascending: false }).range((page - 1) * 25, page * 25 - 1);
       if (status) query = query.eq("order_status", status);
       const { data, count, error } = await query;
       if (error) throw error;
       return json(req, { data, count, page, pageSize: 25 });
+    }
+
+    // Encomendas manuais pertencem à área Personalizadas, não às vendas diretas do site.
+    if (action === "list-manual-orders") {
+      const {data,error} = await client.from("orders")
+        .select("id,order_number,source,order_status,payment_status,payment_provider,manual_received_amount,total_amount,currency,customer_name,customer_email,customer_phone,delivery_method,delivery_tracking_code,delivery_meeting_place,delivery_meeting_at,expected_delivery_date,created_at,paid_at,sales_channel,is_test,admin_seen_at,notes")
+        .is("project_request_id",null).eq("payment_provider","manual").eq("is_test",false)
+        .order("created_at",{ascending:false}).limit(250);
+      if(error) throw error;
+      return json(req,{data});
     }
 
     if (action === "get-order") {
