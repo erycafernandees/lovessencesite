@@ -850,7 +850,7 @@ async function loadProjects() {
   const projects = result.data || [];
   const manuals = (manualResult.data || []).map(order=>({
     ...order, manual_personalized: true, project_number: order.order_number,
-    project_type: 'Encomenda manual · '+({instagram:'Instagram',whatsapp:'WhatsApp',other:'Outro'}[order.sales_channel]||'Outro'),
+    project_type: order.order_number === 'LE-20262311-01' ? 'Conjunto personalizado' : 'Encomenda manual · '+({instagram:'Instagram',whatsapp:'WhatsApp',other:'Outro'}[order.sales_channel]||'Outro'),
     fulfillment_status: order.order_status, event_date: order.expected_delivery_date,
   }));
   const rows = [...manuals,...projects].sort((a,b)=>Date.parse(b.created_at||0)-Date.parse(a.created_at||0));
