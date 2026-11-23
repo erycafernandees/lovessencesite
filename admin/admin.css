@@ -260,3 +260,16 @@
 .checkout-errors-workspace .checkout-error-toggle{white-space:nowrap;font-size:.73rem;padding:.6rem .8rem}
 .checkout-errors-workspace .checkout-error-toggle:disabled{opacity:.55}
 @media(max-width:700px){.tabs{overflow-x:auto;white-space:nowrap;scrollbar-width:thin}.tabs button{flex:0 0 auto}.checkout-errors-workspace .summary-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem}.checkout-errors-workspace .summary-card{padding:.7rem}.checkout-errors-workspace .summary-card strong{font-size:1.35rem}}
+
+
+/* Alíneas de produtos das encomendas manuais */
+.manual-items-field{grid-column:1/-1;min-width:0}
+.manual-items-title{display:block;font-weight:700;margin:0 0 .65rem;color:var(--ink)}
+.manual-order-lines{display:flex;flex-direction:column;gap:.75rem}
+.manual-order-line{display:grid;grid-template-columns:minmax(0,2fr) minmax(92px,.7fr) minmax(125px,1fr) auto;align-items:end;gap:.65rem;padding:.85rem;border:1px solid var(--line);border-radius:12px;background:#fdfafd}
+.manual-order-line label{min-width:0}
+.manual-order-line input{width:100%}
+.manual-order-line .manual-remove-line{padding:.7rem;font-size:.77rem}
+.manual-order-line .manual-remove-line[hidden]{display:none}
+.manual-add-line{margin-top:.65rem}
+@media(max-width:650px){.manual-order-line{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.manual-order-line label:first-child{grid-column:1/-1}.manual-order-line .manual-remove-line{grid-column:1/-1}}
