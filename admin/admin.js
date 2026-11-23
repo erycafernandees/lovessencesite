@@ -19,7 +19,7 @@ const selectedTestOrders = new Set();
 const selectedDraftOrders = new Set();
 const ORDER_LABELS = {draft:'Rascunho',awaiting_payment:'A aguardar pagamento',confirmed:'Confirmada',review:'Em análise',awaiting_details:'A aguardar detalhes',production:'Em produção',ready_to_ship:'Pronta para enviar',shipped:'Enviada',completed:'Concluída',cancelled:'Cancelada'};
 const QUOTE_LABELS = {draft:'Rascunho',sent:'Enviado',approved:'Aprovado',paid:'Pago',expired:'Expirado',cancelled:'Cancelado'};
-const PROJECT_FULFILLMENT_STATES = ['confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'];
+const PROJECT_FULFILLMENT_STATES = ['draft','confirmed','review','awaiting_details','production','ready_to_ship','shipped','completed','cancelled'];
 const PROJECT_LABELS = {draft:'Rascunho',submitted:'Recebido',in_review:'Em análise',awaiting_details:'A aguardar detalhes',quoted:'Orçamentado',approved:'Aprovado',payment_pending:'A aguardar pagamento',paid:'Pago',production:'Em produção',completed:'Concluído',declined:'Recusado',archived:'Arquivado'};
 function updateStatusOptions() {
   const labels = currentView === 'orders' ? ORDER_LABELS : Object.fromEntries(PROJECT_FULFILLMENT_STATES.map(value => [value, ORDER_LABELS[value]]));
@@ -476,8 +476,8 @@ document.getElementById('manual-form').addEventListener('submit', async event =>
     while(lines.children.length>1)lines.lastElementChild.remove();
     updateManualSum(form);
     manualModal.hidden = true;
-    currentView = 'orders';
-    document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.view === 'orders'));
+    currentView = 'projects';
+    document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('active', b.dataset.view === 'projects'));
     testFilter = 'real'; document.getElementById('admin-tests').value = 'real';
     channelFilter = ''; document.getElementById('admin-channel').value = '';
     statusFilter = '';
@@ -813,20 +813,27 @@ async function loadProjects() {
   document.getElementById('test-bulk-actions').hidden = true;
   document.getElementById('draft-bulk-actions').hidden = true;
   document.getElementById('summary-grid').classList.add('projects-summary');
-  const result = await adminApi('list-projects');
-  const rows = result.data || [];
+  const [result,manualResult] = await Promise.all([adminApi('list-projects'),adminApi('list-manual-orders')]);
+  const projects = result.data || [];
+  const manuals = (manualResult.data || []).map(order=>({
+    ...order, manual_personalized: true, project_number: order.order_number,
+    project_type: 'Encomenda manual · '+({instagram:'Instagram',whatsapp:'WhatsApp',other:'Outro'}[order.sales_channel]||'Outro'),
+    fulfillment_status: order.order_status, event_date: order.expected_delivery_date,
+  }));
+  const rows = [...manuals,...projects].sort((a,b)=>Date.parse(b.created_at||0)-Date.parse(a.created_at||0));
   currentRows = rows;
   updateStatusOptions();
   document.getElementById('view-title').textContent = 'Encomendas personalizadas';
   // Mesmos quatro cartões que as encomendas diretas, mas todos com valores em euros.
   // Um orçamento por projeto: a versão mais recente. Não somar versões repetidas.
   const valued = rows.map(project => ({
-    project,
-    quote: lastProjectQuote(project)
+    project, quote: project.manual_personalized
+      ? {total_amount:project.total_amount,currency:project.currency}
+      : lastProjectQuote(project)
   })).filter(item => item.quote);
   const totals = valued.reduce((sum, {project,quote}) => {
     const total = Number(quote.total_amount || 0);
-    const received = Math.min(total, Math.max(0, projectReceivedAmount(project)));
+    const received = Math.min(total, Math.max(0, project.manual_personalized ? Number(project.manual_received_amount || 0) : projectReceivedAmount(project)));
     sum.quoted += total;
     sum.outstanding += total - received;
     if (received > 0 && received < total) sum.partial += received;
@@ -849,14 +856,14 @@ function renderProjectRows(allRows) {
   const rows = filterRows(allRows);
   document.getElementById('results-count').textContent = `${rows.length} resultados (lista carregada)`;
   document.getElementById('table-body').innerHTML = rows.map(row => {
-    const quote = lastProjectQuote(row);
+    const quote = row.manual_personalized ? {total_amount:row.total_amount,currency:row.currency} : lastProjectQuote(row);
     const gross = quote ? Number(quote.total_amount || 0) : 0;
-    const received = Math.min(gross, Math.max(0, projectReceivedAmount(row)));
-    return `<tr data-project="${row.id}">
-      <td><strong>${esc(row.project_number)}</strong>${isNewProject(row) ? ' <span class="new-tag">Novo</span>' : ''}<small class="project-row-subtitle">${esc(row.project_type)}</small></td>
+    const received = Math.min(gross, Math.max(0, row.manual_personalized ? Number(row.manual_received_amount||0) : projectReceivedAmount(row)));
+    return `<tr ${row.manual_personalized ? 'data-manual-order' : 'data-project'}="${row.id}">
+      <td><strong>${esc(row.project_number)}</strong>${(row.manual_personalized ? isNewOrder(row) : isNewProject(row)) ? ' <span class="new-tag">Novo</span>' : ''}<small class="project-row-subtitle">${esc(row.project_type)}</small></td>
       <td>${esc(row.customer_name)}<br>${esc(row.customer_email||'')}</td>
-      <td>${badge(row.fulfillment_status)}</td>
-      <td>${projectPaymentBadge(row)}${row.payment_needs_confirmation && received > 0 ? '<small class="project-row-subtitle">Valor anterior por confirmar</small>' : ''}</td>
+      <td>${row.manual_personalized && row.order_status==='draft' ? '<span class="status-badge">Em orçamento</span>' : badge(row.fulfillment_status)}</td>
+      <td>${row.manual_personalized ? orderPaymentBadge(row) : projectPaymentBadge(row)}${row.payment_needs_confirmation && received > 0 ? '<small class="project-row-subtitle">Valor anterior por confirmar</small>' : ''}</td>
       <td>${quote ? money(gross) : '—'}</td>
       <td>${quote ? money(received) : '—'}</td>
       <td>${quote ? money(Math.max(0,gross-received)) : '—'}</td>
@@ -867,6 +874,7 @@ function renderProjectRows(allRows) {
   }).join('');
   labelMobileTableCells();
   document.querySelectorAll('[data-project]').forEach(row => row.addEventListener('click', () => openProject(row.dataset.project)));
+  document.querySelectorAll('[data-manual-order]').forEach(row => row.addEventListener('click', () => openOrder(row.dataset.manualOrder)));
 }
 
 function openDrawer(html) { drawer.classList.remove('is-editing'); if (unifiedEditorController) unifiedEditorController.abort(); drawer.querySelector('.unified-edit-bar')?.remove(); document.getElementById('drawer-content').innerHTML = html; backdrop.hidden = false; drawer.classList.add('open'); drawer.setAttribute('aria-hidden','false'); }
@@ -899,7 +907,7 @@ async function markSeen(kind,id) {
   try {
     await adminApi('mark-seen',{kind,id});
     row.admin_seen_at = new Date().toISOString();
-    if (currentView === (kind === 'order' ? 'orders' : 'projects')) await loadView();
+    if (currentView === (kind === 'order' ? 'orders' : 'projects') || (kind==='order' && currentView==='projects')) await loadView();
   } catch (error) { console.warn('Não foi possível marcar como visto:',error); }
 }
 
