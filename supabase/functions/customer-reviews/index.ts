@@ -79,7 +79,7 @@ Deno.serve(async (req:Request) => {
   if(action==="published"){
    const {data,error}=await db.from("customer_reviews").select("id,public_name,product_rating,experience_rating,comment,photo_path,publish_photo,created_at,review_invitations(product_name,product_image_url)").eq("status","published").order("created_at",{ascending:false}).limit(60);
    if(error) throw error;
-   return json(req,{data:data||[]});
+   return json(req,{data:(data||[]).map((review)=>({...review,photo_path:review.publish_photo?review.photo_path:null}))});
   }
   throw new ApiError(404,"invalid_action","Operação desconhecida.");
  }catch(e){return handleError(req,e);}
