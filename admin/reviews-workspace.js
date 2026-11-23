@@ -87,9 +87,9 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
   function showDetails(row) {
     if(!row)return;
     const v=reviewOf(row),status=statusOf(row);
-    const photo=v?.photo_path&&v.publish_photo?config.supabaseUrl+'/storage/v1/object/public/customer-review-photos/'+encodeURIComponent(v.photo_path):null;
+    const photo=v?.photo_path?config.supabaseUrl+'/storage/v1/object/public/customer-review-photos/'+encodeURIComponent(v.photo_path):null;
     const content='<p class="eyebrow">Avaliações</p><h2>'+esc(row.customer_name)+'</h2>'+
-      '<div class="detail-section"><h3>Convite</h3><div class="detail-grid"><p><strong>Artigo</strong>'+esc(row.product_name||'Por associar')+'</p><p><strong>Canal</strong>'+esc(channels[row.channel]||row.channel)+'</p><p><strong>Data</strong>'+date(row.created_at)+'</p><p><strong>Estado</strong>'+badge(status)+'</p></div></div>'+
+      '<div class="detail-section"><h3>'+(row.source_origin==='existing_testimonial'?'Testemunho anterior':'Convite')+'</h3><div class="detail-grid"><p><strong>Artigo</strong>'+esc(row.product_name||'Por associar')+'</p><p><strong>Canal</strong>'+esc(channels[row.channel]||row.channel)+'</p><p><strong>Data</strong>'+date(row.created_at)+'</p><p><strong>Estado</strong>'+badge(status)+'</p></div></div>'+
       (v?'<div class="detail-section"><h3>Opinião da cliente</h3><div class="detail-grid"><p><strong>Produto</strong>'+rating(v.product_rating)+'</p><p><strong>Experiência</strong>'+rating(v.experience_rating)+'</p></div><p><strong>Nome público</strong>'+esc(v.public_name)+'</p>'+(v.comment?'<p class="reviews-comment">'+esc(v.comment)+'</p>':'<p class="reviews-hint">Avaliação apenas com estrelas.</p>')+
       (photo?'<img class="reviews-preview" alt="Fotografia enviada pela cliente" src="'+esc(photo)+'">':'')+
       (v.photo_path&&!v.publish_photo?'<p class="reviews-hint">A cliente não autorizou a publicação da fotografia.</p>':'')+
@@ -97,9 +97,11 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
       '<div class="reviews-actions"><button data-review-status="published" type="button">Aprovar</button><button class="secondary" data-review-status="rejected" type="button">Rejeitar / Retirar</button><button class="secondary" data-review-status="pending" type="button">Marcar pendente</button></div><p class="error" id="reviews-drawer-error" role="alert"></p></div>':
       '<div class="detail-section"><h3>A aguardar avaliação</h3><p>A cliente ainda não respondeu ao convite. Os links de convite são apresentados no momento da criação por segurança.</p></div>');
     const association='<div class="detail-section"><h3>Associar artigo Love Essences</h3>'+
-      '<p class="reviews-hint">Podes enviar o convite primeiro e associar o artigo depois. É necessário associá-lo antes de publicar a avaliação.</p>'+
+      '<p class="reviews-hint">'+(row.source_origin==='existing_testimonial'?'Testemunho real anteriormente publicado na loja. Associa-o ao produto e junta uma fotografia, se quiseres.':'Podes enviar o convite primeiro e associar o artigo depois. É necessário associá-lo antes de publicar a avaliação.')+'</p>'+
       '<form id="reviews-associate-form" class="reviews-create-form">'+
       productSelect(row.product_name||'')+
+      '<label>Adicionar fotografia (opcional, JPG ou PNG até 2 MB)<input type="file" name="reviewPhoto" accept="image/jpeg,image/png"></label>'+
+      '<label class="reviews-hint"><input type="checkbox" name="publishPhoto" value="true"> Mostrar a nova fotografia publicamente no site</label>'+
       '<button type="submit">Guardar associação</button><p class="error" id="reviews-associate-error"></p></form></div>';
     openDrawer(content+association);
     byId('reviews-associate-form').addEventListener('submit',async event=>{
@@ -107,7 +109,14 @@ export function setupReviews({supabase,config,openDrawer,closeDrawer}) {
       const form=event.currentTarget,button=form.querySelector('button[type=submit]');
       button.disabled=true;byId('reviews-associate-error').textContent='';
       try{
-        await api('associate',{invitationId:row.id,...Object.fromEntries(new FormData(form))});
+        const data=new FormData(form);
+        const file=data.get('reviewPhoto');
+        let photoData=null;
+        if(file&&file.size){
+          if(!['image/jpeg','image/png'].includes(file.type)||file.size>2097152)throw Error('Escolhe uma fotografia JPG ou PNG até 2 MB.');
+          photoData=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(Error('Erro ao ler a fotografia.'));reader.readAsDataURL(file)});
+        }
+        await api('associate',{invitationId:row.id,productCode:data.get('productCode'),photoData,publishPhoto:data.get('publishPhoto')==='true'});
         await load();
         showDetails(rows.find(item=>item.id===row.id));
       }catch(error){byId('reviews-associate-error').textContent=error.message;button.disabled=false}
