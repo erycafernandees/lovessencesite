@@ -334,7 +334,13 @@ async function adminApi(action, body = {}) {
 }
 
 // Regista códigos CTT através do backend; as credenciais da AfterShip nunca chegam ao browser.
+let cttSyncInFlight;
 async function syncCttTracking() {
+  if (cttSyncInFlight) return cttSyncInFlight;
+  cttSyncInFlight = runCttSync();
+  try { return await cttSyncInFlight; } finally { cttSyncInFlight = null; }
+}
+async function runCttSync() {
   const {data:{session}} = await supabase.auth.getSession();
   if (!session) return;
   const response = await fetch(config.supabaseUrl + '/functions/v1/aftership-ctt-sync', {
@@ -394,7 +400,8 @@ async function showApp() {
     await loadView();
   }
   syncCttTracking().then(result => {
-    if (result?.added || result?.alreadyInAfterShip) console.info('Rastreio CTT sincronizado:', result);
+    if (result?.refreshed) loadView().catch(console.warn);
+    if (result?.added || result?.alreadyInAfterShip || result?.refreshed) console.info('Rastreio CTT sincronizado:', result);
   }).catch(error => console.warn('Sincronização CTT:',error.message));
 }
 
@@ -572,7 +579,15 @@ passwordForm.addEventListener('submit', async event => {
 });
 
 document.getElementById('logout-button').addEventListener('click', async () => { await supabase.auth.signOut(); location.reload(); });
-document.getElementById('refresh-button').addEventListener('click', loadView);
+document.getElementById('refresh-button').addEventListener('click', async () => {
+  try { await syncCttTracking(); } catch(error) { console.warn('Sincronização CTT:', error.message); }
+  await loadView();
+});
+setInterval(async () => {
+  if (app.hidden || document.hidden) return;
+  try { const result = await syncCttTracking(); if (result?.refreshed) console.info('Rastreio atualizado:',result.refreshed); }
+  catch(error) { console.warn('Sincronização CTT:',error.message); }
+}, 15 * 60 * 1000);
 document.getElementById('select-draft-page').addEventListener('change', event => {
   const ids = filterRows(currentRows).filter(isDeletableDraft).map(order => order.id);
   for (const id of ids) {
