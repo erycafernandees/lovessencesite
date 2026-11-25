@@ -54,8 +54,33 @@ export async function readJson<T>(req: Request): Promise<T> {
   if (!req.headers.get("content-type")?.toLowerCase().includes("application/json")) {
     throw new ApiError(415, "invalid_content_type", "É necessário enviar JSON.");
   }
-  try { return await req.json() as T; }
+  const text = await readBodyText(req);
+  try { return JSON.parse(text) as T; }
   catch { throw new ApiError(400, "invalid_json", "O pedido contém JSON inválido."); }
+}
+
+export async function readBodyText(req: Request, maximum = 4 * 1024 * 1024): Promise<string> {
+  if (Number(req.headers.get("content-length")) > maximum) throw new ApiError(413, "body_too_large", "O pedido ultrapassa o tamanho permitido.");
+  if (!req.body) return "";
+  const reader = req.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maximum) {
+        await reader.cancel().catch(() => undefined);
+        throw new ApiError(413, "body_too_large", "O pedido ultrapassa o tamanho permitido.");
+      }
+      chunks.push(value);
+    }
+  } finally { reader.releaseLock(); }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+  return new TextDecoder().decode(bytes);
 }
 
 export function serviceClient(): SupabaseClient {
@@ -71,13 +96,18 @@ export function stripeClient(): Stripe {
   return new Stripe(key, { httpClient: Stripe.createFetchHttpClient() });
 }
 
+export function checkoutSiteUrl(req: Request): string {
+  const preview = "https://love-essences-teste.pages.dev";
+  return req.headers.get("origin") === preview ? preview : (Deno.env.get("SITE_URL") || "https://love-essences.pt");
+}
+
 export function randomToken(bytes = 32): string {
   const value = crypto.getRandomValues(new Uint8Array(bytes));
   return btoa(String.fromCharCode(...value)).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
 }
 
 export async function sha256(value: string | Uint8Array): Promise<string> {
-  const bytes = typeof value === "string" ? new TextEncoder().encode(value) : value;
+  const bytes = typeof value === "string" ? new TextEncoder().encode(value) : new Uint8Array(value);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
@@ -113,15 +143,16 @@ export function validateUploads(input: unknown, maximum: number): UploadDescript
 
 export async function enforceRateLimit(req: Request, action: string, maximum: number, windowMinutes: number): Promise<void> {
   const client = serviceClient();
-  const address = req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for")?.split(",")[0] || "unknown";
+  // Hosted Supabase ingress runs behind Cloudflare. Do not fall back to the
+  // first X-Forwarded-For entry: a caller can prepend arbitrary values there.
+  // Missing trusted ingress identity shares a bucket rather than bypassing it.
+  const address = req.headers.get("cf-connecting-ip")?.trim() || "unknown";
   const hash = await sha256(`${Deno.env.get("RATE_LIMIT_SALT") || "local-development"}:${address}`);
-  const since = new Date(Date.now() - windowMinutes * 60_000).toISOString();
-  const { count, error } = await client.from("api_requests").select("id", { count: "exact", head: true })
-    .eq("action", action).eq("client_hash", hash).gte("created_at", since);
+  const { data: allowed, error } = await client.rpc("consume_api_rate_limit", {
+    p_action: action, p_client_hash: hash, p_maximum: maximum, p_window_minutes: windowMinutes,
+  });
   if (error) throw error;
-  if ((count || 0) >= maximum) throw new ApiError(429, "rate_limited", "Foram feitos demasiados pedidos. Tenta novamente mais tarde.");
-  const { error: insertError } = await client.from("api_requests").insert({ action, client_hash: hash });
-  if (insertError) throw insertError;
+  if (allowed !== true) throw new ApiError(429, "rate_limited", "Foram feitos demasiados pedidos. Tenta novamente mais tarde.");
 }
 
 export async function verifyTurnstile(token: unknown, req: Request): Promise<void> {
@@ -160,9 +191,9 @@ export async function verifyAccessToken(expectedHash: string, expiresAt: string,
 }
 
 export function hasValidMagic(bytes: Uint8Array, mime: string): boolean {
-  if (mime === "image/jpeg") return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
-  if (mime === "image/png") return bytes.slice(0, 8).every((v, i) => v === [0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a][i]);
-  if (mime === "application/pdf") return new TextDecoder().decode(bytes.slice(0, 5)) === "%PDF-";
+  if (mime === "image/jpeg") return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  if (mime === "image/png") return bytes.length >= 8 && bytes.slice(0, 8).every((v, i) => v === [0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a][i]);
+  if (mime === "application/pdf") return bytes.length >= 5 && new TextDecoder().decode(bytes.slice(0, 5)) === "%PDF-";
   return false;
 }
 
@@ -176,6 +207,12 @@ export async function queueEmail(template: string, recipient: string, payload: R
   const savedPayload = snapshot ? { ...payload, emailSnapshot: snapshot } : payload;
   const { data: queued, error } = await client.from("notification_outbox").insert({ channel: "email", template, recipient, payload: savedPayload }).select("id").single();
   if (error || !queued) throw error || new Error("Could not queue email");
+  await deliverQueuedEmail(queued.id, template, recipient, savedPayload);
+}
+
+export async function deliverQueuedEmail(id: string, template: string, recipient: string, payload: Record<string, unknown>, retryOnFailure = false): Promise<void> {
+  const client = serviceClient();
+  const snapshot = payload.emailSnapshot as { from: string; subject: string; html: string } | undefined;
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) return;
   const subjects: Record<string, string> = {
@@ -190,7 +227,7 @@ export async function queueEmail(template: string, recipient: string, payload: R
   };
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json", "Idempotency-Key": `notification-${id}` },
     body: JSON.stringify({
       from: snapshot?.from || Deno.env.get("EMAIL_FROM") || "Love Essences <encomendas@love-essences.pt>",
       to: [recipient],
@@ -203,7 +240,9 @@ export async function queueEmail(template: string, recipient: string, payload: R
   const update = response.ok
     ? { provider_message_id: responseBody.id || null, sent_at: new Date().toISOString(), attempts: 1 }
     : { last_error: responseBody.message || `HTTP ${response.status}`, attempts: 1 };
-  await client.from("notification_outbox").update(update).eq("id", queued.id);
+  const { error: updateError } = await client.from("notification_outbox").update(update).eq("id", id);
+  if (retryOnFailure && updateError) throw updateError;
+  if (retryOnFailure && !response.ok) throw new Error("Email delivery failed; queued notification can be retried");
 }
 
 function escapeText(value: unknown): string {

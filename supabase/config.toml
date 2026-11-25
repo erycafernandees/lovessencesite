@@ -9,7 +9,7 @@ max_rows = 1000
 
 [db]
 port = 54322
-major_version = 15
+major_version = 17
 
 [studio]
 enabled = true
@@ -57,3 +57,15 @@ verify_jwt = false # Endpoint validates origin, categories and rate-limits
 
 [functions.commerce-audit]
 verify_jwt = false # Verifies signed GitHub OIDC JWT internally
+
+[functions.admin-email-test]
+verify_jwt = true
+
+[functions.aftership-ctt-sync]
+verify_jwt = true
+
+[functions.aftership-ctt-webhook]
+verify_jwt = false # HMAC signature verified internally
+
+[functions.public-ctt-tracking]
+verify_jwt = false

@@ -50,9 +50,9 @@ Deno.serve(async (req) => {
       const productCode = cleanText(raw.productCode, 80, true)!;
       const variant = variantMap.get(raw.variantCode);
       const product = variant?.products as unknown as { id: string; code: string; name: string; image_path: string; active: boolean; metadata: Record<string, unknown> };
-      const quantity = Number(raw.quantity);
+      const quantity = raw.quantity;
       if (!variant || !product?.active || product.code !== productCode) throw new ApiError(422, "invalid_product", "Um produto do carrinho deixou de estar disponível.");
-      if (!Number.isInteger(quantity) || quantity < Number(variant.minimum_quantity) || quantity > 500) throw new ApiError(422, "invalid_quantity", `A quantidade de ${product.name} não é válida.`);
+      if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1 || quantity < Number(variant.minimum_quantity) || quantity > 500) throw new ApiError(422, "invalid_quantity", `A quantidade de ${product.name} não é válida.`);
       const personalization = raw.personalization && typeof raw.personalization === "object" ? raw.personalization : {};
       const serialized = JSON.stringify(personalization);
       if (serialized.length > 6000) throw new ApiError(422, "personalization_too_large", "Os dados de personalização são demasiado extensos.");

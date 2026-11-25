@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "test:security": "node --experimental-vm-modules --disable-warning=ExperimentalWarning --test tests/*.test.mjs",
     "build": "python3 scripts/build_site.py --output _site --sync-root-seo",
     "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify",
     "validate:seo": "python3 scripts/validate_site.py --output _site",
