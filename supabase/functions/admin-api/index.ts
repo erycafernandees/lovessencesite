@@ -550,6 +550,9 @@ Deno.serve(async (req) => {
       if (quote.valid_until && new Date(`${quote.valid_until}T23:59:59Z`).getTime() < Date.now()) {
         throw new ApiError(410, "quote_expired", "A validade do orçamento já terminou.");
       }
+      const { count: pendingMockups, error: mockupError } = await client.from("attachments").select("id", { count: "exact", head: true }).eq("quote_id", id).neq("status", "verified");
+      if (mockupError) throw mockupError;
+      if (pendingMockups) throw new ApiError(409, "pending_mockups", "Termina o carregamento dos mockups antes de enviar.");
       const token = randomToken();
       const expiresAt = quote.valid_until
         ? new Date(`${quote.valid_until}T23:59:59Z`).toISOString()
@@ -858,6 +861,77 @@ Deno.serve(async (req) => {
         after_data: { ...patch, items: manualItems, payment_method: paidNow ? cleanText(body.paymentMethod, 80) || "outro" : null },
       });
       return json(req, { ok: true, paymentStatus: paidNow || alreadyPaid ? "paid" : "unpaid" });
+    }
+
+    if (action === "remove-quote-mockup") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Sem permissão.");
+      const { data: file, error } = await client.from("attachments").select("id,quote_id,object_path").eq("id", cleanText(body.id, 80, true)!).single();
+      if (error || !file?.quote_id) throw new ApiError(404, "not_found", "Mockup não encontrado.");
+      const { data: quote } = await client.from("quotes").select("status").eq("id", file.quote_id).single();
+      if (quote?.status !== "draft") throw new ApiError(409, "quote_not_draft", "Só podes alterar mockups em rascunhos.");
+      const { error: storageError } = await client.storage.from(PRIVATE_BUCKET).remove([file.object_path]);
+      if (storageError) throw storageError;
+      const { error: deleteError } = await client.from("attachments").delete().eq("id", file.id);
+      if (deleteError) throw deleteError;
+      return json(req, { ok: true });
+    }
+
+    if (action === "prepare-quote-mockup") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para adicionar fotografias.");
+      const quoteId = cleanText(body.quoteId, 80, true)!;
+      const { data: quote, error: quoteError } = await client.from("quotes").select("id,project_request_id,status").eq("id", quoteId).single();
+      if (quoteError || !quote || quote.status !== "draft") throw new ApiError(409, "quote_not_draft", "Adiciona os mockups a um orçamento em rascunho.");
+      const { count, error: countError } = await client.from("attachments")
+        .select("id", { count: "exact", head: true }).eq("quote_id", quoteId);
+      if (countError) throw countError;
+      if ((count || 0) >= 10) throw new ApiError(422, "too_many_files", "Podes anexar até 10 fotografias por encomenda.");
+      const descriptors = validateUploads([{
+        name: body.fileName, type: body.mimeType, size: body.sizeBytes,
+      }], 1);
+      if (!["image/png", "image/jpeg"].includes(descriptors[0].type)) {
+        throw new ApiError(422, "invalid_file_type", "Escolhe uma fotografia JPG ou PNG.");
+      }
+      const prepared = await createSignedUploads(descriptors, { projectId: quote.project_request_id, quoteId });
+      return json(req, prepared[0]);
+    }
+
+    if (action === "finish-quote-mockup") {
+      if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para confirmar fotografias.");
+      const attachmentId = cleanText(body.attachmentId, 80, true)!;
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(attachmentId)) {
+        throw new ApiError(422, "invalid_id", "O anexo indicado não é válido.");
+      }
+      const { data: attachment, error: attachmentError } = await client.from("attachments")
+        .select("id,quote_id,object_path,mime_type,size_bytes,status").eq("id", attachmentId).single();
+      if (attachmentError || !attachment?.quote_id) {
+        throw new ApiError(404, "attachment_not_found", "O anexo não foi encontrado.");
+      }
+      const { data: quote, error: quoteError } = await client.from("quotes").select("id,status").eq("id", attachment.quote_id).single();
+      if (quoteError || !quote || quote.status !== "draft") throw new ApiError(409, "quote_not_draft", "Este orçamento já não aceita alterações.");
+      if (attachment.status === "verified") return json(req, { ok: true });
+      if (attachment.status !== "pending_upload" && attachment.status !== "uploaded") {
+        throw new ApiError(422, "invalid_attachment", "O anexo não pode ser confirmado.");
+      }
+      const { data: blob, error: downloadError } = await client.storage.from(PRIVATE_BUCKET)
+        .download(attachment.object_path);
+      if (downloadError || !blob) throw new ApiError(422, "upload_missing", "A fotografia ainda não foi carregada.");
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      const valid = bytes.length === Number(attachment.size_bytes)
+        && bytes.length <= 10 * 1024 * 1024
+        && ["image/jpeg", "image/png"].includes(attachment.mime_type)
+        && hasValidMagic(bytes, attachment.mime_type);
+      if (!valid) {
+        await client.storage.from(PRIVATE_BUCKET).remove([attachment.object_path]);
+        await client.from("attachments").update({
+          status: "rejected", rejection_reason: "content_mismatch",
+        }).eq("id", attachment.id);
+        throw new ApiError(422, "invalid_file_content", "A fotografia não corresponde ao ficheiro indicado.");
+      }
+      const { error: updateError } = await client.from("attachments").update({
+        status: "verified", sha256: await sha256(bytes), verified_at: new Date().toISOString(),
+      }).eq("id", attachment.id);
+      if (updateError) throw updateError;
+      return json(req, { ok: true });
     }
 
     if (action === "prepare-order-photo") {

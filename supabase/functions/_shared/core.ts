@@ -231,7 +231,7 @@ function emailHtml(template: string, payload: Record<string, unknown>): string {
 
 export async function createSignedUploads(
   descriptors: UploadDescriptor[],
-  owner: { orderId?: string; projectId?: string; itemIdsByKey?: Record<string, string> },
+  owner: { orderId?: string; projectId?: string; quoteId?: string; itemIdsByKey?: Record<string, string> },
 ): Promise<Array<{ attachmentId: string; path: string; token: string }>> {
   if (!descriptors.length) return [];
   const client = serviceClient();
@@ -240,6 +240,7 @@ export async function createSignedUploads(
     order_id: owner.orderId || null,
     order_item_id: file.lineKey ? owner.itemIdsByKey?.[file.lineKey] || null : null,
     project_request_id: owner.projectId || null,
+    ...(owner.quoteId ? { quote_id: owner.quoteId } : {}),
     object_path: `${ownerFolder}/${crypto.randomUUID()}`,
     original_name: file.name,
     mime_type: file.type,

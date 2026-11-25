@@ -1,4 +1,4 @@
-import { ApiError, handleError, json, serviceClient, verifyAccessToken } from "../_shared/core.ts";
+import { ApiError, handleError, json, PRIVATE_BUCKET, serviceClient, verifyAccessToken } from "../_shared/core.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return json(req, {}, 204);
@@ -13,11 +13,19 @@ Deno.serve(async (req) => {
     if (error || !quote) throw new ApiError(404, "quote_not_found", "A proposta não foi encontrada.");
     await verifyAccessToken(quote.access_token_hash, quote.access_token_expires_at, token);
     if (!["sent","approved","paid"].includes(quote.status)) throw new ApiError(409, "quote_unavailable", "Esta proposta já não está disponível.");
+    const client = serviceClient();
+    const { data: files, error: filesError } = await client.from("attachments").select("id,object_path,original_name").eq("quote_id", quote.id).eq("status", "verified").order("created_at");
+    if (filesError) throw filesError;
+    const mockups = await Promise.all((files || []).map(async (file) => {
+      const { data, error } = await client.storage.from(PRIVATE_BUCKET).createSignedUrl(file.object_path, 3600);
+      if (error || !data) throw error || new Error("Could not sign mockup");
+      return { id: file.id, name: file.original_name, url: data.signedUrl };
+    }));
     return json(req, {
       id: quote.id, version: quote.version, status: quote.status, currency: quote.currency,
       subtotalAmount: quote.subtotal_amount, discountAmount: quote.discount_amount,
       shippingAmount: quote.shipping_amount, totalAmount: quote.total_amount,
-      notes: quote.notes, validUntil: quote.valid_until, items: quote.quote_items,
+      mockups, notes: quote.notes, validUntil: quote.valid_until, items: quote.quote_items,
       projectNumber: quote.project_requests.project_number,
       occasion: quote.project_requests.occasion, projectType: quote.project_requests.project_type,
     });

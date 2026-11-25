@@ -262,7 +262,8 @@
         (quote.discountAmount ? '<div class="quote-total-row"><span>Desconto</span><span>−' + formatMoney(quote.discountAmount, quote.currency) + '</span></div>' : '') +
         '<div class="quote-total-row"><span>Envio</span><span>' + formatMoney(quote.shippingAmount, quote.currency) + '</span></div>' +
         '<div class="quote-total-row quote-total-row--grand"><span>Total</span><span>' + formatMoney(quote.totalAmount, quote.currency) + '</span></div></div>';
-      content.innerHTML = lines + totals + (quote.notes ? '<p><strong>Notas:</strong> ' + escapeHtml(quote.notes) + '</p>' : '') + (quote.validUntil ? '<p>Proposta válida até ' + escapeHtml(quote.validUntil) + '.</p>' : '');
+      var mockups = (quote.mockups || []).length ? '<section><h3>Mockups visuais</h3>' + quote.mockups.map(function (file) { return '<a href="' + escapeHtml(file.url) + '" target="_blank" rel="noopener"><img src="' + escapeHtml(file.url) + '" alt="' + escapeHtml(file.name) + '" style="width:100%;max-width:480px;height:auto;border-radius:12px;margin:12px 0" loading="lazy"></a>'; }).join('') + '</section>' : '';
+      content.innerHTML = mockups + lines + totals + (quote.notes ? '<p><strong>Notas:</strong> ' + escapeHtml(quote.notes) + '</p>' : '') + (quote.validUntil ? '<p>Proposta válida até ' + escapeHtml(quote.validUntil) + '.</p>' : '');
       if (quote.status === 'paid') {
         document.getElementById('quote-pay-button').disabled = true;
         document.getElementById('quote-pay-button').textContent = 'Proposta já paga';
