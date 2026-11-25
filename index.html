@@ -464,6 +464,13 @@
     gap: 1.5rem;
     margin-bottom: 2rem;
   }
+  .feedback-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    width: 100%;
+  }
   .feedback-stats {
     display: flex;
     align-items: center;
@@ -496,17 +503,24 @@
   }
   .feedback-all-reviews {
     color: var(--deep-rose, #66135e);
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    white-space: nowrap;
-    margin-left: 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.5;
+    text-decoration: none;
+    text-align: left;
+    transition: color 0.2s ease;
   }
-  .feedback-all-reviews:hover { color: #b468ab; }
-  @media (max-width: 767px) {
-    .feedback-stats { flex-wrap: wrap; row-gap: 0.75rem; }
-    .feedback-all-reviews { width: 100%; margin-left: 0; text-align: right; }
+  .feedback-all-reviews:hover,
+  .feedback-all-reviews:focus-visible { color: #b468ab; }
+  .feedback-all-reviews:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  @media (max-width: 480px) {
+    .feedback-summary { gap: 0.75rem; }
+    .feedback-stats { gap: 0.65rem; }
+    .feedback-stat span { max-width: 8em; }
   }
   .feedback-list {
     display: grid;
@@ -2398,7 +2412,7 @@
     .feedback-panel .section-title .feedback-title-second::before {
       content: ' ';
     }
-    .feedback-stats { width: 100%; justify-content: space-between; }
+    .feedback-stats { justify-content: flex-end; }
     .feedback-list {
       display: flex;
       gap: 0.9rem;
@@ -9571,17 +9585,19 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
             <p class="section-label">✦ Quem já sentiu</p>
             <h2 class="section-title" style="margin-bottom:0;">Histórias que deixam<br/><em>marca</em></h2>
           </div>
-          <div class="feedback-stats" aria-label="Resumo dos feedbacks">
-            <div class="feedback-stat">
-              <strong>4.9 / 5</strong>
-              <span>experiência sentida</span>
-            </div>
-            <div class="feedback-divider" aria-hidden="true"></div>
-            <div class="feedback-stat">
-              <strong>+300</strong>
-              <span>presentes enviados</span>
-            </div>
+          <div class="feedback-summary">
             <a class="feedback-all-reviews" href="/avaliacoes/">Ver todas as avaliações</a>
+            <div class="feedback-stats" aria-label="Resumo dos feedbacks">
+              <div class="feedback-stat">
+                <strong>4.9 / 5</strong>
+                <span>experiência sentida</span>
+              </div>
+              <div class="feedback-divider" aria-hidden="true"></div>
+              <div class="feedback-stat">
+                <strong>+300</strong>
+                <span>presentes enviados</span>
+              </div>
+            </div>
           </div>
         </div>
 
