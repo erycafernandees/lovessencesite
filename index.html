@@ -459,8 +459,9 @@
   }
   .feedback-panel-head {
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: flex-end;
+    align-items: stretch;
     gap: 1.5rem;
     margin-bottom: 2rem;
   }
@@ -475,7 +476,8 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
   }
   .feedback-stat {
     text-align: right;
