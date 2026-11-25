@@ -49,7 +49,11 @@ jobs:
               const artifacts = await github.paginate(github.rest.actions.listWorkflowRunArtifacts, {
                 ...context.repo, run_id: context.runId, per_page: 100
               });
-              if (artifacts.some(artifact => artifact.name === name && !artifact.expired)) return;
+              if (artifacts.some(artifact => artifact.name === name && !artifact.expired)) {
+                // Pages uses a separate artifact index that can lag behind the REST API.
+                await new Promise(resolve => setTimeout(resolve, 30000));
+                return;
+              }
               await new Promise(resolve => setTimeout(resolve, 3000));
             }
             core.setFailed('Os ficheiros da publicação ainda não estão disponíveis.');
