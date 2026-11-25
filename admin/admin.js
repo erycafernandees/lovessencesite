@@ -1604,6 +1604,23 @@ async function signedPreviewUrl(button) {
 }
 
 let quoteEmailRequest = 0;
+function quoteEmailPreviewDocument(html) {
+  const document = new DOMParser().parseFromString(html, 'text/html');
+  document.querySelectorAll('base,meta[http-equiv="refresh" i]').forEach(element => element.remove());
+  document.querySelectorAll('a[href],area[href]').forEach(link => {
+    try {
+      const url = new URL(link.getAttribute('href'), window.location.origin);
+      if (!['https:', 'http:', 'mailto:', 'tel:'].includes(url.protocol)) throw new Error('Unsupported link');
+      link.setAttribute('href', url.href);
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+    } catch {
+      link.removeAttribute('href');
+      link.removeAttribute('target');
+    }
+  });
+  return '<!doctype html>' + document.documentElement.outerHTML;
+}
 function getQuoteEmailViewer() {
   let viewer = document.getElementById('quote-email-viewer');
   if (viewer) return viewer;
@@ -1615,7 +1632,7 @@ function getQuoteEmailViewer() {
     <div class="private-image-header"><h2 id="quote-email-title">Email do orçamento</h2><button type="button" class="private-image-close" aria-label="Fechar email">×</button></div>
     <div class="quote-email-meta"></div>
     <p class="quote-email-feedback" role="status" aria-live="polite"></p>
-    <iframe title="Conteúdo do email enviado" sandbox="" referrerpolicy="no-referrer" hidden></iframe>
+    <iframe title="Conteúdo do email enviado" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" hidden></iframe>
   </div>`;
   document.body.appendChild(viewer);
   viewer.querySelector('button').addEventListener('click', () => viewer.close());
@@ -1654,7 +1671,7 @@ async function openQuoteEmail(quoteId) {
       ? 'Pré-visualização com base no modelo atual e nos dados do envio. A cópia original deste email não está disponível no CRM.'
       : 'Cópia do email enviado.';
     // Isolate email markup from the authenticated CRM: no scripts, forms or same-origin access.
-    frame.srcdoc = email.html;
+    frame.srcdoc = quoteEmailPreviewDocument(email.html);
     frame.hidden = false;
   } catch (error) {
     if (viewer.open && request === quoteEmailRequest) feedback.textContent = error.message || 'Não foi possível consultar o email.';

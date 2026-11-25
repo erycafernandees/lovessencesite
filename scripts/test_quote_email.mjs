@@ -78,6 +78,9 @@ test('saves exactly the subject and HTML submitted to the email provider', async
 test('email preview remains behind administrator authentication and in an isolated frame', () => {
   assert.ok(admin.indexOf('await requireAdmin(req)') < admin.indexOf('if (action === "quote-email-preview")'));
   const ui = readFileSync(new URL('../admin/admin.js', import.meta.url), 'utf8');
-  assert.match(ui, /iframe title="Conteúdo do email enviado" sandbox=""/);
-  assert.ok(ui.includes('frame.srcdoc = email.html'));
+  assert.match(ui, /iframe title="Conteúdo do email enviado" sandbox="allow-popups allow-popups-to-escape-sandbox"/);
+  assert.ok(ui.includes('frame.srcdoc = quoteEmailPreviewDocument(email.html)'));
+  assert.ok(!ui.includes('sandbox="allow-scripts'));
+  assert.ok(ui.includes("link.setAttribute('target', '_blank')"));
+  assert.ok(ui.includes("link.setAttribute('rel', 'noopener noreferrer')"));
 });
