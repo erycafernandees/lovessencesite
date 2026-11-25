@@ -168,7 +168,13 @@ export function hasValidMagic(bytes: Uint8Array, mime: string): boolean {
 
 export async function queueEmail(template: string, recipient: string, payload: Record<string, unknown>): Promise<void> {
   const client = serviceClient();
-  const { data: queued, error } = await client.from("notification_outbox").insert({ channel: "email", template, recipient, payload }).select("id").single();
+  const snapshot = template === "quote_ready" ? {
+    from: Deno.env.get("EMAIL_FROM") || "Love Essences <encomendas@love-essences.pt>",
+    subject: `A tua proposta Love Essences ${payload.projectNumber || ""}`,
+    html: emailHtml(template, payload),
+  } : null;
+  const savedPayload = snapshot ? { ...payload, emailSnapshot: snapshot } : payload;
+  const { data: queued, error } = await client.from("notification_outbox").insert({ channel: "email", template, recipient, payload: savedPayload }).select("id").single();
   if (error || !queued) throw error || new Error("Could not queue email");
   const key = Deno.env.get("RESEND_API_KEY");
   if (!key) return;
@@ -186,11 +192,11 @@ export async function queueEmail(template: string, recipient: string, payload: R
     method: "POST",
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      from: Deno.env.get("EMAIL_FROM") || "Love Essences <encomendas@love-essences.pt>",
+      from: snapshot?.from || Deno.env.get("EMAIL_FROM") || "Love Essences <encomendas@love-essences.pt>",
       to: [recipient],
       reply_to: Deno.env.get("EMAIL_REPLY_TO") || "love-essences@outlook.com",
-      subject: subjects[template] || "Love Essences",
-      html: emailHtml(template, payload),
+      subject: snapshot?.subject || subjects[template] || "Love Essences",
+      html: snapshot?.html || emailHtml(template, payload),
     }),
   });
   const responseBody = await response.json().catch(() => ({})) as { id?: string; message?: string };
@@ -204,7 +210,7 @@ function escapeText(value: unknown): string {
   return String(value || "Indisponível").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
-function emailHtml(template: string, payload: Record<string, unknown>): string {
+export function emailHtml(template: string, payload: Record<string, unknown>): string {
   const number = String(payload.orderNumber || payload.projectNumber || "");
   if (template === "shipment_ctt") {
     const code = escapeText(payload.trackingCode);

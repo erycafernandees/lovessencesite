@@ -320,3 +320,15 @@
 /* Alinhar as ações das Avaliações como nas restantes áreas da gestão. */
 .reviews-workspace .toolbar #reviews-new-link{margin-left:auto}
 .reviews-workspace .toolbar #reviews-refresh{margin-left:0}
+
+/* Consulta privada do email enviado, mantendo o pedido aberto. */
+.quote-email-viewer{width:min(840px,96vw);max-width:96vw;max-height:94dvh;padding:0;border:1px solid var(--line);border-radius:16px;background:#fff;color:var(--ink);box-shadow:0 20px 80px rgba(20,4,18,.3)}
+.quote-email-viewer::backdrop{background:rgba(21,7,21,.65)}
+.quote-email-panel{padding:1.25rem;overflow:auto;max-height:92dvh}
+.quote-email-panel h2{margin:0;font-size:1.15rem}
+.quote-email-meta{margin:1rem 0;overflow-wrap:anywhere;font-size:.9rem;line-height:1.5}
+.quote-email-meta p{margin:.35rem 0}
+.quote-email-feedback{font-size:.875rem;line-height:1.5;color:var(--muted)}
+.quote-email-panel iframe{display:block;width:100%;height:55dvh;min-height:280px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.quote-email-panel iframe[hidden]{display:none}
+@media(max-width:520px){.quote-email-panel{padding:.8rem}.quote-email-panel iframe{height:58dvh}}

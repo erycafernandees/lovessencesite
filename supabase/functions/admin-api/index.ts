@@ -1,4 +1,4 @@
-import { ApiError, cleanText, createSignedUploads, handleError, hasValidMagic, json, PRIVATE_BUCKET, queueEmail, randomToken, readJson, requireAdmin, serviceClient, sha256, validateUploads } from "../_shared/core.ts";
+import { ApiError, cleanText, createSignedUploads, emailHtml, handleError, hasValidMagic, json, PRIVATE_BUCKET, queueEmail, randomToken, readJson, requireAdmin, serviceClient, sha256, validateUploads } from "../_shared/core.ts";
 
 const ORDER_STATES = ["draft","awaiting_payment","confirmed","review","awaiting_details","production","ready_to_ship","shipped","completed","cancelled"];
 const PROJECT_STATES = ["draft","submitted","in_review","awaiting_details","quoted","approved","payment_pending","paid","production","completed","declined","archived"];
@@ -539,6 +539,54 @@ Deno.serve(async (req) => {
       return json(req, { ok: true });
     }
 
+    if (action === "quote-email-preview") {
+      const id = cleanText(body.id, 80, true)!;
+      const { data: quote, error: quoteError } = await client.from("quotes")
+        .select("id,project_requests(project_number)").eq("id", id).single();
+      if (quoteError || !quote) throw new ApiError(404, "quote_not_found", "O orçamento não foi encontrado.");
+      const project = quote.project_requests as { project_number: string } | null;
+      if (!project) throw new ApiError(404, "project_not_found", "O pedido não foi encontrado.");
+      const { data: notifications, error } = await client.from("notification_outbox")
+        .select("recipient,payload,provider_message_id,sent_at,last_error,created_at")
+        .eq("template", "quote_ready").eq("payload->>projectNumber", project.project_number)
+        .order("created_at", { ascending: false }).limit(100);
+      if (error) throw error;
+      // Legacy emails only stored the quote ID in the private proposal URL.
+      const notification = (notifications || []).find((item) => {
+        if (item.payload?.quoteId === id) return true;
+        try { return new URL(item.payload?.quoteUrl).searchParams.get("quote") === id; }
+        catch { return false; }
+      });
+      if (!notification) throw new ApiError(404, "email_not_found", "Não existe um email enviado para este orçamento.");
+      const metadata = { recipient: notification.recipient, sentAt: notification.sent_at,
+        createdAt: notification.created_at, state: notification.sent_at ? "sent" : notification.last_error ? "failed" : "pending" };
+      if (!notification.sent_at) return json(req, { ...metadata, html: null });
+      const snapshot = notification.payload?.emailSnapshot;
+      if (snapshot?.html && typeof snapshot.html === "string") {
+        return json(req, { ...metadata, from: snapshot.from, subject: snapshot.subject, html: snapshot.html, source: "snapshot" });
+      }
+      // Retrieve the actual original for emails sent before snapshots were saved.
+      const key = Deno.env.get("RESEND_API_KEY");
+      if (key && notification.provider_message_id) {
+        try {
+          const response = await fetch(`https://api.resend.com/emails/${encodeURIComponent(notification.provider_message_id)}`, {
+            headers: { Authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(8000),
+          });
+          if (response.ok) {
+            const email = await response.json();
+            if (typeof email.html === "string" && email.html) return json(req, {
+              ...metadata, from: email.from, subject: email.subject, html: email.html,
+              deliveryStatus: email.last_event, source: "provider",
+            });
+          }
+        } catch { /* A limited API key or unavailable provider must not hide the send record. */ }
+      }
+      return json(req, { ...metadata, source: "template",
+        subject: `A tua proposta Love Essences ${project.project_number}`,
+        html: emailHtml("quote_ready", notification.payload),
+      });
+    }
+
     if (action === "send-quote") {
       if (admin.role === "viewer") throw new ApiError(403, "forbidden", "Não tens permissão para enviar orçamentos.");
       const id = cleanText(body.id, 80, true)!;
@@ -580,7 +628,7 @@ Deno.serve(async (req) => {
       if (project?.customer_email) {
         try {
           await queueEmail("quote_ready", project.customer_email, {
-            projectNumber: project.project_number, quoteUrl, totalAmount: quote.total_amount,
+            quoteId: id, projectNumber: project.project_number, quoteUrl, totalAmount: quote.total_amount,
           });
           emailQueued = true;
         } catch (error) {

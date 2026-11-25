@@ -1398,7 +1398,7 @@ async function openProject(id) {
       <div class="detail-section" id="project-quote-section"><h3>Orçamento e notas</h3>
       <div class="project-quote-subsection"><h4>Notas internas do projeto</h4><p class="internal-notes-help">Regista aqui as confirmações, preferências e detalhes de entrega combinados com o cliente. Estas notas não são enviadas ao cliente.</p><form id="project-notes-form" class="project-notes-form"><label for="project-admin-notes">Notas do projeto</label><textarea id="project-admin-notes" name="notes" rows="6" maxlength="4000" placeholder="Ex.: Produtos, cores, fragrância, entrega e detalhes acordados">${esc(project.admin_notes || '')}</textarea><div class="project-notes-actions"><button type="submit">Guardar notas</button><span id="project-notes-feedback" role="status" aria-live="polite"></span></div></form></div>
       <div class="project-quote-subsection"><h4>Novo orçamento</h4><p class="quote-note">Ao guardares as alterações, este orçamento fica em rascunho. Não é enviado automaticamente.</p><form id="quote-form"><div id="quote-lines"><div class="quote-row"><input name="description" placeholder="Descrição" required/><input name="quantity" type="number" min="1" value="1" required/><input name="unit" type="number" min="0" step="0.01" placeholder="€/un" required/></div></div><label class="quote-client-notes-label" for="quote-client-notes">Observações para a cliente (opcional)</label><textarea id="quote-client-notes" name="quoteNotes" rows="3" maxlength="2000" placeholder="Estas observações só ficam visíveis quando enviares o orçamento."></textarea><div class="quote-actions"><button type="button" class="secondary" id="add-quote-line">+ Linha</button><button type="submit">Guardar rascunho</button></div></form></div>
-      <div class="project-quote-subsection"><h4>Orçamentos guardados</h4>${(project.quotes||[]).map(q=>`<div class="quote-history-entry"><p><strong>v${q.version}</strong> · ${badge(q.status)} · ${money(q.total_amount,q.currency)} · válido até ${esc(q.valid_until||'—')}</p>${q.status==='draft'?`${(project.attachments||[]).filter(f=>f.quote_id===q.id).map(f=>`<p>${esc(f.original_name)} · ${f.status==='verified'?'Anexado':'Por concluir'} <button type="button" data-remove-mockup="${esc(f.id)}">Remover</button></p>`).join('')}<label>Mockups visuais (JPG/PNG, até 10 MB por imagem)<input type="file" accept="image/jpeg,image/png" multiple data-quote-mockups="${esc(q.id)}"></label><span role="status" data-mockup-feedback="${esc(q.id)}"></span><button type="button" class="secondary" data-send-quote="${esc(q.id)}">Enviar orçamento</button><button type="button" class="delete-order-button" data-delete-draft-quote="${esc(q.id)}" data-quote-version="${esc(q.version)}">Eliminar</button>`:''}</div>`).join('')||'<p>Nenhum orçamento guardado.</p>'}</div>
+      <div class="project-quote-subsection"><h4>Orçamentos guardados</h4>${(project.quotes||[]).map(q=>`<div class="quote-history-entry"><p><strong>v${q.version}</strong> · ${badge(q.status)} · ${money(q.total_amount,q.currency)} · válido até ${esc(q.valid_until||'—')}</p>${q.status==='draft'?`${(project.attachments||[]).filter(f=>f.quote_id===q.id).map(f=>`<p>${esc(f.original_name)} · ${f.status==='verified'?'Anexado':'Por concluir'} <button type="button" data-remove-mockup="${esc(f.id)}">Remover</button></p>`).join('')}<label>Mockups visuais (JPG/PNG, até 10 MB por imagem)<input type="file" accept="image/jpeg,image/png" multiple data-quote-mockups="${esc(q.id)}"></label><span role="status" data-mockup-feedback="${esc(q.id)}"></span><button type="button" class="secondary" data-send-quote="${esc(q.id)}">Enviar orçamento</button><button type="button" class="delete-order-button" data-delete-draft-quote="${esc(q.id)}" data-quote-version="${esc(q.version)}">Eliminar</button>`:`<button type="button" class="secondary" data-view-quote-email="${esc(q.id)}">Ver email enviado</button>`}</div>`).join('')||'<p>Nenhum orçamento guardado.</p>'}</div>
       </div>`);
     bindDeliveryForm(project,'project',id);
     async function saveProjectNotes() {
@@ -1502,6 +1502,7 @@ async function openProject(id) {
         submit.disabled = false;
       }
     });
+    document.querySelectorAll('[data-view-quote-email]').forEach(button => button.addEventListener('click', () => openQuoteEmail(button.dataset.viewQuoteEmail)));
     document.querySelectorAll('[data-remove-mockup]').forEach(button => button.addEventListener('click', async () => {
       try { await adminApi('remove-quote-mockup', { id: button.dataset.removeMockup }); await openProject(id); }
       catch (error) { alert(error.message); }
@@ -1600,6 +1601,64 @@ async function signedPreviewUrl(button) {
     button.dataset.previewExpires = String(Date.now() + Math.min(Number(response.expiresIn) || 300, 300) * 1000);
   }
   return response.url;
+}
+
+let quoteEmailRequest = 0;
+function getQuoteEmailViewer() {
+  let viewer = document.getElementById('quote-email-viewer');
+  if (viewer) return viewer;
+  viewer = document.createElement('dialog');
+  viewer.id = 'quote-email-viewer';
+  viewer.className = 'quote-email-viewer';
+  viewer.setAttribute('aria-labelledby', 'quote-email-title');
+  viewer.innerHTML = `<div class="quote-email-panel">
+    <div class="private-image-header"><h2 id="quote-email-title">Email do orçamento</h2><button type="button" class="private-image-close" aria-label="Fechar email">×</button></div>
+    <div class="quote-email-meta"></div>
+    <p class="quote-email-feedback" role="status" aria-live="polite"></p>
+    <iframe title="Conteúdo do email enviado" sandbox="" referrerpolicy="no-referrer" hidden></iframe>
+  </div>`;
+  document.body.appendChild(viewer);
+  viewer.querySelector('button').addEventListener('click', () => viewer.close());
+  viewer.addEventListener('click', event => { if (event.target === viewer) viewer.close(); });
+  viewer.addEventListener('close', () => {
+    quoteEmailRequest++;
+    viewer.querySelector('iframe').removeAttribute('srcdoc');
+    viewer.querySelector('.quote-email-meta').replaceChildren();
+  });
+  return viewer;
+}
+async function openQuoteEmail(quoteId) {
+  const viewer = getQuoteEmailViewer();
+  const request = ++quoteEmailRequest;
+  const frame = viewer.querySelector('iframe');
+  const meta = viewer.querySelector('.quote-email-meta');
+  const feedback = viewer.querySelector('.quote-email-feedback');
+  frame.hidden = true;
+  frame.removeAttribute('srcdoc');
+  meta.replaceChildren();
+  feedback.textContent = 'A carregar email…';
+  if (!viewer.open) viewer.showModal();
+  try {
+    const email = await adminApi('quote-email-preview', { id: quoteId });
+    if (!viewer.open || request !== quoteEmailRequest) return;
+    const date = email.sentAt ? new Intl.DateTimeFormat('pt-PT', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Lisbon' }).format(new Date(email.sentAt)) : '';
+    meta.innerHTML = `<p><strong>Para:</strong> ${esc(email.recipient)}</p>`
+      + (email.from ? `<p><strong>De:</strong> ${esc(email.from)}</p>` : '')
+      + (email.subject ? `<p><strong>Assunto:</strong> ${esc(email.subject)}</p>` : '')
+      + (date ? `<p><strong>Enviado em:</strong> ${esc(date)}</p>` : '');
+    if (!email.html) {
+      feedback.textContent = email.state === 'failed' ? 'O envio deste email falhou.' : 'Este email ainda aguarda envio.';
+      return;
+    }
+    feedback.textContent = email.source === 'template'
+      ? 'Pré-visualização com base no modelo atual e nos dados do envio. A cópia original deste email não está disponível no CRM.'
+      : 'Cópia do email enviado.';
+    // Isolate email markup from the authenticated CRM: no scripts, forms or same-origin access.
+    frame.srcdoc = email.html;
+    frame.hidden = false;
+  } catch (error) {
+    if (viewer.open && request === quoteEmailRequest) feedback.textContent = error.message || 'Não foi possível consultar o email.';
+  }
 }
 
 function getPrivateImageViewer() {
