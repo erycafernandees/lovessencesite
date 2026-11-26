@@ -62,13 +62,31 @@ Deno.serve(async (req: Request) => {
       created: { gte: Math.floor((now - 7 * 86400000) / 1000) },
     });
     if (sessions.has_more) issues.add("stripe_list_incomplete");
-    for (const session of sessions.data) {
+    // Drafts may be deleted after an abandoned/expired Checkout. Only a
+    // completed payment requires reconciliation with an order.
+    const paidSessions = sessions.data.filter((session) => session.mode === "payment" && session.status === "complete" &&
+      ["paid", "no_payment_required"].includes(session.payment_status));
+    // An old order can be paid using a newly created session. The date window
+    // above limits the audit scan; it must not define whether an order exists.
+    const olderOrderIds = [...new Set(paidSessions.map((session) => session.metadata?.order_id)
+      .filter((id): id is string => !!id && !byId.has(id)))];
+    if (olderOrderIds.length) {
+      const older = await db.from("orders")
+        .select("id,order_number,is_test,payment_status,payment_provider,order_status,total_amount,stripe_checkout_session_id,created_at")
+        .in("id", olderOrderIds);
+      if (older.error) throw older.error;
+      for (const order of older.data || []) byId.set(order.id, order);
+    }
+    for (const session of paidSessions) {
       const orderId = session.metadata?.order_id;
       if (!orderId) continue;
       const order = byId.get(orderId);
-      if (!order) { issues.add("stripe_order_missing"); continue; }
-      if (session.payment_status === "paid" && new Date(order.created_at).getTime() < now - 15 * 60000) {
-        if (order.payment_status !== "paid") issues.add("paid_session_not_registered");
+      if (!order) {
+        if (session.created * 1000 < now - 15 * 60000) issues.add("stripe_order_missing");
+        continue;
+      }
+      if (new Date(order.created_at).getTime() < now - 15 * 60000) {
+        if (!["paid", "partially_refunded", "refunded"].includes(order.payment_status)) issues.add("paid_session_not_registered");
         if (order.stripe_checkout_session_id !== session.id) issues.add("paid_session_id_mismatch");
         if (session.amount_total != null && order.total_amount !== session.amount_total) {
           issues.add("paid_amount_mismatch");
