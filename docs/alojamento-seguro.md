@@ -4,6 +4,31 @@ O build escreve `_site/_headers` a partir de `scripts/hosting_security.py`, que
 também produz a CSP dos documentos HTML. O GitHub Pages atual ignora `_headers`:
 publicar o ficheiro não ativa os cabeçalhos no domínio real.
 
+## Alternativa: manter GitHub Pages com um proxy Cloudflare
+
+Esta opção mantém o workflow e o alojamento atuais. Antes de alterar nameservers,
+exportar a zona DNS completa na Amen e conferir todos os registos na Cloudflare,
+incluindo email e DNSSEC. Usar o plano gratuito apenas se a conta confirmar que
+inclui as regras necessárias. Configurar TLS Full (strict), manter as proteções
+de scripts/HTML existentes e aplicar regras de resposta com operação **Set**.
+
+O comando seguinte gera as quatro regras, por ordem: público, CSP do admin,
+cache das rotas sensíveis e revalidação dos assets. Conferir e preservar regras
+já existentes na zona; não substituir um ruleset inteiro sem o ler primeiro.
+
+```sh
+python3 scripts/hosting_security.py
+```
+
+Conferir o certificado e o funcionamento antes de ativar HSTS. Não usar TLS
+Flexible. Não ativar otimizações que reescrevam JavaScript sem testar novamente
+a CSP. Confirmar o comportamento da cache na borda separadamente: alterar o
+cabeçalho de resposta Cache-Control não altera a decisão de cache da Cloudflare.
+Só depois de verificar a zona e o plano, mudar os nameservers na Amen e repetir
+o verificador HTTP e os percursos funcionais no domínio real.
+
+Referência: https://developers.cloudflare.com/rules/transform/response-header-modification/
+
 ## Ativação em Cloudflare Pages
 
 Usar o projeto existente `love-essences-teste`, se a conta confirmar a sua

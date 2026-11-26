@@ -189,6 +189,14 @@ try {
     const {replaySandbox}=await import('./stripe-sandbox-replay.mjs');
     await replaySandbox(client,process.env.SECURITY_STRIPE_FIXTURE,process.env.SECURITY_STRIPE_TOOLS||toolsRoot);
   }
+  if(process.env.SECURITY_PROVIDER_REFUND_STDIN === '1'){
+    const {createInterface}=await import('node:readline');
+    const {replayProviderRefund}=await import('./stripe-provider-refund-replay.mjs');
+    const input=createInterface({input:process.stdin,terminal:false});
+    const line=await new Promise(resolve=>input.once('line',resolve));
+    input.close(); process.stdin.pause();
+    await replayProviderRefund(client,JSON.parse(line),process.env.SECURITY_STRIPE_TOOLS||toolsRoot);
+  }
   console.log(`POSTGRES_INTEGRATION_PASSED=${passed}`);
 } catch (error) {
   console.error('POSTGRES_INTEGRATION_FAILED', error); failed = true; process.exitCode = 1;

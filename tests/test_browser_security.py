@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from browser_security import Externalize, CheckPolicy, secure_documents
-from hosting_security import browser_policy, host_headers
+from hosting_security import browser_policy, host_headers, cloudflare_ruleset
 
 
 def effective_headers(path):
@@ -85,6 +85,20 @@ class SecurityBuildTests(unittest.TestCase):
 
     def test_header_lines_fit_cloudflare_limits(self):
         self.assertTrue(all(len(line) <= 2000 for line in host_headers().splitlines()))
+
+    def test_proxy_rules_replace_policies_in_order_and_match_host_configuration(self):
+        ruleset = cloudflare_ruleset()
+        self.assertEqual(ruleset['phase'], 'http_response_headers_transform')
+        public, admin, private, assets = ruleset['rules']
+        for rule in ruleset['rules']:
+            self.assertIn('http.host in {"love-essences.pt" "www.love-essences.pt"}', rule['expression'])
+            self.assertTrue(all(value['operation'] == 'set' for value in rule['action_parameters']['headers'].values()))
+        for rule, is_admin in [(public, False), (admin, True)]:
+            self.assertEqual(rule['action_parameters']['headers']['content-security-policy']['value'], browser_policy(is_admin) + "; frame-ancestors 'none'; upgrade-insecure-requests")
+        self.assertIn('http.request.uri.path eq "/admin"', admin['expression'])
+        self.assertIn('starts_with(http.request.uri.path, "/admin/")', admin['expression'])
+        self.assertEqual(private['action_parameters']['headers']['cache-control']['value'], 'no-store')
+        self.assertEqual(assets['action_parameters']['headers']['cache-control']['value'], 'public, max-age=0, must-revalidate')
 
 
 if __name__ == '__main__':
