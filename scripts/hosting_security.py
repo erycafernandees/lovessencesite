@@ -43,3 +43,43 @@ def host_headers() -> str:
         result += f"\n{route}\n  Cache-Control: no-store\n  X-Robots-Tag: noindex\n"
     result += "\n/assets/*\n  Cache-Control: public, max-age=0, must-revalidate\n"
     return result
+
+
+def cloudflare_ruleset() -> dict:
+    """Response transforms for a proxy in front of the existing GitHub host."""
+    domain = 'http.host in {"love-essences.pt" "www.love-essences.pt"}'
+    admin = '(http.request.uri.path eq "/admin" or starts_with(http.request.uri.path, "/admin/"))'
+    private = ' or '.join(
+        f'(http.request.uri.path eq "{path}" or starts_with(http.request.uri.path, "{path}/"))'
+        for path in ('/admin', '/checkout', '/encomenda', '/orcamento', '/avaliar')
+    )
+
+    def rule(description, condition, headers):
+        return {
+            'description': description, 'expression': f'{domain} and ({condition})',
+            'action': 'rewrite', 'enabled': True,
+            'action_parameters': {'headers': {name: {'operation': 'set', 'value': value} for name, value in headers.items()}},
+        }
+
+    return {
+        'name': 'Love Essences security headers', 'kind': 'zone',
+        'phase': 'http_response_headers_transform',
+        'rules': [
+            rule('Love Essences public security', 'true', {
+                'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY',
+                'referrer-policy': 'no-referrer', 'strict-transport-security': 'max-age=31536000',
+                'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.stripe.com")',
+                'content-security-policy': browser_policy() + "; frame-ancestors 'none'; upgrade-insecure-requests",
+            }),
+            rule('Love Essences admin CSP', admin, {
+                'content-security-policy': browser_policy(True) + "; frame-ancestors 'none'; upgrade-insecure-requests",
+            }),
+            rule('Love Essences private browser cache', private, {'cache-control': 'no-store', 'x-robots-tag': 'noindex'}),
+            rule('Love Essences asset revalidation', 'starts_with(http.request.uri.path, "/assets/")', {'cache-control': 'public, max-age=0, must-revalidate'}),
+        ],
+    }
+
+
+if __name__ == '__main__':
+    import json
+    print(json.dumps(cloudflare_ruleset(), ensure_ascii=False, indent=2))
