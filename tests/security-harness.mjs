@@ -5,7 +5,7 @@ import { resolve, dirname } from 'node:path';
 
 // Execute the actual Edge Function with isolated, in-memory external services.
 // No network, database credentials, email or payment provider are used.
-export async function loadFunction(name, { client, stripe = {}, env = {}, transform, StripeSDK } = {}) {
+export async function loadFunction(name, { client, stripe = {}, env = {}, transform, StripeSDK, externalModules = {} } = {}) {
   let handler;
   class Stripe {
     constructor() { return stripe; }
@@ -26,7 +26,7 @@ export async function loadFunction(name, { client, stripe = {}, env = {}, transf
     if (cache.has(path)) return cache.get(path);
     let module;
     if (path.startsWith('jsr:') || path.startsWith('npm:')) {
-      const values = path.startsWith('jsr:') ? { createClient: () => client, SupabaseClient: class {} } : { default: StripeSDK || Stripe };
+      const values = externalModules[path] || (path.startsWith('jsr:') ? { createClient: () => client, SupabaseClient: class {} } : { default: StripeSDK || Stripe });
       module = new vm.SyntheticModule(Object.keys(values), function () {
         for (const [key, value] of Object.entries(values)) this.setExport(key, value);
       }, { context, identifier: path });
