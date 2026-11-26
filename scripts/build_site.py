@@ -17,6 +17,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from zoneinfo import ZoneInfo
+from browser_security import secure_documents
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -844,6 +845,7 @@ def add_browser_security(output: Path) -> None:
     # GitHub Pages does not consume the Cloudflare-style _headers file. A meta
     # policy supplies the directives browsers support in HTML. frame-ancestors,
     # HSTS and X-Frame-Options still require real HTTP headers at the host.
+    secure_documents(output)
     shared = (
         "default-src 'self'; base-uri 'self'; object-src 'none'; "
         "form-action 'self' https://checkout.stripe.com; "
@@ -857,10 +859,10 @@ def add_browser_security(output: Path) -> None:
     for page in output.rglob("*.html"):
         is_admin = page.relative_to(output).parts[0] == "admin"
         scripts = "script-src 'self' https://cdn.jsdelivr.net" if is_admin else (
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net "
+            "script-src 'self' "
             "https://www.googletagmanager.com https://www.clarity.ms https://challenges.cloudflare.com"
         )
-        policy = html_lib.escape(shared + scripts, quote=True)
+        policy = html_lib.escape(shared + scripts + "; script-src-attr 'none'", quote=True)
         tags = f'<meta charset="utf-8"/>\n<meta http-equiv="Content-Security-Policy" content="{policy}"/>\n<meta name="referrer" content="no-referrer"/>'
         source = page.read_text(encoding="utf-8")
         source = re.sub(r'<meta\b(?=[^>]*\bname=["\x27]referrer["\x27])[^>]*>', '', source, flags=re.I)

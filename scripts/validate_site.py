@@ -9,6 +9,7 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from browser_security import validate_documents
 
 from build_site import (
     DOMAIN,
@@ -33,6 +34,7 @@ def one(pattern: str, source: str, label: str, flags: int = 0) -> str:
 
 
 def validate(output: Path) -> None:
+    validate_documents(output)
     source = (ROOT / "index.html").read_text(encoding="utf-8")
     products, routes = get_routes(source)
     known_route_paths = {route.path for route in routes} | {'/avaliacoes/'}  # Página autónoma gerada em avaliacoes/

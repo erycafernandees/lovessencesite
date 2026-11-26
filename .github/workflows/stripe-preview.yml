@@ -21,6 +21,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Gerar site de teste
         run: python3 scripts/build_site.py --output _site
+      - name: Preparar Node para os testes de segurança
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verificar eventos e controlos de segurança
+        run: |
+          npm run test:security
+          python3 -m unittest discover -s tests -p 'test_browser_security.py'
       - name: Validar rotas e SEO
         run: python3 scripts/validate_site.py --output _site
       - name: Validar integração do checkout
@@ -30,7 +38,10 @@ jobs:
           html = Path('_site/index.html').read_text(encoding='utf-8')
           config = Path('_site/assets/js/commerce-config.js').read_text(encoding='utf-8')
           commerce = Path('_site/assets/js/commerce.js').read_text(encoding='utf-8')
-          assert 'onclick="window.LoveCommerce.startCatalogCheckout(this)"' in html
+          events = '\n'.join(path.read_text(encoding='utf-8') for path in Path('_site/assets/js').glob('page-events-*.js'))
+          assert 'window.LoveCommerce.startCatalogCheckout(this)' in events
+          assert ' data-le-onclick=' in html
+          assert ' onclick=' not in html
           assert 'enabled: true' in config
           assert 'checkout-prepare' in commerce and 'checkout-session' in commerce
           assert Path('_site/encomenda/confirmacao/index.html').exists()
