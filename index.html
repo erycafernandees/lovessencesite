@@ -131,7 +131,7 @@
   }
 
   /* Ensure all buttons and links respond to touch immediately, fix iOS 300ms delay */
-  button, a, [onclick], [role="button"],
+  button, a, [data-le-onclick], [role="button"],
   .cat-tab, .product-btn, .btn-primary, .btn-outline, .nav-cta,
   .product-card, .occasion-card, .footer-col a,
   .mobile-nav-link, .mobile-cta, .hamburger,
@@ -144,7 +144,7 @@
     -webkit-user-select: none;
     user-select: none;
   }
-  [onclick] { cursor: pointer; }
+  [data-le-onclick] { cursor: pointer; }
 
   /* NAV */
   nav {
@@ -3301,9 +3301,9 @@
     position: relative;
   }
 
-  button[onclick],
-  a[onclick],
-  [role="button"][onclick],
+  button[data-le-onclick],
+  a[data-le-onclick],
+  [role="button"][data-le-onclick],
   .product-btn,
   .btn-primary,
   .btn-outline,
@@ -10230,7 +10230,7 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
         <div class="product-info">
           <h3 class="product-name">Lembrei-me de Ti</h3>
           <p class="product-desc">Mini bouquet delicado, ideal para um gesto espontâneo. Pequeno no tamanho, cheio de intenção no significado.</p>
-          <div class="product-footer"><span class="product-price">12€</span><button type="button" class="product-btn cart-add-btn" onclick="addToCart('Lembrei-me de Ti',12,'🌷')">Adicionar 🛒</button></div>
+          <div class="product-footer"><span class="product-price">12€</span><button type="button" class="product-btn cart-add-btn" data-cart-name="Lembrei-me de Ti" onclick="addToCart('Lembrei-me de Ti',12,'🌷')">Adicionar 🛒</button></div>
         </div>
       </div>
 
@@ -14554,9 +14554,9 @@ function updateRouteContent(state) {
     var list = shopBreadcrumb.querySelector('ol');
     if (list) {
       var extra = routeSeo.label && (state.category || state.occasion)
-        ? '<li><a href="/loja/" onclick="showPage(\'shop\'); return false;">Loja</a></li><li aria-current="page">' + routeSeo.label + '</li>'
+        ? '<li><a href="/loja/" data-le-onclick="route-shop">Loja</a></li><li aria-current="page">' + routeSeo.label + '</li>'
         : '<li aria-current="page">Loja</li>';
-      list.innerHTML = '<li><a href="/" onclick="showPage(\'home\'); return false;">Início</a></li>' + extra;
+      list.innerHTML = '<li><a href="/" data-le-onclick="route-home">Início</a></li>' + extra;
     }
   }
   if (state.page === 'product' && state.productId && PRODUCT_CATALOG[state.productId]) {
@@ -14564,7 +14564,7 @@ function updateRouteContent(state) {
     var categoryKey = product.category === 'Coleção Assinatura' ? 'pecas' : product.category === 'Coleção Memórias' ? 'memorias' : 'eventos';
     var categoryNode = document.getElementById('product-breadcrumb-category');
     var nameNode = document.getElementById('product-breadcrumb-name');
-    if (categoryNode) categoryNode.innerHTML = '<a href="' + LOVE_CATEGORY_ROUTES[categoryKey] + '" onclick="openShopCategory(\'' + categoryKey + '\'); return false;">' + product.category + '</a>';
+    if (categoryNode) categoryNode.innerHTML = '<a href="' + LOVE_CATEGORY_ROUTES[categoryKey] + '" data-le-onclick="shop-category" data-le-category="' + categoryKey + '">' + product.category + '</a>';
     if (nameNode) nameNode.textContent = product.name;
   }
   renderCommercialSeoContent(state);
@@ -15994,7 +15994,7 @@ function selectSoapFlowerFragrance(label) {
 
 function renderSoapFlowerFragranceGroup(labels) {
   var options = labels.map(function(label) {
-    return '<button type="button" class="pd-soap-fragrance-option" role="radio" aria-checked="false" data-fragrance="' + productEscapeHtml(label) + '" onclick="selectSoapFlowerFragrance(this.dataset.fragrance)">' + productEscapeHtml(label) + '</button>';
+    return '<button type="button" class="pd-soap-fragrance-option" role="radio" aria-checked="false" data-fragrance="' + productEscapeHtml(label) + '" data-le-onclick="soap-fragrance">' + productEscapeHtml(label) + '</button>';
   }).join('');
   return '<div class="pd-fragrance-group"><div class="pd-soap-fragrance-list">' + options + '</div></div>';
 }
@@ -16253,19 +16253,19 @@ function renderProductGallery(images, altBase) {
       '</div>';
     }
     return '<div class="pd-gallery-slide' + (idx === 0 ? ' active' : '') + '" data-gallery-index="' + idx + '">' +
-      '<img src="' + productEscapeHtml(src) + '" alt="' + safeAlt + (currentGalleryImages.length > 1 ? ' foto ' + (idx + 1) : '') + '" loading="' + (idx === 0 ? 'eager' : 'lazy') + '" decoding="async"' + (idx === 0 ? ' fetchpriority="high"' : '') + ' onerror="this.closest(\'.pd-gallery-slide\').remove()">' +
+      '<img src="' + productEscapeHtml(src) + '" alt="' + safeAlt + (currentGalleryImages.length > 1 ? ' foto ' + (idx + 1) : '') + '" loading="' + (idx === 0 ? 'eager' : 'lazy') + '" decoding="async"' + (idx === 0 ? ' fetchpriority="high"' : '') + ' data-le-onerror="gallery-image-error">' +
     '</div>';
   }).join('');
 
   var controls = '';
   if (currentGalleryImages.length > 1) {
     controls =
-      '<button type="button" class="pd-gallery-nav pd-gallery-prev" aria-label="Ver foto anterior" onclick="changeProductGallery(-1, true)">‹</button>' +
-      '<button type="button" class="pd-gallery-nav pd-gallery-next" aria-label="Ver próxima foto" onclick="changeProductGallery(1, true)">›</button>' +
+      '<button type="button" class="pd-gallery-nav pd-gallery-prev" aria-label="Ver foto anterior" data-le-onclick="gallery-prev">‹</button>' +
+      '<button type="button" class="pd-gallery-nav pd-gallery-next" aria-label="Ver próxima foto" data-le-onclick="gallery-next">›</button>' +
       '<div class="pd-gallery-dots" aria-label="Escolher foto">' +
         currentGalleryImages.map(function(item, idx) {
           var itemLabel = getGalleryItemType(item) === 'video' ? 'vídeo' : 'foto';
-          return '<button type="button" class="pd-gallery-dot' + (idx === 0 ? ' active' : '') + '" aria-label="Ver ' + itemLabel + ' ' + (idx + 1) + '" onclick="setProductGallerySlide(' + idx + ', true)"></button>';
+          return '<button type="button" class="pd-gallery-dot' + (idx === 0 ? ' active' : '') + '" aria-label="Ver ' + itemLabel + ' ' + (idx + 1) + '" data-le-onclick="gallery-slide" data-le-index="' + idx + '"></button>';
         }).join('') +
       '</div>';
   }
@@ -17771,10 +17771,10 @@ function renderCart() {
         '<div class="cart-item-price">' + formatPrice(lineTotal) + ' <span style="color:var(--warm-gray);font-weight:300;font-size:0.78rem;">(' + formatPrice(price) + ' × ' + qty + ')</span></div>' +
       '</div>' +
       '<div class="cart-item-controls">' +
-        '<button type="button" class="qty-btn" onclick="updateCartLineQty(' + index + ',-1)" style="touch-action:manipulation;">−</button>' +
+        '<button type="button" class="qty-btn" data-le-onclick="cart-quantity" data-le-index="' + index + '" data-le-delta="-1" style="touch-action:manipulation;">−</button>' +
         '<span class="qty-display">' + qty + '</span>' +
-        '<button type="button" class="qty-btn" onclick="updateCartLineQty(' + index + ',1)" style="touch-action:manipulation;">+</button>' +
-        '<button type="button" class="cart-item-remove" onclick="removeCartLine(' + index + ')" title="Remover">✕</button>' +
+        '<button type="button" class="qty-btn" data-le-onclick="cart-quantity" data-le-index="' + index + '" data-le-delta="1" style="touch-action:manipulation;">+</button>' +
+        '<button type="button" class="cart-item-remove" data-le-onclick="cart-remove" data-le-index="' + index + '" title="Remover">✕</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -18353,9 +18353,9 @@ renderCart();
 
   function getProductIdFromCard(card) {
     // Use the stable product action, independent of translated titles.
-    var action = card.querySelector('[onclick*="openProduct("]');
-    var match = action && (action.getAttribute('onclick') || '').match(/openProduct\\(['"]([^'"]+)['"]\\)/);
-    if (match && PRODUCT_CATALOG[match[1]]) return match[1];
+    var action = card.querySelector('[data-le-product]');
+    var productId = action && action.dataset.leProduct;
+    if (productId && PRODUCT_CATALOG[productId]) return productId;
     var link = card.querySelector('a[href*="/produtos/"]');
     if (link && typeof getProductUrl === 'function') {
       var path = new URL(link.getAttribute('href'), document.baseURI).pathname;
@@ -18515,8 +18515,8 @@ renderCart();
    var sourceCards=Array.from(grid.querySelectorAll(".product-card"));
    recommendedIds.forEach(function(id){
      var source=sourceCards.find(function(card){
-       var btn=card.querySelector('[onclick*="openProduct"]');
-       return btn&&btn.getAttribute("onclick").indexOf("'"+id+"'")!==-1;
+       var btn=card.querySelector('[data-le-product]');
+       return btn && btn.dataset.leProduct === id;
      });
      if(!source)return;
      var clone=source.cloneNode(true);
