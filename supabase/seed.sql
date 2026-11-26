@@ -60,3 +60,30 @@ insert into public.product_addons(product_id, code, label, unit_amount)
 select p.id, a.code, a.label, a.cents
 from addons a join public.products p on p.code=a.product_code
 on conflict (code) do update set label=excluded.label, unit_amount=excluded.unit_amount, active=true;
+
+-- Christmas products already present in the live catalog. Seed clean local
+-- environments without overwriting prices or content maintained in the CRM.
+insert into public.products (code,name,category,image_path,metadata) values
+('natal_aconchego','Luna','Natal','assets/products/aconchego.jpg','{}'),
+('natal_bloom','Bloom de Natal','Natal','assets/products/bloom-natal.jpg','{}'),
+('natal_carrinha_pinheiro','Rumo ao Natal','Natal','assets/products/carrinha-natal-capa.png','{}'),
+('natal_carrossel','Carrossel Encantado','Natal','assets/products/carrossel.jpg','{}'),
+('natal_sagrada_familia','Sagrada Família','Natal','assets/products/sagrada-familia.jpg','{}'),
+('natal_vela_abobora','Vela Abóbora','Natal','assets/products/vela-abobora.jpg','{}'),
+('natal_vila_encantada','Vila Encantada','Natal','assets/products/vila-encantada.jpg','{}')
+on conflict (code) do nothing;
+
+with variants(product_code,code,label,cents) as (values
+('natal_aconchego','natal_aconchego:mini','Mini',1590),
+('natal_aconchego','natal_aconchego:m','M',2990),
+('natal_bloom','natal_bloom:mini','Mini',1890),
+('natal_bloom','natal_bloom:m','M',3500),
+('natal_carrinha_pinheiro','natal_carrinha_pinheiro:default','Único',1290),
+('natal_carrossel','natal_carrossel:default','Único',1290),
+('natal_sagrada_familia','natal_sagrada_familia:default','Único',1000),
+('natal_vela_abobora','natal_vela_abobora:default','Único',1290),
+('natal_vila_encantada','natal_vila_encantada:default','Único',1190)
+)
+insert into public.product_variants(product_id,code,label,unit_amount,minimum_quantity)
+select p.id,v.code,v.label,v.cents,1 from variants v join public.products p on p.code=v.product_code
+on conflict (code) do nothing;

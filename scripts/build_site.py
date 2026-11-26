@@ -840,6 +840,34 @@ def get_routes(source: str) -> tuple[list[Product], list[Route]]:
     return products, routes
 
 
+def add_browser_security(output: Path) -> None:
+    # GitHub Pages does not consume the Cloudflare-style _headers file. A meta
+    # policy supplies the directives browsers support in HTML. frame-ancestors,
+    # HSTS and X-Frame-Options still require real HTTP headers at the host.
+    shared = (
+        "default-src 'self'; base-uri 'self'; object-src 'none'; "
+        "form-action 'self' https://checkout.stripe.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: blob: https://*.supabase.co https://www.clarity.ms https://c.bing.com; "
+        "media-src 'self'; connect-src 'self' https://*.supabase.co https://api.stripe.com "
+        "https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com "
+        "https://*.clarity.ms https://c.bing.com; frame-src 'self' https://challenges.cloudflare.com; "
+    )
+    for page in output.rglob("*.html"):
+        is_admin = page.relative_to(output).parts[0] == "admin"
+        scripts = "script-src 'self' https://cdn.jsdelivr.net" if is_admin else (
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net "
+            "https://www.googletagmanager.com https://www.clarity.ms https://challenges.cloudflare.com"
+        )
+        policy = html_lib.escape(shared + scripts, quote=True)
+        tags = f'<meta charset="utf-8"/>\n<meta http-equiv="Content-Security-Policy" content="{policy}"/>\n<meta name="referrer" content="no-referrer"/>'
+        source = page.read_text(encoding="utf-8")
+        source = re.sub(r'<meta\b(?=[^>]*\bname=["\x27]referrer["\x27])[^>]*>', '', source, flags=re.I)
+        source = re.sub(r'<meta\b[^>]*\bcharset\s*=[^>]*>', '', source, flags=re.I)
+        page.write_text(re.sub(r"<head(?:\s[^>]*)?>", lambda match: match.group(0) + "\n" + tags, source, count=1, flags=re.I), encoding="utf-8")
+
+
 def build(output: Path, sync_root_seo: bool) -> None:
     output = output.resolve()
     if output == ROOT or ROOT not in output.parents:
@@ -897,6 +925,7 @@ def build(output: Path, sync_root_seo: bool) -> None:
     sitemap = write_sitemap(output, routes)
     robots = write_robots(output)
     write_404(output)
+    add_browser_security(output)
     if sync_root_seo:
         (ROOT / "sitemap.xml").write_text(sitemap, encoding="utf-8")
         (ROOT / "robots.txt").write_text(robots, encoding="utf-8")

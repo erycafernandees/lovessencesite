@@ -8,9 +8,10 @@ async function notifyCttShipment(client: ReturnType<typeof serviceClient>, kind:
   const table = kind === "order" ? "orders" : "project_requests";
   const statusField = kind === "order" ? "order_status" : "fulfillment_status";
   const numberField = kind === "order" ? "order_number" : "project_number";
-  const {data: row, error}=await client.from(table).select("id,customer_email,delivery_method,delivery_tracking_code,"+statusField+","+numberField).eq("id",id).maybeSingle();
+  const {data: record, error}=await client.from(table).select("id,customer_email,delivery_method,delivery_tracking_code,"+statusField+","+numberField).eq("id",id).maybeSingle();
   if(error) throw error;
-  if(!row) return {queued:false,reason:"not_found"};
+  if(!record) return {queued:false,reason:"not_found"};
+  const row = record as unknown as { customer_email: string | null; delivery_method: string | null; delivery_tracking_code: string | null; order_status?: string; fulfillment_status?: string; order_number?: string; project_number?: string };
   const code=String(row.delivery_tracking_code||"").trim().toUpperCase();
   const email=String(row.customer_email||"").trim();
   if(row[statusField]!=="shipped" || row.delivery_method!=="ctt" || !/^[A-Z0-9-]{8,60}$/.test(code) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -35,6 +36,8 @@ Deno.serve(async (req) => {
     const body = req.method === "POST" ? await readJson<Record<string, unknown>>(req) : {};
     const url = new URL(req.url);
     const action = String(body.action || url.searchParams.get("action") || "list-orders");
+    const viewerActions = new Set(["list-checkout-errors", "list-orders", "list-manual-orders", "get-order", "list-projects", "get-project", "signed-file", "quote-email-preview"]);
+    if (admin.role === "viewer" && !viewerActions.has(action)) throw new ApiError(403, "forbidden", "O teu perfil permite apenas consultar os dados.");
     const client = serviceClient();
 
     if (action === "list-checkout-errors") {
@@ -469,9 +472,9 @@ Deno.serve(async (req) => {
       const { data: versions } = await client.from("quotes").select("version").eq("project_request_id", projectId).order("version", { ascending: false }).limit(1);
       const normalizedItems = body.items.map((raw) => {
         const item = raw as Record<string, unknown>;
-        const quantity = Number(item.quantity);
+        const quantity = item.quantity;
         const unitAmount = Number(item.unitAmount);
-        if (!Number.isInteger(quantity) || quantity < 1 || !Number.isInteger(unitAmount) || unitAmount < 0) throw new ApiError(422, "invalid_quote_item", "Uma linha do orçamento não é válida.");
+        if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isInteger(unitAmount) || unitAmount < 0) throw new ApiError(422, "invalid_quote_item", "Uma linha do orçamento não é válida.");
         return { description: cleanText(item.description, 240, true), quantity, unit_amount: unitAmount, line_amount: quantity * unitAmount };
       });
       const subtotal = normalizedItems.reduce((sum, item) => sum + item.line_amount, 0);
@@ -544,7 +547,8 @@ Deno.serve(async (req) => {
       const { data: quote, error: quoteError } = await client.from("quotes")
         .select("id,project_requests(project_number)").eq("id", id).single();
       if (quoteError || !quote) throw new ApiError(404, "quote_not_found", "O orçamento não foi encontrado.");
-      const project = quote.project_requests as { project_number: string } | null;
+      const relation = quote.project_requests;
+      const project = (Array.isArray(relation) ? relation[0] : relation) as { project_number: string } | null;
       if (!project) throw new ApiError(404, "project_not_found", "O pedido não foi encontrado.");
       const { data: notifications, error } = await client.from("notification_outbox")
         .select("recipient,payload,provider_message_id,sent_at,last_error,created_at")
@@ -622,7 +626,8 @@ Deno.serve(async (req) => {
       });
       const siteUrl = Deno.env.get("SITE_URL") || "http://127.0.0.1:4176";
       const quoteUrl = `${siteUrl}/projeto/orcamento/?quote=${id}&token=${encodeURIComponent(token)}`;
-      const project = quote.project_requests as { project_number: string; customer_email: string | null } | null;
+      const relation = quote.project_requests;
+      const project = (Array.isArray(relation) ? relation[0] : relation) as { project_number: string; customer_email: string | null } | null;
       let emailQueued = false;
       let emailError: string | null = null;
       if (project?.customer_email) {
@@ -657,9 +662,9 @@ Deno.serve(async (req) => {
       if (!rawItems.length || rawItems.length > 50) throw new ApiError(422,"items","São permitidos 1 a 50 artigos.");
       const manualItems = rawItems.map((entry: any) => {
         const description = cleanText(entry.description,240,true)!;
-        const quantity = Number(entry.quantity), unitAmount = Number(entry.unitAmount);
+        const quantity = entry.quantity, unitAmount = Number(entry.unitAmount);
         const lineAmount = quantity * unitAmount;
-        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isSafeInteger(unitAmount) || unitAmount < 0 || !Number.isSafeInteger(lineAmount) || lineAmount > 100000000)
+        if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isSafeInteger(unitAmount) || unitAmount < 0 || !Number.isSafeInteger(lineAmount) || lineAmount > 100000000)
           throw new ApiError(422,"invalid_items","Verifica a quantidade e o preço unitário de cada artigo.");
         return {description,quantity,unitAmount,lineAmount};
       });
@@ -802,7 +807,7 @@ Deno.serve(async (req) => {
         }
       }
       await client.from("order_status_history").insert({
-        order_id: id, order_status: patch.order_status || before.order_status, payment_status: fullyPaid ? "paid" : "unpaid",
+        order_id: id, order_status: before.order_status, payment_status: fullyPaid ? "paid" : "unpaid",
         note: fullyPaid ? "Pagamento manual integral confirmado" : "Montante recebido atualizado: " + (received / 100).toFixed(2) + " EUR",
         actor_user_id: admin.userId,
       });
@@ -834,9 +839,9 @@ Deno.serve(async (req) => {
       if (!rawItems.length || rawItems.length > 50) throw new ApiError(422,"items","São permitidos 1 a 50 artigos.");
       const manualItems = rawItems.map((entry: any) => {
         const description = cleanText(entry.description,240,true)!;
-        const quantity = Number(entry.quantity), unitAmount = Number(entry.unitAmount);
+        const quantity = entry.quantity, unitAmount = Number(entry.unitAmount);
         const lineAmount = quantity * unitAmount;
-        if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isSafeInteger(unitAmount) || unitAmount < 0 || !Number.isSafeInteger(lineAmount) || lineAmount > 100000000)
+        if (typeof quantity !== "number" || !Number.isInteger(quantity) || quantity < 1 || quantity > 10000 || !Number.isSafeInteger(unitAmount) || unitAmount < 0 || !Number.isSafeInteger(lineAmount) || lineAmount > 100000000)
           throw new ApiError(422,"invalid_items","Verifica a quantidade e o preço unitário de cada artigo.");
         return {description,quantity,unitAmount,lineAmount};
       });

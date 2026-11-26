@@ -1,5 +1,6 @@
 import Stripe from "npm:stripe@22.5.0";
-import { handleError, json, queueEmail, serviceClient, stripeClient } from "../_shared/core.ts";
+import { ApiError, deliverQueuedEmail, handleError, json, readBodyText, serviceClient, stripeClient } from "../_shared/core.ts";
+import { validatePaidCheckout } from "../_shared/payment-validation.ts";
 
 async function recordPaidSession(session: Stripe.Checkout.Session): Promise<void> {
   const client = serviceClient();
@@ -7,66 +8,59 @@ async function recordPaidSession(session: Stripe.Checkout.Session): Promise<void
   if (!orderId) throw new Error("Stripe session has no order_id metadata");
   const { data: before, error: beforeError } = await client.from("orders").select("*").eq("id", orderId).single();
   if (beforeError || !before) throw beforeError || new Error("Order not found");
-  const customer = session.customer_details;
-  const shipping = session.collected_information?.shipping_details;
-  const update = {
-    payment_status: "paid", order_status: before.order_status === "awaiting_payment" || before.order_status === "draft" ? "confirmed" : before.order_status,
-    customer_name: customer?.name || before.customer_name, customer_email: customer?.email || before.customer_email,
-    customer_phone: customer?.phone || before.customer_phone, shipping_address: shipping || before.shipping_address,
-    stripe_customer_id: typeof session.customer === "string" ? session.customer : session.customer?.id,
-    stripe_payment_intent_id: typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id,
-    total_amount: session.amount_total ?? before.total_amount,
-    discount_amount: (before.subtotal_amount + before.shipping_amount) - (session.amount_total ?? before.total_amount),
-    paid_at: new Date().toISOString(),
-  };
-  const { error: orderUpdateError } = await client.from("orders").update(update).eq("id", orderId);
-  if (orderUpdateError) throw orderUpdateError;
-
+  validatePaidCheckout(session, before);
   let charge: Stripe.Charge | null = null;
   let balance: Stripe.BalanceTransaction | null = null;
-  const paymentIntentId = update.stripe_payment_intent_id;
+  const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
   if (paymentIntentId) {
     const intent = await stripeClient().paymentIntents.retrieve(paymentIntentId, { expand: ["latest_charge.balance_transaction"] });
+    if (intent.status !== "succeeded" || intent.currency !== session.currency || intent.amount_received !== session.amount_total || intent.metadata?.order_id !== orderId)
+      throw new ApiError(409, "payment_intent_mismatch", "O pagamento não corresponde à encomenda.");
     charge = typeof intent.latest_charge === "object" ? intent.latest_charge : null;
     balance = charge && typeof charge.balance_transaction === "object" ? charge.balance_transaction : null;
+  } else if (session.amount_total !== 0) {
+    throw new ApiError(409, "missing_payment_intent", "Falta confirmar o pagamento.");
   }
-  const { error: paymentUpsertError } = await client.from("payments").upsert({
-    order_id: orderId, provider: "stripe", status: "paid", provider_checkout_id: session.id,
-    provider_payment_id: paymentIntentId, provider_charge_id: charge?.id || null,
-    provider_balance_transaction_id: balance?.id || null, currency: session.currency || before.currency,
-    gross_amount: balance?.amount ?? session.amount_total ?? 0, processing_fee_amount: balance?.fee ?? null,
-    net_amount: balance?.net ?? null, refunded_amount: charge?.amount_refunded ?? 0,
-    payment_method_type: charge?.payment_method_details?.type || null,
-    provider_data: { payment_status: session.payment_status, checkout_status: session.status },
-  }, { onConflict: "provider,provider_checkout_id" });
-  if (paymentUpsertError) throw paymentUpsertError;
-  if (before.payment_status !== "paid") {
-    const { error: historyError } = await client.from("order_status_history").insert({ order_id: orderId, order_status: update.order_status, payment_status: "paid", note: "Pagamento confirmado pela Stripe" });
-    if (historyError) throw historyError;
-  }
-  if (before.payment_status !== "paid") {
-    if (update.customer_email) await queueEmail("order_paid", update.customer_email, { orderNumber: before.order_number });
-    const adminEmail = Deno.env.get("ADMIN_NOTIFICATION_EMAIL");
-    if (adminEmail) await queueEmail("admin_order_paid", adminEmail, { orderNumber: before.order_number });
-  }
-  if (session.metadata?.quote_id) {
-    await client.from("quotes").update({ status: "paid" }).eq("id", session.metadata.quote_id);
-    if (session.metadata?.project_request_id) await client.from("project_requests").update({ status: "paid" }).eq("id", session.metadata.project_request_id);
+  const sameSettlementCurrency = balance?.currency === session.currency;
+  const { data: finalized, error: finalizeError } = await client.rpc("finalize_stripe_checkout", {
+    p_session: session,
+    p_payment: {
+      payment_intent_id: paymentIntentId || null, charge_id: charge?.id || null,
+      customer_id: typeof session.customer === "string" ? session.customer : session.customer?.id || null,
+      balance_id: balance?.id || null, fee: sameSettlementCurrency ? balance?.fee : null,
+      net: sameSettlementCurrency ? balance?.net : null, refunded_amount: charge?.amount_refunded || 0,
+      method: charge?.payment_method_details?.type || null,
+      checkout_base_amount: session.amount_subtotal,
+      settlement: balance ? { amount: balance.amount, fee: balance.fee, net: balance.net, currency: balance.currency } : null,
+    },
+    p_admin_email: Deno.env.get("ADMIN_NOTIFICATION_EMAIL") || null,
+  });
+  if (finalizeError) throw finalizeError;
+  for (const email of finalized?.notifications || []) {
+    await deliverQueuedEmail(email.id, email.template, email.recipient, email.payload, true);
   }
 }
 
+async function recordSessionState(session: Stripe.Checkout.Session, status: "processing" | "failed"): Promise<void> {
+  if (!session.metadata?.order_id) throw new Error("Stripe session has no order_id metadata");
+  const { error } = await serviceClient().from("orders").update({ payment_status: status })
+    .eq("id", session.metadata.order_id).eq("stripe_checkout_session_id", session.id).eq("payment_provider", "stripe")
+    .in("payment_status", ["unpaid", "processing", "failed"]);
+  if (error) throw error;
+}
+
+async function retrieveSession(id: string, liveMode: boolean): Promise<Stripe.Checkout.Session> {
+  const session = await stripeClient().checkout.sessions.retrieve(id);
+  if (session.livemode !== liveMode) throw new Error("Stripe mode mismatch");
+  return session;
+}
+
 async function recordRefund(charge: Stripe.Charge): Promise<void> {
-  const client = serviceClient();
-  const { data: payment } = await client.from("payments").select("id,order_id,gross_amount").eq("provider_charge_id", charge.id).maybeSingle();
-  if (!payment) return;
-  for (const refund of charge.refunds?.data || []) {
-    await client.from("refunds").upsert({ payment_id: payment.id, provider_refund_id: refund.id, amount: refund.amount, status: refund.status || "unknown", reason: refund.reason || null }, { onConflict: "provider_refund_id" });
-  }
-  const fullyRefunded = charge.refunded || charge.amount_refunded >= payment.gross_amount;
-  const status = fullyRefunded ? "refunded" : "partially_refunded";
-  await client.from("payments").update({ status, refunded_amount: charge.amount_refunded }).eq("id", payment.id);
-  await client.from("orders").update({ payment_status: status }).eq("id", payment.order_id);
-  await client.from("order_status_history").insert({ order_id: payment.order_id, payment_status: status, note: "Reembolso atualizado pela Stripe" });
+  // Event delivery is unordered. Retrieve current provider state and commit all
+  // refund changes together; a delayed partial refund cannot undo a full one.
+  const current = await stripeClient().charges.retrieve(charge.id, { expand: ["refunds"] });
+  const { error } = await serviceClient().rpc("record_stripe_refund", { p_charge: current });
+  if (error) throw error;
 }
 
 async function recordRefundObject(refund: Stripe.Refund): Promise<void> {
@@ -81,10 +75,13 @@ Deno.serve(async (req) => {
   try {
     const signature = req.headers.get("stripe-signature");
     const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
-    if (!signature || !secret) throw new Error("Webhook signature configuration missing");
-    const raw = await req.text();
+    if (!signature) throw new ApiError(400, "invalid_signature", "Falta a assinatura do webhook.");
+    if (!secret) throw new Error("Webhook signature configuration missing");
+    const raw = await readBodyText(req);
     const stripe = stripeClient();
-    const event = await stripe.webhooks.constructEventAsync(raw, signature, secret, undefined, Stripe.createSubtleCryptoProvider());
+    let event: Stripe.Event;
+    try { event = await stripe.webhooks.constructEventAsync(raw, signature, secret, undefined, Stripe.createSubtleCryptoProvider()); }
+    catch { throw new ApiError(400, "invalid_signature", "A assinatura do webhook não é válida."); }
     const client = serviceClient();
     const { error: eventError } = await client.from("webhook_events").insert({ provider: "stripe", event_id: event.id, event_type: event.type, payload: event });
     if (eventError?.code === "23505") {
@@ -97,15 +94,28 @@ Deno.serve(async (req) => {
     if (eventError && eventError.code !== "23505") throw eventError;
     try {
       if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
-        const session = event.data.object as Stripe.Checkout.Session;
-        if (session.payment_status === "paid" || event.type.endsWith("async_payment_succeeded")) await recordPaidSession(session);
-        else if (session.metadata?.order_id) await client.from("orders").update({ payment_status: "processing" }).eq("id", session.metadata.order_id);
+        const session = await retrieveSession(event.data.object.id, event.livemode);
+        if (session.payment_status === "paid" || session.payment_status === "no_payment_required") await recordPaidSession(session);
+        else if (event.type === "checkout.session.async_payment_succeeded") throw new Error("Stripe payment is not yet confirmed");
+        else await recordSessionState(session, "processing");
       } else if (event.type === "checkout.session.async_payment_failed") {
-        const session = event.data.object as Stripe.Checkout.Session;
-        if (session.metadata?.order_id) await client.from("orders").update({ payment_status: "failed" }).eq("id", session.metadata.order_id);
+        const session = await retrieveSession(event.data.object.id, event.livemode);
+        if (session.payment_status === "paid" || session.payment_status === "no_payment_required") await recordPaidSession(session);
+        else await recordSessionState(session, "failed");
       } else if (event.type === "payment_intent.payment_failed") {
         const intent = event.data.object as Stripe.PaymentIntent;
-        if (intent.metadata?.order_id) await client.from("orders").update({ payment_status: "failed" }).eq("id", intent.metadata.order_id);
+        if (intent.metadata?.order_id) {
+          const { data: order, error } = await client.from("orders").select("stripe_checkout_session_id").eq("id", intent.metadata.order_id).single();
+          if (error) throw error;
+          if (order?.stripe_checkout_session_id) {
+            const session = await retrieveSession(order.stripe_checkout_session_id, event.livemode);
+            const linkedIntent = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
+            if (linkedIntent === intent.id) {
+              if (session.payment_status === "paid" || session.payment_status === "no_payment_required") await recordPaidSession(session);
+              else await recordSessionState(session, "failed");
+            }
+          }
+        }
       } else if (event.type === "charge.refunded") {
         await recordRefund(event.data.object as Stripe.Charge);
       } else if (event.type === "refund.created" || event.type === "refund.updated" || event.type === "refund.failed" || event.type === "charge.refund.updated") {

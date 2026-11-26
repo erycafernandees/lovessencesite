@@ -62,7 +62,7 @@ test('does not query notifications for a nonexistent quote', async () => {
 });
 test('saves exactly the subject and HTML submitted to the email provider', async () => {
   let saved, submitted;
-  const source = core.slice(core.indexOf('export async function queueEmail('), core.indexOf('\nfunction escapeText(')).replace('export ', '');
+  const source = core.slice(core.indexOf('export async function queueEmail('), core.indexOf('\nfunction escapeText(')).replace(/^export /gm, '');
   const queueEmail = new Function('serviceClient','Deno','fetch','emailHtml', stripTypeScriptTypes(source) + '; return queueEmail;')(
     () => ({ from() { return { insert(value) { saved = value; return { select() { return { single: async () => ({ data: { id: 'outbox-1' } }) }; } }; }, update() { return { eq: async () => ({}) }; } }; } }),
     { env: { get: key => key === 'RESEND_API_KEY' ? 'server-key' : undefined } },

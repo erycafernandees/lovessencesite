@@ -12,6 +12,9 @@ Deno.serve(async (req) => {
       .eq("id", quoteId).single();
     if (error || !quote) throw new ApiError(404, "quote_not_found", "A proposta não foi encontrada.");
     await verifyAccessToken(quote.access_token_hash, quote.access_token_expires_at, token);
+    const relation = quote.project_requests;
+    const project = Array.isArray(relation) ? relation[0] : relation;
+    if (!project) throw new ApiError(404, "quote_not_found", "A proposta não foi encontrada.");
     if (!["sent","approved","paid"].includes(quote.status)) throw new ApiError(409, "quote_unavailable", "Esta proposta já não está disponível.");
     const client = serviceClient();
     const { data: files, error: filesError } = await client.from("attachments").select("id,object_path,original_name").eq("quote_id", quote.id).eq("status", "verified").order("created_at");
@@ -26,8 +29,8 @@ Deno.serve(async (req) => {
       subtotalAmount: quote.subtotal_amount, discountAmount: quote.discount_amount,
       shippingAmount: quote.shipping_amount, totalAmount: quote.total_amount,
       mockups, notes: quote.notes, validUntil: quote.valid_until, items: quote.quote_items,
-      projectNumber: quote.project_requests.project_number,
-      occasion: quote.project_requests.occasion, projectType: quote.project_requests.project_type,
+      projectNumber: project.project_number,
+      occasion: project.occasion, projectType: project.project_type,
     });
   } catch (error) { return handleError(req, error); }
 });
