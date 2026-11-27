@@ -11,6 +11,9 @@ Deno.serve(async (req) => {
     if (error || !order) throw new ApiError(404, "order_not_found", "A encomenda não foi encontrada.");
     await verifyAccessToken(order.access_token_hash, order.access_token_expires_at, body.orderToken);
     if (!["unpaid", "processing", "failed"].includes(order.payment_status) || order.payment_provider !== "stripe" || order.order_status === "cancelled") throw new ApiError(409, "already_paid", "Esta encomenda já não está disponível para pagamento.");
+    const campaign = order.promotion_snapshot?.code === "black-friday-2026";
+    const deadline = Date.parse("2026-11-28T00:00:00Z");
+    if (campaign && Date.now() >= deadline) throw new ApiError(410, "campaign_ended", "A Black Friday terminou. Volta ao carrinho para atualizar os preços.");
     if (order.stripe_checkout_session_id) {
       const existing = await stripeClient().checkout.sessions.retrieve(order.stripe_checkout_session_id);
       if (existing.metadata?.order_id !== order.id) throw new ApiError(409, "checkout_mismatch", "Não foi possível confirmar a ligação de pagamento.");
@@ -23,6 +26,7 @@ Deno.serve(async (req) => {
     // the same order. The normal cart still uses server-calculated prices.
     const testCode = String(body.promoCode || "").trim().toUpperCase() === "TESTELOVE1";
     if (body.promoCode && !testCode) throw new ApiError(422, "invalid_code", "Código promocional inválido.");
+    if (testCode && campaign) throw new ApiError(422, "invalid_code", "A Black Friday não acumula com cupões.");
     if (testCode) {
       if (order.source !== "catalog" || order.currency !== "eur" || order.total_amount < 100) throw new ApiError(422, "invalid_test_cart", "Este código não é válido para esta encomenda.");
       const { data: claimed, error: claimError } = await client.rpc("claim_test_checkout_code", { p_code: "TESTELOVE1", p_order_id: order.id });
@@ -40,11 +44,12 @@ Deno.serve(async (req) => {
       const lineDiscount = isLast ? order.discount_amount - allocatedDiscount : Math.round(lineAmount * discountRatio);
       allocatedDiscount += lineDiscount;
       const snapshot = item.product_snapshot as Record<string, unknown>;
+      const effectiveDiscount = campaign ? Number(snapshot?.blackFridaySaving || 0) + Number(snapshot?.eventSaving || 0) : lineDiscount;
       return {
         quantity: 1,
         price_data: {
           currency: order.currency,
-          unit_amount: Math.max(0, lineAmount - lineDiscount),
+          unit_amount: Math.max(0, lineAmount - effectiveDiscount),
           product_data: {
             name: `${item.name} × ${item.quantity}`.slice(0, 120),
             description: Object.keys((item.personalization as Record<string, unknown>) || {}).length ? "Produto personalizado" : undefined,
@@ -65,7 +70,8 @@ Deno.serve(async (req) => {
       line_items: lineItems,
       success_url: `${siteUrl}/encomenda/confirmacao/?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/checkout/?cancelled=1`,
-      allow_promotion_codes: !testCode,
+      allow_promotion_codes: !testCode && !campaign,
+      ...(campaign ? { expires_at: Math.max(Math.floor(deadline / 1000), Math.ceil(Date.now() / 1000) + 1805) } : {}),
       billing_address_collection: "auto",
       shipping_address_collection: { allowed_countries: ["PT"] },
       phone_number_collection: { enabled: true },

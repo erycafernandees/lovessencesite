@@ -36,6 +36,10 @@ Deno.serve(async (req) => {
       for (const addon of addons || []) addonMap.set(addon.code, addon);
     }
 
+    const now = Date.now();
+    const blackFriday = now >= Date.parse("2026-11-27T00:00:00Z") && now < Date.parse("2026-11-28T00:00:00Z");
+    const eventLines: Array<{ snapshot: Record<string, unknown>; amount: number; group: string }> = [];
+    let campaignSaving = 0;
     let subtotal = 0;
     let adultQty = 0;
     let childQty = 0;
@@ -68,15 +72,25 @@ Deno.serve(async (req) => {
       const lineAmount = unitAmount * quantity;
       subtotal += lineAmount;
       const group = String(product.metadata?.discount_group || "");
+      const eligible = blackFriday && (group === "signature" || group === "memories" || product.code.startsWith("natal_"));
+      // Lowest advertised base price in the preceding 30 days, plus selected extras.
+      const historicalBase = ["natal_vila_encantada", "natal_sagrada_familia"].includes(product.code)
+        ? Math.min(990, Number(variant.unit_amount)) : Number(variant.unit_amount);
+      const reference = historicalBase + unitAmount - Number(variant.unit_amount);
+      const saving = eligible ? (unitAmount - Math.round(reference * 85 / 100)) * quantity : 0;
+      campaignSaving += saving;
       if (group === "child_event") { childQty += quantity; childSubtotal += lineAmount; childTypes.add(product.code); }
       if (group === "adult_event") { adultQty += quantity; adultSubtotal += lineAmount; }
       const files = validateUploads(raw.attachments, 3);
       files.forEach((file) => allUploads.push({ ...file, lineKey }));
+      const snapshot: Record<string, unknown> = { productName: product.name, variantLabel: variant.label, imagePath: product.image_path, addons: addonSnapshot };
+      if (saving) snapshot.blackFridaySaving = saving;
+      if (group === "adult_event" || group === "child_event") eventLines.push({ snapshot, amount: lineAmount, group });
       normalized.push({
         line_key: lineKey, product_id: product.id, variant_id: variant.id, product_code: product.code,
         variant_code: variant.code, name: `${product.name}${variant.label === "Único" ? "" : ` (${variant.label})`}`,
         quantity, unit_amount: unitAmount, line_amount: lineAmount, personalization,
-        product_snapshot: { productName: product.name, variantLabel: variant.label, imagePath: product.image_path, addons: addonSnapshot },
+        product_snapshot: snapshot,
       });
     }
 
@@ -89,6 +103,21 @@ Deno.serve(async (req) => {
     } else if (childTypes.size >= 2) {
       discount = Math.round(childSubtotal * 0.05);
       promotionSnapshot = { code: "child-kit", label: "Desconto kit infantil", percentage: 5 };
+    }
+    if (campaignSaving > 0) {
+      if (discount && promotionSnapshot) {
+        const childOnly = promotionSnapshot.code === "child-kit";
+        const basis = childOnly ? childSubtotal : eventSubtotal;
+        let runningAmount = 0;
+        for (const line of eventLines) {
+          if (childOnly && line.group !== "child_event") continue;
+          const before = Math.round(runningAmount * discount / basis);
+          runningAmount += line.amount;
+          line.snapshot.eventSaving = Math.round(runningAmount * discount / basis) - before;
+        }
+      }
+      discount += campaignSaving;
+      promotionSnapshot = { code: "black-friday-2026", campaignSaving, eventPromotion: promotionSnapshot };
     }
     const shipping = subtotal >= 6000 ? 0 : 590;
     const token = randomToken();
