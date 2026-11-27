@@ -14,11 +14,12 @@ required_files = [
     "assets/js/commerce.js", "assets/js/commerce-config.js", "admin/index.html", "admin/admin.js",
     "supabase/functions/checkout-prepare/index.ts", "supabase/functions/checkout-session/index.ts",
     "supabase/functions/stripe-webhook/index.ts", "supabase/functions/project-submit/index.ts",
-    "supabase/functions/admin-api/index.ts", "_headers",
+    "supabase/functions/admin-api/index.ts",
     "supabase/functions/quote-details/index.ts", "supabase/functions/quote-checkout/index.ts",
 ]
 missing = [path for path in required_files if not (ROOT / path).exists()]
 assert not missing, f"Missing commerce files: {missing}"
+# _headers is generated in the build output and checked by validate_site.py.
 
 catalog_match = re.search(r"var PRODUCT_CATALOG = \{(.*?)\n\};\n\nvar currentProduct", source, re.S)
 assert catalog_match, "Product catalog was not found"

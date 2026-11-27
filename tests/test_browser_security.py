@@ -86,6 +86,11 @@ class SecurityBuildTests(unittest.TestCase):
     def test_header_lines_fit_cloudflare_limits(self):
         self.assertTrue(all(len(line) <= 2000 for line in host_headers().splitlines()))
 
+    def test_unconditional_proxy_rule_uses_only_the_host_predicate(self):
+        # The response-transform editor rejects an appended `and (true)`.
+        public = cloudflare_ruleset()['rules'][0]
+        self.assertEqual(public['expression'], 'http.host in {"love-essences.pt" "www.love-essences.pt"}')
+
     def test_proxy_rules_replace_policies_in_order_and_match_host_configuration(self):
         ruleset = cloudflare_ruleset()
         self.assertEqual(ruleset['phase'], 'http_response_headers_transform')
