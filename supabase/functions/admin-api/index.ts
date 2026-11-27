@@ -1,3 +1,4 @@
+import { previewOrder, testDraft } from "../_shared/facturalusa-test.mjs";
 import { ApiError, cleanText, createSignedUploads, emailHtml, handleError, hasValidMagic, json, PRIVATE_BUCKET, queueEmail, randomToken, readJson, requireAdmin, serviceClient, sha256, validateUploads } from "../_shared/core.ts";
 
 const ORDER_STATES = ["draft","awaiting_payment","confirmed","review","awaiting_details","production","ready_to_ship","shipped","completed","cancelled"];
@@ -39,6 +40,51 @@ Deno.serve(async (req) => {
     const viewerActions = new Set(["list-checkout-errors", "list-orders", "list-manual-orders", "get-order", "list-projects", "get-project", "signed-file", "quote-email-preview"]);
     if (admin.role === "viewer" && !viewerActions.has(action)) throw new ApiError(403, "forbidden", "O teu perfil permite apenas consultar os dados.");
     const client = serviceClient();
+
+    if (action === "facturalusa-test-draft") {
+      if (req.method !== "POST") throw new ApiError(405, "method", "Utiliza POST.");
+      try {
+        const draft = await testDraft({
+          token: Deno.env.get("FACTURALUSA_TEST_TOKEN"), customer: Deno.env.get("FACTURALUSA_TEST_CUSTOMER"),
+          item: Deno.env.get("FACTURALUSA_TEST_ITEM")
+        });
+        return json(req, draft);
+      } catch (error) {
+        throw new ApiError(502, "facturalusa_test", error instanceof Error ? error.message : "Falha no teste.");
+      }
+    }
+
+    if (action === "facturalusa-preview") {
+      const month = String(body.month || "");
+      if (!/^20[0-9]{2}-(0[1-9]|1[0-2])$/.test(month)) throw new ApiError(422, "month", "Seleciona um mês.");
+      const [year, number] = month.split("-").map(Number);
+      const next = new Date(Date.UTC(year, number, 1)).toISOString().slice(0,10);
+      const start = month + "-01 00:00 Europe/Lisbon";
+      const end = next + " 00:00 Europe/Lisbon";
+      const rows = [];
+      for (const table of ["orders","project_requests"]) {
+        const columns = table === "orders"
+          ? "id,order_number,is_test,stripe_checkout_session_id,order_status,payment_provider,payment_status,manual_received_amount,total_amount"
+          : "id,project_number,payment_received_amount,payment_needs_confirmation,fulfillment_status,orders(id)";
+        for (let offset = 0;; offset += 250) {
+          const { data, error } = await client.from(table).select(columns).gte("created_at", start)
+            .lt("created_at", end).order("id").range(offset, offset + 249);
+          if (error) throw error;
+          for (const record of data || []) {
+            const row = record as unknown as Record<string, any>;
+            if (table === "orders") {
+              const preview = previewOrder(row);
+              if (preview) rows.push(preview);
+            } else if (!row.orders?.length && (row.payment_received_amount > 0 || row.fulfillment_status === "completed" || row.payment_needs_confirmation)) {
+              rows.push({ reference: row.project_number, received: row.payment_received_amount,
+                observation: "Personalizada · conferir orçamento, sinal e datas" });
+            }
+          }
+          if (!data || data.length < 250) break;
+        }
+      }
+      return json(req, { rows });
+    }
 
     if (action === "list-checkout-errors") {
       const { data, error } = await client.from("site_error_events")

@@ -50,6 +50,7 @@
       <button data-view="projects">Personalizadas</button>
       <button data-view="gallery">Fotos</button>
       <button data-view="checkout-errors">Falhas no checkout</button>
+      <button data-view="billing">Faturação</button>
       <button data-view="reviews">Avaliações</button>
     </nav>
     <section class="workspace" id="admin-orders-workspace">
@@ -78,6 +79,16 @@
         <small>São eliminados apenas rascunhos sem pagamentos, sessões de checkout ou códigos associados. As restantes encomendas ficam protegidas.</small>
       </div>
       </details>
+    </section>
+    <section class="workspace" id="billing-workspace" hidden>
+      <div class="toolbar"><h1>Faturação em teste</h1>
+        <label>Mês de criação da encomenda <input id="billing-month" type="month" value="2026-11"></label>
+        <button type="button" id="billing-refresh">Atualizar</button>
+      </div>
+      <p id="billing-status" role="status"></p>
+      <div class="table-card"><div class="table-scroll"><table><thead><tr><th>Encomenda</th><th>Recebido no CRM</th><th>Conferência</th></tr></thead><tbody id="billing-rows"></tbody></table></div></div>
+      <button type="button" id="billing-test" class="secondary">Criar rascunho fictício no Facturalusa</button>
+      <p id="billing-test-status" role="status"></p>
     </section>
     <section class="workspace reviews-workspace" id="admin-reviews-workspace" hidden>
       <div class="toolbar">
@@ -181,7 +192,7 @@
     </section>
   </div>
   <script src="/assets/js/commerce-config.js"></script>
-  <script type="module" src="/admin/admin.js?v=20261125-email-links"></script>
+  <script type="module" src="/admin/admin.js?v=20261127-facturalusa"></script>
 </body>
 </html>
 

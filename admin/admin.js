@@ -701,13 +701,16 @@ document.querySelectorAll('.tabs button').forEach(button => button.addEventListe
   document.querySelectorAll('.tabs button').forEach(item => item.classList.remove('active'));
   button.classList.add('active');
   currentView = button.dataset.view;
+  const isBilling = currentView === 'billing';
+  document.getElementById('billing-workspace').hidden = !isBilling;
   const isGallery = currentView === 'gallery';
   const isCheckoutErrors = currentView === 'checkout-errors';
   const isReviews = currentView === 'reviews';
-  document.getElementById('admin-orders-workspace').hidden = isGallery || isCheckoutErrors || isReviews;
+  document.getElementById('admin-orders-workspace').hidden = isBilling || isGallery || isCheckoutErrors || isReviews;
   document.getElementById('admin-gallery-workspace').hidden = !isGallery;
   document.getElementById('admin-checkout-errors-workspace').hidden = !isCheckoutErrors;
   document.getElementById('admin-reviews-workspace').hidden = !isReviews;
+  if (isBilling) { loadBillingPreview(); return; }
   if (isGallery) { loadProductGalleryAdmin(); return; }
   if (isCheckoutErrors) { loadCheckoutErrors(); return; }
   if (isReviews) { reviewsWorkspace.load(); return; }
@@ -715,6 +718,37 @@ document.querySelectorAll('.tabs button').forEach(button => button.addEventListe
   updateStatusOptions();
   loadView();
 }));
+
+let billingRequest = 0;
+async function loadBillingPreview() {
+  const request = ++billingRequest;
+  const status = document.getElementById('billing-status');
+  const table = document.getElementById('billing-rows');
+  table.replaceChildren();
+  status.textContent = 'A consultar encomendas…';
+  try {
+    const { rows } = await adminApi('facturalusa-preview', { month: document.getElementById('billing-month').value });
+    if (request !== billingRequest) return;
+    for (const row of rows) {
+      const tr = table.insertRow();
+      for (const value of [row.reference, money(row.received), row.observation]) tr.insertCell().textContent = value;
+    }
+    status.textContent = rows.length ? 'Pré-visualização de ' + rows.length + ' registo(s).' : 'Sem encomendas para este mês.';
+  } catch (error) { if (request === billingRequest) status.textContent = error.message; }
+}
+document.getElementById('billing-month').addEventListener('change', loadBillingPreview);
+document.getElementById('billing-refresh').addEventListener('click', loadBillingPreview);
+document.getElementById('billing-test').addEventListener('click', async event => {
+  const button = event.currentTarget;
+  const status = document.getElementById('billing-test-status');
+  button.disabled = true;
+  status.textContent = 'A testar…';
+  try {
+    const { id } = await adminApi('facturalusa-test-draft');
+    status.textContent = 'Rascunho fictício criado na conta de testes (#' + id + ').';
+  } catch (error) { status.textContent = error.message; }
+  finally { button.disabled = false; }
+});
 
 let checkoutErrorRows = [];
 let checkoutErrorLoading = false;
