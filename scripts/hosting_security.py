@@ -56,7 +56,7 @@ def cloudflare_ruleset() -> dict:
 
     def rule(description, condition, headers):
         return {
-            'description': description, 'expression': f'{domain} and ({condition})',
+            'description': description, 'expression': f'{domain} and ({condition})' if condition else domain,
             'action': 'rewrite', 'enabled': True,
             'action_parameters': {'headers': {name: {'operation': 'set', 'value': value} for name, value in headers.items()}},
         }
@@ -65,7 +65,7 @@ def cloudflare_ruleset() -> dict:
         'name': 'Love Essences security headers', 'kind': 'zone',
         'phase': 'http_response_headers_transform',
         'rules': [
-            rule('Love Essences public security', 'true', {
+            rule('Love Essences public security', None, {
                 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY',
                 'referrer-policy': 'no-referrer', 'strict-transport-security': 'max-age=31536000',
                 'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.stripe.com")',
