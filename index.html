@@ -6239,7 +6239,14 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
 }
 @media(max-width:360px){#page-shop #natal26-shortcuts .cat-tab{font-size:.63rem;}}
 </style>
-</head>
+<style>
+.bf-hero{display:none}
+.bf-day .bf-hero{display:grid;grid-template-columns:1fr minmax(260px,42%);align-items:center;background:#f5e5d5;color:#513323;padding:clamp(24px,5vw,72px) max(6vw,24px);gap:5vw}
+.bf-day .bf-hero+.home-hero-photo{display:none!important}
+.bf-hero h2,.bf-hero strong{font:500 clamp(2.8rem,6vw,6rem)/1.05 var(--serif)}
+.bf-hero strong{color:#914939}.bf-hero p{margin:1rem 0}.bf-hero img{width:100%;height:auto;display:block}.bf-hero small{display:block}
+@media(max-width:640px){.bf-day .bf-hero{display:block;padding:0}.bf-hero>div{display:none}}
+</style></head>
 <body>
 
 <style>
@@ -9225,6 +9232,12 @@ body.natal26-shop #page-shop .shop-products-grid .natal26-price-hidden {display:
 <div class="page active" id="page-home">
 
   
+  <section class="bf-hero" aria-label="Black Friday">
+    <div><p>Love Essences · Exclusivo no site</p><h2>Black Friday</h2><strong>−15%</strong>
+    <p>Só hoje, até às 23h59. Desconto automático, incluindo na coleção de Natal.</p>
+    <small>Exclui lembranças de eventos e encomendas por orçamento. Não acumulável com cupões.</small></div>
+    <a href="/loja/" aria-label="Comprar com 15% de desconto"><img src="assets/hero/black-friday-2026.webp" alt="Campanha Black Friday Love Essences com três peças artesanais"></a>
+  </section>
   <!-- HERO -->
   <section class="hero-premium home-hero-photo">
     <img class="home-hero-photo-image" src="assets/hero/hero-floral-aboboras.png" alt="Arranjos florais artesanais e peças decorativas em forma de abóbora Love Essences" loading="eager" fetchpriority="high"/>
@@ -16597,6 +16610,8 @@ function updateProductPrice() {
     : selection.hasPaidAddon
       ? formatPrice(selection.price) + (p.priceSuffix || '')
       : p.priceLabel || (formatPrice(selection.price) + (p.priceSuffix || ''));
+  var offer = campaignPrice(currentProduct, selection.price);
+  if (offer && !selection.quoteOnly) document.getElementById('pd-price').innerHTML = campaignPriceHTML(offer);
   document.getElementById('pd-price-from').style.display = 'none';
   var scentSection = document.getElementById('pd-natal-note-section');
   if (scentSection && p.natalCandleOptions) {
@@ -17439,7 +17454,34 @@ function getSubtotal() {
   }, 0);
 }
 
+function blackFridayActive() {
+  var now = Date.now();
+  return now >= Date.parse('2026-11-27T00:00:00Z') && now < Date.parse('2026-11-28T00:00:00Z');
+}
+function campaignPrice(code, price) {
+  var product = PRODUCT_CATALOG[code];
+  if (!blackFridayActive() || !product || typeof price !== 'number' ||
+      ['Natal','Coleção Assinatura','Coleção Memórias'].indexOf(product.category) < 0) return null;
+  var cents = Math.round(price * 100);
+  var reference = cents;
+  if (code === 'natal_vila_encantada' || code === 'natal_sagrada_familia')
+    reference -= Math.max(0, Math.round(product.basePrice * 100) - 990);
+  return { reference: reference / 100, sale: Math.round(reference * 85 / 100) / 100 };
+}
+function campaignPriceHTML(offer) {
+  return '<del>' + formatPrice(offer.reference) + '</del> <strong>' + formatPrice(offer.sale) + '</strong>';
+}
 function getCartDiscount() {
+  var standard = getEventCartDiscount();
+  var saving = cart.reduce(function(sum, item) {
+    var offer = campaignPrice(item.productCode || LOVE_PRODUCT_CODE_BY_NAME[getCartBaseName(item.name)], item.price);
+    return sum + (offer ? (Math.round(item.price * 100) - Math.round(offer.sale * 100)) * item.qty : 0);
+  }, 0);
+  if (!saving) return standard;
+  return { amount: (saving + Math.round(standard.amount * 100)) / 100,
+    label: 'Black Friday (15%)' + (standard.amount ? ' + ' + standard.label : '') };
+}
+function getEventCartDiscount() {
   var childSubtotal = 0;
   var adultSubtotal = 0;
   var childQty = 0;
@@ -18610,7 +18652,7 @@ renderCart();
    var spans=document.querySelectorAll("#announce-bar .announce-track span");
    spans.forEach(function(el){
      if(!originalAnnouncement.has(el))originalAnnouncement.set(el,el.textContent);
-     el.textContent=inSeason()
+     el.textContent=blackFridayActive() ? "BLACK FRIDAY · −15% · Exclusivo no site · Hoje até às 23h59" : inSeason()
        ?(day<=20261212
          ?"Natal 2026   Encomendas até 12 de dezembro   Entrega sujeita aos prazos dos CTT   Portes grátis acima de 60 €"
          :"Natal 2026   Consulta os prazos de entrega antes de encomendar   Portes grátis acima de 60 €")
@@ -18655,5 +18697,31 @@ renderCart();
 })();
 </script>
 <script defer src="/assets/js/review-product-widget.js?v=20261123-home-feedback"></script>
-</body>
+<script>
+(function(){
+  function refresh(){
+    document.body.classList.toggle('bf-day', blackFridayActive());
+    document.querySelectorAll('.product-card').forEach(function(card){
+      var el=card.querySelector('.product-price');
+      var name=card.querySelector('.product-name');
+      if(!el || !name) return;
+      var code=Object.keys(PRODUCT_CATALOG).find(function(k){return PRODUCT_CATALOG[k].name===name.textContent.trim();});
+      var product=PRODUCT_CATALOG[code];
+      var offer=product && campaignPrice(code,getProductMinimumPrice(product));
+      if(offer){
+        if (!el.dataset.originalPrice) el.dataset.originalPrice=el.textContent;
+        el.innerHTML=(product.sizes && product.sizes.length>1?'Desde ':'')+campaignPriceHTML(offer);
+      } else if(el.dataset.originalPrice){el.textContent=el.dataset.originalPrice;delete el.dataset.originalPrice;}
+    });
+    if(currentProduct) updateProductPrice();
+    renderCart();
+  }
+  if(blackFridayActive()){
+    refresh();
+    window.addEventListener('pageshow',refresh);
+    document.addEventListener('visibilitychange',function(){if(!document.hidden)refresh();});
+    setTimeout(function(){location.reload();},Math.max(0,Date.parse('2026-11-28T00:00:00Z')-Date.now()));
+  }
+})();
+</script></body>
 </html>
