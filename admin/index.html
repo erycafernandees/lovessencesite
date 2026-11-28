@@ -48,10 +48,16 @@
     <nav class="tabs" aria-label="Área administrativa">
       <button class="active" data-view="orders">Diretas</button>
       <button data-view="projects">Personalizadas</button>
+      <button data-view="totals">Total geral</button>
       <button data-view="gallery">Fotos</button>
       <button data-view="checkout-errors">Falhas no checkout</button>
       <button data-view="reviews">Avaliações</button>
     </nav>
+    <section class="workspace" id="admin-totals-workspace" hidden>
+      <div class="toolbar"><h1>Total geral das encomendas</h1><button type="button" class="secondary" id="refresh-totals">Atualizar</button></div>
+      <p>Encomendas reais confirmadas de todo o histórico, incluindo valores por receber. Cada personalizada conta uma vez.</p>
+      <div class="summary-grid" id="order-totals" aria-live="polite"></div>
+    </section>
     <section class="workspace" id="admin-orders-workspace">
       <div class="toolbar">
         <div><p class="eyebrow" id="view-eyebrow">Operação</p><h1 id="view-title">Encomendas diretas</h1></div>
@@ -181,7 +187,7 @@
     </section>
   </div>
   <script src="/assets/js/commerce-config.js"></script>
-  <script type="module" src="/admin/admin.js?v=20261125-email-links"></script>
+  <script type="module" src="/admin/admin.js?v=20261128-totals"></script>
 </body>
 </html>
 

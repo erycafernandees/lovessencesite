@@ -701,13 +701,16 @@ document.querySelectorAll('.tabs button').forEach(button => button.addEventListe
   document.querySelectorAll('.tabs button').forEach(item => item.classList.remove('active'));
   button.classList.add('active');
   currentView = button.dataset.view;
+  const isTotals = currentView === 'totals';
+  document.getElementById('admin-totals-workspace').hidden = !isTotals;
   const isGallery = currentView === 'gallery';
   const isCheckoutErrors = currentView === 'checkout-errors';
   const isReviews = currentView === 'reviews';
-  document.getElementById('admin-orders-workspace').hidden = isGallery || isCheckoutErrors || isReviews;
+  document.getElementById('admin-orders-workspace').hidden = isTotals || isGallery || isCheckoutErrors || isReviews;
   document.getElementById('admin-gallery-workspace').hidden = !isGallery;
   document.getElementById('admin-checkout-errors-workspace').hidden = !isCheckoutErrors;
   document.getElementById('admin-reviews-workspace').hidden = !isReviews;
+  if (isTotals) { loadOrderTotals(); return; }
   if (isGallery) { loadProductGalleryAdmin(); return; }
   if (isCheckoutErrors) { loadCheckoutErrors(); return; }
   if (isReviews) { reviewsWorkspace.load(); return; }
@@ -715,6 +718,27 @@ document.querySelectorAll('.tabs button').forEach(button => button.addEventListe
   updateStatusOptions();
   loadView();
 }));
+
+async function loadOrderTotals() {
+  const panel = document.getElementById('order-totals');
+  const button = document.getElementById('refresh-totals');
+  if (button.disabled) return;
+  button.disabled = true;
+  panel.textContent = 'A calcular…';
+  try {
+    const { data, error } = await supabase.rpc('admin_order_totals').single();
+    if (error) throw error;
+    const direct = Number(data.direct_amount);
+    const custom = Number(data.custom_amount);
+    panel.innerHTML = [['Total geral', direct + custom], ['Diretas', direct], ['Personalizadas', custom]]
+      .map(([label, amount]) => `<div class="summary-card"><span>${label}</span><strong>${money(amount)}</strong></div>`).join('');
+  } catch {
+    panel.textContent = 'Não foi possível carregar o total. Clica em Atualizar para tentar novamente.';
+  } finally {
+    button.disabled = false;
+  }
+}
+document.getElementById('refresh-totals').addEventListener('click', loadOrderTotals);
 
 let checkoutErrorRows = [];
 let checkoutErrorLoading = false;
