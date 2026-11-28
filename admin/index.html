@@ -167,6 +167,7 @@
         <label>Canal<select name="channel"><option value="whatsapp">WhatsApp</option><option value="instagram">Instagram</option><option value="other">Outro</option></select></label>
         <label>Nome do cliente<input name="customerName" required/></label>
         <label>Email (opcional)<input name="customerEmail" type="email"/></label>
+        <label>NIF (opcional)<input name="customerNif" inputmode="numeric" pattern="[0-9]{9}" maxlength="9"/></label>
         <label>Telefone (opcional)<input name="customerPhone"/></label>
         <div class="manual-items-field"><span class="manual-items-title">Artigos da encomenda</span>
           <div id="manual-order-lines" class="manual-order-lines"><div class="manual-order-line">
@@ -187,7 +188,7 @@
     </section>
   </div>
   <script src="/assets/js/commerce-config.js"></script>
-  <script type="module" src="/admin/admin.js?v=20261128-totals"></script>
+  <script type="module" src="/admin/admin.js?v=20261128-nif"></script>
 </body>
 </html>
 

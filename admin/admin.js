@@ -504,7 +504,7 @@ document.getElementById('manual-form').addEventListener('submit', async event =>
     if (photos.length > 10 || photos.some(file => !['image/jpeg','image/png'].includes(file.type) || file.size > 10485760)) throw new Error('Escolhe até 10 fotografias JPG/PNG, com um máximo de 10 MB cada.');
     const created = await adminApi('create-manual-order', {
       channel: values.get('channel'), customerName: values.get('customerName'),
-      customerEmail: values.get('customerEmail'), customerPhone: values.get('customerPhone'),
+      customerNif: values.get('customerNif'), customerEmail: values.get('customerEmail'), customerPhone: values.get('customerPhone'),
       items: manualItemsFrom(form),
       totalAmount: Math.round(amount * 100), paymentStatus: values.get('paymentStatus'),
       expectedDeliveryDate: values.get('expectedDeliveryDate') || null,
@@ -1122,6 +1122,11 @@ function unifiedProjectTasks(record, id) {
 
 function setupUnifiedDetailEditor(kind, record, id) {
   const root = document.getElementById('drawer-content');
+  const nif = document.createElement('label');
+  nif.innerHTML = 'NIF <input inputmode="numeric" maxlength="9" pattern="[0-9]{9}" placeholder="Sem NIF" aria-label="NIF" readonly>';
+  const nifInput = nif.querySelector('input');
+  nifInput.value = record.customer_nif || '';
+  root.querySelector('.detail-grid')?.append(nif);
   const editor = document.getElementById(kind === 'order' ? 'order-edit-form' : 'quote-form');
   if (editor) editor.closest(kind === 'order' ? '.detail-section' : '.project-quote-subsection')?.classList.add('detail-edit-section');
   if (kind === 'project') {
@@ -1173,6 +1178,7 @@ function setupUnifiedDetailEditor(kind, record, id) {
   const start=bar.querySelector('.unified-start'),cancel=bar.querySelector('.unified-cancel'),save=bar.querySelector('.unified-save'),feedback=bar.querySelector('.unified-edit-feedback');
   const setEditMode = value => {
     drawer.classList.toggle('is-editing',value);
+    nifInput.readOnly = !value;
     start.hidden=value; cancel.hidden=!value; save.hidden=!value;
     if (value) root.scrollTo({top:0,behavior:'smooth'});
   };
@@ -1185,6 +1191,10 @@ function setupUnifiedDetailEditor(kind, record, id) {
     try{tasks=kind==='order'?unifiedOrderTasks(record,id):unifiedProjectTasks(record,id);}
     catch(error){feedback.textContent=error.message||'Verifica os campos antes de guardar.';return;}
     if(tasks===null)return;
+    if (nifInput.value !== (record.customer_nif || '')) {
+      if (!nifInput.reportValidity()) return;
+      tasks.unshift({label:'NIF', action:'set-customer-nif', body:{kind,id,nif:nifInput.value}});
+    }
     if(!tasks.length){setEditMode(false);feedback.textContent='Sem alterações para guardar.';return;}
     save.disabled=true;cancel.disabled=true;start.disabled=true;
     let completed=0;

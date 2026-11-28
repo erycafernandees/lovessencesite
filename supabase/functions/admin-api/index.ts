@@ -1,3 +1,4 @@
+import { customerNif } from "../_shared/customer-nif.ts";
 import { ApiError, cleanText, createSignedUploads, emailHtml, handleError, hasValidMagic, json, PRIVATE_BUCKET, queueEmail, randomToken, readJson, requireAdmin, serviceClient, sha256, validateUploads } from "../_shared/core.ts";
 
 const ORDER_STATES = ["draft","awaiting_payment","confirmed","review","awaiting_details","production","ready_to_ship","shipped","completed","cancelled"];
@@ -40,6 +41,13 @@ Deno.serve(async (req) => {
     if (admin.role === "viewer" && !viewerActions.has(action)) throw new ApiError(403, "forbidden", "O teu perfil permite apenas consultar os dados.");
     const client = serviceClient();
 
+    if (action === "set-customer-nif") {
+      const table = body.kind === "project" ? "project_requests" : "orders";
+      const { error } = await client.from(table).update({customer_nif: customerNif(body.nif)})
+        .eq("id", cleanText(body.id, 80, true)!).select("id").single();
+      if (error) throw error;
+      return json(req, {saved:true});
+    }
     if (action === "list-checkout-errors") {
       const { data, error } = await client.from("site_error_events")
         .select("id,created_at,category,area,page_path,error_message,resolved_at")
@@ -695,7 +703,7 @@ Deno.serve(async (req) => {
         expected_delivery_date: expectedDeliveryDate,
         customer_name: customerName,
         customer_email: customerEmail?.toLowerCase() || null,
-        customer_phone: customerPhone,
+        customer_phone: customerPhone, customer_nif: customerNif(body.customerNif),
         subtotal_amount: totalAmount,
         discount_amount: 0,
         shipping_amount: 0,

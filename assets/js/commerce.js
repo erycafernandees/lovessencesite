@@ -8,6 +8,20 @@
   var pendingFileWrites = [];
   var activeQuote = null;
 
+  function addNifField(anchor, id) {
+    if (!anchor || document.getElementById(id)) return;
+    var field = document.createElement('div');
+    field.className = 'cart-promo-field';
+    field.innerHTML = '<label for="' + id + '">NIF para a fatura (opcional)</label><input id="' + id + '" type="text" inputmode="numeric" maxlength="9" autocomplete="off">';
+    anchor.before(field);
+  }
+  function installNifFields() {
+    addNifField(document.getElementById('le-promo-code')?.parentElement, 'cart-nif');
+    addNifField(document.getElementById('quote-approval')?.parentElement, 'quote-nif');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installNifFields);
+  else installNifFields();
+
   function assertConfigured() {
     if (!config.enabled || !/^https:\/\/.+\.supabase\.co$/.test(config.supabaseUrl || '') || !config.supabaseAnonKey || config.supabaseAnonKey.indexOf('YOUR_') === 0) {
       throw new Error('O checkout está preparado em modo de desenvolvimento, mas ainda falta ligar o projeto Supabase e as chaves de teste Stripe.');
@@ -174,7 +188,7 @@
           personalization: item.personalization || {}, addonCodes: item.addonCodes || [], attachments: descriptors
         });
       }
-      var prepared = await api('checkout-prepare', { body: { items: items, shippingDestination: window.shippingDestination, turnstileToken: window.LoveTurnstileToken || null } });
+      var prepared = await api('checkout-prepare', { body: { items: items, customerNif: document.getElementById('cart-nif')?.value, shippingDestination: window.shippingDestination, turnstileToken: window.LoveTurnstileToken || null } });
       for (var fileIndex = 0; fileIndex < flatFiles.length; fileIndex += 1) {
         await uploadSigned(flatFiles[fileIndex], prepared.uploads[fileIndex]);
         await api('attachment-confirm', { body: { attachmentId: prepared.uploads[fileIndex].attachmentId, ownerToken: prepared.orderToken } });
@@ -283,7 +297,7 @@
     button.disabled = true;
     button.textContent = 'A preparar pagamento…';
     try {
-      var result = await api('quote-checkout', { body: { quoteId: activeQuote.id, quoteToken: activeQuote.token, approve: true } });
+      var result = await api('quote-checkout', { body: { quoteId: activeQuote.id, quoteToken: activeQuote.token, customerNif: document.getElementById('quote-nif')?.value, approve: true } });
       window.location.assign(result.checkoutUrl);
     } catch (error) {
       if (errorEl) errorEl.textContent = error.message;

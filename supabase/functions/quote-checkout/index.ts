@@ -1,11 +1,13 @@
+import { customerNif } from "../_shared/customer-nif.ts";
 import { ApiError, checkoutSiteUrl, handleError, json, randomToken, readJson, serviceClient, sha256, stripeClient, verifyAccessToken } from "../_shared/core.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return json(req, {}, 204);
   if (req.method !== "POST") return json(req, { error: "method_not_allowed" }, 405);
   try {
-    const body = await readJson<{ quoteId?: string; quoteToken?: string; approve?: boolean }>(req);
+    const body = await readJson<{ quoteId?: string; quoteToken?: string; customerNif?: string; approve?: boolean }>(req);
     if (body.approve !== true) throw new ApiError(422, "approval_required", "É necessário aprovar o orçamento antes do pagamento.");
+    const nif = customerNif(body.customerNif);
     const client = serviceClient();
     const { data: authorizedQuote, error } = await client.from("quotes")
       .select("*,quote_items(*),project_requests(*)").eq("id", body.quoteId || "").single();
@@ -19,6 +21,10 @@ Deno.serve(async (req) => {
     if (reserveError || !reservation) throw reserveError || new Error("Could not reserve quoted order");
     const { order, quote } = reservation;
     const project = quote.project_requests;
+    if (nif) {
+      const { error } = await client.rpc("save_quote_checkout_nif", {p_order:order.id, p_project:project.id, p_nif:nif});
+      if (error) throw error;
+    }
     if (order.stripe_checkout_session_id) {
       const existing = await stripeClient().checkout.sessions.retrieve(order.stripe_checkout_session_id);
       if (existing.metadata?.order_id !== order.id) throw new ApiError(409, "checkout_mismatch", "Não foi possível confirmar a ligação de pagamento.");

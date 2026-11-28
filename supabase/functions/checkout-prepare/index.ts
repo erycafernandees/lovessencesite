@@ -1,3 +1,4 @@
+import { customerNif } from "../_shared/customer-nif.ts";
 import { ApiError, cleanText, createSignedUploads, enforceRateLimit, handleError, json, randomToken, readJson, serviceClient, sha256, validateUploads, verifyTurnstile } from "../_shared/core.ts";
 
 type CartItem = {
@@ -15,7 +16,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json(req, { error: "method_not_allowed" }, 405);
   try {
     await enforceRateLimit(req, "checkout_prepare", 12, 30);
-    const body = await readJson<{ items?: CartItem[]; shippingDestination?: string; turnstileToken?: string }>(req);
+    const body = await readJson<{ items?: CartItem[]; customerNif?: string; shippingDestination?: string; turnstileToken?: string }>(req);
     await verifyTurnstile(body.turnstileToken, req);
     if (!Array.isArray(body.items) || !body.items.length || body.items.length > 25) throw new ApiError(422, "invalid_cart", "O carrinho está vazio ou contém demasiadas linhas.");
     if ((body.shippingDestination || "mainland") !== "mainland") throw new ApiError(422, "shipping_unavailable", "Nesta fase, o checkout direto está disponível para Portugal Continental. Contacta-nos para outros destinos.");
@@ -122,7 +123,7 @@ Deno.serve(async (req) => {
     const shipping = subtotal >= 6000 ? 0 : 590;
     const token = randomToken();
     const { data: order, error: orderError } = await client.from("orders").insert({
-      source: "catalog", order_status: "draft", payment_status: "unpaid", payment_provider: "stripe",
+      customer_nif: customerNif(body.customerNif), source: "catalog", order_status: "draft", payment_status: "unpaid", payment_provider: "stripe",
       subtotal_amount: subtotal, discount_amount: discount, shipping_amount: shipping,
       total_amount: subtotal - discount + shipping, shipping_destination: "mainland", shipping_method: "Envio Expresso",
       access_token_hash: await sha256(token), promotion_snapshot: promotionSnapshot,
